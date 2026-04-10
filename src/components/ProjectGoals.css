@@ -1,0 +1,11 @@
+.project-goals {
+  color: var(--color-white);
+}
+
+.goals-title {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  color: var(--color-accent-green);
+  margin-bottom: 1.5rem;
+}

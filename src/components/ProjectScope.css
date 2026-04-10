@@ -1,0 +1,11 @@
+.project-scope {
+  color: var(--color-white);
+}
+
+.scope-title {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  color: var(--color-accent-green);
+  margin-bottom: 1.5rem;
+}
