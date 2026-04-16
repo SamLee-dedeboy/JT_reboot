@@ -45,6 +45,10 @@ const navItems: NavItem[] = [
       { label: 'Delta Adapts', href: 'https://www.deltacouncil.ca.gov/delta-plan/climate-change', external: true },
     ],
   },
+  {
+    label: 'Playground',
+    href: '/pages/playground',
+  },
 ];
 
 export default function Navbar() {

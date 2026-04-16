@@ -4,9 +4,12 @@ import Footer from '../components/Footer';
 interface PageLayoutProps {
   title: string;
   children: React.ReactNode;
+  fullWidthContent?: boolean;
 }
 
-export default function PageLayout({ title, children }: PageLayoutProps) {
+export default function PageLayout({ title, children, fullWidthContent = false }: PageLayoutProps) {
+  const contentClassName = fullWidthContent ? 'page-content page-content-full' : 'page-content container';
+
   return (
     <>
       <Navbar />
@@ -16,7 +19,7 @@ export default function PageLayout({ title, children }: PageLayoutProps) {
             <h1 className="page-title">{title}</h1>
           </div>
         </div>
-        <div className="page-content container">
+        <div className={contentClassName}>
           {children}
         </div>
       </main>

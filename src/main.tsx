@@ -11,6 +11,7 @@ import ContactUs from './pages/ContactUs.tsx'
 import ProjectDocumentation from './pages/ProjectDocumentation.tsx'
 import ServiceLearning from './pages/ServiceLearning.tsx'
 import Resources from './pages/Resources.tsx'
+import Playground from './pages/Playground.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
         <Route path="/pages/service-learning" element={<ServiceLearning />} />
         <Route path="/pages/resources" element={<Resources />} />
+        <Route path="/pages/playground" element={<Playground />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
