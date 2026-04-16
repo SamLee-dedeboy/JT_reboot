@@ -10,10 +10,10 @@
 }
 
 .gantt-header {
-    margin: 1rem 0.75rem;
+  margin: 1rem 0.75rem;
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: space-evenly;
   gap: 0.75rem;
 }
 
@@ -52,6 +52,93 @@
   border-radius: 4px;
   padding: 0.2rem 0.35rem;
   font-size: 0.75rem;
+}
+
+.gantt-interaction-notes {
+  margin: 0.55rem 0 0;
+  max-width: 260px;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: #d8dfe2;
+}
+
+.gantt-interaction-note {
+  margin: 0;
+  padding-left: 0.85rem;
+  position: relative;
+}
+
+.gantt-interaction-note::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  width: 0.28rem;
+  height: 0.28rem;
+  border-radius: 50%;
+  background: #d8dfe2;
+}
+
+.gantt-interaction-note + .gantt-interaction-note {
+  margin-top: 0.2rem;
+}
+
+.gantt-toggle-controls {
+  margin-top: 0.5rem;
+}
+
+.gantt-threshold-controls {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 220px;
+}
+
+.gantt-threshold-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.gantt-threshold-label {
+  font-size: 0.72rem;
+  color: #d8d8d8;
+}
+
+.gantt-threshold-label span {
+  color: #9bc7d6;
+  font-weight: 700;
+}
+
+.gantt-threshold-label .gantt-threshold-value-unacceptable {
+  color: #f77c3b;
+}
+
+.gantt-threshold-slider {
+  width: 100%;
+  accent-color: #51a2bd;
+}
+
+.gantt-threshold-slider-unacceptable {
+  accent-color: #f77c3b;
+}
+
+.gantt-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: #d8d8d8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.gantt-partition-toggle {
+  width: 0.9rem;
+  height: 0.9rem;
+  accent-color: #51a2bd;
+  cursor: pointer;
 }
 
 .gantt-legend {
@@ -138,9 +225,15 @@
 
 .gantt-svg {
   width: 100%;
-  min-width: 980px;
+  min-width: 0;
   height: auto;
   display: block;
+}
+
+@media (min-width: 1024px) {
+  .gantt-canvas-wrap {
+    overflow: hidden;
+  }
 }
 
 .gantt-station-label {
@@ -148,6 +241,14 @@
   color: #c5c5c5;
   text-transform: uppercase;
   fill: #c5c5c5;
+}
+
+.gantt-gap-label {
+  font-size: 0.72rem;
+  color: #8ea9b5;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  fill: #8ea9b5;
 }
 
 .gantt-segment {
@@ -188,13 +289,13 @@
 }
 
 .gantt-brush .selection {
-  fill: #51a2bd78;
-  stroke: #51a2bd;
+  fill: #7ed95778;
+  stroke: #7ed957;
   stroke-width: 1;
 }
 
 .gantt-brush .handle {
-  fill: #51a2bd;
+  fill: #7ed957;
 }
 
 

@@ -2,8 +2,12 @@ import { Layer, Source } from 'react-map-gl/mapbox';
 import type { LayerProps } from 'react-map-gl/mapbox';
 
 export const DELTA_STATION_POINTS_LAYER_ID = 'delta-station-points-circle';
+const DELTA_STATION_POINTS_HIGHLIGHT_LAYER_ID = 'delta-station-points-highlight';
+const DELTA_STATION_POINTS_SOURCE_ID = 'delta-station-points-source';
+const DELTA_STATION_POINTS_SOURCE_URL = 'mapbox://justtransition.2am7ol9m';
+const DELTA_STATION_POINTS_SOURCE_LAYER = 'Delta_Station_Locations_JT_Sa-20pbps';
 
-const waterQualityStationIndices = [
+const waterQualityStationIndices: ReadonlyArray<number> = [
   184, 84, 173, 24, 171, 324, 40, 200, 320, 322,
   321, 323, 327, 31, 88, 325, 201, 37, 7, 13,
   303, 66, 288, 319, 175, 96, 86, 50, 328, 318,
@@ -25,7 +29,7 @@ export default function DeltaStationPointsLayer({
   const baseLayer: LayerProps = {
     id: DELTA_STATION_POINTS_LAYER_ID,
     type: 'circle',
-    'source-layer': 'Delta_Station_Locations_JT_Sa-20pbps',
+    'source-layer': DELTA_STATION_POINTS_SOURCE_LAYER,
     filter: ['in', ['get', 'index_'], ['literal', waterQualityStationIndices]],
     paint: {
       'circle-radius': 6,
@@ -43,9 +47,9 @@ export default function DeltaStationPointsLayer({
   };
 
   const highlightLayer: LayerProps = {
-    id: 'delta-station-points-highlight',
+    id: DELTA_STATION_POINTS_HIGHLIGHT_LAYER_ID,
     type: 'circle',
-    'source-layer': 'Delta_Station_Locations_JT_Sa-20pbps',
+    'source-layer': DELTA_STATION_POINTS_SOURCE_LAYER,
     filter: ['==', ['get', 'index_'], highlightedStationIndex ?? -999999],
     paint: {
       'circle-radius': 10,
@@ -57,7 +61,7 @@ export default function DeltaStationPointsLayer({
   };
 
   return (
-    <Source id="delta-station-points-source" type="vector" url="mapbox://justtransition.2am7ol9m">
+    <Source id={DELTA_STATION_POINTS_SOURCE_ID} type="vector" url={DELTA_STATION_POINTS_SOURCE_URL}>
       <Layer {...baseLayer} />
       <Layer {...highlightLayer} />
     </Source>

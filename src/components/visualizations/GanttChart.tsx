@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import './GanttChart.css';
 
 type WaterQualityStatus = 'acceptable' | 'unacceptable' | string;
+type VulnerabilityGroup = 'HIGHEST' | 'HIGH' | 'MODERATE';
 
 interface WaterQualitySegment {
   status: WaterQualityStatus;
@@ -10,9 +11,43 @@ interface WaterQualitySegment {
   end: string;
 }
 
+interface RawWaterQualitySegment {
+  status: WaterQualityStatus;
+  start: string;
+  end: string;
+}
+
+interface RawWaterQualityRecord {
+  station: string;
+  station_index: string | number;
+  station_long_name?: string;
+  vulnerability?: string;
+  affordability?: string;
+  segments: RawWaterQualitySegment[];
+}
+
+interface RawWaterQualitySummaryRecord {
+  station: string;
+  station_index: string | number;
+  station_long_name?: string;
+  vulnerability?: string;
+  affordability?: string;
+  good: number;
+  acceptable: number;
+  unacceptable: number;
+  not_good?: number;
+}
+
+interface WaterQualityStationMetrics {
+  good: number;
+  acceptable: number;
+  unacceptable: number;
+}
+
 interface WaterQualityRecord {
   station: string;
   station_index: number;
+  vulnerability: VulnerabilityGroup;
   segments: WaterQualitySegment[];
 }
 
@@ -31,13 +66,21 @@ interface WaterQualitySummaryRecord {
   not_good?: number;
 }
 
+interface RawWaterQualityData {
+  timestamps: string[];
+  records: RawWaterQualityRecord[];
+  summary?: RawWaterQualitySummaryRecord[];
+}
+
 type SortMode = 'unacceptable' | 'good' | 'station-index';
-type DatasetMode = 'run15-historical' | 'run16-10decrease' | 'run17-30increase';
+type DatasetMode = 'run15' | 'run16' | 'run17';
+
+const VULNERABILITY_GROUP_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'];
 
 const DATASET_PATHS: Record<DatasetMode, string> = {
-  'run15-historical': '/data/water_quality_15.json',
-  'run16-10decrease': '/data/water_quality_16.json',
-  'run17-30increase': '/data/water_quality_17.json',
+  run15: '/data/water_quality_run15.json',
+  run16: '/data/water_quality_run16.json',
+  run17: '/data/water_quality_run17.json',
 };
 
 interface RenderSegment {
@@ -45,6 +88,36 @@ interface RenderSegment {
   station: string;
   startDate: Date;
   endDate: Date;
+}
+
+interface StationDisplayRow {
+  kind: 'station';
+  key: string;
+  record: WaterQualityRecord;
+}
+
+interface GapDisplayRow {
+  kind: 'gap';
+  key: string;
+  vulnerability: VulnerabilityGroup;
+}
+
+type DisplayRow = StationDisplayRow | GapDisplayRow;
+
+function isStationRow(row: DisplayRow): row is StationDisplayRow {
+  return row.kind === 'station';
+}
+
+function isGapRow(row: DisplayRow): row is GapDisplayRow {
+  return row.kind === 'gap';
+}
+
+function getStationRecord(row: DisplayRow): WaterQualityRecord {
+  return (row as StationDisplayRow).record;
+}
+
+function getGapVulnerability(row: DisplayRow): VulnerabilityGroup {
+  return (row as GapDisplayRow).vulnerability;
 }
 
 interface GanttChartProps {
@@ -58,6 +131,151 @@ interface GanttChartProps {
 
 function parseDate(value: string): Date {
   return new Date(`${value}T00:00:00Z`);
+}
+
+function normalizeStationIndex(value: string | number): number {
+  return typeof value === 'number' ? value : Number.parseInt(value, 10);
+}
+
+function normalizeVulnerability(value?: string): VulnerabilityGroup {
+  const normalized = value?.toUpperCase();
+
+  if (normalized === 'HIGHEST' || normalized === 'HIGH' || normalized === 'MODERATE') {
+    return normalized;
+  }
+
+  return 'MODERATE';
+}
+
+function formatVulnerabilityLabel(vulnerability: VulnerabilityGroup): string {
+  return `${vulnerability}`;
+}
+
+function buildStationMetricsMap(summary?: WaterQualitySummaryRecord[]) {
+  const metricsByStationIndex = new Map<number, WaterQualityStationMetrics>();
+
+  summary?.forEach((record) => {
+    const stationIndex = normalizeStationIndex(record.station_index);
+
+    metricsByStationIndex.set(stationIndex, {
+      good: Number(record.good) || 0,
+      acceptable: Number(record.acceptable) || 0,
+      unacceptable: Number(record.unacceptable) || 0,
+    });
+  });
+
+  return metricsByStationIndex;
+}
+
+function normalizeWaterQualityData(payload: RawWaterQualityData): WaterQualityData {
+  return {
+    timestamps: payload.timestamps,
+    records: payload.records.map((record) => ({
+      station: record.station,
+      station_index: normalizeStationIndex(record.station_index),
+      vulnerability: normalizeVulnerability(record.vulnerability),
+      segments: record.segments.map((segment) => ({
+        status: segment.status,
+        start: segment.start,
+        end: segment.end,
+      })),
+    })),
+    summary: payload.summary?.map((record) => ({
+      station: record.station,
+      station_index: normalizeStationIndex(record.station_index),
+      good: Number(record.good) || 0,
+      acceptable: Number(record.acceptable) || 0,
+      unacceptable: Number(record.unacceptable) || 0,
+      not_good: record.not_good,
+    })),
+  };
+}
+
+function compareStationRecords(
+  a: WaterQualityRecord,
+  b: WaterQualityRecord,
+  sortMode: SortMode,
+  stationMetrics: Map<number, WaterQualityStationMetrics>,
+) {
+  const aMetrics = stationMetrics.get(a.station_index) ?? { good: 0, acceptable: 0, unacceptable: 0 };
+  const bMetrics = stationMetrics.get(b.station_index) ?? { good: 0, acceptable: 0, unacceptable: 0 };
+
+  if (sortMode === 'station-index') {
+    return a.station_index - b.station_index;
+  }
+
+  if (sortMode === 'good') {
+    const goodDelta = bMetrics.good - aMetrics.good;
+    if (goodDelta !== 0) {
+      return goodDelta;
+    }
+
+    const acceptableDelta = bMetrics.acceptable - aMetrics.acceptable;
+    return acceptableDelta !== 0 ? acceptableDelta : a.station_index - b.station_index;
+  }
+
+  const unacceptableDelta = bMetrics.unacceptable - aMetrics.unacceptable;
+  if (unacceptableDelta !== 0) {
+    return unacceptableDelta;
+  }
+
+  const acceptableDelta = bMetrics.acceptable - aMetrics.acceptable;
+  return acceptableDelta !== 0 ? acceptableDelta : a.station_index - b.station_index;
+}
+
+function sortStationRecords(
+  records: WaterQualityRecord[],
+  sortMode: SortMode,
+  stationMetrics: Map<number, WaterQualityStationMetrics>,
+) {
+  return [...records].sort((a, b) => compareStationRecords(a, b, sortMode, stationMetrics));
+}
+
+function buildDisplayRows(
+  records: WaterQualityRecord[],
+  sortMode: SortMode,
+  partitionByVulnerability: boolean,
+  stationMetrics: Map<number, WaterQualityStationMetrics>,
+) {
+  if (!partitionByVulnerability) {
+    return sortStationRecords(records, sortMode, stationMetrics).map((record): DisplayRow => ({
+      kind: 'station',
+      key: `station-${record.station_index}`,
+      record,
+    }));
+  }
+
+  const rows: DisplayRow[] = [];
+
+  VULNERABILITY_GROUP_ORDER.forEach((vulnerability) => {
+    const groupedRecords = sortStationRecords(
+      records.filter((record) => record.vulnerability === vulnerability),
+      sortMode,
+      stationMetrics,
+    );
+
+    if (groupedRecords.length === 0) {
+      return;
+    }
+
+    if (rows.length === 0 || rows[rows.length - 1]?.kind === 'station') {
+      rows.push({
+        kind: 'gap',
+        key: `gap-${vulnerability}-${rows.length}`,
+        vulnerability,
+      });
+    }
+
+    groupedRecords.forEach((record) => {
+      rows.push({
+        kind: 'station',
+        key: `station-${record.station_index}-${vulnerability}`,
+        record,
+      });
+    });
+  });
+
+  return rows;
 }
 
 function getAxisTickConfig(start: Date, end: Date) {
@@ -92,8 +310,40 @@ export default function GanttChart({
   const [error, setError] = useState<string | null>(null);
   const [focusDomain, setFocusDomain] = useState<[Date, Date] | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('unacceptable');
-  const [datasetMode, setDatasetMode] = useState<DatasetMode>('run15-historical');
+  const [datasetMode, setDatasetMode] = useState<DatasetMode>('run15');
+  const [partitionByVulnerability, setPartitionByVulnerability] = useState(false);
+  const [unacceptableFocusThreshold, setUnacceptableFocusThreshold] = useState(75);
+  const [goodFocusThreshold, setGoodFocusThreshold] = useState(75);
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const canvasWrapRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  useEffect(() => {
+    if (!canvasWrapRef.current) {
+      return;
+    }
+
+    const element = canvasWrapRef.current;
+
+    const updateSize = () => {
+      setCanvasSize({
+        width: element.clientWidth,
+        height: element.clientHeight,
+      });
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -106,7 +356,8 @@ export default function GanttChart({
           throw new Error(`Failed to load water quality data (${response.status})`);
         }
 
-        const payload = (await response.json()) as WaterQualityData;
+        const rawPayload = (await response.json()) as RawWaterQualityData;
+        const payload = normalizeWaterQualityData(rawPayload);
         if (isMounted) {
           setData(payload);
           setError(null);
@@ -140,21 +391,21 @@ export default function GanttChart({
     return { startDate, endDate };
   }, [data]);
 
-  const orderedRecords = useMemo(() => {
+  const stationMetrics = useMemo(() => {
     if (!data) {
-      return [] as WaterQualityRecord[];
+      return new Map<number, WaterQualityStationMetrics>();
     }
 
-    if (sortMode === 'good') {
-      return [...data.records].reverse();
+    return buildStationMetricsMap(data.summary);
+  }, [data]);
+
+  const displayRows = useMemo(() => {
+    if (!data) {
+      return [] as DisplayRow[];
     }
 
-    if (sortMode === 'station-index') {
-      return [...data.records].sort((a, b) => a.station_index - b.station_index);
-    }
-
-    return data.records;
-  }, [data, sortMode]);
+    return buildDisplayRows(data.records, sortMode, partitionByVulnerability, stationMetrics);
+  }, [data, sortMode, partitionByVulnerability, stationMetrics]);
 
   const parsedTimeline = useMemo(() => {
     if (!data) {
@@ -169,6 +420,8 @@ export default function GanttChart({
       return { unacceptableOver75: [], goodOver75: [] };
     }
 
+    const unacceptableThresholdRatio = unacceptableFocusThreshold / 100;
+    const goodThresholdRatio = goodFocusThreshold / 100;
     const unacceptableOver75: number[] = [];
     const goodOver75: number[] = [];
 
@@ -185,17 +438,17 @@ export default function GanttChart({
       const unacceptableRatio = unacceptableDays / totalDays;
       const goodRatio = goodDays / totalDays;
 
-      if (unacceptableRatio > 0.75) {
+      if (unacceptableRatio >= unacceptableThresholdRatio) {
         unacceptableOver75.push(record.station_index);
       }
 
-      if (goodRatio > 0.75) {
+      if (goodRatio >= goodThresholdRatio) {
         goodOver75.push(record.station_index);
       }
     });
 
     return { unacceptableOver75, goodOver75 };
-  }, [data]);
+  }, [data, unacceptableFocusThreshold, goodFocusThreshold]);
 
   const unacceptableOver75Set = useMemo(() => {
     return new Set(stationCategoryLists.unacceptableOver75);
@@ -226,18 +479,28 @@ export default function GanttChart({
       return;
     }
 
-    const rowHeight = 16;
-    const chartWidth = 1100;
+    const containerWidth = canvasSize.width;
+    const containerHeight = canvasSize.height;
+    const isLargeViewport = containerWidth >= 1024;
+    const chartWidth = isLargeViewport ? Math.max(containerWidth, 900) : 1100;
     const brushHeight = 24;
     const margin = { top: 26, right: 18, bottom: 22, left: 84 };
-    const brushGap = 8;
-    const innerHeight = Math.max(orderedRecords.length * rowHeight, 100);
+    const brushGap = partitionByVulnerability ? 20 : 8;
+    const defaultRowHeight = 16;
+    const defaultInnerHeight = Math.max(displayRows.length * defaultRowHeight, 100);
+    const availableInnerHeight = Math.max(
+      containerHeight - (margin.top + brushHeight + brushGap + margin.bottom),
+      100,
+    );
+    const innerHeight = isLargeViewport && containerHeight > 0 ? availableInnerHeight : defaultInnerHeight;
     const barsTop = margin.top + brushHeight + brushGap;
     const brushTop = margin.top;
     const chartHeight = barsTop + innerHeight + margin.bottom;
     const [domainStart, domainEnd] = focusDomain ?? [bounds.startDate, bounds.endDate];
 
     const svg = d3.select(svgRef.current);
+    svg.attr('width', chartWidth);
+    svg.attr('height', chartHeight);
     svg.attr('viewBox', `0 0 ${chartWidth} ${chartHeight}`);
     svg.selectAll('*').remove();
 
@@ -255,7 +518,7 @@ export default function GanttChart({
 
     const y = d3
       .scaleBand<string>()
-      .domain(orderedRecords.map((record) => record.station))
+      .domain(displayRows.map((row) => row.key))
       .range([barsTop, barsTop + innerHeight])
       .paddingInner(0.32)
       .paddingOuter(0.1);
@@ -281,19 +544,35 @@ export default function GanttChart({
     const rowGroups = plotGroup
       .append('g')
       .selectAll('g')
-      .data(orderedRecords)
+      .data(displayRows)
       .join('g')
-      .attr('transform', (record: WaterQualityRecord) => `translate(0, ${y(record.station) ?? 0})`);
+      .attr('transform', (row: DisplayRow) => `translate(0, ${y(row.key) ?? 0})`);
 
     rowGroups
+      .filter(isGapRow)
+      .append('text')
+      .attr('class', 'gantt-gap-label')
+      .attr('x', margin.left - 8)
+      .attr('y', (y.bandwidth() / 2) + 0.5)
+      .attr('dy', '0.35em')
+      .attr('text-anchor', 'end')
+      .text((row: DisplayRow) => formatVulnerabilityLabel(getGapVulnerability(row)));
+
+    rowGroups
+      .filter(isStationRow)
       .append('text')
       .attr('class', 'gantt-station-label')
       .attr('x', margin.left - 8)
       .attr('y', (y.bandwidth() / 2) + 0.5)
       .attr('dy', '0.35em')
       .attr('text-anchor', 'end')
-      .attr('font-weight', (record: WaterQualityRecord) => (focusedStationIndexSet.has(record.station_index) ? 700 : 400))
-      .style('fill', (record: WaterQualityRecord) => {
+      .attr('font-weight', (row: DisplayRow) => {
+        const record = getStationRecord(row);
+        return focusedStationIndexSet.has(record.station_index) ? 700 : 400;
+      })
+      .style('fill', (row: DisplayRow) => {
+        const record = getStationRecord(row);
+
         if (unacceptableOver75Set.has(record.station_index)) {
           return '#f77c3b';
         }
@@ -305,8 +584,9 @@ export default function GanttChart({
         return '#cfcfcf';
       })
       .style('cursor', 'pointer')
-      .text((record: WaterQualityRecord) => record.station)
-      .on('mouseenter', (_, record: WaterQualityRecord) => {
+      .text((row: DisplayRow) => String(getStationRecord(row).station_index))
+      .on('mouseenter', (_, row: DisplayRow) => {
+        const record = getStationRecord(row);
         onHoverStationIndexChange?.(record.station_index);
       })
       .on('mouseleave', () => {
@@ -314,6 +594,7 @@ export default function GanttChart({
       });
 
     rowGroups
+      .filter(isStationRow)
       .append('rect')
       .attr('class', 'gantt-row-default')
       .attr('x', margin.left)
@@ -322,14 +603,15 @@ export default function GanttChart({
       .attr('width', chartWidth - margin.left - margin.right);
 
     rowGroups
+      .filter(isStationRow)
       .append('g')
       .attr('class', 'gantt-segments')
       .selectAll('rect')
-      .data((record: WaterQualityRecord) =>
-        record.segments
+      .data((row: DisplayRow) =>
+        getStationRecord(row).segments
           .map((segment: WaterQualitySegment) => ({
             segment,
-            station: record.station,
+            station: getStationRecord(row).station,
             startDate: parseDate(segment.start),
             endDate: parseDate(segment.end),
           }))
@@ -473,9 +755,11 @@ export default function GanttChart({
   }, [
     data,
     bounds,
+    canvasSize,
     focusDomain,
-    orderedRecords,
+    displayRows,
     parsedTimeline,
+    partitionByVulnerability,
     focusedStationIndexSet,
     unacceptableOver75Set,
     goodOver75Set,
@@ -497,6 +781,10 @@ export default function GanttChart({
         <div className="gantt-title-block">
           <h3>Water Quality Timeline</h3>
           <p>{data.timestamps[0]} to {data.timestamps[data.timestamps.length - 1]}</p>
+          <div className="gantt-interaction-notes" aria-label="Chart interaction notes">
+            <p className="gantt-interaction-note">Use the brush to focus on certain time window. Click outside to reset.</p>
+            <p className="gantt-interaction-note">Hover a station index to highlight that station on the map.</p>
+          </div>
           <div className="gantt-dataset-controls" aria-label="Dataset options">
             <label htmlFor="gantt-dataset-select">Dataset</label>
             <select
@@ -508,9 +796,9 @@ export default function GanttChart({
                 setDatasetMode(event.target.value as DatasetMode);
               }}
             >
-              <option value="run15-historical">Run15 - Historical</option>
-              <option value="run16-10decrease">Run16 - 10decrease</option>
-              <option value="run17-30increase">Run17 - 30increase</option>
+              <option value="run15">Run 15 - Historical</option>
+              <option value="run16">Run 16 - 10decrease</option>
+              <option value="run17">Run 17 - 30increase</option>
             </select>
           </div>
         </div>
@@ -542,10 +830,54 @@ export default function GanttChart({
               <option value="station-index">Sorted by station index</option>
             </select>
           </div>
+          <div className="gantt-toggle-controls">
+            <label className="gantt-toggle-label" htmlFor="gantt-partition-toggle">
+              <input
+                id="gantt-partition-toggle"
+                className="gantt-partition-toggle"
+                type="checkbox"
+                checked={partitionByVulnerability}
+                onChange={(event) => setPartitionByVulnerability(event.target.checked)}
+              />
+              Group by vulnerability
+            </label>
+          </div>
+          <div className="gantt-threshold-controls" aria-label="Focus threshold options">
+            <div className="gantt-threshold-group">
+              <label className="gantt-threshold-label" htmlFor="gantt-unacceptable-threshold">
+                Unacceptable Exceedance: <span className="gantt-threshold-value-unacceptable">{unacceptableFocusThreshold}%</span>
+              </label>
+              <input
+                id="gantt-unacceptable-threshold"
+                className="gantt-threshold-slider gantt-threshold-slider-unacceptable"
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={unacceptableFocusThreshold}
+                onChange={(event) => setUnacceptableFocusThreshold(Number(event.target.value))}
+              />
+            </div>
+            <div className="gantt-threshold-group">
+              <label className="gantt-threshold-label" htmlFor="gantt-good-threshold">
+                Good Exceedance: <span>{goodFocusThreshold}%</span>
+              </label>
+              <input
+                id="gantt-good-threshold"
+                className="gantt-threshold-slider"
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={goodFocusThreshold}
+                onChange={(event) => setGoodFocusThreshold(Number(event.target.value))}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="gantt-canvas-wrap" role="img" aria-label="Water quality timeline chart">
+      <div ref={canvasWrapRef} className="gantt-canvas-wrap" role="img" aria-label="Water quality timeline chart">
         <svg ref={svgRef} className="gantt-svg" />
       </div>
     </div>

@@ -4,6 +4,36 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLayerOrchestrator from './MapLayerOrchestrator';
 import { DELTA_STATION_POINTS_LAYER_ID } from './layers/DeltaStationPointsLayer';
 
+const mapContainerStyle = { position: 'relative', width: '100%', height: '100%' } as const;
+const mapStyle = { width: '100%', height: '100%' } as const;
+const tooltipStyle = {
+  position: 'absolute',
+  background: 'rgba(22, 22, 22, 0.94)',
+  color: '#f2f2f2',
+  border: '1px solid rgba(242, 200, 32, 0.75)',
+  borderRadius: 6,
+  padding: '0.45rem 0.55rem',
+  fontSize: '0.78rem',
+  lineHeight: 1.4,
+  pointerEvents: 'none',
+  zIndex: 20,
+  maxWidth: 220,
+} as const;
+const dateBadgeStyle = {
+  position: 'absolute',
+  top: 10,
+  left: 10,
+  background: 'rgba(22, 22, 22, 0.9)',
+  color: '#f2f2f2',
+  border: '2px solid rgba(126, 217, 87, 0.75)',
+  borderRadius: 6,
+  padding: '0.4rem 0.55rem',
+  fontSize: '0.78rem',
+  lineHeight: 1.35,
+  zIndex: 21,
+  pointerEvents: 'none',
+} as const;
+
 interface TooltipState {
   x: number;
   y: number;
@@ -17,6 +47,20 @@ interface MapContainerProps {
   highlightedStationIndex?: number | null;
   unacceptableOver75?: number[];
   goodOver75?: number[];
+}
+
+function buildTooltipState(props: Record<string, unknown>, x: number, y: number): TooltipState {
+  const stationIndex = props.index_ ?? props.station_index ?? props.index ?? 'N/A';
+  const stationId = props.short_name ?? 'Unknown';
+  const stationName = props.long_name ?? 'Unknown';
+
+  return {
+    x,
+    y,
+    stationIndex: String(stationIndex),
+    stationID: String(stationId).toUpperCase(),
+    stationName: String(stationName),
+  };
 }
 
 export default function MapContainer({
@@ -37,7 +81,7 @@ export default function MapContainer({
   }
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+    <div style={mapContainerStyle}>
       <Map
         initialViewState={{
           longitude: -121.95,
@@ -46,7 +90,7 @@ export default function MapContainer({
         }}
         mapStyle="mapbox://styles/justtransition/cmo0kote1006j01st023g37ga"
         mapboxAccessToken={mapboxToken}
-        style={{ width: '100%', height: '100%' }}
+        style={mapStyle}
         interactiveLayerIds={[DELTA_STATION_POINTS_LAYER_ID]}
         onMouseMove={(event) => {
           const feature = event.features?.[0];
@@ -56,17 +100,7 @@ export default function MapContainer({
           }
 
           const props = feature.properties as Record<string, unknown>;
-          const indexValue = props.index_ ?? props.station_index ?? props.index ?? 'N/A';
-          const IDValue = props.short_name ?? 'Unknown';
-          const nameValue = props.long_name ?? 'Unknown';
-
-          setTooltip({
-            x: event.point.x,
-            y: event.point.y,
-            stationIndex: String(indexValue),
-            stationID: String(IDValue).toUpperCase(),
-            stationName: String(nameValue),
-          });
+          setTooltip(buildTooltipState(props, event.point.x, event.point.y));
         }}
         onMouseLeave={() => setTooltip(null)}
       >
@@ -80,19 +114,9 @@ export default function MapContainer({
       {tooltip && (
         <div
           style={{
-            position: 'absolute',
+            ...tooltipStyle,
             left: tooltip.x + 12,
             top: tooltip.y + 12,
-            background: 'rgba(22, 22, 22, 0.94)',
-            color: '#f2f2f2',
-            border: '1px solid rgba(242, 200, 32, 0.75)',
-            borderRadius: 6,
-            padding: '0.45rem 0.55rem',
-            fontSize: '0.78rem',
-            lineHeight: 1.4,
-            pointerEvents: 'none',
-            zIndex: 20,
-            maxWidth: 220,
           }}
         >
           <div><strong>Index:</strong> {tooltip.stationIndex}</div>
@@ -102,20 +126,7 @@ export default function MapContainer({
       )}
 
       <div
-        style={{
-          position: 'absolute',
-          top: 10,
-          left: 10,
-          background: 'rgba(22, 22, 22, 0.9)',
-          color: '#f2f2f2',
-          border: '1px solid rgba(81, 162, 189, 0.75)',
-          borderRadius: 6,
-          padding: '0.4rem 0.55rem',
-          fontSize: '0.78rem',
-          lineHeight: 1.35,
-          zIndex: 21,
-          pointerEvents: 'none',
-        }}
+        style={dateBadgeStyle}
       >
         <strong>Currently Viewing:</strong> {currentViewingDate ?? 'N/A'}
       </div>

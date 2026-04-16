@@ -12,13 +12,11 @@ export default function MapLayerOrchestrator({
   goodOver75 = [],
 }: MapLayerOrchestratorProps) {
   return (
-    <>
-      <DeltaStationPointsLayer
-        highlightedStationIndex={highlightedStationIndex}
-        unacceptableOver75={unacceptableOver75}
-        goodOver75={goodOver75}
-      />
-    </>
+    <DeltaStationPointsLayer
+      highlightedStationIndex={highlightedStationIndex}
+      unacceptableOver75={unacceptableOver75}
+      goodOver75={goodOver75}
+    />
   );
 }
 
