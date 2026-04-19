@@ -1,5 +1,6 @@
 import './App.css'
 import { Link } from 'react-router-dom'
+import { assetUrl } from './utils/baseUrl'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import WhatIf from './components/WhatIf'
@@ -21,7 +22,7 @@ function App() {
         title="What Are Just Transitions?"
         text="The term Just Transition is used in the domains of climate, energy, and environmental justice and refers to efforts to reduce inequity in society. This project seeks to advance such efforts by democratizing science and decision making in the Delta through a participatory scenario planning process that engages underrepresented communities most affected by salinity management."
         imagePosition="right"
-        imageSrc="/images/community-fishing.jpg"
+        imageSrc={assetUrl('/images/community-fishing.jpg')}
         imageAlt="Community members fishing in the Delta"
       />
 
@@ -70,7 +71,7 @@ function App() {
         title="How Our Project Works"
         text="Our project aims to raise awareness of the tradeoffs involved in managing the Sacramento-San Joaquin Delta amid future droughts and rising sea levels. Through collaborative design of future scenarios, community dialogue, advanced modeling and visualization, and co-learning that emphasizes underrepresented voices, we build shared understanding of what's possible and what's at stake."
         imagePosition="right"
-        imageSrc="/images/workshop-session.jpg"
+        imageSrc={assetUrl('/images/workshop-session.jpg')}
         imageAlt="Community workshop session"
       >
         <div style={{ marginTop: '1.5rem' }}>

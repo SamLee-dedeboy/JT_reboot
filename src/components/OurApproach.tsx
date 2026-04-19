@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './OurApproach.css';
+import { assetUrl } from '../utils/baseUrl';
 
 export default function OurApproach() {
   return (
@@ -18,7 +19,7 @@ export default function OurApproach() {
           </div>
         </div>
         <div className="approach-image">
-          <img src="/images/approach-diagram.png" alt="Participatory process diagram" className="approach-photo" />
+          <img src={assetUrl('/images/approach-diagram.png')} alt="Participatory process diagram" className="approach-photo" />
         </div>
       </div>
     </section>

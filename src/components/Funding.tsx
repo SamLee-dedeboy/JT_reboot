@@ -1,4 +1,5 @@
 import './Funding.css';
+import { assetUrl } from '../utils/baseUrl';
 
 export default function Funding() {
   return (
@@ -13,7 +14,7 @@ export default function Funding() {
           </blockquote>
         </div>
         <div className="funding-logo">
-          <img src="/images/uc-logo-white.png" alt="University of California" />
+          <img src={assetUrl('/images/uc-logo-white.png')} alt="University of California" />
         </div>
       </div>
     </section>

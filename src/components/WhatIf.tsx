@@ -1,4 +1,5 @@
 import './WhatIf.css';
+import { assetUrl } from '../utils/baseUrl';
 
 export default function WhatIf() {
   return (
@@ -16,7 +17,7 @@ export default function WhatIf() {
           </blockquote>
         </div>
         <div className="what-if-image">
-          <img src="/images/delta-aerial.jpg" alt="Aerial view of the Sacramento-San Joaquin Delta" className="what-if-photo" />
+          <img src={assetUrl('/images/delta-aerial.jpg')} alt="Aerial view of the Sacramento-San Joaquin Delta" className="what-if-photo" />
         </div>
       </div>
     </section>

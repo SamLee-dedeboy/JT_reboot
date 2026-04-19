@@ -1,4 +1,5 @@
 import './Footer.css';
+import { assetUrl } from '../utils/baseUrl';
 
 export default function Footer() {
   return (
@@ -13,7 +14,7 @@ export default function Footer() {
           </blockquote>
         </div>
         <div className="footer-funding-logo">
-          <img src="/images/uc-logo-white.png" alt="University of California" />
+          <img src={assetUrl('/images/uc-logo-white.png')} alt="University of California" />
         </div>
       </div>
       <div className="footer-bottom container">

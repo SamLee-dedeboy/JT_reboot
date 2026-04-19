@@ -78,9 +78,9 @@ type DatasetMode = 'run15' | 'run16' | 'run17';
 const VULNERABILITY_GROUP_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'];
 
 const DATASET_PATHS: Record<DatasetMode, string> = {
-  run15: '/data/water_quality_run15.json',
-  run16: '/data/water_quality_run16.json',
-  run17: '/data/water_quality_run17.json',
+  run15: `${import.meta.env.BASE_URL}data/water_quality_run15.json`,
+  run16: `${import.meta.env.BASE_URL}data/water_quality_run16.json`,
+  run17: `${import.meta.env.BASE_URL}data/water_quality_run17.json`,
 };
 
 interface RenderSegment {
