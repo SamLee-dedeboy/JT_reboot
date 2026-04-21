@@ -89,14 +89,14 @@ const VULNERABILITY_GROUP_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MOD
 
 const DATASET_PATHS: Record<ThresholdSourceMode, Record<DatasetMode, string>> = {
   original: {
-    run15: '/data/original/water_quality_run15.json',
-    run16: '/data/original/water_quality_run16.json',
-    run17: '/data/original/water_quality_run17.json',
+    run15: `${import.meta.env.BASE_URL}/data/original/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/original/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/original/water_quality_run17.json`,
   },
   deanna: {
-    run15: '/data/Deanna/water_quality_run15.json',
-    run16: '/data/Deanna/water_quality_run16.json',
-    run17: '/data/Deanna/water_quality_run17.json',
+    run15: `${import.meta.env.BASE_URL}/data/Deanna/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/Deanna/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/Deanna/water_quality_run17.json`,
   },
 };
 
