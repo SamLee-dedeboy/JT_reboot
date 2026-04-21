@@ -537,7 +537,7 @@ export default function GanttChart({
     const isLargeViewport = containerWidth >= 1024;
     const chartWidth = isLargeViewport ? Math.max(containerWidth, 900) : 1100;
     const brushHeight = 24;
-    const margin = { top: 26, right: 18, bottom: 22, left: 84 };
+    const margin = { top: 32, right: 18, bottom: 22, left: 84 };
     const brushGap = partitionByVulnerability ? 20 : 8;
     const defaultRowHeight = 16;
     const defaultInnerHeight = Math.max(displayRows.length * defaultRowHeight, 100);
@@ -590,7 +590,7 @@ export default function GanttChart({
 
     axisGroup.select('.domain').attr('stroke', '#5e5e5e');
     axisGroup.selectAll('.tick line').attr('stroke', '#404040');
-    axisGroup.selectAll('.tick text').attr('fill', '#cfcfcf').attr('font-size', 11);
+    axisGroup.selectAll('.tick text').attr('fill', '#cfcfcf').attr('font-size', '0.9rem');
 
     const plotGroup = svg.append('g').attr('class', 'gantt-plot');
 
