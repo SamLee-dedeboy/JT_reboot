@@ -342,7 +342,7 @@ export default function GanttChart({
 
     async function loadStationInfo() {
       try {
-        const response = await fetch('/data/water_quality_station_info.json');
+        const response = await fetch(`${import.meta.env.BASE_URL}/data/water_quality_station_info.json`);
         if (!response.ok) {
           throw new Error(`Failed to load station info (${response.status})`);
         }
