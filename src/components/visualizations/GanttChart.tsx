@@ -72,15 +72,32 @@ interface RawWaterQualityData {
   summary?: RawWaterQualitySummaryRecord[];
 }
 
+interface StationInfoRecord {
+  station_short_name: string;
+  station_index: number;
+}
+
+interface StationInfoPayload {
+  stations: StationInfoRecord[];
+}
+
 type SortMode = 'unacceptable' | 'good' | 'station-index';
 type DatasetMode = 'run15' | 'run16' | 'run17';
+type ThresholdSourceMode = 'original' | 'deanna';
 
 const VULNERABILITY_GROUP_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'];
 
-const DATASET_PATHS: Record<DatasetMode, string> = {
-  run15: '/data/water_quality_run15.json',
-  run16: '/data/water_quality_run16.json',
-  run17: '/data/water_quality_run17.json',
+const DATASET_PATHS: Record<ThresholdSourceMode, Record<DatasetMode, string>> = {
+  original: {
+    run15: '/data/original/water_quality_run15.json',
+    run16: '/data/original/water_quality_run16.json',
+    run17: '/data/original/water_quality_run17.json',
+  },
+  deanna: {
+    run15: '/data/Deanna/water_quality_run15.json',
+    run16: '/data/Deanna/water_quality_run16.json',
+    run17: '/data/Deanna/water_quality_run17.json',
+  },
 };
 
 interface RenderSegment {
@@ -311,12 +328,48 @@ export default function GanttChart({
   const [focusDomain, setFocusDomain] = useState<[Date, Date] | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('unacceptable');
   const [datasetMode, setDatasetMode] = useState<DatasetMode>('run15');
+  const [thresholdSourceMode, setThresholdSourceMode] = useState<ThresholdSourceMode>('original');
   const [partitionByVulnerability, setPartitionByVulnerability] = useState(false);
   const [unacceptableFocusThreshold, setUnacceptableFocusThreshold] = useState(75);
   const [goodFocusThreshold, setGoodFocusThreshold] = useState(75);
+  const [stationShortNameByIndex, setStationShortNameByIndex] = useState<Map<number, string>>(new Map());
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const canvasWrapRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadStationInfo() {
+      try {
+        const response = await fetch('/data/water_quality_station_info.json');
+        if (!response.ok) {
+          throw new Error(`Failed to load station info (${response.status})`);
+        }
+
+        const payload = (await response.json()) as StationInfoPayload;
+        const nextMap = new Map<number, string>();
+
+        payload.stations.forEach((record) => {
+          nextMap.set(Number(record.station_index), record.station_short_name);
+        });
+
+        if (isMounted) {
+          setStationShortNameByIndex(nextMap);
+        }
+      } catch {
+        if (isMounted) {
+          setStationShortNameByIndex(new Map());
+        }
+      }
+    }
+
+    void loadStationInfo();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!canvasWrapRef.current) {
@@ -351,7 +404,7 @@ export default function GanttChart({
     async function loadData() {
       try {
         setLoading(true);
-        const response = await fetch(DATASET_PATHS[datasetMode]);
+        const response = await fetch(DATASET_PATHS[thresholdSourceMode][datasetMode]);
         if (!response.ok) {
           throw new Error(`Failed to load water quality data (${response.status})`);
         }
@@ -378,7 +431,7 @@ export default function GanttChart({
     return () => {
       isMounted = false;
     };
-  }, [datasetMode]);
+  }, [datasetMode, thresholdSourceMode]);
 
   const bounds = useMemo(() => {
     if (!data || data.timestamps.length === 0) {
@@ -472,7 +525,7 @@ export default function GanttChart({
   useEffect(() => {
     onHoverDateChange?.(null);
     onHoverStationIndexChange?.(null);
-  }, [datasetMode, onHoverDateChange, onHoverStationIndexChange]);
+  }, [datasetMode, thresholdSourceMode, onHoverDateChange, onHoverStationIndexChange]);
 
   useEffect(() => {
     if (!data || !bounds || !svgRef.current) {
@@ -584,7 +637,10 @@ export default function GanttChart({
         return '#cfcfcf';
       })
       .style('cursor', 'pointer')
-      .text((row: DisplayRow) => String(getStationRecord(row).station_index))
+      .text((row: DisplayRow) => {
+        const stationIndex = getStationRecord(row).station_index;
+        return stationShortNameByIndex.get(stationIndex) ?? String(stationIndex);
+      })
       .on('mouseenter', (_, row: DisplayRow) => {
         const record = getStationRecord(row);
         onHoverStationIndexChange?.(record.station_index);
@@ -763,6 +819,7 @@ export default function GanttChart({
     focusedStationIndexSet,
     unacceptableOver75Set,
     goodOver75Set,
+    stationShortNameByIndex,
     onHoverDateChange,
     onHoverStationIndexChange,
   ]);
@@ -799,6 +856,21 @@ export default function GanttChart({
               <option value="run15">Run 15 - Historical</option>
               <option value="run16">Run 16 - 10decrease</option>
               <option value="run17">Run 17 - 30increase</option>
+            </select>
+          </div>
+          <div className="gantt-dataset-controls" aria-label="Threshold source options">
+            <label htmlFor="gantt-threshold-source-select">Threshold set</label>
+            <select
+              id="gantt-threshold-source-select"
+              className="gantt-dataset-select"
+              value={thresholdSourceMode}
+              onChange={(event) => {
+                setFocusDomain(null);
+                setThresholdSourceMode(event.target.value as ThresholdSourceMode);
+              }}
+            >
+              <option value="original">Original thresholds</option>
+              <option value="deanna">Deanna thresholds</option>
             </select>
           </div>
         </div>

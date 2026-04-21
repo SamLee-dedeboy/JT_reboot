@@ -1,0 +1,255 @@
+{
+  "total_stations": 50,
+  "stations": [
+    {
+      "station_short_name": "JT1",
+      "station_full_name": "JT_Clarksburg_Sac River",
+      "station_index": 307
+    },
+    {
+      "station_short_name": "JT10",
+      "station_full_name": "JT_Isleton_Sac River",
+      "station_index": 316
+    },
+    {
+      "station_short_name": "JT11",
+      "station_full_name": "JT_Vieras Resort_Sac River",
+      "station_index": 317
+    },
+    {
+      "station_short_name": "JT12",
+      "station_full_name": "JT_Snug Harbor Marina_Steamboat Slough",
+      "station_index": 318
+    },
+    {
+      "station_short_name": "JT13",
+      "station_full_name": "JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "station_index": 319
+    },
+    {
+      "station_short_name": "JT14",
+      "station_full_name": "JT_Brannan Marinas_San Joaquin River",
+      "station_index": 320
+    },
+    {
+      "station_short_name": "JT15",
+      "station_full_name": "JT_Dutch Slough",
+      "station_index": 321
+    },
+    {
+      "station_short_name": "JT16",
+      "station_full_name": "JT_Taylor Dutch Slough Confluence",
+      "station_index": 322
+    },
+    {
+      "station_short_name": "JT17",
+      "station_full_name": "JT_Taylor Slough",
+      "station_index": 323
+    },
+    {
+      "station_short_name": "JT18",
+      "station_full_name": "JT_Willow Park Marina_Sand Mound Dutch Slough Confluence",
+      "station_index": 324
+    },
+    {
+      "station_short_name": "JT19",
+      "station_full_name": "JT_Summer Lake_Sand Mound Slough",
+      "station_index": 325
+    },
+    {
+      "station_short_name": "JT2",
+      "station_full_name": "JT_Hood_Sac River",
+      "station_index": 308
+    },
+    {
+      "station_short_name": "JT20",
+      "station_full_name": "JT_Bethel Island_Delta Coves",
+      "station_index": 326
+    },
+    {
+      "station_short_name": "JT21",
+      "station_full_name": "JT_King Island Marina Trailer Park_White Slough",
+      "station_index": 327
+    },
+    {
+      "station_short_name": "JT22",
+      "station_full_name": "JT_Orowood_Old River",
+      "station_index": 328
+    },
+    {
+      "station_short_name": "JT3",
+      "station_full_name": "JT_Courtland_Sac River",
+      "station_index": 309
+    },
+    {
+      "station_short_name": "JT4",
+      "station_full_name": "JT_Locke_Sac River",
+      "station_index": 310
+    },
+    {
+      "station_short_name": "JT5",
+      "station_full_name": "JT_Walnut Grove Cross Channel_Sac River",
+      "station_index": 311
+    },
+    {
+      "station_short_name": "JT6",
+      "station_full_name": "JT_Old Walnut Grove_Snodgrass Slough",
+      "station_index": 312
+    },
+    {
+      "station_short_name": "JT7",
+      "station_full_name": "JT_Wimpy's Marina_Mokelumne Confluence",
+      "station_index": 313
+    },
+    {
+      "station_short_name": "JT8",
+      "station_full_name": "JT_Ryde_Sac River",
+      "station_index": 314
+    },
+    {
+      "station_short_name": "JT9",
+      "station_full_name": "JT_Trailer Park_Sac River",
+      "station_index": 315
+    },
+    {
+      "station_short_name": "anh",
+      "station_full_name": "Lower San Joaquin at Antioch",
+      "station_index": 175
+    },
+    {
+      "station_short_name": "bdt",
+      "station_full_name": "San Joaquin River at Brandt Bridge",
+      "station_index": 66
+    },
+    {
+      "station_short_name": "ben",
+      "station_full_name": "Mokelumne River at Benson's Ferry",
+      "station_index": 2
+    },
+    {
+      "station_short_name": "bet",
+      "station_full_name": "Piper Slough at Bethal Tract",
+      "station_index": 171
+    },
+    {
+      "station_short_name": "cnt",
+      "station_full_name": "Contra Costa",
+      "station_index": 84
+    },
+    {
+      "station_short_name": "dar",
+      "station_full_name": "Drainage at Arbor Road",
+      "station_index": 303
+    },
+    {
+      "station_short_name": "dbi",
+      "station_full_name": "Discovery Bay at Indian Slough",
+      "station_index": 7
+    },
+    {
+      "station_short_name": "fpt",
+      "station_full_name": "Sacramento R at Freeport",
+      "station_index": 117
+    },
+    {
+      "station_short_name": "frp",
+      "station_full_name": "Farrar Park",
+      "station_index": 13
+    },
+    {
+      "station_short_name": "gsm",
+      "station_full_name": "Georgiana Slough at Mokelumne R",
+      "station_index": 145
+    },
+    {
+      "station_short_name": "gss",
+      "station_full_name": "Georgiana Slough near Sacramento R",
+      "station_index": 121
+    },
+    {
+      "station_short_name": "mal",
+      "station_full_name": "Lower Sacramento River at Mallard Island",
+      "station_index": 24
+    },
+    {
+      "station_short_name": "mok2",
+      "station_full_name": "Mokelumne River near Highway 12",
+      "station_index": 164
+    },
+    {
+      "station_short_name": "msd2",
+      "station_full_name": "San Joaquin at Mossdale Bridge",
+      "station_index": 176
+    },
+    {
+      "station_short_name": "oh1",
+      "station_full_name": "Old River at Head",
+      "station_index": 31
+    },
+    {
+      "station_short_name": "pts",
+      "station_full_name": "Lower Pittsburg",
+      "station_index": 86
+    },
+    {
+      "station_short_name": "rri2",
+      "station_full_name": "Rough and Ready Island",
+      "station_index": 173
+    },
+    {
+      "station_short_name": "sjd",
+      "station_full_name": "San Joaquin River above Dos Reis",
+      "station_index": 184
+    },
+    {
+      "station_short_name": "sjg",
+      "station_full_name": "San Joaquin R below Garwood Bridge",
+      "station_index": 96
+    },
+    {
+      "station_short_name": "smr",
+      "station_full_name": "S Mokelumne R at New Hope BR near Walnut Grove",
+      "station_index": 192
+    },
+    {
+      "station_short_name": "srh",
+      "station_full_name": "Sacramento River at Hood",
+      "station_index": 50
+    },
+    {
+      "station_short_name": "ssa",
+      "station_full_name": "San Joaquin River at San Andreas Landing",
+      "station_index": 288
+    },
+    {
+      "station_short_name": "ssi",
+      "station_full_name": "Sacramento River near Sherman Island",
+      "station_index": 201
+    },
+    {
+      "station_short_name": "sti",
+      "station_full_name": "Mokelumne River (South Fork) @ Staten Island",
+      "station_index": 37
+    },
+    {
+      "station_short_name": "swe",
+      "station_full_name": "Sacramento R at Walnut Grove",
+      "station_index": 146
+    },
+    {
+      "station_short_name": "tpp",
+      "station_full_name": "Tom Paine Sl near Pescadero",
+      "station_index": 40
+    },
+    {
+      "station_short_name": "twi",
+      "station_full_name": "San Joaquin River at Twitchell Island",
+      "station_index": 200
+    },
+    {
+      "station_short_name": "ver",
+      "station_full_name": "Vernalis",
+      "station_index": 88
+    }
+  ]
+}

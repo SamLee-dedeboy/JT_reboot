@@ -8,11 +8,11 @@ const DELTA_STATION_POINTS_SOURCE_URL = 'mapbox://justtransition.2am7ol9m';
 const DELTA_STATION_POINTS_SOURCE_LAYER = 'Delta_Station_Locations_JT_Sa-20pbps';
 
 const waterQualityStationIndices: ReadonlyArray<number> = [
-  184, 84, 173, 24, 171, 324, 40, 200, 320, 322,
-  321, 323, 327, 31, 88, 325, 201, 37, 7, 13,
-  303, 66, 288, 319, 175, 96, 86, 50, 328, 318,
-  326, 176, 2, 316, 311, 192, 117, 121, 145, 146,
-  164, 307, 308, 309, 310, 312, 313, 314, 315, 317,
+  13, 24, 86, 322, 323, 326, 175, 201, 200, 171,
+  320, 288, 319, 164, 66, 31, 88, 317, 318, 316,
+  2, 37, 121, 145, 146, 192, 309, 310, 311, 312,
+  313, 314, 315, 7, 321, 324, 325, 328, 40, 176,
+  117, 307, 308, 96, 173, 327,
 ];
 
 interface DeltaStationPointsLayerProps {
