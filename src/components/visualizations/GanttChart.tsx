@@ -83,20 +83,30 @@ interface StationInfoPayload {
 
 type SortMode = 'unacceptable' | 'good' | 'station-index';
 type DatasetMode = 'run15' | 'run16' | 'run17';
-type ThresholdSourceMode = 'original' | 'deanna';
+type ConfigurationMode = 'max-base' | 'max-deanna' | 'mean-base' | 'mean-stringent';
 
 const VULNERABILITY_GROUP_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'];
 
-const DATASET_PATHS: Record<ThresholdSourceMode, Record<DatasetMode, string>> = {
-  original: {
-    run15: `${import.meta.env.BASE_URL}/data/original/water_quality_run15.json`,
-    run16: `${import.meta.env.BASE_URL}/data/original/water_quality_run16.json`,
-    run17: `${import.meta.env.BASE_URL}/data/original/water_quality_run17.json`,
+const DATASET_PATHS: Record<ConfigurationMode, Record<DatasetMode, string>> = {
+  'max-base': {
+    run15: `${import.meta.env.BASE_URL}/data/max/base/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/max/base/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/max/base/water_quality_run17.json`,
   },
-  deanna: {
-    run15: `${import.meta.env.BASE_URL}/data/Deanna/water_quality_run15.json`,
-    run16: `${import.meta.env.BASE_URL}/data/Deanna/water_quality_run16.json`,
-    run17: `${import.meta.env.BASE_URL}/data/Deanna/water_quality_run17.json`,
+  'max-deanna': {
+    run15: `${import.meta.env.BASE_URL}/data/max/Deanna/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/max/Deanna/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/max/Deanna/water_quality_run17.json`,
+  },
+  'mean-base': {
+    run15: `${import.meta.env.BASE_URL}/data/mean/base/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/mean/base/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/mean/base/water_quality_run17.json`,
+  },
+  'mean-stringent': {
+    run15: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run17.json`,
   },
 };
 
@@ -328,7 +338,7 @@ export default function GanttChart({
   const [focusDomain, setFocusDomain] = useState<[Date, Date] | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>('unacceptable');
   const [datasetMode, setDatasetMode] = useState<DatasetMode>('run15');
-  const [thresholdSourceMode, setThresholdSourceMode] = useState<ThresholdSourceMode>('original');
+  const [configurationMode, setConfigurationMode] = useState<ConfigurationMode>('max-base');
   const [partitionByVulnerability, setPartitionByVulnerability] = useState(false);
   const [unacceptableFocusThreshold, setUnacceptableFocusThreshold] = useState(75);
   const [goodFocusThreshold, setGoodFocusThreshold] = useState(75);
@@ -404,7 +414,7 @@ export default function GanttChart({
     async function loadData() {
       try {
         setLoading(true);
-        const response = await fetch(DATASET_PATHS[thresholdSourceMode][datasetMode]);
+        const response = await fetch(DATASET_PATHS[configurationMode][datasetMode]);
         if (!response.ok) {
           throw new Error(`Failed to load water quality data (${response.status})`);
         }
@@ -431,7 +441,7 @@ export default function GanttChart({
     return () => {
       isMounted = false;
     };
-  }, [datasetMode, thresholdSourceMode]);
+  }, [datasetMode, configurationMode]);
 
   const bounds = useMemo(() => {
     if (!data || data.timestamps.length === 0) {
@@ -525,7 +535,7 @@ export default function GanttChart({
   useEffect(() => {
     onHoverDateChange?.(null);
     onHoverStationIndexChange?.(null);
-  }, [datasetMode, thresholdSourceMode, onHoverDateChange, onHoverStationIndexChange]);
+  }, [datasetMode, configurationMode, onHoverDateChange, onHoverStationIndexChange]);
 
   useEffect(() => {
     if (!data || !bounds || !svgRef.current) {
@@ -842,8 +852,8 @@ export default function GanttChart({
             <p className="gantt-interaction-note">Use the brush to focus on certain time window. Click outside to reset.</p>
             <p className="gantt-interaction-note">Hover a station index to highlight that station on the map.</p>
           </div>
-          <div className="gantt-dataset-controls" aria-label="Dataset options">
-            <label htmlFor="gantt-dataset-select">Dataset</label>
+          <div className="gantt-dataset-controls" aria-label="Run options">
+            <label htmlFor="gantt-dataset-select">Run</label>
             <select
               id="gantt-dataset-select"
               className="gantt-dataset-select"
@@ -858,19 +868,21 @@ export default function GanttChart({
               <option value="run17">Run 17 - 30increase</option>
             </select>
           </div>
-          <div className="gantt-dataset-controls" aria-label="Threshold source options">
-            <label htmlFor="gantt-threshold-source-select">Threshold set</label>
+          <div className="gantt-dataset-controls" aria-label="Configuration options">
+            <label htmlFor="gantt-configuration-select">Configuration</label>
             <select
-              id="gantt-threshold-source-select"
+              id="gantt-configuration-select"
               className="gantt-dataset-select"
-              value={thresholdSourceMode}
+              value={configurationMode}
               onChange={(event) => {
                 setFocusDomain(null);
-                setThresholdSourceMode(event.target.value as ThresholdSourceMode);
+                setConfigurationMode(event.target.value as ConfigurationMode);
               }}
             >
-              <option value="original">Original thresholds</option>
-              <option value="deanna">Deanna thresholds</option>
+              <option value="max-base">Max daily - base thresholds</option>
+              <option value="max-deanna">Max daily - Deanna thresholds</option>
+              <option value="mean-base">Mean daily - base thresholds</option>
+              <option value="mean-stringent">Mean daily - stringent thresholds</option>
             </select>
           </div>
         </div>
