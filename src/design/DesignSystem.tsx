@@ -20,14 +20,6 @@ const typography = [
   { variant: 'Button', size: '1rem', weight: 500, line: 1.4 },
 ];
 
-const spacing = [
-  { token: 'xs', px: '4px' },
-  { token: 'sm', px: '8px' },
-  { token: 'md', px: '12px' },
-  { token: 'lg', px: '16px' },
-  { token: 'xl', px: '24px' },
-];
-
 const radii = [
   { name: 'xs', px: '2px' },
   { name: 'sm', px: '4px' },
@@ -36,12 +28,6 @@ const radii = [
   { name: 'pill', px: '999px' },
 ];
 
-const shadows = [
-  { name: 'subtle', value: '0 1px 2px rgba(0,0,0,0.08)' },
-  { name: 'sm', value: '0 2px 4px rgba(0,0,0,0.10)' },
-  { name: 'md', value: '0 4px 8px rgba(0,0,0,0.12)' },
-  { name: 'lg', value: '0 8px 16px rgba(0,0,0,0.15)' },
-];
 
 export default function DesignSystem() {
   const [isDarkBackground, setIsDarkBackground] = useState(true);
