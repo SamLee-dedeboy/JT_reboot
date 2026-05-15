@@ -1,3 +1,4 @@
+import { Box, Typography } from '@mui/material'
 import './TextColumns.css';
 
 interface Column {
@@ -11,15 +12,15 @@ interface TextColumnsProps {
 
 export default function TextColumns({ columns }: TextColumnsProps) {
   return (
-    <section className="text-columns">
-      <div className="text-columns-inner container">
+    <Box component="section" className="text-columns">
+      <Box className="text-columns-inner container">
         {columns.map((col) => (
-          <div key={col.title} className="text-col">
-            <h2 className="text-col-title">{col.title}</h2>
-            <blockquote className="text-col-body">{col.text}</blockquote>
-          </div>
+          <Box key={col.title} className="text-col">
+            <Typography variant="h2" component="h2" className="text-col-title">{col.title}</Typography>
+            <Box component="blockquote" className="text-col-body">{col.text}</Box>
+          </Box>
         ))}
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 }

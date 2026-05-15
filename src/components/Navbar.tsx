@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './Navbar.css';
+import { AppBar, Toolbar, Box, Button, Drawer, IconButton, List, ListItemButton, ListItemText, Menu, MenuItem, Stack, Typography, Collapse, useTheme } from '@mui/material';
+import Logo from './Logo';
+import MenuIcon from '@mui/icons-material/Menu';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+//import './Navbar.css';
 
 interface DropdownItem {
   label: string;
@@ -46,72 +52,139 @@ const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Playground',
-    href: '/pages/playground',
+    label: 'Internal',
+    dropdown: [
+      { label: 'Design System', href: '/design-system' },
+      { label: 'EJ Playground', href: '/pages/playground' },
+
+    ]
   },
 ];
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
+  const [desktopAnchorEl, setDesktopAnchorEl] = useState<HTMLElement | null>(null);
+  const [desktopMenuIndex, setDesktopMenuIndex] = useState<number | null>(null);
+  const theme = useTheme();
+
+  const activeDesktopMenu = desktopMenuIndex !== null ? navItems[desktopMenuIndex] : null;
+
+  const handleDesktopMenuOpen = (event: React.MouseEvent<HTMLElement>, index: number) => {
+    setDesktopAnchorEl(event.currentTarget);
+    setDesktopMenuIndex(index);
+  };
+
+  const handleDesktopMenuClose = () => {
+    setDesktopAnchorEl(null);
+    setDesktopMenuIndex(null);
+  };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-inner container">
-        <Link to="/" className="navbar-logo">
-          <span className="logo-text">Just Transitions in the Delta</span>
-        </Link>
-        <button
-          className={`hamburger ${mobileOpen ? 'active' : ''}`}
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          <span />
-          <span />
-          <span />
-        </button>
-        <ul className={`nav-links ${mobileOpen ? 'open' : ''}`}>
-          {navItems.map((item, i) => (
-            <li
-              key={item.label}
-              className="nav-item"
-              onMouseEnter={() => setOpenDropdown(i)}
-              onMouseLeave={() => setOpenDropdown(null)}
-            >
-              {item.href ? (
-                <Link to={item.href}>{item.label}</Link>
-              ) : (
-                <button
-                  className="nav-btn"
-                  onClick={() => setOpenDropdown(openDropdown === i ? null : i)}
+    <AppBar position="sticky" component="nav" color="transparent" elevation={4} sx={{ height: 'auto' }}>
+      <Toolbar sx={{ maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+          <Logo />
+
+          <Box sx={{ display: { xs: 'inline-flex', md: 'none' } }}>
+            <IconButton aria-label="Toggle menu" onClick={() => setMobileOpen((current) => !current)} sx={{ color: 'brand.primaryGreen' }}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
+
+          <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', pl: theme.jtSpacing.component.lg}}>
+            {navItems.map((item, i) => (
+              item.href ? (
+                <Button
+                  key={item.label}
+                  component={Link}
+                  to={item.href}
+                  sx={{
+                    minWidth: 140,
+                    whiteSpace: 'nowrap',
+                    color: 'common.white',
+                  }}
                 >
                   {item.label}
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                    <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" />
-                  </svg>
-                </button>
-              )}
-              {item.dropdown && openDropdown === i && (
-                <ul className="dropdown">
-                  {item.dropdown.map((sub) => (
-                    <li key={sub.label}>
-                      {sub.external ? (
-                        <a href={sub.href} target="_blank" rel="noopener noreferrer">
-                          {sub.label}
-                        </a>
-                      ) : (
-                        <Link to={sub.href} onClick={() => { setOpenDropdown(null); setMobileOpen(false); }}>
-                          {sub.label}
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </nav>
+                </Button>
+              ) : (
+                <Button
+                  key={item.label}
+                  sx={{
+                    minWidth: 140,
+                    whiteSpace: 'nowrap',
+                    color: 'common.white',
+                  }}
+                  endIcon={<KeyboardArrowDownIcon />}
+                  onClick={(event) => handleDesktopMenuOpen(event, i)}
+                >
+                  {item.label}
+                </Button>
+              )
+            ))}
+          </Stack>
+        </Box>
+      </Toolbar>
+
+      <Menu
+        anchorEl={desktopAnchorEl}
+        open={Boolean(desktopAnchorEl && activeDesktopMenu?.dropdown)}
+        onClose={handleDesktopMenuClose}
+      >
+        {activeDesktopMenu?.dropdown?.map((sub) => (
+          sub.external ? (
+            <MenuItem key={sub.label} component="a" href={sub.href} target="_blank" rel="noopener noreferrer" onClick={handleDesktopMenuClose} sx={{ color: 'common.white' }}>
+              {sub.label}
+            </MenuItem>
+          ) : (
+            <MenuItem key={sub.label} component={Link} to={sub.href} onClick={handleDesktopMenuClose} sx={{ color: 'common.white' }}>
+              {sub.label}
+            </MenuItem>
+          )
+        ))}
+      </Menu>
+
+      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+        <Box sx={{ width: 320, p: 2 }}>
+          <Typography variant="h4" component="div" sx={{ mb: 2, color: 'secondary.main'}}>
+            Just Transitions in the Delta
+          </Typography>
+          <List>
+            {navItems.map((item, idx) => (
+              <Box key={item.label} sx={{ mb: 1 }}>
+                {item.href ? (
+                  <ListItemButton component={Link} to={item.href} onClick={() => setMobileOpen(false)} sx={{ color: 'common.white' }}>
+                    <ListItemText primary={item.label} slotProps={{ primary: { sx: { color: 'common.white', whiteSpace: 'nowrap' } } }} />
+                  </ListItemButton>
+                ) : (
+                  <>
+                    <ListItemButton onClick={() => setOpenDropdown((current) => (current === idx ? null : idx))} sx={{ color: 'common.white', justifyContent: 'space-between' }}>
+                      <ListItemText primary={item.label} slotProps={{ primary: { sx: { color: 'common.white', whiteSpace: 'nowrap' } } }} />
+                      {item.dropdown && (openDropdown === idx ? <ExpandLessIcon sx={{ color: 'common.white' }} /> : <ExpandMoreIcon sx={{ color: 'common.white' }} />)}
+                    </ListItemButton>
+
+                    <Collapse in={openDropdown === idx} timeout="auto" unmountOnExit>
+                      <Box sx={{ pl: 2 }}>
+                        {item.dropdown?.map((sub) => (
+                          sub.external ? (
+                            <ListItemButton key={sub.label} component="a" href={sub.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} sx={{ color: 'common.white' }}>
+                              <ListItemText primary={sub.label} slotProps={{ primary: { sx: { color: 'common.white' } } }} />
+                            </ListItemButton>
+                          ) : (
+                            <ListItemButton key={sub.label} component={Link} to={sub.href} onClick={() => setMobileOpen(false)} sx={{ color: 'common.white' }}>
+                              <ListItemText primary={sub.label} slotProps={{ primary: { sx: { color: 'common.white' } } }} />
+                            </ListItemButton>
+                          )
+                        ))}
+                      </Box>
+                    </Collapse>
+                  </>
+                )}
+              </Box>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+    </AppBar>
   );
 }

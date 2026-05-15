@@ -1,3 +1,4 @@
+import { Box, Typography } from '@mui/material'
 import './InfoSection.css';
 
 interface InfoSectionProps {
@@ -20,19 +21,19 @@ export default function InfoSection({
   children,
 }: InfoSectionProps) {
   return (
-    <section id={id} className="info-section">
-      <div className={`info-inner container ${imagePosition === 'left' ? 'img-left' : ''}`}>
-        <div className="info-text">
-          <h2 className="info-title">{title}</h2>
-          <blockquote className="info-body">{text}</blockquote>
+    <Box component="section" id={id} className="info-section">
+      <Box className={`info-inner container ${imagePosition === 'left' ? 'img-left' : ''}`}>
+        <Box className="info-text">
+          <Typography variant="h2" component="h2" className="info-title">{title}</Typography>
+          <Box component="blockquote" className="info-body">{text}</Box>
           {children}
-        </div>
+        </Box>
         {imageSrc && (
-          <div className="info-image">
-            <img src={imageSrc} alt={imageAlt} className="info-photo" />
-          </div>
+          <Box className="info-image">
+            <Box component="img" src={imageSrc} alt={imageAlt} className="info-photo" />
+          </Box>
         )}
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 }

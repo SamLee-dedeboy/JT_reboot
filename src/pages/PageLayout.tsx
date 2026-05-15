@@ -1,3 +1,4 @@
+import { Box, Container, Typography } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -13,16 +14,16 @@ export default function PageLayout({ title, children, fullWidthContent = false }
   return (
     <>
       <Navbar />
-      <main className="page-layout">
-        <div className="page-hero">
-          <div className="container">
-            <h1 className="page-title">{title}</h1>
-          </div>
-        </div>
-        <div className={contentClassName}>
+      <Box component="main" className="page-layout">
+        <Box className="page-hero">
+          <Container>
+            <Typography variant="h1" component="h1" className="page-title">{title}</Typography>
+          </Container>
+        </Box>
+        <Box className={contentClassName}>
           {children}
-        </div>
-      </main>
+        </Box>
+      </Box>
       <Footer />
     </>
   );

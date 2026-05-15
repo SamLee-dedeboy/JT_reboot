@@ -1,42 +1,43 @@
+import { Box, Card, CardContent, Typography } from '@mui/material';
 import PageLayout from './PageLayout';
 
 export default function ProjectDocumentation() {
   return (
     <PageLayout title="Project Documentation & Reports">
-      <p>
+      <Typography variant="body1" component="p">
         Access our project documentation, research reports, and published materials
         related to the Just Transitions in the Delta initiative.
-      </p>
+      </Typography>
 
-      <div className="card-grid">
-        <div className="card">
-          <h3>Research Reports</h3>
-          <p>
+      <Box className="card-grid">
+        <Card className="card"><CardContent>
+          <Typography variant="h4" component="h3">Research Reports</Typography>
+          <Typography variant="body1" component="p">
             Published findings from our participatory scenario planning process,
             including community input summaries and scenario analyses.
-          </p>
-        </div>
-        <div className="card">
-          <h3>Workshop Materials</h3>
-          <p>
+          </Typography>
+        </CardContent></Card>
+        <Card className="card"><CardContent>
+          <Typography variant="h4" component="h3">Workshop Materials</Typography>
+          <Typography variant="body1" component="p">
             Presentations, handouts, and summary documents from our public workshops
             and community engagement events.
-          </p>
-        </div>
-        <div className="card">
-          <h3>Technical Documentation</h3>
-          <p>
+          </Typography>
+        </CardContent></Card>
+        <Card className="card"><CardContent>
+          <Typography variant="h4" component="h3">Technical Documentation</Typography>
+          <Typography variant="body1" component="p">
             Methodology descriptions, modeling frameworks, and data documentation
             supporting our scenario planning work.
-          </p>
-        </div>
-      </div>
+          </Typography>
+        </CardContent></Card>
+      </Box>
 
-      <h2>Publications</h2>
-      <p>
+      <Typography variant="h2" component="h2">Publications</Typography>
+      <Typography variant="body1" component="p">
         Check back for links to peer-reviewed publications and working papers as they
         become available.
-      </p>
+      </Typography>
     </PageLayout>
   );
 }

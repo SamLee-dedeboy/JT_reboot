@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material'
 import Accordion from './Accordion';
 import './ProjectGoals.css';
 
@@ -32,7 +33,7 @@ const goals = [
 export default function ProjectGoals() {
   return (
     <div className="project-goals">
-      <h2 className="goals-title">Project Goals</h2>
+      <Typography variant="h2" component="h2" className="goals-title">Project Goals</Typography>
       <Accordion items={goals} />
     </div>
   );

@@ -1,3 +1,4 @@
+import { Typography } from '@mui/material'
 import Accordion from './Accordion';
 import './ProjectScope.css';
 
@@ -32,7 +33,7 @@ const scopeItems = [
 export default function ProjectScope() {
   return (
     <div className="project-scope">
-      <h2 className="scope-title">Project Scope</h2>
+      <Typography variant="h2" component="h2" className="scope-title">Project Scope</Typography>
       <Accordion items={scopeItems} />
     </div>
   );

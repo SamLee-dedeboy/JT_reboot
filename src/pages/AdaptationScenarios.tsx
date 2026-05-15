@@ -1,3 +1,4 @@
+import { Box, Container, List, ListItem, Typography } from '@mui/material';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { assetUrl } from '../utils/baseUrl';
@@ -87,88 +88,88 @@ export default function AdaptationScenarios() {
   return (
     <>
       <Navbar />
-      <main className="scenarios-page">
-        <header className="scenarios-cover">
-          <img src={assetUrl('/images/scenarios/cover.jpg')} alt="" className="scenarios-cover-bg" />
-          <div className="scenarios-cover-overlay" />
-          <div className="scenarios-cover-inner">
-            <h1 className="scenarios-cover-title">Adaptation Scenarios</h1>
-            <p className="scenarios-cover-subtitle">
+      <Box component="main" className="scenarios-page">
+        <Box component="header" className="scenarios-cover">
+          <Box component="img" src={assetUrl('/images/scenarios/cover.jpg')} alt="" className="scenarios-cover-bg" />
+          <Box className="scenarios-cover-overlay" />
+          <Box className="scenarios-cover-inner">
+            <Typography variant="h1" component="h1" className="scenarios-cover-title">Adaptation Scenarios</Typography>
+            <Typography variant="h4" component="p" className="scenarios-cover-subtitle">
               Salinity and climate adaptation strategies for the Sacramento-San Joaquin Delta.
-            </p>
-          </div>
-        </header>
+            </Typography>
+          </Box>
+        </Box>
 
-        <nav className="scenarios-nav">
-          <div className="container">
-            <ul className="scenarios-nav-list">
+        <Box component="nav" className="scenarios-nav">
+          <Container>
+            <Box component="ul" className="scenarios-nav-list" sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
               {scenarios.map((s) => (
-                <li key={s.id}>
-                  <a href={`#${s.id}`}>{s.title}</a>
-                </li>
+                <Box component="li" key={s.id}>
+                  <Box component="a" href={`#${s.id}`}>{s.title}</Box>
+                </Box>
               ))}
-            </ul>
-          </div>
-        </nav>
+            </Box>
+          </Container>
+        </Box>
 
-        <section className="scenarios-intro">
-          <div className="container">
-            <h2>Envisioning Future Scenarios</h2>
-            <p>
+        <Box component="section" className="scenarios-intro">
+          <Container>
+            <Typography variant="h2" component="h2">Envisioning Future Scenarios</Typography>
+            <Typography variant="body1" component="p">
               This resource presents the adaptation strategies for each of the six future scenarios
               as they have been developed through the publicly co-designed participatory scenario
               planning (PSP) process. The following is provided for each scenario:
-            </p>
-            <ol>
-              <li>A short narrative describing the features and transformations entailed in the scenario, as well as some of the primary research questions being explored.</li>
-              <li>Definitions of the geographic scope and extent of the scenarios. These definitions describe what is and is not included in the scenario, as well as the technical basis for modelling the scenario.</li>
-              <li>Perceived benefits and impacts of each scenario, per public feedback received at our previous public workshops.</li>
-              <li>An interactive, multiscalar map of the scenario. Each map provides geospatial data and information specific to the adaptation explored.</li>
-            </ol>
-            <p className="scenarios-note">
+            </Typography>
+            <List component="ol">
+              <ListItem>A short narrative describing the features and transformations entailed in the scenario, as well as some of the primary research questions being explored.</ListItem>
+              <ListItem>Definitions of the geographic scope and extent of the scenarios. These definitions describe what is and is not included in the scenario, as well as the technical basis for modelling the scenario.</ListItem>
+              <ListItem>Perceived benefits and impacts of each scenario, per public feedback received at our previous public workshops.</ListItem>
+              <ListItem>An interactive, multiscalar map of the scenario. Each map provides geospatial data and information specific to the adaptation explored.</ListItem>
+            </List>
+            <Typography variant="body1" component="p" className="scenarios-note">
               The maps and information for all scenarios are works in progress, and more data and
               information may be added to them as the scenarios continue to be refined.
-            </p>
-          </div>
-        </section>
+            </Typography>
+          </Container>
+        </Box>
 
         {scenarios.map((scenario) => (
-          <section key={scenario.id} id={scenario.id} className="scenario-section">
-            <div className="scenario-hero">
-              <img src={scenario.image} alt={scenario.title} className="scenario-hero-img" />
-            </div>
-            <div className="scenario-body container">
-              <h3>Scenario Narrative</h3>
-              <blockquote className="scenario-narrative">{scenario.narrative}</blockquote>
+          <Box component="section" key={scenario.id} id={scenario.id} className="scenario-section">
+            <Box className="scenario-hero">
+              <Box component="img" src={scenario.image} alt={scenario.title} className="scenario-hero-img" />
+            </Box>
+            <Box className="scenario-body container">
+              <Typography variant="h3" component="h3">Scenario Narrative</Typography>
+              <Box component="blockquote" className="scenario-narrative">{scenario.narrative}</Box>
               {scenario.note && (
-                <p className="scenario-note"><em>{scenario.note}</em></p>
+                <Typography variant="body1" component="p" className="scenario-note"><em>{scenario.note}</em></Typography>
               )}
 
               {scenario.questions.length > 0 && (
                 <>
-                  <h3>Key Questions</h3>
-                  <ul className="scenario-questions">
+                  <Typography variant="h3" component="h3">Key Questions</Typography>
+                  <List className="scenario-questions">
                     {scenario.questions.map((q, i) => (
-                      <li key={i}>{q}</li>
+                      <ListItem key={i}>{q}</ListItem>
                     ))}
-                  </ul>
+                  </List>
                 </>
               )}
 
               {'scopeImage' in scenario && scenario.scopeImage && (
                 <>
-                  <h3>Scope & Extent</h3>
-                  <img src={scenario.scopeImage} alt={`${scenario.title} scope and extent`} className="scenario-scope-img" />
+                  <Typography variant="h3" component="h3">Scope & Extent</Typography>
+                  <Box component="img" src={scenario.scopeImage} alt={`${scenario.title} scope and extent`} className="scenario-scope-img" />
                 </>
               )}
 
-              <div className="scenario-map-placeholder">
-                <p>Interactive map coming soon</p>
-              </div>
-            </div>
-          </section>
+              <Box className="scenario-map-placeholder">
+                <Typography variant="body1" component="p">Interactive map coming soon</Typography>
+              </Box>
+            </Box>
+          </Box>
         ))}
-      </main>
+      </Box>
       <Footer />
     </>
   );

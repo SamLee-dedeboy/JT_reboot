@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Box, Typography } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
 import Map from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLayerOrchestrator from './MapLayerOrchestrator';
@@ -6,33 +8,35 @@ import { DELTA_STATION_POINTS_LAYER_ID } from './layers/DeltaStationPointsLayer'
 
 const mapContainerStyle = { position: 'relative', width: '100%', height: '100%' } as const;
 const mapStyle = { width: '100%', height: '100%' } as const;
-const tooltipStyle = {
+const tooltipSx: SxProps<Theme> = {
   position: 'absolute',
-  background: 'rgba(22, 22, 22, 0.94)',
-  color: '#f2f2f2',
+  backgroundColor: 'rgba(22, 22, 22, 0.94)',
+  color: 'grey.100',
   border: '1px solid rgba(242, 200, 32, 0.75)',
-  borderRadius: 6,
-  padding: '0.45rem 0.55rem',
-  fontSize: '1rem',
+  borderRadius: 1,
+  px: 1,
+  py: 0.5,
+  typography: 'body2',
   lineHeight: 1.4,
   pointerEvents: 'none',
   zIndex: 20,
   maxWidth: 220,
-} as const;
-const dateBadgeStyle = {
+};
+const dateBadgeSx: SxProps<Theme> = {
   position: 'absolute',
-  top: 10,
-  left: 10,
-  background: 'rgba(22, 22, 22, 0.9)',
-  color: '#f2f2f2',
+  top: 1,
+  left: 1,
+  backgroundColor: 'rgba(22, 22, 22, 0.9)',
+  color: 'grey.100',
   border: '2px solid rgba(126, 217, 87, 0.75)',
-  borderRadius: 6,
-  padding: '0.4rem 0.55rem',
-  fontSize: '1rem',
+  borderRadius: 1,
+  px: 1,
+  py: 0.5,
+  typography: 'body2',
   lineHeight: 1.35,
   zIndex: 21,
   pointerEvents: 'none',
-} as const;
+};
 
 interface TooltipState {
   x: number;
@@ -112,24 +116,22 @@ export default function MapContainer({
       </Map>
 
       {tooltip && (
-        <div
-          style={{
-            ...tooltipStyle,
+        <Box
+          sx={{
+            ...tooltipSx,
             left: tooltip.x + 12,
             top: tooltip.y + 12,
           }}
         >
-          <div><strong>Index:</strong> {tooltip.stationIndex}</div>
-          <div><strong>ID:</strong> {tooltip.stationID}</div>
-          <div><strong>Name:</strong> {tooltip.stationName}</div>
-        </div>
+          <Typography variant="body2" component="div"><strong>Index:</strong> {tooltip.stationIndex}</Typography>
+          <Typography variant="body2" component="div"><strong>ID:</strong> {tooltip.stationID}</Typography>
+          <Typography variant="body2" component="div"><strong>Name:</strong> {tooltip.stationName}</Typography>
+        </Box>
       )}
 
-      <div
-        style={dateBadgeStyle}
-      >
-        <strong>Currently Viewing:</strong> {currentViewingDate ?? 'N/A'}
-      </div>
+      <Box sx={dateBadgeSx}>
+        <Typography variant="body2" component="strong">Currently Viewing:</Typography> {currentViewingDate ?? 'N/A'}
+      </Box>
     </div>
   );
 }

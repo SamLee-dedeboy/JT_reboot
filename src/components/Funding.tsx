@@ -1,22 +1,23 @@
+import { Box, Typography } from '@mui/material'
 import './Funding.css';
 import { assetUrl } from '../utils/baseUrl';
 
 export default function Funding() {
   return (
-    <section className="funding">
-      <div className="funding-inner container">
-        <div className="funding-text">
-          <h2 className="funding-title">Project Funding</h2>
-          <blockquote className="funding-body">
+    <Box component="section" className="funding">
+      <Box className="funding-inner container">
+        <Box className="funding-text">
+          <Typography variant="h2" component="h2" className="funding-title">Project Funding</Typography>
+          <Box component="blockquote" className="funding-body">
             This project is supported by the University of California's Multicampus Research Programs
             and Initiatives (MRPI) grant, which funds system-wide, cross-campus collaborative research
             of significance to the State of California.
-          </blockquote>
-        </div>
-        <div className="funding-logo">
-          <img src={assetUrl('/images/uc-logo-white.png')} alt="University of California" />
-        </div>
-      </div>
-    </section>
+          </Box>
+        </Box>
+        <Box className="funding-logo">
+          <Box component="img" src={assetUrl('/images/uc-logo-white.png')} alt="University of California" />
+        </Box>
+      </Box>
+    </Box>
   );
 }
