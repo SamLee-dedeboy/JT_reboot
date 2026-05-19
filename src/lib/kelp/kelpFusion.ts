@@ -44,7 +44,10 @@ function distToSegment(
  * Build a scalar field where value > 0 inside the fused boundary.
  * value = thickness - distance(cell, nearest SPG segment/point).
  */
-export function rasterizeSetField(spg: SpgResult, cfg: KelpFieldConfig): KelpField {
+export function rasterizeSetField(
+  spg: Pick<SpgResult, 'points' | 'edges'>,
+  cfg: KelpFieldConfig,
+): KelpField {
   const { width, height, cell, thickness, pad } = cfg;
   const gw = Math.max(1, Math.ceil((width + 2 * pad) / cell));
   const gh = Math.max(1, Math.ceil((height + 2 * pad) / cell));

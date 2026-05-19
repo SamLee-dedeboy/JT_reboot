@@ -58,15 +58,40 @@ function minimumSpanningTree(points: KelpPoint[]): SpgEdge[] {
   return tree;
 }
 
+/** Count connected components of `n` nodes given an edge list. */
+function countComponents(n: number, edges: SpgEdge[]): number {
+  if (n === 0) return 0;
+  const dsu = new DisjointSet(n);
+  for (const edge of edges) {
+    dsu.union(edge.u, edge.v);
+  }
+  const roots = new Set<number>();
+  for (let i = 0; i < n; i += 1) {
+    roots.add(dsu.find(i));
+  }
+  return roots.size;
+}
+
+export interface ComputeSPGOptions {
+  /** When false, skip the MST fallback — the graph may be disconnected. */
+  ensureConnected?: boolean;
+}
+
 /**
  * Compute the shortest-path graph for a set of points.
  * @param points set members in screen-pixel coordinates
- * @param tension t in [1, 2]; higher keeps more edges (denser, hull-like)
+ * @param tension t in [1, 2]; higher keeps fewer edges (sparser, line-like)
+ * @param options set `ensureConnected: false` to inspect the raw graph
  */
-export function computeSPG(points: KelpPoint[], tension: number): SpgResult {
+export function computeSPG(
+  points: KelpPoint[],
+  tension: number,
+  options: ComputeSPGOptions = {},
+): SpgResult {
+  const { ensureConnected = true } = options;
   const n = points.length;
   if (n < 2) {
-    return { points, edges: [] };
+    return { points, edges: [], componentCount: n };
   }
 
   const t = Math.max(1, tension);
@@ -93,20 +118,22 @@ export function computeSPG(points: KelpPoint[], tension: number): SpgResult {
   }
 
   // Guarantee connectivity: add MST edges for any missing links.
-  const dsu = new DisjointSet(n);
-  for (const edge of edges) {
-    dsu.union(edge.u, edge.v);
-  }
-  for (const edge of minimumSpanningTree(points)) {
-    if (dsu.find(edge.u) !== dsu.find(edge.v)) {
+  if (ensureConnected) {
+    const dsu = new DisjointSet(n);
+    for (const edge of edges) {
       dsu.union(edge.u, edge.v);
-      const key = `${Math.min(edge.u, edge.v)}-${Math.max(edge.u, edge.v)}`;
-      if (!edgeKeys.has(key)) {
-        edges.push(edge);
-        edgeKeys.add(key);
+    }
+    for (const edge of minimumSpanningTree(points)) {
+      if (dsu.find(edge.u) !== dsu.find(edge.v)) {
+        dsu.union(edge.u, edge.v);
+        const key = `${Math.min(edge.u, edge.v)}-${Math.max(edge.u, edge.v)}`;
+        if (!edgeKeys.has(key)) {
+          edges.push(edge);
+          edgeKeys.add(key);
+        }
       }
     }
   }
 
-  return { points, edges };
+  return { points, edges, componentCount: countComponents(n, edges) };
 }

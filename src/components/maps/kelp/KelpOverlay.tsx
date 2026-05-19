@@ -10,7 +10,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Map as MapboxMap } from 'mapbox-gl';
 import { computeSPG } from '../../../lib/kelp/shortestPathGraph';
 import { rasterizeSetField, fieldToPath, type KelpFieldConfig } from '../../../lib/kelp/kelpFusion';
-import type { KelpPoint, KelpSet, SpgEdge } from '../../../lib/kelp/types';
+import { tensionToT, tensionToThickness } from '../../../lib/kelp/tension';
+import type { KelpPoint, KelpSet, SetStat, SpgEdge } from '../../../lib/kelp/types';
+
+export type KelpRenderMode = 'fused' | 'graph';
 
 interface KelpOverlayProps {
   map: MapboxMap;
@@ -18,6 +21,12 @@ interface KelpOverlayProps {
   lngLatByIndex: Map<number, [number, number]>;
   /** Slider value in [0, 1]. */
   tension: number;
+  /** 'fused' draws the smooth contour; 'graph' draws the raw SPG (dev view). */
+  renderMode: KelpRenderMode;
+  /** When false, the SPG keeps no MST fallback and may be disconnected. */
+  ensureConnected: boolean;
+  /** Reports per-set connected-component counts to the dev controls. */
+  onStats?: (stats: SetStat[]) => void;
 }
 
 interface SetTopology {
@@ -25,6 +34,7 @@ interface SetTopology {
   /** Station indices in a stable order; SPG edges reference these positions. */
   order: number[];
   edges: SpgEdge[];
+  componentCount: number;
 }
 
 /** Map view captured when a fused contour was last rasterized. */
@@ -37,17 +47,15 @@ interface ReferenceView {
 const GRID_CELL = 8;
 const GRID_PAD = 36;
 
-/** Map the [0,1] slider to SPG tension t (1 = line-based, 2 = hull-based). */
-function tensionToT(value: number): number {
-  return 1 + Math.max(0, Math.min(1, value));
-}
-
-/** Map the [0,1] slider to capsule thickness in px (fatter when denser). */
-function tensionToThickness(value: number): number {
-  return 14 + Math.max(0, Math.min(1, value)) * 16;
-}
-
-export default function KelpOverlay({ map, sets, lngLatByIndex, tension }: KelpOverlayProps) {
+export default function KelpOverlay({
+  map,
+  sets,
+  lngLatByIndex,
+  tension,
+  renderMode,
+  ensureConnected,
+  onStats,
+}: KelpOverlayProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [isMoving, setIsMoving] = useState(false);
@@ -106,7 +114,8 @@ export default function KelpOverlay({ map, sets, lngLatByIndex, tension }: KelpO
     };
   }, [map]);
 
-  // SPG topology — recomputed only when membership or tension change.
+  // SPG topology — recomputed only when membership, tension or the
+  // connectivity option change.
   const topologies = useMemo<SetTopology[]>(() => {
     const t = tensionToT(tension);
     return sets.map((set) => {
@@ -116,10 +125,20 @@ export default function KelpOverlay({ map, sets, lngLatByIndex, tension }: KelpO
         const projected = map.project([lng, lat]);
         return { id: index, x: projected.x, y: projected.y };
       });
-      const { edges } = computeSPG(points, t);
-      return { set, order, edges };
+      const { edges, componentCount } = computeSPG(points, t, { ensureConnected });
+      return { set, order, edges, componentCount };
     });
-  }, [sets, tension, lngLatByIndex, map]);
+  }, [sets, tension, ensureConnected, lngLatByIndex, map]);
+
+  // Surface per-set connectivity diagnostics to the dev controls.
+  useEffect(() => {
+    onStats?.(
+      topologies.map((topology) => ({
+        setId: topology.set.setId,
+        componentCount: topology.componentCount,
+      })),
+    );
+  }, [topologies, onStats]);
 
   /** Re-project a topology's points at the current map view. */
   const projectPoints = (order: number[]): KelpPoint[] =>
@@ -192,6 +211,41 @@ export default function KelpOverlay({ map, sets, lngLatByIndex, tension }: KelpO
         {drawOrder.map((topology) => {
           const { set } = topology;
           if (!set.visible || topology.order.length === 0) return null;
+
+          if (renderMode === 'graph') {
+            // Dev view: raw shortest-path graph — thin edges + station dots.
+            const points = projectPoints(topology.order);
+            return (
+              <g key={set.setId}>
+                {topology.edges.map((edge, i) => {
+                  const a = points[edge.u];
+                  const b = points[edge.v];
+                  return (
+                    <line
+                      key={i}
+                      x1={a.x}
+                      y1={a.y}
+                      x2={b.x}
+                      y2={b.y}
+                      stroke={set.color}
+                      strokeWidth={1.5}
+                    />
+                  );
+                })}
+                {points.map((p) => (
+                  <circle
+                    key={p.id}
+                    cx={p.x}
+                    cy={p.y}
+                    r={3.5}
+                    fill={set.color}
+                    stroke="#161616"
+                    strokeWidth={1}
+                  />
+                ))}
+              </g>
+            );
+          }
 
           const path = fusedPaths.get(set.setId);
 

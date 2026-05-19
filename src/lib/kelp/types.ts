@@ -29,4 +29,12 @@ export interface SpgEdge {
 export interface SpgResult {
   points: KelpPoint[];
   edges: SpgEdge[];
+  /** Number of connected components in the returned edge set. */
+  componentCount: number;
+}
+
+/** Per-set diagnostics surfaced to the dev controls. */
+export interface SetStat {
+  setId: string;
+  componentCount: number;
 }

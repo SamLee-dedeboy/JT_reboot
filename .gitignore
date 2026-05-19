@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 *.pdf
 note
+
+ashley_paper_figure
+
+# Local Claude Code state (settings + worktrees)
+.claude/

@@ -9,10 +9,10 @@ import type { Map as MapboxMap } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Box } from '@mui/material';
 import DeltaStationPointsLayer from './layers/DeltaStationPointsLayer';
-import KelpOverlay from './kelp/KelpOverlay';
+import KelpOverlay, { type KelpRenderMode } from './kelp/KelpOverlay';
 import KelpControls from './kelp/KelpControls';
 import { useStationCoords } from './kelp/useStationCoords';
-import type { KelpSet } from '../../lib/kelp/types';
+import type { KelpSet, SetStat } from '../../lib/kelp/types';
 
 interface RawRecord {
   station_index: string | number;
@@ -26,9 +26,9 @@ interface RawWaterQualityData {
 type VulnerabilityGroup = 'HIGHEST' | 'HIGH' | 'MODERATE';
 
 const VULNERABILITY_META: Record<VulnerabilityGroup, { label: string; color: string }> = {
-  HIGHEST: { label: 'Highest Vulnerability', color: '#f77c3b' },
-  HIGH: { label: 'High Vulnerability', color: '#51a2bd' },
-  MODERATE: { label: 'Moderate Vulnerability', color: '#f2c820' },
+  HIGHEST: { label: 'Highest', color: '#f77c3b' },
+  HIGH: { label: 'High', color: '#51a2bd' },
+  MODERATE: { label: 'Moderate', color: '#f2c820' },
 };
 const VULNERABILITY_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'];
 
@@ -39,6 +39,9 @@ export default function KelpFusionMap() {
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null);
   const [tension, setTension] = useState(0.4);
   const [sets, setSets] = useState<KelpSet[]>([]);
+  const [renderMode, setRenderMode] = useState<KelpRenderMode>('fused');
+  const [ensureConnected, setEnsureConnected] = useState(true);
+  const [stats, setStats] = useState<SetStat[]>([]);
 
   const stationCoords = useStationCoords(mapObj);
 
@@ -125,6 +128,9 @@ export default function KelpFusionMap() {
           sets={sets}
           lngLatByIndex={stationCoords.lngLatByIndex}
           tension={tension}
+          renderMode={renderMode}
+          ensureConnected={ensureConnected}
+          onStats={setStats}
         />
       )}
 
@@ -134,6 +140,11 @@ export default function KelpFusionMap() {
           onTensionChange={setTension}
           sets={sets}
           onSetChange={handleSetChange}
+          renderMode={renderMode}
+          onRenderModeChange={setRenderMode}
+          ensureConnected={ensureConnected}
+          onEnsureConnectedChange={setEnsureConnected}
+          stats={stats}
         />
       )}
     </div>
