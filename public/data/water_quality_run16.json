@@ -1,0 +1,3268 @@
+{
+  "run": "run16",
+  "timestamps": [
+    "2020-10-01",
+    "2020-10-02",
+    "2020-10-03",
+    "2020-10-04",
+    "2020-10-05",
+    "2020-10-06",
+    "2020-10-07",
+    "2020-10-08",
+    "2020-10-09",
+    "2020-10-10",
+    "2020-10-11",
+    "2020-10-12",
+    "2020-10-13",
+    "2020-10-14",
+    "2020-10-15",
+    "2020-10-16",
+    "2020-10-17",
+    "2020-10-18",
+    "2020-10-19",
+    "2020-10-20",
+    "2020-10-21",
+    "2020-10-22",
+    "2020-10-23",
+    "2020-10-24",
+    "2020-10-25",
+    "2020-10-26",
+    "2020-10-27",
+    "2020-10-28",
+    "2020-10-29",
+    "2020-10-30",
+    "2020-10-31",
+    "2020-11-01",
+    "2020-11-02",
+    "2020-11-03",
+    "2020-11-04",
+    "2020-11-05",
+    "2020-11-06",
+    "2020-11-07",
+    "2020-11-08",
+    "2020-11-09",
+    "2020-11-10",
+    "2020-11-11",
+    "2020-11-12",
+    "2020-11-13",
+    "2020-11-14",
+    "2020-11-15",
+    "2020-11-16",
+    "2020-11-17",
+    "2020-11-18",
+    "2020-11-19",
+    "2020-11-20",
+    "2020-11-21",
+    "2020-11-22",
+    "2020-11-23",
+    "2020-11-24",
+    "2020-11-25",
+    "2020-11-26",
+    "2020-11-27",
+    "2020-11-28",
+    "2020-11-29",
+    "2020-11-30",
+    "2020-12-01",
+    "2020-12-02",
+    "2020-12-03",
+    "2020-12-04",
+    "2020-12-05",
+    "2020-12-06",
+    "2020-12-07",
+    "2020-12-08",
+    "2020-12-09",
+    "2020-12-10",
+    "2020-12-11",
+    "2020-12-12",
+    "2020-12-13",
+    "2020-12-14",
+    "2020-12-15",
+    "2020-12-16",
+    "2020-12-17",
+    "2020-12-18",
+    "2020-12-19",
+    "2020-12-20",
+    "2020-12-21",
+    "2020-12-22",
+    "2020-12-23",
+    "2020-12-24",
+    "2020-12-25",
+    "2020-12-26",
+    "2020-12-27",
+    "2020-12-28",
+    "2020-12-29",
+    "2020-12-30",
+    "2020-12-31",
+    "2021-01-01",
+    "2021-01-02",
+    "2021-01-03",
+    "2021-01-04",
+    "2021-01-05",
+    "2021-01-06",
+    "2021-01-07",
+    "2021-01-08",
+    "2021-01-09",
+    "2021-01-10",
+    "2021-01-11",
+    "2021-01-12",
+    "2021-01-13",
+    "2021-01-14",
+    "2021-01-15",
+    "2021-01-16",
+    "2021-01-17",
+    "2021-01-18",
+    "2021-01-19",
+    "2021-01-20",
+    "2021-01-21",
+    "2021-01-22",
+    "2021-01-23",
+    "2021-01-24",
+    "2021-01-25",
+    "2021-01-26",
+    "2021-01-27",
+    "2021-01-28",
+    "2021-01-29",
+    "2021-01-30",
+    "2021-01-31",
+    "2021-02-01",
+    "2021-02-02",
+    "2021-02-03",
+    "2021-02-04",
+    "2021-02-05",
+    "2021-02-06",
+    "2021-02-07",
+    "2021-02-08",
+    "2021-02-09",
+    "2021-02-10",
+    "2021-02-11",
+    "2021-02-12",
+    "2021-02-13",
+    "2021-02-14",
+    "2021-02-15",
+    "2021-02-16",
+    "2021-02-17",
+    "2021-02-18",
+    "2021-02-19",
+    "2021-02-20",
+    "2021-02-21",
+    "2021-02-22",
+    "2021-02-23",
+    "2021-02-24",
+    "2021-02-25",
+    "2021-02-26",
+    "2021-02-27",
+    "2021-02-28",
+    "2021-03-01",
+    "2021-03-02",
+    "2021-03-03",
+    "2021-03-04",
+    "2021-03-05",
+    "2021-03-06",
+    "2021-03-07",
+    "2021-03-08",
+    "2021-03-09",
+    "2021-03-10",
+    "2021-03-11",
+    "2021-03-12",
+    "2021-03-13",
+    "2021-03-14",
+    "2021-03-15",
+    "2021-03-16",
+    "2021-03-17",
+    "2021-03-18",
+    "2021-03-19",
+    "2021-03-20",
+    "2021-03-21",
+    "2021-03-22",
+    "2021-03-23",
+    "2021-03-24",
+    "2021-03-25",
+    "2021-03-26",
+    "2021-03-27",
+    "2021-03-28",
+    "2021-03-29",
+    "2021-03-30",
+    "2021-03-31",
+    "2021-04-01",
+    "2021-04-02",
+    "2021-04-03",
+    "2021-04-04",
+    "2021-04-05",
+    "2021-04-06",
+    "2021-04-07",
+    "2021-04-08",
+    "2021-04-09",
+    "2021-04-10",
+    "2021-04-11",
+    "2021-04-12",
+    "2021-04-13",
+    "2021-04-14",
+    "2021-04-15",
+    "2021-04-16",
+    "2021-04-17",
+    "2021-04-18",
+    "2021-04-19",
+    "2021-04-20",
+    "2021-04-21",
+    "2021-04-22",
+    "2021-04-23",
+    "2021-04-24",
+    "2021-04-25",
+    "2021-04-26",
+    "2021-04-27",
+    "2021-04-28",
+    "2021-04-29",
+    "2021-04-30",
+    "2021-05-01",
+    "2021-05-02",
+    "2021-05-03",
+    "2021-05-04",
+    "2021-05-05",
+    "2021-05-06",
+    "2021-05-07",
+    "2021-05-08",
+    "2021-05-09",
+    "2021-05-10",
+    "2021-05-11",
+    "2021-05-12",
+    "2021-05-13",
+    "2021-05-14",
+    "2021-05-15",
+    "2021-05-16",
+    "2021-05-17",
+    "2021-05-18",
+    "2021-05-19",
+    "2021-05-20",
+    "2021-05-21",
+    "2021-05-22",
+    "2021-05-23",
+    "2021-05-24",
+    "2021-05-25",
+    "2021-05-26",
+    "2021-05-27",
+    "2021-05-28",
+    "2021-05-29",
+    "2021-05-30",
+    "2021-05-31",
+    "2021-06-01",
+    "2021-06-02",
+    "2021-06-03",
+    "2021-06-04",
+    "2021-06-05",
+    "2021-06-06",
+    "2021-06-07",
+    "2021-06-08",
+    "2021-06-09",
+    "2021-06-10",
+    "2021-06-11",
+    "2021-06-12",
+    "2021-06-13",
+    "2021-06-14",
+    "2021-06-15",
+    "2021-06-16",
+    "2021-06-17",
+    "2021-06-18",
+    "2021-06-19",
+    "2021-06-20",
+    "2021-06-21",
+    "2021-06-22",
+    "2021-06-23",
+    "2021-06-24",
+    "2021-06-25",
+    "2021-06-26",
+    "2021-06-27",
+    "2021-06-28",
+    "2021-06-29",
+    "2021-06-30",
+    "2021-07-01",
+    "2021-07-02",
+    "2021-07-03",
+    "2021-07-04",
+    "2021-07-05",
+    "2021-07-06",
+    "2021-07-07",
+    "2021-07-08",
+    "2021-07-09",
+    "2021-07-10",
+    "2021-07-11",
+    "2021-07-12",
+    "2021-07-13",
+    "2021-07-14",
+    "2021-07-15",
+    "2021-07-16",
+    "2021-07-17",
+    "2021-07-18",
+    "2021-07-19",
+    "2021-07-20",
+    "2021-07-21",
+    "2021-07-22",
+    "2021-07-23",
+    "2021-07-24",
+    "2021-07-25",
+    "2021-07-26",
+    "2021-07-27",
+    "2021-07-28",
+    "2021-07-29",
+    "2021-07-30",
+    "2021-07-31",
+    "2021-08-01",
+    "2021-08-02",
+    "2021-08-03",
+    "2021-08-04",
+    "2021-08-05",
+    "2021-08-06",
+    "2021-08-07",
+    "2021-08-08",
+    "2021-08-09",
+    "2021-08-10",
+    "2021-08-11",
+    "2021-08-12",
+    "2021-08-13",
+    "2021-08-14",
+    "2021-08-15",
+    "2021-08-16",
+    "2021-08-17",
+    "2021-08-18",
+    "2021-08-19",
+    "2021-08-20",
+    "2021-08-21",
+    "2021-08-22",
+    "2021-08-23",
+    "2021-08-24",
+    "2021-08-25",
+    "2021-08-26",
+    "2021-08-27",
+    "2021-08-28",
+    "2021-08-29",
+    "2021-08-30",
+    "2021-08-31",
+    "2021-09-01",
+    "2021-09-02",
+    "2021-09-03",
+    "2021-09-04",
+    "2021-09-05",
+    "2021-09-06",
+    "2021-09-07",
+    "2021-09-08",
+    "2021-09-09",
+    "2021-09-10",
+    "2021-09-11",
+    "2021-09-12",
+    "2021-09-13",
+    "2021-09-14",
+    "2021-09-15",
+    "2021-09-16",
+    "2021-09-17",
+    "2021-09-18",
+    "2021-09-19",
+    "2021-09-20",
+    "2021-09-21",
+    "2021-09-22",
+    "2021-09-23",
+    "2021-09-24",
+    "2021-09-25",
+    "2021-09-26",
+    "2021-09-27",
+    "2021-09-28",
+    "2021-09-29",
+    "2021-09-30",
+    "2021-10-01",
+    "2021-10-02",
+    "2021-10-03",
+    "2021-10-04",
+    "2021-10-05",
+    "2021-10-06",
+    "2021-10-07",
+    "2021-10-08",
+    "2021-10-09",
+    "2021-10-10",
+    "2021-10-11",
+    "2021-10-12",
+    "2021-10-13",
+    "2021-10-14",
+    "2021-10-15",
+    "2021-10-16",
+    "2021-10-17",
+    "2021-10-18",
+    "2021-10-19",
+    "2021-10-20",
+    "2021-10-21",
+    "2021-10-22",
+    "2021-10-23",
+    "2021-10-24",
+    "2021-10-25",
+    "2021-10-26",
+    "2021-10-27",
+    "2021-10-28",
+    "2021-10-29",
+    "2021-10-30",
+    "2021-10-31",
+    "2021-11-01",
+    "2021-11-02",
+    "2021-11-03",
+    "2021-11-04",
+    "2021-11-05",
+    "2021-11-06",
+    "2021-11-07",
+    "2021-11-08",
+    "2021-11-09",
+    "2021-11-10",
+    "2021-11-11",
+    "2021-11-12",
+    "2021-11-13",
+    "2021-11-14",
+    "2021-11-15",
+    "2021-11-16",
+    "2021-11-17",
+    "2021-11-18",
+    "2021-11-19",
+    "2021-11-20",
+    "2021-11-21",
+    "2021-11-22",
+    "2021-11-23",
+    "2021-11-24",
+    "2021-11-25",
+    "2021-11-26",
+    "2021-11-27",
+    "2021-11-28",
+    "2021-11-29",
+    "2021-11-30",
+    "2021-12-01",
+    "2021-12-02",
+    "2021-12-03",
+    "2021-12-04",
+    "2021-12-05",
+    "2021-12-06",
+    "2021-12-07",
+    "2021-12-08",
+    "2021-12-09",
+    "2021-12-10",
+    "2021-12-11",
+    "2021-12-12",
+    "2021-12-13",
+    "2021-12-14",
+    "2021-12-15",
+    "2021-12-16",
+    "2021-12-17",
+    "2021-12-18",
+    "2021-12-19",
+    "2021-12-20",
+    "2021-12-21",
+    "2021-12-22",
+    "2021-12-23",
+    "2021-12-24",
+    "2021-12-25",
+    "2021-12-26",
+    "2021-12-27",
+    "2021-12-28",
+    "2021-12-29",
+    "2021-12-30",
+    "2021-12-31",
+    "2022-01-01"
+  ],
+  "stations": [
+    "24_Sacramento River at Mallard Island",
+    "86_Pittsburg",
+    "175_San Joaquin at Antioch",
+    "201_Sacramento River near Sherman Island",
+    "321_JT_Dutch Slough",
+    "13_Farrar Park",
+    "322_JT_Taylor Dutch Slough Confluence",
+    "200_San Joaquin River at Twitchell Island",
+    "324_JT_Willow Park Marina_Sand Mound Slough",
+    "323_JT_Taylor Slough",
+    "326_JT_Bethel Island_Delta Coves",
+    "40_Tom Paine Sl near Pescadero",
+    "88_Vernalis",
+    "96_San Joaquin R below Garwood Bridge",
+    "31_Old River at Head",
+    "66_San Joaquin River at Brandt Bridge",
+    "176_San Joaquin at Mossdale Bridge",
+    "173_Rough and Ready Island",
+    "317_JT_Vieras Resort_Sac River",
+    "320_JT_Brannan Marinas_San Joaquin River",
+    "171_Piper Slough at Bethal Tract",
+    "2_Mokelumne River at Benson's Ferry",
+    "7_Discovery Bay at Indian Slough",
+    "37_Mokelumne River (South Fork) @ Staten Island",
+    "117_Sacramento R at Freeport",
+    "121_Georgiana Slough near Sacramento R",
+    "145_Georgiana Slough at Mokelumne R",
+    "146_Sacramento R at Walnut Grove",
+    "164_Mokelumne River near Highway 12",
+    "192_S Mokelumne R at New Hope BR near Walnut Grove",
+    "288_San Joaquin River at San Andreas Landing",
+    "307_JT_Clarksburg_Sac River         River",
+    "308_JT_Hood_Sac River         River",
+    "309_JT_Courtland_Sac River         River",
+    "310_JT_Locke_Sac River         River",
+    "311_JT_Walnut Grove Cross Channel_Sac River",
+    "312_JT_Old Walnut Grove_Snodgrass Slough",
+    "313_JT_Wimpy's Marina_Mokelumne Confluence",
+    "314_JT_Ryde_Sac River",
+    "315_JT_Trailer Park_Sac River",
+    "316_JT_Isleton_Sac River",
+    "318_JT_Snug Harbor Marina_Steamboat Slough",
+    "319_JT_Brannan Marinas_Mokelumne SJ Confluence",
+    "325_JT_Summer Lake_Sand Mound Slough",
+    "327_JT_King Island Marina Trailer Park_White Slough",
+    "328_JT_Orowood_Old River"
+  ],
+  "station_indices": [
+    "24",
+    "86",
+    "175",
+    "201",
+    "321",
+    "13",
+    "322",
+    "200",
+    "324",
+    "323",
+    "326",
+    "40",
+    "88",
+    "96",
+    "31",
+    "66",
+    "176",
+    "173",
+    "317",
+    "320",
+    "171",
+    "2",
+    "7",
+    "37",
+    "117",
+    "121",
+    "145",
+    "146",
+    "164",
+    "192",
+    "288",
+    "307",
+    "308",
+    "309",
+    "310",
+    "311",
+    "312",
+    "313",
+    "314",
+    "315",
+    "316",
+    "318",
+    "319",
+    "325",
+    "327",
+    "328"
+  ],
+  "station_metadata": [
+    {
+      "station": "24_Sacramento River at Mallard Island",
+      "station_index": "24",
+      "station_long_name": "Sacramento River at Mallard Island",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "86_Pittsburg",
+      "station_index": "86",
+      "station_long_name": "Pittsburg",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "175_San Joaquin at Antioch",
+      "station_index": "175",
+      "station_long_name": "San Joaquin at Antioch",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "201_Sacramento River near Sherman Island",
+      "station_index": "201",
+      "station_long_name": "Sacramento River near Sherman Island",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "321_JT_Dutch Slough",
+      "station_index": "321",
+      "station_long_name": "JT_Dutch Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "NONE"
+    },
+    {
+      "station": "13_Farrar Park",
+      "station_index": "13",
+      "station_long_name": "Farrar Park",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "322_JT_Taylor Dutch Slough Confluence",
+      "station_index": "322",
+      "station_long_name": "JT_Taylor Dutch Slough Confluence",
+      "vulnerability": "HIGH",
+      "affordability": "NONE"
+    },
+    {
+      "station": "200_San Joaquin River at Twitchell Island",
+      "station_index": "200",
+      "station_long_name": "San Joaquin River at Twitchell Island",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "324_JT_Willow Park Marina_Sand Mound Slough",
+      "station_index": "324",
+      "station_long_name": "JT_Willow Park Marina_Sand Mound Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "LOW"
+    },
+    {
+      "station": "323_JT_Taylor Slough",
+      "station_index": "323",
+      "station_long_name": "JT_Taylor Slough",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "326_JT_Bethel Island_Delta Coves",
+      "station_index": "326",
+      "station_long_name": "JT_Bethel Island_Delta Coves",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "40_Tom Paine Sl near Pescadero",
+      "station_index": "40",
+      "station_long_name": "Tom Paine Sl near Pescadero",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "88_Vernalis",
+      "station_index": "88",
+      "station_long_name": "Vernalis",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "96_San Joaquin R below Garwood Bridge",
+      "station_index": "96",
+      "station_long_name": "San Joaquin R below Garwood Bridge",
+      "vulnerability": "HIGHEST",
+      "affordability": "LOW"
+    },
+    {
+      "station": "31_Old River at Head",
+      "station_index": "31",
+      "station_long_name": "Old River at Head",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "66_San Joaquin River at Brandt Bridge",
+      "station_index": "66",
+      "station_long_name": "San Joaquin River at Brandt Bridge",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "176_San Joaquin at Mossdale Bridge",
+      "station_index": "176",
+      "station_long_name": "San Joaquin at Mossdale Bridge",
+      "vulnerability": "MODERATE",
+      "affordability": null
+    },
+    {
+      "station": "173_Rough and Ready Island",
+      "station_index": "173",
+      "station_long_name": "Rough and Ready Island",
+      "vulnerability": "HIGHEST",
+      "affordability": "LOW"
+    },
+    {
+      "station": "317_JT_Vieras Resort_Sac River",
+      "station_index": "317",
+      "station_long_name": "JT_Vieras Resort_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "320_JT_Brannan Marinas_San Joaquin River",
+      "station_index": "320",
+      "station_long_name": "JT_Brannan Marinas_San Joaquin River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "171_Piper Slough at Bethal Tract",
+      "station_index": "171",
+      "station_long_name": "Piper Slough at Bethal Tract",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "2_Mokelumne River at Benson's Ferry",
+      "station_index": "2",
+      "station_long_name": "Mokelumne River at Benson's Ferry",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "7_Discovery Bay at Indian Slough",
+      "station_index": "7",
+      "station_long_name": "Discovery Bay at Indian Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "NONE"
+    },
+    {
+      "station": "37_Mokelumne River (South Fork) @ Staten Island",
+      "station_index": "37",
+      "station_long_name": "Mokelumne River (South Fork) @ Staten Island",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "117_Sacramento R at Freeport",
+      "station_index": "117",
+      "station_long_name": "Sacramento R at Freeport",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "121_Georgiana Slough near Sacramento R",
+      "station_index": "121",
+      "station_long_name": "Georgiana Slough near Sacramento R",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "145_Georgiana Slough at Mokelumne R",
+      "station_index": "145",
+      "station_long_name": "Georgiana Slough at Mokelumne R",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "146_Sacramento R at Walnut Grove",
+      "station_index": "146",
+      "station_long_name": "Sacramento R at Walnut Grove",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "164_Mokelumne River near Highway 12",
+      "station_index": "164",
+      "station_long_name": "Mokelumne River near Highway 12",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "192_S Mokelumne R at New Hope BR near Walnut Grove",
+      "station_index": "192",
+      "station_long_name": "S Mokelumne R at New Hope BR near Walnut Grove",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "288_San Joaquin River at San Andreas Landing",
+      "station_index": "288",
+      "station_long_name": "San Joaquin River at San Andreas Landing",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "307_JT_Clarksburg_Sac River         River",
+      "station_index": "307",
+      "station_long_name": "JT_Clarksburg_Sac River         River",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "308_JT_Hood_Sac River         River",
+      "station_index": "308",
+      "station_long_name": "JT_Hood_Sac River         River",
+      "vulnerability": "MODERATE",
+      "affordability": "LOW"
+    },
+    {
+      "station": "309_JT_Courtland_Sac River         River",
+      "station_index": "309",
+      "station_long_name": "JT_Courtland_Sac River         River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "310_JT_Locke_Sac River         River",
+      "station_index": "310",
+      "station_long_name": "JT_Locke_Sac River         River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "311_JT_Walnut Grove Cross Channel_Sac River",
+      "station_index": "311",
+      "station_long_name": "JT_Walnut Grove Cross Channel_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "312_JT_Old Walnut Grove_Snodgrass Slough",
+      "station_index": "312",
+      "station_long_name": "JT_Old Walnut Grove_Snodgrass Slough",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "313_JT_Wimpy's Marina_Mokelumne Confluence",
+      "station_index": "313",
+      "station_long_name": "JT_Wimpy's Marina_Mokelumne Confluence",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "314_JT_Ryde_Sac River",
+      "station_index": "314",
+      "station_long_name": "JT_Ryde_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "315_JT_Trailer Park_Sac River",
+      "station_index": "315",
+      "station_long_name": "JT_Trailer Park_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "316_JT_Isleton_Sac River",
+      "station_index": "316",
+      "station_long_name": "JT_Isleton_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW"
+    },
+    {
+      "station": "318_JT_Snug Harbor Marina_Steamboat Slough",
+      "station_index": "318",
+      "station_long_name": "JT_Snug Harbor Marina_Steamboat Slough",
+      "vulnerability": "HIGH",
+      "affordability": "NONE"
+    },
+    {
+      "station": "319_JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "station_index": "319",
+      "station_long_name": "JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "325_JT_Summer Lake_Sand Mound Slough",
+      "station_index": "325",
+      "station_long_name": "JT_Summer Lake_Sand Mound Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "LOW"
+    },
+    {
+      "station": "327_JT_King Island Marina Trailer Park_White Slough",
+      "station_index": "327",
+      "station_long_name": "JT_King Island Marina Trailer Park_White Slough",
+      "vulnerability": "HIGHEST",
+      "affordability": "NO DATA"
+    },
+    {
+      "station": "328_JT_Orowood_Old River",
+      "station_index": "328",
+      "station_long_name": "JT_Orowood_Old River",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA"
+    }
+  ],
+  "records": [
+    {
+      "station": "24_Sacramento River at Mallard Island",
+      "station_index": "24",
+      "station_long_name": "Sacramento River at Mallard Island",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "unacceptable",
+          "start": "2020-10-01",
+          "end": "2021-12-26"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-26",
+          "end": "2021-12-27"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-27",
+          "end": "2021-12-30"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-12-30",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "86_Pittsburg",
+      "station_index": "86",
+      "station_long_name": "Pittsburg",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "unacceptable",
+          "start": "2020-10-01",
+          "end": "2021-10-28"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-10-28",
+          "end": "2021-10-30"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-10-30",
+          "end": "2021-12-26"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-26",
+          "end": "2022-01-01"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2022-01-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "175_San Joaquin at Antioch",
+      "station_index": "175",
+      "station_long_name": "San Joaquin at Antioch",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "unacceptable",
+          "start": "2020-10-01",
+          "end": "2021-02-14"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-14",
+          "end": "2021-02-21"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-21",
+          "end": "2021-02-22"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-22",
+          "end": "2021-02-23"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-02-23",
+          "end": "2021-03-21"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-21",
+          "end": "2021-03-23"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-23",
+          "end": "2021-03-25"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-25",
+          "end": "2021-03-29"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-03-29",
+          "end": "2021-10-27"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-10-27",
+          "end": "2021-10-28"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-28",
+          "end": "2021-11-04"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-11-04",
+          "end": "2021-11-05"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-11-05",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-18",
+          "end": "2021-12-21"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-21",
+          "end": "2022-01-01"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2022-01-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "201_Sacramento River near Sherman Island",
+      "station_index": "201",
+      "station_long_name": "Sacramento River near Sherman Island",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "unacceptable",
+          "start": "2020-10-01",
+          "end": "2021-02-04"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-04",
+          "end": "2021-02-06"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-02-06",
+          "end": "2021-02-14"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-14",
+          "end": "2021-02-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-16",
+          "end": "2021-02-23"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-23",
+          "end": "2021-02-25"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-02-25",
+          "end": "2021-03-16"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-16",
+          "end": "2021-03-18"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-03-18",
+          "end": "2021-03-19"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-19",
+          "end": "2021-03-21"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-21",
+          "end": "2021-03-25"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-25",
+          "end": "2021-03-29"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-03-29",
+          "end": "2021-10-26"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-26",
+          "end": "2021-11-03"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-11-03",
+          "end": "2021-11-04"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-11-04",
+          "end": "2021-12-16"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-16",
+          "end": "2021-12-17"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-17",
+          "end": "2022-01-01"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2022-01-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "321_JT_Dutch Slough",
+      "station_index": "321",
+      "station_long_name": "JT_Dutch Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "NONE",
+      "segments": [
+        {
+          "status": "acceptable",
+          "start": "2020-10-01",
+          "end": "2020-11-13"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-13",
+          "end": "2020-11-14"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-14",
+          "end": "2020-11-15"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-15",
+          "end": "2020-11-17"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-17",
+          "end": "2020-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-18",
+          "end": "2021-01-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-13",
+          "end": "2021-01-19"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-19",
+          "end": "2021-01-20"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-20",
+          "end": "2021-02-01"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-01",
+          "end": "2021-06-08"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-08",
+          "end": "2021-08-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-07",
+          "end": "2021-08-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-09",
+          "end": "2021-09-02"
+        },
+        {
+          "status": "good",
+          "start": "2021-09-02",
+          "end": "2021-09-10"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-10",
+          "end": "2021-10-27"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-27",
+          "end": "2021-12-03"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-03",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-18",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "13_Farrar Park",
+      "station_index": "13",
+      "station_long_name": "Farrar Park",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "acceptable",
+          "start": "2020-10-01",
+          "end": "2020-11-13"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-13",
+          "end": "2020-11-17"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-17",
+          "end": "2020-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-18",
+          "end": "2021-01-21"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-21",
+          "end": "2021-01-31"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-31",
+          "end": "2021-06-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-09",
+          "end": "2021-06-17"
+        },
+        {
+          "status": "good",
+          "start": "2021-06-17",
+          "end": "2021-06-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-18",
+          "end": "2021-08-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-07",
+          "end": "2021-08-10"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-10",
+          "end": "2021-08-11"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-11",
+          "end": "2021-08-15"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-15",
+          "end": "2021-08-19"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-19",
+          "end": "2021-08-21"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-21",
+          "end": "2021-08-25"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-25",
+          "end": "2021-09-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-13",
+          "end": "2021-10-27"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-27",
+          "end": "2021-12-03"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-03",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-18",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "322_JT_Taylor Dutch Slough Confluence",
+      "station_index": "322",
+      "station_long_name": "JT_Taylor Dutch Slough Confluence",
+      "vulnerability": "HIGH",
+      "affordability": "NONE",
+      "segments": [
+        {
+          "status": "acceptable",
+          "start": "2020-10-01",
+          "end": "2020-11-12"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-12",
+          "end": "2020-11-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-18",
+          "end": "2020-12-09"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-09",
+          "end": "2020-12-11"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-12-11",
+          "end": "2020-12-17"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-17",
+          "end": "2021-01-24"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-24",
+          "end": "2021-01-30"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-30",
+          "end": "2021-06-10"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-10",
+          "end": "2021-06-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-06-16",
+          "end": "2021-06-19"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-19",
+          "end": "2021-08-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-07",
+          "end": "2021-08-22"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-22",
+          "end": "2021-08-25"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-25",
+          "end": "2021-09-14"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-14",
+          "end": "2021-10-27"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-27",
+          "end": "2021-12-04"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-04",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-18",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "200_San Joaquin River at Twitchell Island",
+      "station_index": "200",
+      "station_long_name": "San Joaquin River at Twitchell Island",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2020-10-17"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-10-17",
+          "end": "2020-10-28"
+        },
+        {
+          "status": "good",
+          "start": "2020-10-28",
+          "end": "2020-10-30"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-10-30",
+          "end": "2020-10-31"
+        },
+        {
+          "status": "good",
+          "start": "2020-10-31",
+          "end": "2020-11-03"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-03",
+          "end": "2020-11-04"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-04",
+          "end": "2020-11-16"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-16",
+          "end": "2020-11-21"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-21",
+          "end": "2020-12-02"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-12-02",
+          "end": "2020-12-06"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-06",
+          "end": "2020-12-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-12-13",
+          "end": "2020-12-15"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-15",
+          "end": "2021-01-11"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-11",
+          "end": "2021-01-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-16",
+          "end": "2021-01-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-18",
+          "end": "2021-01-19"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-19",
+          "end": "2021-01-22"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-22",
+          "end": "2021-01-23"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-23",
+          "end": "2021-01-24"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-24",
+          "end": "2021-01-25"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-25",
+          "end": "2021-01-27"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-27",
+          "end": "2021-01-29"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-29",
+          "end": "2021-05-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-05-13",
+          "end": "2021-05-17"
+        },
+        {
+          "status": "good",
+          "start": "2021-05-17",
+          "end": "2021-05-28"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-05-28",
+          "end": "2021-05-31"
+        },
+        {
+          "status": "good",
+          "start": "2021-05-31",
+          "end": "2021-06-07"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-07",
+          "end": "2021-06-17"
+        },
+        {
+          "status": "good",
+          "start": "2021-06-17",
+          "end": "2021-06-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-18",
+          "end": "2021-06-22"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-06-22",
+          "end": "2021-06-30"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-30",
+          "end": "2021-07-25"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-07-25",
+          "end": "2021-07-26"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-07-26",
+          "end": "2021-08-13"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-13",
+          "end": "2021-08-14"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-14",
+          "end": "2021-08-26"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-26",
+          "end": "2021-08-29"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-08-29",
+          "end": "2021-09-04"
+        },
+        {
+          "status": "good",
+          "start": "2021-09-04",
+          "end": "2021-09-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-09",
+          "end": "2021-10-25"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-25",
+          "end": "2021-12-01"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-01",
+          "end": "2021-12-04"
+        },
+        {
+          "status": "unacceptable",
+          "start": "2021-12-04",
+          "end": "2021-12-06"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-06",
+          "end": "2021-12-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-16",
+          "end": "2022-01-01"
+        },
+        {
+          "status": "acceptable",
+          "start": "2022-01-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "324_JT_Willow Park Marina_Sand Mound Slough",
+      "station_index": "324",
+      "station_long_name": "JT_Willow Park Marina_Sand Mound Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "acceptable",
+          "start": "2020-10-01",
+          "end": "2020-11-12"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-12",
+          "end": "2020-11-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-18",
+          "end": "2020-12-17"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-17",
+          "end": "2021-01-23"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-23",
+          "end": "2021-01-31"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-31",
+          "end": "2021-06-15"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-15",
+          "end": "2021-06-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-06-16",
+          "end": "2021-06-20"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-20",
+          "end": "2021-08-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-07",
+          "end": "2021-09-15"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-15",
+          "end": "2021-10-26"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-26",
+          "end": "2021-12-05"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-05",
+          "end": "2021-12-11"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-11",
+          "end": "2021-12-12"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-12",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-18",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "323_JT_Taylor Slough",
+      "station_index": "323",
+      "station_long_name": "JT_Taylor Slough",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "acceptable",
+          "start": "2020-10-01",
+          "end": "2020-11-13"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-13",
+          "end": "2020-11-29"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-29",
+          "end": "2020-12-05"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-05",
+          "end": "2021-01-25"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-25",
+          "end": "2021-01-30"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-30",
+          "end": "2021-06-20"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-20",
+          "end": "2021-08-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-07",
+          "end": "2021-09-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-18",
+          "end": "2021-10-26"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-26",
+          "end": "2021-12-08"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-08",
+          "end": "2021-12-10"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-10",
+          "end": "2021-12-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-13",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-18",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "326_JT_Bethel Island_Delta Coves",
+      "station_index": "326",
+      "station_long_name": "JT_Bethel Island_Delta Coves",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "acceptable",
+          "start": "2020-10-01",
+          "end": "2020-11-08"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-08",
+          "end": "2020-11-25"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-25",
+          "end": "2020-11-26"
+        },
+        {
+          "status": "good",
+          "start": "2020-11-26",
+          "end": "2020-11-27"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-11-27",
+          "end": "2020-12-03"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-03",
+          "end": "2020-12-11"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-12-11",
+          "end": "2020-12-17"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-17",
+          "end": "2021-01-25"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-25",
+          "end": "2021-01-29"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-29",
+          "end": "2021-06-20"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-20",
+          "end": "2021-08-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-08-07",
+          "end": "2021-09-18"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-18",
+          "end": "2021-10-26"
+        },
+        {
+          "status": "good",
+          "start": "2021-10-26",
+          "end": "2021-12-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-12-13",
+          "end": "2021-12-18"
+        },
+        {
+          "status": "good",
+          "start": "2021-12-18",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "40_Tom Paine Sl near Pescadero",
+      "station_index": "40",
+      "station_long_name": "Tom Paine Sl near Pescadero",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2020-12-08"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-12-08",
+          "end": "2020-12-14"
+        },
+        {
+          "status": "good",
+          "start": "2020-12-14",
+          "end": "2020-12-24"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-12-24",
+          "end": "2021-01-02"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-02",
+          "end": "2021-01-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-13",
+          "end": "2021-01-15"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-15",
+          "end": "2021-02-10"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-10",
+          "end": "2021-02-12"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-12",
+          "end": "2021-02-16"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-16",
+          "end": "2021-05-08"
+        },
+        {
+          "status": "good",
+          "start": "2021-05-08",
+          "end": "2021-05-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-05-09",
+          "end": "2021-05-11"
+        },
+        {
+          "status": "good",
+          "start": "2021-05-11",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "88_Vernalis",
+      "station_index": "88",
+      "station_long_name": "Vernalis",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-02-03"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-03",
+          "end": "2021-02-15"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-15",
+          "end": "2021-02-26"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-26",
+          "end": "2021-03-10"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-10",
+          "end": "2021-03-13"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-13",
+          "end": "2021-03-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-16",
+          "end": "2021-03-17"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-17",
+          "end": "2021-04-01"
+        },
+        {
+          "status": "good",
+          "start": "2021-04-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "96_San Joaquin R below Garwood Bridge",
+      "station_index": "96",
+      "station_long_name": "San Joaquin R below Garwood Bridge",
+      "vulnerability": "HIGHEST",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-01-28"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-01-28",
+          "end": "2021-01-29"
+        },
+        {
+          "status": "good",
+          "start": "2021-01-29",
+          "end": "2021-02-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-09",
+          "end": "2021-02-21"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-21",
+          "end": "2021-03-05"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-05",
+          "end": "2021-03-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-07",
+          "end": "2021-03-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-09",
+          "end": "2021-03-10"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-10",
+          "end": "2021-03-11"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-11",
+          "end": "2021-03-14"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-14",
+          "end": "2021-03-23"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-23",
+          "end": "2021-04-14"
+        },
+        {
+          "status": "good",
+          "start": "2021-04-14",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "31_Old River at Head",
+      "station_index": "31",
+      "station_long_name": "Old River at Head",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-02-06"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-06",
+          "end": "2021-02-15"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-15",
+          "end": "2021-03-01"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-01",
+          "end": "2021-03-04"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-04",
+          "end": "2021-03-05"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-05",
+          "end": "2021-03-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-07",
+          "end": "2021-03-08"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-08",
+          "end": "2021-03-11"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-11",
+          "end": "2021-03-21"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-21",
+          "end": "2021-04-03"
+        },
+        {
+          "status": "good",
+          "start": "2021-04-03",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "66_San Joaquin River at Brandt Bridge",
+      "station_index": "66",
+      "station_long_name": "San Joaquin River at Brandt Bridge",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-02-07"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-07",
+          "end": "2021-02-16"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-16",
+          "end": "2021-03-03"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-03",
+          "end": "2021-03-05"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-05",
+          "end": "2021-03-07"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-07",
+          "end": "2021-03-08"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-08",
+          "end": "2021-03-09"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-09",
+          "end": "2021-03-12"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-12",
+          "end": "2021-03-22"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-22",
+          "end": "2021-04-05"
+        },
+        {
+          "status": "good",
+          "start": "2021-04-05",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "176_San Joaquin at Mossdale Bridge",
+      "station_index": "176",
+      "station_long_name": "San Joaquin at Mossdale Bridge",
+      "vulnerability": "MODERATE",
+      "affordability": null,
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-02-06"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-06",
+          "end": "2021-02-14"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-14",
+          "end": "2021-02-28"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-28",
+          "end": "2021-03-03"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-03",
+          "end": "2021-03-04"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-04",
+          "end": "2021-03-07"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-07",
+          "end": "2021-03-08"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-08",
+          "end": "2021-03-10"
+        },
+        {
+          "status": "good",
+          "start": "2021-03-10",
+          "end": "2021-03-20"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-03-20",
+          "end": "2021-04-02"
+        },
+        {
+          "status": "good",
+          "start": "2021-04-02",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "173_Rough and Ready Island",
+      "station_index": "173",
+      "station_long_name": "Rough and Ready Island",
+      "vulnerability": "HIGHEST",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-02-19"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-02-19",
+          "end": "2021-02-25"
+        },
+        {
+          "status": "good",
+          "start": "2021-02-25",
+          "end": "2021-04-01"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-04-01",
+          "end": "2021-04-19"
+        },
+        {
+          "status": "good",
+          "start": "2021-04-19",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "317_JT_Vieras Resort_Sac River",
+      "station_index": "317",
+      "station_long_name": "JT_Vieras Resort_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-06-23"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-23",
+          "end": "2021-06-29"
+        },
+        {
+          "status": "good",
+          "start": "2021-06-29",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "320_JT_Brannan Marinas_San Joaquin River",
+      "station_index": "320",
+      "station_long_name": "JT_Brannan Marinas_San Joaquin River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2021-06-25"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-06-25",
+          "end": "2021-06-27"
+        },
+        {
+          "status": "good",
+          "start": "2021-06-27",
+          "end": "2021-09-27"
+        },
+        {
+          "status": "acceptable",
+          "start": "2021-09-27",
+          "end": "2021-09-28"
+        },
+        {
+          "status": "good",
+          "start": "2021-09-28",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "171_Piper Slough at Bethal Tract",
+      "station_index": "171",
+      "station_long_name": "Piper Slough at Bethal Tract",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2020-10-26"
+        },
+        {
+          "status": "acceptable",
+          "start": "2020-10-26",
+          "end": "2020-10-27"
+        },
+        {
+          "status": "good",
+          "start": "2020-10-27",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "2_Mokelumne River at Benson's Ferry",
+      "station_index": "2",
+      "station_long_name": "Mokelumne River at Benson's Ferry",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "7_Discovery Bay at Indian Slough",
+      "station_index": "7",
+      "station_long_name": "Discovery Bay at Indian Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "NONE",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "37_Mokelumne River (South Fork) @ Staten Island",
+      "station_index": "37",
+      "station_long_name": "Mokelumne River (South Fork) @ Staten Island",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "117_Sacramento R at Freeport",
+      "station_index": "117",
+      "station_long_name": "Sacramento R at Freeport",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "121_Georgiana Slough near Sacramento R",
+      "station_index": "121",
+      "station_long_name": "Georgiana Slough near Sacramento R",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "145_Georgiana Slough at Mokelumne R",
+      "station_index": "145",
+      "station_long_name": "Georgiana Slough at Mokelumne R",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "146_Sacramento R at Walnut Grove",
+      "station_index": "146",
+      "station_long_name": "Sacramento R at Walnut Grove",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "164_Mokelumne River near Highway 12",
+      "station_index": "164",
+      "station_long_name": "Mokelumne River near Highway 12",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "192_S Mokelumne R at New Hope BR near Walnut Grove",
+      "station_index": "192",
+      "station_long_name": "S Mokelumne R at New Hope BR near Walnut Grove",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "288_San Joaquin River at San Andreas Landing",
+      "station_index": "288",
+      "station_long_name": "San Joaquin River at San Andreas Landing",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "307_JT_Clarksburg_Sac River         River",
+      "station_index": "307",
+      "station_long_name": "JT_Clarksburg_Sac River         River",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "308_JT_Hood_Sac River         River",
+      "station_index": "308",
+      "station_long_name": "JT_Hood_Sac River         River",
+      "vulnerability": "MODERATE",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "309_JT_Courtland_Sac River         River",
+      "station_index": "309",
+      "station_long_name": "JT_Courtland_Sac River         River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "310_JT_Locke_Sac River         River",
+      "station_index": "310",
+      "station_long_name": "JT_Locke_Sac River         River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "311_JT_Walnut Grove Cross Channel_Sac River",
+      "station_index": "311",
+      "station_long_name": "JT_Walnut Grove Cross Channel_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "312_JT_Old Walnut Grove_Snodgrass Slough",
+      "station_index": "312",
+      "station_long_name": "JT_Old Walnut Grove_Snodgrass Slough",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "313_JT_Wimpy's Marina_Mokelumne Confluence",
+      "station_index": "313",
+      "station_long_name": "JT_Wimpy's Marina_Mokelumne Confluence",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "314_JT_Ryde_Sac River",
+      "station_index": "314",
+      "station_long_name": "JT_Ryde_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "315_JT_Trailer Park_Sac River",
+      "station_index": "315",
+      "station_long_name": "JT_Trailer Park_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "316_JT_Isleton_Sac River",
+      "station_index": "316",
+      "station_long_name": "JT_Isleton_Sac River",
+      "vulnerability": "HIGH",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "318_JT_Snug Harbor Marina_Steamboat Slough",
+      "station_index": "318",
+      "station_long_name": "JT_Snug Harbor Marina_Steamboat Slough",
+      "vulnerability": "HIGH",
+      "affordability": "NONE",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "319_JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "station_index": "319",
+      "station_long_name": "JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "vulnerability": "HIGH",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "325_JT_Summer Lake_Sand Mound Slough",
+      "station_index": "325",
+      "station_long_name": "JT_Summer Lake_Sand Mound Slough",
+      "vulnerability": "MODERATE",
+      "affordability": "LOW",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "327_JT_King Island Marina Trailer Park_White Slough",
+      "station_index": "327",
+      "station_long_name": "JT_King Island Marina Trailer Park_White Slough",
+      "vulnerability": "HIGHEST",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    },
+    {
+      "station": "328_JT_Orowood_Old River",
+      "station_index": "328",
+      "station_long_name": "JT_Orowood_Old River",
+      "vulnerability": "MODERATE",
+      "affordability": "NO DATA",
+      "segments": [
+        {
+          "status": "good",
+          "start": "2020-10-01",
+          "end": "2022-01-02"
+        }
+      ]
+    }
+  ],
+  "sort_by_duration": "not_good",
+  "sort_descending": true,
+  "summary": [
+    {
+      "station": "24_Sacramento River at Mallard Island",
+      "station_index": "24",
+      "station_long_name": "Sacramento River at Mallard Island",
+      "vulnerability": "HIGH",
+      "good": 3,
+      "acceptable": 1,
+      "unacceptable": 454,
+      "not_good": 455
+    },
+    {
+      "station": "86_Pittsburg",
+      "station_index": "86",
+      "station_long_name": "Pittsburg",
+      "vulnerability": "HIGH",
+      "good": 6,
+      "acceptable": 2,
+      "unacceptable": 450,
+      "not_good": 452
+    },
+    {
+      "station": "175_San Joaquin at Antioch",
+      "station_index": "175",
+      "station_long_name": "San Joaquin at Antioch",
+      "vulnerability": "HIGH",
+      "good": 21,
+      "acceptable": 19,
+      "unacceptable": 418,
+      "not_good": 437
+    },
+    {
+      "station": "201_Sacramento River near Sherman Island",
+      "station_index": "201",
+      "station_long_name": "Sacramento River near Sherman Island",
+      "vulnerability": "HIGH",
+      "good": 34,
+      "acceptable": 16,
+      "unacceptable": 408,
+      "not_good": 424
+    },
+    {
+      "station": "321_JT_Dutch Slough",
+      "station_index": "321",
+      "station_long_name": "JT_Dutch Slough",
+      "vulnerability": "MODERATE",
+      "good": 219,
+      "acceptable": 239,
+      "unacceptable": 0,
+      "not_good": 239
+    },
+    {
+      "station": "13_Farrar Park",
+      "station_index": "13",
+      "station_long_name": "Farrar Park",
+      "vulnerability": "HIGH",
+      "good": 248,
+      "acceptable": 210,
+      "unacceptable": 0,
+      "not_good": 210
+    },
+    {
+      "station": "322_JT_Taylor Dutch Slough Confluence",
+      "station_index": "322",
+      "station_long_name": "JT_Taylor Dutch Slough Confluence",
+      "vulnerability": "HIGH",
+      "good": 268,
+      "acceptable": 190,
+      "unacceptable": 0,
+      "not_good": 190
+    },
+    {
+      "station": "200_San Joaquin River at Twitchell Island",
+      "station_index": "200",
+      "station_long_name": "San Joaquin River at Twitchell Island",
+      "vulnerability": "HIGH",
+      "good": 271,
+      "acceptable": 176,
+      "unacceptable": 11,
+      "not_good": 187
+    },
+    {
+      "station": "324_JT_Willow Park Marina_Sand Mound Slough",
+      "station_index": "324",
+      "station_long_name": "JT_Willow Park Marina_Sand Mound Slough",
+      "vulnerability": "MODERATE",
+      "good": 277,
+      "acceptable": 181,
+      "unacceptable": 0,
+      "not_good": 181
+    },
+    {
+      "station": "323_JT_Taylor Slough",
+      "station_index": "323",
+      "station_long_name": "JT_Taylor Slough",
+      "vulnerability": "HIGH",
+      "good": 311,
+      "acceptable": 147,
+      "unacceptable": 0,
+      "not_good": 147
+    },
+    {
+      "station": "326_JT_Bethel Island_Delta Coves",
+      "station_index": "326",
+      "station_long_name": "JT_Bethel Island_Delta Coves",
+      "vulnerability": "HIGH",
+      "good": 312,
+      "acceptable": 146,
+      "unacceptable": 0,
+      "not_good": 146
+    },
+    {
+      "station": "40_Tom Paine Sl near Pescadero",
+      "station_index": "40",
+      "station_long_name": "Tom Paine Sl near Pescadero",
+      "vulnerability": "MODERATE",
+      "good": 356,
+      "acceptable": 102,
+      "unacceptable": 0,
+      "not_good": 102
+    },
+    {
+      "station": "88_Vernalis",
+      "station_index": "88",
+      "station_long_name": "Vernalis",
+      "vulnerability": "HIGH",
+      "good": 416,
+      "acceptable": 42,
+      "unacceptable": 0,
+      "not_good": 42
+    },
+    {
+      "station": "96_San Joaquin R below Garwood Bridge",
+      "station_index": "96",
+      "station_long_name": "San Joaquin R below Garwood Bridge",
+      "vulnerability": "HIGHEST",
+      "good": 417,
+      "acceptable": 41,
+      "unacceptable": 0,
+      "not_good": 41
+    },
+    {
+      "station": "31_Old River at Head",
+      "station_index": "31",
+      "station_long_name": "Old River at Head",
+      "vulnerability": "HIGH",
+      "good": 428,
+      "acceptable": 30,
+      "unacceptable": 0,
+      "not_good": 30
+    },
+    {
+      "station": "66_San Joaquin River at Brandt Bridge",
+      "station_index": "66",
+      "station_long_name": "San Joaquin River at Brandt Bridge",
+      "vulnerability": "HIGH",
+      "good": 429,
+      "acceptable": 29,
+      "unacceptable": 0,
+      "not_good": 29
+    },
+    {
+      "station": "176_San Joaquin at Mossdale Bridge",
+      "station_index": "176",
+      "station_long_name": "San Joaquin at Mossdale Bridge",
+      "vulnerability": "MODERATE",
+      "good": 429,
+      "acceptable": 29,
+      "unacceptable": 0,
+      "not_good": 29
+    },
+    {
+      "station": "173_Rough and Ready Island",
+      "station_index": "173",
+      "station_long_name": "Rough and Ready Island",
+      "vulnerability": "HIGHEST",
+      "good": 434,
+      "acceptable": 24,
+      "unacceptable": 0,
+      "not_good": 24
+    },
+    {
+      "station": "317_JT_Vieras Resort_Sac River",
+      "station_index": "317",
+      "station_long_name": "JT_Vieras Resort_Sac River",
+      "vulnerability": "HIGH",
+      "good": 452,
+      "acceptable": 6,
+      "unacceptable": 0,
+      "not_good": 6
+    },
+    {
+      "station": "320_JT_Brannan Marinas_San Joaquin River",
+      "station_index": "320",
+      "station_long_name": "JT_Brannan Marinas_San Joaquin River",
+      "vulnerability": "HIGH",
+      "good": 455,
+      "acceptable": 3,
+      "unacceptable": 0,
+      "not_good": 3
+    },
+    {
+      "station": "171_Piper Slough at Bethal Tract",
+      "station_index": "171",
+      "station_long_name": "Piper Slough at Bethal Tract",
+      "vulnerability": "HIGH",
+      "good": 457,
+      "acceptable": 1,
+      "unacceptable": 0,
+      "not_good": 1
+    },
+    {
+      "station": "2_Mokelumne River at Benson's Ferry",
+      "station_index": "2",
+      "station_long_name": "Mokelumne River at Benson's Ferry",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "7_Discovery Bay at Indian Slough",
+      "station_index": "7",
+      "station_long_name": "Discovery Bay at Indian Slough",
+      "vulnerability": "MODERATE",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "37_Mokelumne River (South Fork) @ Staten Island",
+      "station_index": "37",
+      "station_long_name": "Mokelumne River (South Fork) @ Staten Island",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "117_Sacramento R at Freeport",
+      "station_index": "117",
+      "station_long_name": "Sacramento R at Freeport",
+      "vulnerability": "MODERATE",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "121_Georgiana Slough near Sacramento R",
+      "station_index": "121",
+      "station_long_name": "Georgiana Slough near Sacramento R",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "145_Georgiana Slough at Mokelumne R",
+      "station_index": "145",
+      "station_long_name": "Georgiana Slough at Mokelumne R",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "146_Sacramento R at Walnut Grove",
+      "station_index": "146",
+      "station_long_name": "Sacramento R at Walnut Grove",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "164_Mokelumne River near Highway 12",
+      "station_index": "164",
+      "station_long_name": "Mokelumne River near Highway 12",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "192_S Mokelumne R at New Hope BR near Walnut Grove",
+      "station_index": "192",
+      "station_long_name": "S Mokelumne R at New Hope BR near Walnut Grove",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "288_San Joaquin River at San Andreas Landing",
+      "station_index": "288",
+      "station_long_name": "San Joaquin River at San Andreas Landing",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "307_JT_Clarksburg_Sac River         River",
+      "station_index": "307",
+      "station_long_name": "JT_Clarksburg_Sac River         River",
+      "vulnerability": "MODERATE",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "308_JT_Hood_Sac River         River",
+      "station_index": "308",
+      "station_long_name": "JT_Hood_Sac River         River",
+      "vulnerability": "MODERATE",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "309_JT_Courtland_Sac River         River",
+      "station_index": "309",
+      "station_long_name": "JT_Courtland_Sac River         River",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "310_JT_Locke_Sac River         River",
+      "station_index": "310",
+      "station_long_name": "JT_Locke_Sac River         River",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "311_JT_Walnut Grove Cross Channel_Sac River",
+      "station_index": "311",
+      "station_long_name": "JT_Walnut Grove Cross Channel_Sac River",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "312_JT_Old Walnut Grove_Snodgrass Slough",
+      "station_index": "312",
+      "station_long_name": "JT_Old Walnut Grove_Snodgrass Slough",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "313_JT_Wimpy's Marina_Mokelumne Confluence",
+      "station_index": "313",
+      "station_long_name": "JT_Wimpy's Marina_Mokelumne Confluence",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "314_JT_Ryde_Sac River",
+      "station_index": "314",
+      "station_long_name": "JT_Ryde_Sac River",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "315_JT_Trailer Park_Sac River",
+      "station_index": "315",
+      "station_long_name": "JT_Trailer Park_Sac River",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "316_JT_Isleton_Sac River",
+      "station_index": "316",
+      "station_long_name": "JT_Isleton_Sac River",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "318_JT_Snug Harbor Marina_Steamboat Slough",
+      "station_index": "318",
+      "station_long_name": "JT_Snug Harbor Marina_Steamboat Slough",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "319_JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "station_index": "319",
+      "station_long_name": "JT_Brannan Marinas_Mokelumne SJ Confluence",
+      "vulnerability": "HIGH",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "325_JT_Summer Lake_Sand Mound Slough",
+      "station_index": "325",
+      "station_long_name": "JT_Summer Lake_Sand Mound Slough",
+      "vulnerability": "MODERATE",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "327_JT_King Island Marina Trailer Park_White Slough",
+      "station_index": "327",
+      "station_long_name": "JT_King Island Marina Trailer Park_White Slough",
+      "vulnerability": "HIGHEST",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    },
+    {
+      "station": "328_JT_Orowood_Old River",
+      "station_index": "328",
+      "station_long_name": "JT_Orowood_Old River",
+      "vulnerability": "MODERATE",
+      "good": 458,
+      "acceptable": 0,
+      "unacceptable": 0,
+      "not_good": 0
+    }
+  ]
+}

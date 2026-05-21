@@ -4,7 +4,7 @@ import type { SxProps, Theme } from '@mui/material/styles';
 import Map from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLayerOrchestrator from './MapLayerOrchestrator';
-import { DELTA_STATION_POINTS_LAYER_ID } from './layers/DeltaStationPointsLayer';
+import { DELTA_STATION_POINTS_LAYER_ID } from './layers/deltaStationConstants';
 
 const mapContainerStyle = { position: 'relative', width: '100%', height: '100%' } as const;
 const mapStyle = { width: '100%', height: '100%' } as const;

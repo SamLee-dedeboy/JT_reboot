@@ -56,6 +56,7 @@ const navItems: NavItem[] = [
     dropdown: [
       { label: 'Design System', href: '/design-system' },
       { label: 'EJ Playground', href: '/pages/playground' },
+      { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
 
     ]
   },
