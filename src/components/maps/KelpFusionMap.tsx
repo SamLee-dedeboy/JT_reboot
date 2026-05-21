@@ -1,7 +1,9 @@
 // Map page hosting the KelpFusion set-visualization overlay.
 //
 // Renders the Delta station tileset, derives one set per vulnerability group
-// from the water-quality data, and draws fused KelpFusion boundaries on top.
+// from the water-quality data, loads the channel-centerline mesh that
+// powers waterway-aware routing, and draws fused KelpFusion boundaries on
+// top of the basemap.
 
 import { useEffect, useMemo, useState } from 'react';
 import MapGL from 'react-map-gl/mapbox';
@@ -9,10 +11,20 @@ import type { Map as MapboxMap } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Box } from '@mui/material';
 import DeltaStationPointsLayer from './layers/DeltaStationPointsLayer';
+import { WATER_QUALITY_STATION_INDICES } from './layers/deltaStationConstants';
 import KelpOverlay, { type KelpRenderMode } from './kelp/KelpOverlay';
 import KelpControls from './kelp/KelpControls';
 import { useStationCoords } from './kelp/useStationCoords';
-import type { KelpSet, SetStat } from '../../lib/kelp/types';
+import type {
+  KelpSet,
+  SetStat,
+  WaterwayGraph,
+  WaterwayRouting,
+} from '../../lib/kelp/types';
+import {
+  buildWaterwayGraphFromGeoJSON,
+  computeWaterwayRouting,
+} from '../../lib/kelp/waterwayGraph';
 
 interface RawRecord {
   station_index: string | number;
@@ -34,6 +46,9 @@ const VULNERABILITY_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'
 
 const containerStyle = { position: 'relative', width: '100%', height: '100%' } as const;
 
+/** Slider default for the max waterway-distance threshold. */
+const DEFAULT_MAX_DISTANCE_MILES = 10;
+
 export default function KelpFusionMap() {
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null);
@@ -42,6 +57,8 @@ export default function KelpFusionMap() {
   const [renderMode, setRenderMode] = useState<KelpRenderMode>('fused');
   const [ensureConnected, setEnsureConnected] = useState(true);
   const [stats, setStats] = useState<SetStat[]>([]);
+  const [maxDistanceMiles, setMaxDistanceMiles] = useState(DEFAULT_MAX_DISTANCE_MILES);
+  const [waterwayGraph, setWaterwayGraph] = useState<WaterwayGraph | null>(null);
 
   const stationCoords = useStationCoords(mapObj);
 
@@ -91,6 +108,48 @@ export default function KelpFusionMap() {
     };
   }, []);
 
+  // Load the channel-centerline mesh once and build the routing graph.
+  // Failure is non-fatal: the overlay falls back to straight-line SPG.
+  useEffect(() => {
+    let isMounted = true;
+    async function loadGraph() {
+      try {
+        const response = await fetch(
+          `${import.meta.env.BASE_URL}/data/delta_waterway_lines.geojson`,
+        );
+        if (!response.ok) throw new Error(`Failed to load mesh (${response.status})`);
+        const fc = await response.json();
+        const graph = buildWaterwayGraphFromGeoJSON(fc);
+        if (isMounted) setWaterwayGraph(graph);
+      } catch (err) {
+        // Keep the overlay usable in straight-line mode if the mesh is absent.
+        console.warn(
+          '[KelpFusion] waterway graph unavailable, falling back to straight-line SPG:',
+          err,
+        );
+        if (isMounted) setWaterwayGraph(null);
+      }
+    }
+    void loadGraph();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Once both the graph and the station coordinates are loaded, compute one
+  // global pairwise-routing table over every station the water-quality
+  // dataset cares about. Per-set kelp overlays slice into this table by
+  // station index — running Dijkstra once per station (~50) instead of once
+  // per station per set keeps startup CPU sublinear in set count.
+  const routing = useMemo<WaterwayRouting | null>(() => {
+    if (!waterwayGraph || !stationCoords.ready) return null;
+    return computeWaterwayRouting(
+      waterwayGraph,
+      stationCoords.lngLatByIndex,
+      [...WATER_QUALITY_STATION_INDICES],
+    );
+  }, [waterwayGraph, stationCoords.ready, stationCoords.lngLatByIndex]);
+
   const handleSetChange = (setId: string, patch: Partial<KelpSet>) => {
     setSets((current) =>
       current.map((set) => (set.setId === setId ? { ...set, ...patch } : set)),
@@ -130,6 +189,8 @@ export default function KelpFusionMap() {
           tension={tension}
           renderMode={renderMode}
           ensureConnected={ensureConnected}
+          routing={routing}
+          maxDistanceMiles={maxDistanceMiles}
           onStats={setStats}
         />
       )}
@@ -144,6 +205,10 @@ export default function KelpFusionMap() {
           onRenderModeChange={setRenderMode}
           ensureConnected={ensureConnected}
           onEnsureConnectedChange={setEnsureConnected}
+          maxDistanceMiles={maxDistanceMiles}
+          onMaxDistanceMilesChange={setMaxDistanceMiles}
+          routingReady={routing !== null}
+          unsnappedStationIndices={routing?.unsnappedStationIndices ?? []}
           stats={stats}
         />
       )}

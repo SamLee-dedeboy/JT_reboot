@@ -1,17 +1,39 @@
 // SVG overlay that draws KelpFusion set boundaries on top of the Mapbox map.
 //
 // The SPG topology is invariant under map pan and (approximately) uniform
-// zoom, so it is computed once per set whenever membership or tension change.
-// The fused isocontour is rasterized when the map is settled ('idle'); during
-// an active drag the cached contour is kept and an affine transform (derived
-// from the pan/zoom delta) is applied so the shape tracks the map seamlessly.
+// zoom, so it is computed once per set whenever membership, tension or the
+// distance threshold change. The fused isocontour is rasterized when the
+// map is settled ('idle'); during an active drag the cached contour is
+// kept and an affine transform (derived from the pan/zoom delta) is
+// applied so the shape tracks the map seamlessly.
+//
+// When a WaterwayRouting table is supplied, edges follow channel polylines
+// (each SpgEdge.path is in lng/lat and re-projected per render) and the
+// SPG selection uses waterway-network distance with a hard mileage
+// threshold. With no routing, behavior reverts to the original Euclidean
+// straight-line SPG so the map page stays usable even if the centerline
+// mesh fails to load.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Map as MapboxMap } from 'mapbox-gl';
-import { computeSPG } from '../../../lib/kelp/shortestPathGraph';
-import { rasterizeSetField, fieldToPath, type KelpFieldConfig } from '../../../lib/kelp/kelpFusion';
+import {
+  computeSPG,
+  computeSPGFromDistanceMatrix,
+} from '../../../lib/kelp/shortestPathGraph';
+import {
+  rasterizeSetField,
+  fieldToPath,
+  type KelpFieldConfig,
+  type ProjectedEdge,
+} from '../../../lib/kelp/kelpFusion';
 import { tensionToT, tensionToThickness } from '../../../lib/kelp/tension';
-import type { KelpPoint, KelpSet, SetStat, SpgEdge } from '../../../lib/kelp/types';
+import type {
+  KelpPoint,
+  KelpSet,
+  SetStat,
+  SpgEdge,
+  WaterwayRouting,
+} from '../../../lib/kelp/types';
 
 export type KelpRenderMode = 'fused' | 'graph';
 
@@ -25,6 +47,13 @@ interface KelpOverlayProps {
   renderMode: KelpRenderMode;
   /** When false, the SPG keeps no MST fallback and may be disconnected. */
   ensureConnected: boolean;
+  /**
+   * Precomputed pairwise routing over the channel-centerline mesh. When
+   * `null`, the overlay falls back to Euclidean SPG with no threshold.
+   */
+  routing: WaterwayRouting | null;
+  /** Max waterway distance allowed between two connected stations, in miles. */
+  maxDistanceMiles: number;
   /** Reports per-set connected-component counts to the dev controls. */
   onStats?: (stats: SetStat[]) => void;
 }
@@ -46,6 +75,7 @@ interface ReferenceView {
 
 const GRID_CELL = 8;
 const GRID_PAD = 36;
+const METERS_PER_MILE = 1609.344;
 
 export default function KelpOverlay({
   map,
@@ -54,6 +84,8 @@ export default function KelpOverlay({
   tension,
   renderMode,
   ensureConnected,
+  routing,
+  maxDistanceMiles,
   onStats,
 }: KelpOverlayProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -114,21 +146,100 @@ export default function KelpOverlay({
     };
   }, [map]);
 
-  // SPG topology — recomputed only when membership, tension or the
-  // connectivity option change.
+  /**
+   * Build a station-index → global-routing-row map so per-set SPG can
+   * slice into the precomputed pairwise matrix. Independent of map view
+   * so it only changes when the routing object itself changes.
+   */
+  const routingIndexByStationId = useMemo<Map<number, number> | null>(() => {
+    if (!routing) return null;
+    const m = new Map<number, number>();
+    for (let i = 0; i < routing.stationIndices.length; i += 1) {
+      m.set(routing.stationIndices[i], i);
+    }
+    return m;
+  }, [routing]);
+
+  // SPG topology — recomputed when membership, tension, connectivity option,
+  // or distance threshold change. When waterway routing is available we use
+  // waterway distance + mileage threshold; otherwise we fall back to
+  // Euclidean SPG over screen-pixel positions.
   const topologies = useMemo<SetTopology[]>(() => {
     const t = tensionToT(tension);
+    const maxMeters = Number.isFinite(maxDistanceMiles)
+      ? maxDistanceMiles * METERS_PER_MILE
+      : Infinity;
+
     return sets.map((set) => {
-      const order = set.stationIndices.filter((index) => lngLatByIndex.has(index));
+      // Filter to stations whose coordinates have actually loaded. When
+      // routing is available we additionally drop stations that failed to
+      // snap to the mesh (their global row exists but distances are all
+      // Infinity, so they'd be filtered anyway — explicit drop keeps the
+      // pixel point list and the matrix indices aligned).
+      const order = set.stationIndices.filter((index) => {
+        if (!lngLatByIndex.has(index)) return false;
+        if (routing && routingIndexByStationId) {
+          const gIdx = routingIndexByStationId.get(index);
+          if (gIdx === undefined) return false;
+          if (routing.nodeIndex[gIdx] < 0) return false;
+        }
+        return true;
+      });
+
       const points: KelpPoint[] = order.map((index) => {
         const [lng, lat] = lngLatByIndex.get(index)!;
         const projected = map.project([lng, lat]);
         return { id: index, x: projected.x, y: projected.y };
       });
+
+      if (routing && routingIndexByStationId) {
+        const n = order.length;
+        // Per-set sub-distance-matrix, sliced from the global routing table.
+        const subMatrix: number[][] = Array.from({ length: n }, () =>
+          new Array<number>(n).fill(Infinity),
+        );
+        for (let i = 0; i < n; i += 1) subMatrix[i][i] = 0;
+        const globalIdx = order.map((stationId) => routingIndexByStationId.get(stationId)!);
+        for (let i = 0; i < n; i += 1) {
+          for (let j = i + 1; j < n; j += 1) {
+            const d = routing.distanceMeters[globalIdx[i]][globalIdx[j]];
+            subMatrix[i][j] = d;
+            subMatrix[j][i] = d;
+          }
+        }
+
+        const { edges, componentCount } = computeSPGFromDistanceMatrix(
+          points,
+          subMatrix,
+          t,
+          { ensureConnected, maxDistanceMeters: maxMeters },
+        );
+
+        // Attach the lng/lat polyline that the rasterizer + graph renderer
+        // need. Every kept edge has a finite weight by construction, so
+        // `path[i][j]` is guaranteed to be defined.
+        const edgesWithPaths: SpgEdge[] = edges.map((edge) => ({
+          ...edge,
+          path: routing.path[globalIdx[edge.u]][globalIdx[edge.v]],
+        }));
+
+        return { set, order, edges: edgesWithPaths, componentCount };
+      }
+
+      // Fallback: original straight-line Euclidean SPG.
       const { edges, componentCount } = computeSPG(points, t, { ensureConnected });
       return { set, order, edges, componentCount };
     });
-  }, [sets, tension, ensureConnected, lngLatByIndex, map]);
+  }, [
+    sets,
+    tension,
+    ensureConnected,
+    lngLatByIndex,
+    map,
+    routing,
+    routingIndexByStationId,
+    maxDistanceMiles,
+  ]);
 
   // Surface per-set connectivity diagnostics to the dev controls.
   useEffect(() => {
@@ -146,6 +257,26 @@ export default function KelpOverlay({
       const [lng, lat] = lngLatByIndex.get(index)!;
       const projected = map.project([lng, lat]);
       return { id: index, x: projected.x, y: projected.y };
+    });
+
+  /**
+   * Project a topology's SPG edges to overlay-pixel polylines.
+   * Each waterway-routed edge follows its precomputed lng/lat path; a
+   * straight-line fallback edge becomes a 2-vertex polyline so the
+   * rasterizer's per-segment loop still works without a special case.
+   */
+  const projectEdges = (points: KelpPoint[], edges: SpgEdge[]): ProjectedEdge[] =>
+    edges.map((edge) => {
+      if (edge.path && edge.path.length >= 2) {
+        const polyline: [number, number][] = edge.path.map(([lng, lat]) => {
+          const p = map.project([lng, lat]);
+          return [p.x, p.y];
+        });
+        return { polyline };
+      }
+      const a = points[edge.u];
+      const b = points[edge.v];
+      return { polyline: [[a.x, a.y], [b.x, b.y]] };
     });
 
   // Full fused render when the map is settled.
@@ -170,7 +301,8 @@ export default function KelpOverlay({
       for (const topology of topologies) {
         if (!topology.set.visible || topology.order.length === 0) continue;
         const points = projectPoints(topology.order);
-        const field = rasterizeSetField({ points, edges: topology.edges }, cfg);
+        const projected = projectEdges(points, topology.edges);
+        const field = rasterizeSetField({ points, edges: projected }, cfg);
         next.set(topology.set.setId, fieldToPath(field, cfg));
       }
       setFusedPaths(next);
@@ -188,7 +320,7 @@ export default function KelpOverlay({
     });
 
     return () => cancelAnimationFrame(handle);
-    // projectPoints is stable enough; deps below cover every input.
+    // projectPoints / projectEdges are stable enough; deps below cover every input.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMoving, size.width, size.height, tension, topologies]);
 
@@ -213,25 +345,20 @@ export default function KelpOverlay({
           if (!set.visible || topology.order.length === 0) return null;
 
           if (renderMode === 'graph') {
-            // Dev view: raw shortest-path graph — thin edges + station dots.
+            // Dev view: raw shortest-path graph — thin polylines + station dots.
             const points = projectPoints(topology.order);
+            const projected = projectEdges(points, topology.edges);
             return (
               <g key={set.setId}>
-                {topology.edges.map((edge, i) => {
-                  const a = points[edge.u];
-                  const b = points[edge.v];
-                  return (
-                    <line
-                      key={i}
-                      x1={a.x}
-                      y1={a.y}
-                      x2={b.x}
-                      y2={b.y}
-                      stroke={set.color}
-                      strokeWidth={1.5}
-                    />
-                  );
-                })}
+                {projected.map((edge, i) => (
+                  <polyline
+                    key={i}
+                    points={edge.polyline.map(([x, y]) => `${x},${y}`).join(' ')}
+                    fill="none"
+                    stroke={set.color}
+                    strokeWidth={1.5}
+                  />
+                ))}
                 {points.map((p) => (
                   <circle
                     key={p.id}
@@ -250,27 +377,26 @@ export default function KelpOverlay({
           const path = fusedPaths.get(set.setId);
 
           if (!path) {
-            // First-load fallback: no contour rasterized yet.
+            // First-load fallback: no contour rasterized yet. Render the SPG
+            // skeleton as thick rounded strokes so the boundary "shape" is
+            // visible immediately, then swap to the smoothed contour once
+            // rasterization completes on the next 'idle'.
             const points = projectPoints(topology.order);
+            const projected = projectEdges(points, topology.edges);
             return (
               <g key={set.setId}>
-                {topology.edges.map((edge, i) => {
-                  const a = points[edge.u];
-                  const b = points[edge.v];
-                  return (
-                    <line
-                      key={i}
-                      x1={a.x}
-                      y1={a.y}
-                      x2={b.x}
-                      y2={b.y}
-                      stroke={set.color}
-                      strokeWidth={tensionToThickness(tension) * 1.4}
-                      strokeLinecap="round"
-                      opacity={set.opacity * 0.85}
-                    />
-                  );
-                })}
+                {projected.map((edge, i) => (
+                  <polyline
+                    key={i}
+                    points={edge.polyline.map(([x, y]) => `${x},${y}`).join(' ')}
+                    fill="none"
+                    stroke={set.color}
+                    strokeWidth={tensionToThickness(tension) * 1.4}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity={set.opacity * 0.85}
+                  />
+                ))}
                 {points.map((p) => (
                   <circle
                     key={p.id}

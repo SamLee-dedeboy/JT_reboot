@@ -1,5 +1,6 @@
-// Control panel for the KelpFusion overlay: tension slider, per-set legend,
-// and developer toggles for inspecting the algorithm.
+// Control panel for the KelpFusion overlay: tension slider, max-waterway-
+// distance threshold, per-set legend, and developer toggles for inspecting
+// the algorithm.
 
 import type { ReactNode } from 'react';
 import { Box, Slider, Switch, Typography } from '@mui/material';
@@ -16,6 +17,13 @@ interface KelpControlsProps {
   onRenderModeChange: (mode: KelpRenderMode) => void;
   ensureConnected: boolean;
   onEnsureConnectedChange: (value: boolean) => void;
+  /** Max waterway distance between two connected stations, in miles. */
+  maxDistanceMiles: number;
+  onMaxDistanceMilesChange: (value: number) => void;
+  /** True when the channel-centerline mesh + pairwise routing finished loading. */
+  routingReady: boolean;
+  /** Station indices that could not be snapped to the mesh within tolerance. */
+  unsnappedStationIndices: number[];
   stats: SetStat[];
 }
 
@@ -70,6 +78,30 @@ function SectionLabel({ children }: { children: ReactNode }) {
 
 const dividerSx = { my: 1.5, borderTop: '1px solid rgba(255, 255, 255, 0.09)' } as const;
 
+const warningChipSx = {
+  display: 'inline-block',
+  mt: 0.5,
+  px: 0.85,
+  py: 0.25,
+  borderRadius: 1,
+  fontSize: 10.5,
+  fontWeight: 600,
+  backgroundColor: 'rgba(247, 124, 59, 0.18)',
+  border: '1px solid rgba(247, 124, 59, 0.55)',
+  color: '#ffb892',
+} as const;
+
+const statusChipSx = {
+  display: 'inline-block',
+  mt: 0.5,
+  px: 0.85,
+  py: 0.25,
+  borderRadius: 1,
+  fontSize: 10.5,
+  fontWeight: 600,
+  letterSpacing: '0.03em',
+} as const;
+
 export default function KelpControls({
   tension,
   onTensionChange,
@@ -79,6 +111,10 @@ export default function KelpControls({
   onRenderModeChange,
   ensureConnected,
   onEnsureConnectedChange,
+  maxDistanceMiles,
+  onMaxDistanceMilesChange,
+  routingReady,
+  unsnappedStationIndices,
   stats,
 }: KelpControlsProps) {
   const componentCountById = new Map(stats.map((stat) => [stat.setId, stat.componentCount]));
@@ -110,11 +146,58 @@ export default function KelpControls({
 
       <Box sx={dividerSx} />
 
+      {/* Max waterway distance — controls when two stations stay connected. */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <SectionLabel>Max waterway distance</SectionLabel>
+        <Typography
+          sx={{ fontSize: 12, fontWeight: 700, color: '#9be870', fontVariantNumeric: 'tabular-nums' }}
+        >
+          {maxDistanceMiles.toFixed(1)} mi
+        </Typography>
+      </Box>
+      <Slider
+        size="small"
+        min={0.5}
+        max={30}
+        step={0.5}
+        value={maxDistanceMiles}
+        onChange={(_, value) => onMaxDistanceMilesChange(value as number)}
+        disabled={!routingReady}
+        sx={{ color: 'brand.primaryGreen' }}
+      />
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography sx={{ fontSize: 10.5, color: mutedTextColor }}>0.5 mi</Typography>
+        <Typography sx={{ fontSize: 10.5, color: mutedTextColor }}>30 mi</Typography>
+      </Box>
+      {!routingReady && (
+        <Box
+          sx={{
+            ...statusChipSx,
+            backgroundColor: 'rgba(255, 255, 255, 0.06)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            color: mutedTextColor,
+          }}
+        >
+          loading waterway mesh…
+        </Box>
+      )}
+      {routingReady && unsnappedStationIndices.length > 0 && (
+        <Box sx={warningChipSx}>
+          {unsnappedStationIndices.length} station
+          {unsnappedStationIndices.length === 1 ? '' : 's'} off-mesh: #
+          {unsnappedStationIndices.slice(0, 6).join(', #')}
+          {unsnappedStationIndices.length > 6 ? '…' : ''}
+        </Box>
+      )}
+
+      <Box sx={dividerSx} />
+
       {/* Vulnerability sets */}
       <SectionLabel>Vulnerability Sets</SectionLabel>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
         {sets.map((set) => {
           const groups = componentCountById.get(set.setId);
+          const isSplit = (groups ?? 0) > 1;
           return (
             <Box
               key={set.setId}
@@ -145,7 +228,13 @@ export default function KelpControls({
                   {set.label}
                 </Typography>
                 <Typography
-                  sx={{ fontSize: 11, color: mutedTextColor, flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
+                  sx={{
+                    fontSize: 11,
+                    color: isSplit ? '#ffb892' : mutedTextColor,
+                    flexShrink: 0,
+                    fontVariantNumeric: 'tabular-nums',
+                    fontWeight: isSplit ? 700 : 400,
+                  }}
                 >
                   {set.stationIndices.length} pts · {groups ?? '–'} grp
                 </Typography>
