@@ -2,8 +2,8 @@
 // distance threshold, per-set legend, and developer toggles for inspecting
 // the algorithm.
 
-import type { ReactNode } from 'react';
-import { Box, Slider, Switch, Typography } from '@mui/material';
+import { useState, type ReactNode } from 'react';
+import { Box, IconButton, Slider, Switch, Tooltip, Typography } from '@mui/material';
 import { tensionToT } from '../../../lib/kelp/tension';
 import type { KelpSet, SetStat } from '../../../lib/kelp/types';
 import type { KelpRenderMode } from './KelpOverlay';
@@ -36,14 +36,16 @@ interface KelpControlsProps {
 // `cssVariables: true` resolution checks out for these tokens. Possible
 // remaining suspects: MUI Typography variant defaults, a stale Vite/HMR
 // cache, or screenshot color compression. Revisit if it still reads dim.
+// Host pages can override the top anchor by setting `--kelp-controls-top` on
+// an ancestor (e.g. the Playground tab uses this to sit below its tab strip).
 const panelSx = {
   position: 'absolute',
-  top: 12,
+  top: 'var(--kelp-controls-top, 12px)',
   right: 12,
   zIndex: 30,
   pointerEvents: 'auto',
   width: 264,
-  maxHeight: 'calc(100% - 24px)',
+  maxHeight: 'calc(100% - var(--kelp-controls-top, 12px) - 12px)',
   overflowY: 'auto',
   p: 1.75,
   borderRadius: 2,
@@ -53,6 +55,36 @@ const panelSx = {
   border: '1px solid rgba(126, 217, 87, 0.35)',
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
   color: '#ffffff',
+} as const;
+
+const collapsedSx = {
+  position: 'absolute',
+  top: 'var(--kelp-controls-top, 12px)',
+  right: 12,
+  zIndex: 30,
+  pointerEvents: 'auto',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 0.75,
+  px: 1.25,
+  py: 0.75,
+  borderRadius: 2,
+  backgroundColor: 'rgba(13, 15, 17, 0.97)',
+  backdropFilter: 'blur(6px)',
+  border: '1px solid rgba(126, 217, 87, 0.35)',
+  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
+  color: '#ffffff',
+  cursor: 'pointer',
+  userSelect: 'none',
+  '&:hover': {
+    backgroundColor: 'rgba(20, 24, 27, 0.98)',
+  },
+} as const;
+
+const collapseBtnSx = {
+  color: '#9be870',
+  p: 0.25,
+  '&:hover': { backgroundColor: 'rgba(155, 232, 112, 0.12)' },
 } as const;
 
 // Muted-but-legible color for secondary labels (slider end caps, counts, etc.).
@@ -118,9 +150,66 @@ export default function KelpControls({
   stats,
 }: KelpControlsProps) {
   const componentCountById = new Map(stats.map((stat) => [stat.setId, stat.componentCount]));
+  const [collapsed, setCollapsed] = useState(false);
+
+  if (collapsed) {
+    return (
+      <Box sx={collapsedSx} onClick={() => setCollapsed(false)} role="button" tabIndex={0}>
+        <Typography
+          sx={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: '#9be870',
+          }}
+        >
+          Kelp Controls
+        </Typography>
+        <Tooltip title="Show controls" placement="left">
+          <IconButton size="small" sx={collapseBtnSx} aria-label="Show kelp controls">
+            {/* Chevron-left glyph — purely decorative; click target is the wrapper. */}
+            <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>‹</span>
+          </IconButton>
+        </Tooltip>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={panelSx}>
+      {/* Header with collapse toggle */}
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          mb: 0.75,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: '#9be870',
+          }}
+        >
+          Kelp Controls
+        </Typography>
+        <Tooltip title="Hide controls" placement="left">
+          <IconButton
+            size="small"
+            sx={collapseBtnSx}
+            aria-label="Hide kelp controls"
+            onClick={() => setCollapsed(true)}
+          >
+            <span aria-hidden style={{ fontSize: 16, lineHeight: 1 }}>›</span>
+          </IconButton>
+        </Tooltip>
+      </Box>
+
       {/* Tension */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <SectionLabel>Tension</SectionLabel>

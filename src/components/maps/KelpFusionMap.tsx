@@ -49,7 +49,23 @@ const containerStyle = { position: 'relative', width: '100%', height: '100%' } a
 /** Slider default for the max waterway-distance threshold. */
 const DEFAULT_MAX_DISTANCE_MILES = 10;
 
-export default function KelpFusionMap() {
+interface KelpFusionMapProps {
+  /**
+   * Optional caller-supplied vulnerability sets. When provided, the map
+   * skips the built-in fetch of `water_quality_run15.json` and renders these
+   * sets directly. Use this to drive the overlay from live UI state (e.g.
+   * threshold sliders) instead of a static dataset.
+   *
+   * Note: opacity/visible are controlled by KelpControls after mount, so the
+   * caller's values are only used as initial defaults. Identity of `sets` is
+   * what triggers a refresh — pass a stable reference for stable behavior.
+   */
+  externalSets?: KelpSet[] | null;
+  /** Hide the overlay entirely without unmounting the map. */
+  hidden?: boolean;
+}
+
+export default function KelpFusionMap({ externalSets = null, hidden = false }: KelpFusionMapProps = {}) {
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null);
   const [tension, setTension] = useState(0.4);
@@ -63,7 +79,10 @@ export default function KelpFusionMap() {
   const stationCoords = useStationCoords(mapObj);
 
   // Build one set per vulnerability group from the water-quality data.
+  // Skipped when the caller passes `externalSets` — that path drives the
+  // overlay from live UI state instead.
   useEffect(() => {
+    if (externalSets) return;
     let isMounted = true;
 
     async function loadSets() {
@@ -106,7 +125,26 @@ export default function KelpFusionMap() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [externalSets]);
+
+  // External-sets path: mirror the caller's sets into local state, preserving
+  // user-edited visible/opacity per set across updates so toggling a checkbox
+  // doesn't get reset every time the threshold slider tweaks membership.
+  useEffect(() => {
+    if (!externalSets) return;
+    setSets((current) => {
+      const prevById = new Map(current.map((s) => [s.setId, s]));
+      return externalSets.map((incoming) => {
+        const prev = prevById.get(incoming.setId);
+        if (!prev) return incoming;
+        return {
+          ...incoming,
+          visible: prev.visible,
+          opacity: prev.opacity,
+        };
+      });
+    });
+  }, [externalSets]);
 
   // Load the channel-centerline mesh once and build the routing graph.
   // Failure is non-fatal: the overlay falls back to straight-line SPG.
@@ -170,7 +208,7 @@ export default function KelpFusionMap() {
   }
 
   return (
-    <div style={containerStyle}>
+    <div style={{ ...containerStyle, display: hidden ? 'none' : 'block' }}>
       <MapGL
         initialViewState={{ longitude: -121.95, latitude: 37.95, zoom: 9.5 }}
         mapStyle="mapbox://styles/justtransition/cmo0kote1006j01st023g37ga"
