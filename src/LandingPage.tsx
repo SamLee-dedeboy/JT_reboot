@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Box, Button, Container, useTheme } from '@mui/material'
+import { Box, Button, Container, Typography, useTheme } from '@mui/material'
 import Navbar from './components/Navbar'
 import HeroMap from './components/maps/HeroMap.tsx'
 import Footer from './components/Footer'
@@ -22,6 +22,25 @@ function LandingPage() {
               <Button component={Link} to="/pages/adaptation-scenarios" variant="contained" color="primary">
                 View Adaptation Scenarios
               </Button>
+            </Box>
+          </Container>
+        </Box>
+
+        <Box component="section" sx={{ bgcolor: 'brand.base', color: 'common.white', py: theme.jtSpacing.section.md }}>
+          <Container>
+            <Typography variant="h2" component="h2" sx={{ color: 'primary.main', mb: theme.jtSpacing.component.sm }}>
+              What If?
+            </Typography>
+            <Box
+              component="blockquote"
+              sx={{ m: 0, pl: theme.jtSpacing.component.md, borderLeft: 4, borderColor: 'primary.main', typography: 'body1', lineHeight: 1.8 }}
+            >
+              What if we considered a wide range of future scenarios for equitable water management
+              in the Delta, under a shifting climate of uncertainty? What would these scenarios look
+              like? How might these scenarios compare amongst the many social and ecological factors
+              at play? What potential benefits and tradeoffs would need to be considered in each of
+              these futures? How might these adaptation scenarios support a framework for Just
+              Transitions in the Delta?
             </Box>
           </Container>
         </Box>
