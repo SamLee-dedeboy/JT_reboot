@@ -17,7 +17,7 @@ export default function ContactUs() {
       </Typography>
 
       <Typography variant="h2" component="h2">Send a Message</Typography>
-      <Box component="form" className="contact-form" onSubmit={(e) => e.preventDefault()}>
+      <Box component="form" sx={{ maxWidth: 500, mt: 2 }} onSubmit={(e) => e.preventDefault()}>
         <Stack spacing={2}>
           <TextField label="Your Name" />
           <TextField label="Your Email" type="email" />

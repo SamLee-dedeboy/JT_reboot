@@ -1,31 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Nunito+Sans:opsz,wght@6..12,200..900&display=swap');
 
 :root {
-  /* Primary Colors */
-  --color-dark-blue: #253439;
-  --color-mid-blue: #51a2bd;
-  --color-accent-green: #7ed957;
-  --color-white: #ffffff;
-  --color-light-gray: #f5f5f5;
-  --color-text-dark: #1a1a1a;
-  --color-text-light: #e0e0e0;
-
-  /* Secondary Colors */
-  --color-cyan: #1ecaee;
-  --color-rust: #cb531b;
-  --color-green: #0ec006;
-  --color-purple: #a263ff;
-  --color-gold: #bfa400;
-  --color-pink: #f64c79;
-
-  /* Gradient stops (blue → green) for section titles */
-  --gradient-title: linear-gradient(90deg, #91a2bd, #57aeae, #5eb2a0, #60c138, #64ba9f, #7bd966, #7ed957);
-
-  /* Fonts */
+  /* Font families — referenced by out-of-scope CSS (Playground.css, GanttChart.css).
+     All other design tokens (colors, spacing, type) live in the MUI theme. */
   --font-heading: 'Hammersmith One', sans-serif;
   --font-body: 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
-
-  --max-width: 1200px;
 }
 
 *,
@@ -38,18 +17,6 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-body);
-  color: var(--color-text-dark);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  line-height: 1.2;
 }
 
 a {
@@ -65,10 +32,4 @@ img {
 
 ul {
   list-style: none;
-}
-
-.container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 2rem;
 }

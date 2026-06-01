@@ -14,7 +14,7 @@ function LandingPage() {
   return (
     <>
       <Navbar />
-      <main className="landing-main">
+      <main>
         <HeroMap />
         <Box sx={{ bgcolor: '#222f34', py: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md } }}>
           <Container>

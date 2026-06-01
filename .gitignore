@@ -24,3 +24,13 @@ dist-ssr
 *.sw?
 *.pdf
 note
+
+# Claude Code local config
+.claude/
+
+# Python virtual environments
+.venv*/
+venv/
+
+AGENTS.md
+ashley_paper_figure/
