@@ -25,12 +25,17 @@ dist-ssr
 *.pdf
 note
 
-# Claude Code local config
+# Local Claude Code state (settings + worktrees)
 .claude/
-
-# Python virtual environments
-.venv*/
-venv/
 
 AGENTS.md
 ashley_paper_figure/
+
+# Python tooling for scripts/ (e.g. scripts/extract_centerlines.py).
+# The scripts themselves are tracked; the venv and bytecode caches are not.
+.venv/
+.venv-*/
+venv/
+__pycache__/
+*.pyc
+*.pyo
