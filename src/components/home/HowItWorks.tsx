@@ -1,0 +1,91 @@
+import { Box, Button, Typography } from '@mui/material';
+import Section from '../common/Section';
+import SectionHead from '../common/SectionHead';
+import Reveal from '../common/Reveal';
+import Icon from '../common/Icon';
+import { assetUrl } from '../../utils/baseUrl';
+import { WORKS_LEDE, WORKS_STEPS, WORKS_OUTRO } from '../../data/homeContent';
+
+export default function HowItWorks() {
+  return (
+    <Section id="works" bg="base.600">
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 7fr' }, gap: { xs: '1.6rem', md: '2.25rem' }, alignItems: 'center' }}>
+        <Reveal delay={0.08} sx={{ maxWidth: { xs: 460, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
+          <Box
+            component="img"
+            src={assetUrl('/images/workshop-session.jpg')}
+            alt="Community workshop session"
+            sx={{
+              width: '100%',
+              aspectRatio: '5 / 4',
+              objectFit: 'cover',
+              borderRadius: 'var(--mui-shape-borderRadius)',
+              border: '1px solid rgba(155,162,164,0.2)',
+              display: 'block',
+            }}
+          />
+        </Reveal>
+        <Box>
+          <SectionHead eyebrow="The Project" title="How Our Project Works" />
+          <Reveal delay={0.06}>
+            <Typography variant="body1" sx={{ mb: '1.6rem' }}>{WORKS_LEDE}</Typography>
+          </Reveal>
+          <Reveal delay={0.12} sx={{ mb: '2rem' }}>
+            <Typography variant="body2" sx={{ mb: '0.9rem' }}>Through&hellip;</Typography>
+            <Box
+              component="ul"
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                gap: '0.9rem 1.4rem',
+                listStyle: 'none',
+                p: 0,
+                m: 0,
+                mb: '1rem',
+              }}
+            >
+              {WORKS_STEPS.map((s, n) => (
+                <Box component="li" key={n} sx={{ position: 'relative', pl: '2.6rem', fontSize: '1.08rem', lineHeight: 1.4, alignSelf: 'start' }}>
+                  <Box
+                    component="span"
+                    sx={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      fontFamily: 'var(--font-heading)',
+                      fontSize: '0.9rem',
+                      letterSpacing: '0.08em',
+                      color: 'primary.main',
+                      border: '1px solid rgba(126,217,87,0.4)',
+                      borderRadius: '999px',
+                      width: '1.9rem',
+                      height: '1.9rem',
+                      display: 'grid',
+                      placeItems: 'center',
+                    }}
+                  >
+                    {String(n + 1).padStart(2, '0')}
+                  </Box>
+                  {s}
+                </Box>
+              ))}
+            </Box>
+            <Typography variant="body2">{WORKS_OUTRO}</Typography>
+          </Reveal>
+          <Reveal delay={0.18} sx={{ mt: '0.5rem' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled
+              title="Coming soon"
+              endIcon={<Icon name="arrow-right" size={18} />}
+            >
+              View Adaptation Scenarios
+            </Button>
+            <Typography variant="body2" sx={{ mt: 1, opacity: 0.6 }}>Adaptation Scenarios — coming soon.</Typography>
+          </Reveal>
+        </Box>
+      </Box>
+    </Section>
+  );
+}

@@ -4,8 +4,10 @@ import type { Map as MapboxMap } from 'mapbox-gl'
 import { useTheme } from '@mui/material'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { motion } from 'framer-motion'
-import { Box, Typography } from '@mui/material'
+import { Box, Button, Typography } from '@mui/material'
 import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowDownRounded'
+import Eyebrow from '../common/Eyebrow'
+import { HERO } from '../../data/homeContent'
 
 const mapContainerStyle = { position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' } as const
 const mapStyle = { width: '100%', height: '100%' } as const
@@ -152,7 +154,7 @@ export default function HeroMap() {
   }, [mapObj])
 
   return (
-    <Box component="section" sx={{ position: 'relative', width: '100%', height: '90vh' }}>
+    <Box component="section" id="top" sx={{ position: 'relative', width: '100%', height: '90vh' }}>
       <Box sx={mapContainerStyle}>
         <Map
           initialViewState={{
@@ -223,21 +225,27 @@ export default function HeroMap() {
           borderRadius: theme.shape.borderRadius,
           maxWidth: { xs: '92%', md: '55%' },
           boxSizing: 'border-box',
-          maxHeight: { xs: '45vh', md: '35vh' },
-          overflow: 'auto',
           overflowWrap: 'anywhere',
           wordBreak: 'break-word',
         }}
       >
-        <Typography variant="h1">
-          Just Transitions in the Delta
+        <Eyebrow sx={{ mb: theme.jtSpacing.component.sm, textShadow: '0 1px 8px rgba(16,22,24,0.6)' }}>
+          {HERO.eyebrow}
+        </Eyebrow>
+        <Typography variant="h1" sx={{ maxWidth: '16ch', textShadow: '0 2px 30px rgba(16,22,24,0.5)' }}>
+          {HERO.titleLine1}<br />{HERO.titleLine2}
         </Typography>
         <Typography
           variant="h4"
-          sx={{ mt: theme.jtSpacing.component.xs, textTransform: 'none', fontFamily: '"Nunito Sans", "Helvetica Neue", Arial, sans-serif' }}
+          sx={{ mt: theme.jtSpacing.component.sm, maxWidth: '46ch', textTransform: 'none', fontFamily: '"Nunito Sans", "Helvetica Neue", Arial, sans-serif', color: 'rgba(242,240,239,0.92)' }}
         >
-          Envisioning adaptation strategies in the Sacramento–San Joaquin Delta under conditions of drought, salinity, and sea-level rise
+          {HERO.lede}
         </Typography>
+        <Box sx={{ mt: theme.jtSpacing.component.md, display: 'flex', flexWrap: 'wrap', gap: theme.jtSpacing.gap.sm }}>
+          <Button href="#approach" variant="outlined" color="primary">
+            Our Approach
+          </Button>
+        </Box>
       </Box>
     </Box>
   )

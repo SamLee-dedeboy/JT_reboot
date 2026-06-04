@@ -34,6 +34,8 @@ export const palette = {
     900: "#101618",
   },
   surface:  "rgba(81, 93, 97, 0.3)", // 400 with 30% opacity, can be used for cards and surfaces
+  surfaceStrong: "rgba(81, 93, 97, 0.45)", // card hover fill
+  footerBg: "#343c40",
 }
 
 /* 

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptation Scenarios — Choose a Direction</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="scenarios/scenarios.css" />
+  <style>
+    .chooser-head { padding: 1.2rem 0; border-bottom: 1px solid rgba(155,162,164,0.14); background: var(--base-500); position: sticky; top: 0; z-index: 20; }
+    .chooser-head .container { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .ch-hero { padding-block: 3.6rem 1rem; }
+    .ch-hero .page-lede { margin-top: 1.1rem; }
+
+    /* CSS layout thumbnails */
+    .thumb { position: absolute; inset: 14px; display: flex; gap: 8px; }
+    .thumb .col { display: flex; flex-direction: column; gap: 8px; }
+    .tb { background: var(--surface); border: 1px solid rgba(155,162,164,0.2); border-radius: 5px; }
+    .tb.green { border-color: rgba(126,217,87,0.5); background: rgba(126,217,87,0.1); }
+    .tb.blue { border-color: rgba(81,162,189,0.5); background: rgba(81,162,189,0.12); }
+    /* Matrix */
+    .t-matrix { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); grid-auto-rows: 1fr; gap: 6px; inset: 16px; }
+    .t-matrix .hd { background: var(--base-700); border: 1px solid rgba(155,162,164,0.22); border-radius: 4px; }
+    .t-matrix .cl { background: rgba(20,29,31,0.5); border: 1px solid rgba(155,162,164,0.12); border-radius: 4px; }
+    /* Gallery */
+    .t-gal { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; inset: 16px; }
+    .t-gal .gc { background: var(--surface); border: 1px solid rgba(155,162,164,0.2); border-radius: 6px; display: flex; flex-direction: column; }
+    .t-gal .gc .im { height: 38%; background: rgba(81,162,189,0.16); border-bottom: 1px solid rgba(155,162,164,0.2); border-radius: 6px 6px 0 0; }
+    /* Explorer */
+    .t-exp .map { flex: 1.3; background: rgba(81,162,189,0.14); border: 1px solid rgba(81,162,189,0.4); border-radius: 6px; position: relative; }
+    .t-exp .map::after { content: ''; position: absolute; left: 55%; top: 8%; bottom: 8%; width: 2px; background: var(--brand-green); }
+    .t-exp .pan { flex: 1; background: var(--surface); border: 1px solid rgba(155,162,164,0.2); border-radius: 6px; }
+    /* Narrative */
+    .t-narr { flex-direction: column; gap: 10px; }
+    .t-narr .rowx { flex: 1; display: flex; gap: 10px; }
+    .t-narr .rowx .tx { flex: 1.3; background: var(--surface); border: 1px solid rgba(155,162,164,0.2); border-radius: 6px; }
+    .t-narr .rowx .mp { flex: 1; background: rgba(126,217,87,0.1); border: 1px solid rgba(126,217,87,0.4); border-radius: 6px; }
+    .t-narr .rowx.r .tx { order: 2; }
+  </style>
+</head>
+<body>
+  <template id="__bundler_thumbnail" data-bg-color="#253439">
+    <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+      <rect width="1200" height="800" fill="#253439" />
+      <g fill="none" stroke="#7ed957" stroke-width="14">
+        <rect x="360" y="290" width="220" height="100" rx="10" />
+        <rect x="620" y="290" width="220" height="100" rx="10" />
+        <rect x="360" y="410" width="220" height="100" rx="10" />
+        <rect x="620" y="410" width="220" height="100" rx="10" />
+      </g>
+    </svg>
+  </template>
+  <header class="chooser-head">
+    <div class="container">
+      <a class="wordmark" href="Just Transitions Homepage.html" aria-label="Just Transitions in the Delta — home">
+        <span class="wordmark-line">Just Transitions</span>
+        <span class="wordmark-line">in the Delta</span>
+        <span class="wordmark-sub">Drought, salinity, and sea-level rise</span>
+      </a>
+      <a class="optswitch-all" href="Just Transitions Homepage.html">← Back to homepage</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero ch-hero">
+      <div class="container">
+        <span class="eyebrow page-eyebrow">Adaptation Scenarios · Design directions</span>
+        <h1 class="h1 page-title">Choose a direction</h1>
+        <p class="page-lede">Four ways to present the Delta’s six adaptation scenarios — all built on the same data and schematic maps, each foregrounding the tradeoff comparison differently. Open any one to explore the full page; switch between them from the bar at the top.</p>
+        <p class="page-note"><span class="dot"></span>Scenario content from the Just Transitions participatory set. Tradeoff ratings &amp; salinity lines are illustrative placeholders pending model outputs.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 1.5rem;">
+      <div class="container">
+        <div class="chooser-grid">
+
+          <a class="ch-card card" href="Adaptation Scenarios - Comparison Matrix.html">
+            <div class="ch-thumb">
+              <div class="thumb t-matrix">
+                <div class="hd" style="grid-column: 1; grid-row: 1;"></div>
+                <div class="hd"></div><div class="hd"></div><div class="hd"></div><div class="hd"></div>
+                <div class="tb"></div><div class="cl"></div><div class="cl"></div><div class="cl"></div><div class="cl"></div>
+                <div class="tb"></div><div class="cl"></div><div class="cl"></div><div class="cl"></div><div class="cl"></div>
+                <div class="tb"></div><div class="cl"></div><div class="cl"></div><div class="cl"></div><div class="cl"></div>
+              </div>
+            </div>
+            <div class="ch-top">
+              <span class="ch-letter">A</span>
+              <div>
+                <div class="ch-title">Comparison Matrix</div>
+                <div class="ch-tags">Data-forward · Scan tradeoffs</div>
+              </div>
+            </div>
+            <p class="ch-desc">Scenarios as columns topped by mini salinity maps; tradeoff factors as rows. The fastest way to compare all six futures at a glance — best when comparison is the whole point.</p>
+            <span class="ch-link">Open this direction <span style="font-size:1.1em">→</span></span>
+          </a>
+
+          <a class="ch-card card" href="Adaptation Scenarios - Card Gallery.html">
+            <div class="ch-thumb">
+              <div class="thumb t-gal">
+                <div class="gc"><div class="im"></div></div>
+                <div class="gc"><div class="im"></div></div>
+                <div class="gc"><div class="im"></div></div>
+              </div>
+            </div>
+            <div class="ch-top">
+              <span class="ch-letter">B</span>
+              <div>
+                <div class="ch-title">Card Gallery</div>
+                <div class="ch-tags">Airy · Browsable</div>
+              </div>
+            </div>
+            <p class="ch-desc">A central anchor map over a grid of scenario cards, each with imagery, community rank, levers and a mini tradeoff read. Inviting and editorial — good for first-time visitors.</p>
+            <span class="ch-link">Open this direction <span style="font-size:1.1em">→</span></span>
+          </a>
+
+          <a class="ch-card card" href="Adaptation Scenarios - Map Explorer.html">
+            <div class="ch-thumb">
+              <div class="thumb t-exp">
+                <div class="map"></div>
+                <div class="col" style="flex:1; gap:8px;">
+                  <div class="pan" style="flex:1;"></div>
+                </div>
+              </div>
+            </div>
+            <div class="ch-top">
+              <span class="ch-letter">C</span>
+              <div>
+                <div class="ch-title">Map Explorer</div>
+                <div class="ch-tags">Map-central · Interactive</div>
+              </div>
+            </div>
+            <p class="ch-desc">The map leads. Pick a scenario and the salinity line moves while a detail panel updates with its levers and tradeoffs. Most immersive — best if the map is the star.</p>
+            <span class="ch-link">Open this direction <span style="font-size:1.1em">→</span></span>
+          </a>
+
+          <a class="ch-card card" href="Adaptation Scenarios - Narrative Scroll.html">
+            <div class="ch-thumb">
+              <div class="thumb t-narr">
+                <div class="rowx"><div class="tx"></div><div class="mp"></div></div>
+                <div class="rowx r"><div class="tx"></div><div class="mp"></div></div>
+              </div>
+            </div>
+            <div class="ch-top">
+              <span class="ch-letter">D</span>
+              <div>
+                <div class="ch-title">Narrative Scroll</div>
+                <div class="ch-tags">Story-led · Builds to favorite</div>
+              </div>
+            </div>
+            <p class="ch-desc">One scenario per full section, scrolling from the least-liked baseline up to the community’s most-preferred future, ending in a ranked summary. Most persuasive and memorable.</p>
+            <span class="ch-link">Open this direction <span style="font-size:1.1em">→</span></span>
+          </a>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p class="h4">Just Transitions in the Delta</p>
+        <p class="body2" style="opacity:.5;">Adaptation Scenarios — design exploration</p>
+        <a href="mailto:just.transitions@ucdavis.edu" class="footer-mail">just.transitions@ucdavis.edu</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
