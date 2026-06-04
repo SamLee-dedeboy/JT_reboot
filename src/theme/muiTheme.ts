@@ -85,7 +85,7 @@ export const jtSpacing = {
  * 3. Fonts and typography
  */
 const fontHeading= '"Hammersmith One", sans-serif';
-const fontBody = '"Nunito Sans", "Helvetica Neue", Arial, sans-serif';
+const fontBody = '"Nunito Sans", "Proxima Nova", "Helvetica Neue", Arial, sans-serif';
 
 
 /* 
@@ -238,6 +238,13 @@ const themeOptions = {
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          backgroundColor: palette.surface,
         },
       },
     },

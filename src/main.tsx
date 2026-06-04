@@ -12,6 +12,7 @@ import ProjectDocumentation from './pages/ProjectDocumentation.tsx'
 import ServiceLearning from './pages/ServiceLearning.tsx'
 import Resources from './pages/Resources.tsx'
 import Playground from './pages/Playground.tsx'
+import WaterShed from './pages/WaterShed.tsx'
 import KelpDiagram from './pages/KelpDiagram.tsx'
 import DesignSystem from './design/DesignSystem.tsx'
 import theme from './theme/muiTheme'
@@ -31,7 +32,6 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/pages/service-learning" element={<ServiceLearning />} />
           <Route path="/pages/resources" element={<Resources />} />
           <Route path="/pages/playground" element={<Playground />} />
-          <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
           <Route path="/design-system" element={<DesignSystem />} />
         </Routes>
       </BrowserRouter>

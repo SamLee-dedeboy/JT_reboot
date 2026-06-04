@@ -58,6 +58,7 @@ const navItems: NavItem[] = [
       { label: 'Design System', href: '/design-system' },
       { label: 'EJ Playground', href: '/pages/playground' },
       { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
+      { label: 'Watershed', href: '/pages/watershed' },
 
     ]
   },
