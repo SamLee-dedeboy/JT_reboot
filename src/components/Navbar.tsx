@@ -18,14 +18,15 @@ interface NavItem {
   label: string;
   href?: string;
   dropdown?: DropdownItem[];
+  /** Disabled "coming soon" item — rendered greyed out, not navigable. */
+  disabled?: boolean;
 }
 
 const navItems: NavItem[] = [
   {
+    // Adaptation Scenarios is a future phase — keep the slot but disable it.
     label: 'Scenarios',
-    dropdown: [
-      { label: 'Adaptation Scenarios', href: '/pages/adaptation-scenarios' },
-    ],
+    disabled: true,
   },
   {
     label: 'Get Involved',
@@ -95,7 +96,21 @@ export default function Navbar() {
 
           <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', pl: theme.jtSpacing.component.lg}}>
             {navItems.map((item, i) => (
-              item.href ? (
+              item.disabled ? (
+                <Button
+                  key={item.label}
+                  disabled
+                  endIcon={<Box component="span" sx={{ fontSize: '0.6rem', letterSpacing: '0.08em', opacity: 0.8 }}>SOON</Box>}
+                  title="Coming soon"
+                  sx={{
+                    minWidth: 140,
+                    whiteSpace: 'nowrap',
+                    '&.Mui-disabled': { color: 'rgba(242,240,239,0.4)' },
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ) : item.href ? (
                 <Button
                   key={item.label}
                   component={Link}
@@ -153,7 +168,12 @@ export default function Navbar() {
           <List>
             {navItems.map((item, idx) => (
               <Box key={item.label} sx={{ mb: 1 }}>
-                {item.href ? (
+                {item.disabled ? (
+                  <ListItemButton disabled sx={{ justifyContent: 'space-between' }}>
+                    <ListItemText primary={item.label} slotProps={{ primary: { sx: { color: 'rgba(242,240,239,0.4)', whiteSpace: 'nowrap' } } }} />
+                    <ListItemText primary="Coming soon" slotProps={{ primary: { sx: { color: 'rgba(242,240,239,0.4)', textAlign: 'right', fontSize: '0.75rem' } } }} />
+                  </ListItemButton>
+                ) : item.href ? (
                   <ListItemButton component={Link} to={item.href} onClick={() => setMobileOpen(false)} sx={{ color: 'common.white' }}>
                     <ListItemText primary={item.label} slotProps={{ primary: { sx: { color: 'common.white', whiteSpace: 'nowrap' } } }} />
                   </ListItemButton>
