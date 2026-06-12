@@ -56,9 +56,9 @@ function AccordionItem({ a, n, open, onToggle }: { a: Article; n: number; open: 
           color: 'common.white',
         }}
       >
-        <Box component="span" sx={{ fontFamily: 'var(--font-heading)', fontSize: '1.1rem', color: 'primary.main', letterSpacing: '0.06em', width: { xs: 'auto', sm: '2.4rem' } }}>
+        <Typography variant="numberArticle" component="span" sx={{ width: (theme) => theme.numbering.article.width }}>
           {String(n).padStart(2, '0')}
-        </Box>
+        </Typography>
         <Box sx={{ minWidth: 0 }}>
           <Box sx={{ fontSize: '1.3rem', fontWeight: 700, lineHeight: 1.3, color: 'common.white', mb: '0.4rem' }}>{a.title}</Box>
           <Box sx={{ fontSize: '0.98rem', color: 'base.200', display: 'flex', flexWrap: 'wrap', gap: '0.5rem 0.9rem' }}>

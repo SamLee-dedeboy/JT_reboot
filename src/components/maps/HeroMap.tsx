@@ -1,21 +1,27 @@
 import Map from 'react-map-gl/mapbox'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
-import { useTheme } from '@mui/material'
+import { useMediaQuery, useTheme } from '@mui/material'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { motion } from 'framer-motion'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowDownRounded'
 import Eyebrow from '../common/Eyebrow'
 import { HERO } from '../../data/homeContent'
 
 const mapContainerStyle = { position: 'relative', width: '100%', height: '100%', pointerEvents: 'none' } as const
 const mapStyle = { width: '100%', height: '100%' } as const
+const suisunBayCenter = {
+  longitude: -122.05,
+  latitude: 38.08,
+}
+const heroLede = 'Envisioning equitable futures for water management in the Sacramento-San Joaquin Delta amid drought, salinity, and'
 
 const cycleLayerIds = [
   'salinity-mockup-june-3kgk8e',
   'salinity-mockup-september-dh1h3e',
-  'salinity-mockup-october-3y2x4a',
+  'salinity-mockup-october-v2-zi-vxywcj',
+  //'salinity-mockup-october-3y2x4a',
   'salinity-mockup-april-0pn2k2',
 ]
 
@@ -41,22 +47,26 @@ const transitionPropsByLayerType: Record<string, string> = {
 
 export default function HeroMap() {
   const theme = useTheme()
+  const isSmUp = useMediaQuery(theme.breakpoints.up('sm'))
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
+  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'))
+  const isXlUp = useMediaQuery(theme.breakpoints.up('xl'))
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null)
-  const hideTimeoutsRef = useRef<number[]>([])
+  const heroViewState = {
+    ...suisunBayCenter,
+    zoom: isXlUp ? 10.25 : isLgUp ? 10 : isMdUp ? 9.75 : isSmUp ? 9.45 : 9.15,
+  }
 
   useEffect(() => {
     if (!mapObj) return
 
     let idx = 0
     let intervalId: number | undefined
+    const crossfadeMs = 1400
+    const cycleMs = 2800
 
-    const clearHideTimeouts = () => {
-      hideTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId))
-      hideTimeoutsRef.current = []
-    }
-
-    const setLayerVisibility = (layerId: string, visible: boolean) => {
+    const setLayerOpacity = (layerId: string, opacity: number) => {
       const layer = mapObj.getLayer(layerId) as { type?: string } | undefined
       if (!layer) {
         console.warn('No layer', layerId)
@@ -69,73 +79,37 @@ export default function HeroMap() {
       const typedOpacityProperty = opacityProperty as Parameters<MapboxMap['setPaintProperty']>[1]
       const typedTransitionProperty = transitionProperty as Parameters<MapboxMap['setPaintProperty']>[1]
 
-      if (visible) {
-        mapObj.setLayoutProperty(layerId, 'visibility', 'visible')
-
-        if (opacityProperty && transitionProperty) {
-          mapObj.setPaintProperty(layerId, typedTransitionProperty, {
-            duration: 1000,
-            delay: 0,
-          } as Parameters<MapboxMap['setPaintProperty']>[2])
-          mapObj.setPaintProperty(layerId, typedOpacityProperty, 0 as Parameters<MapboxMap['setPaintProperty']>[2])
-
-          window.requestAnimationFrame(() => {
-            if (mapObj.getLayer(layerId)) {
-              mapObj.setPaintProperty(layerId, typedOpacityProperty, 1 as Parameters<MapboxMap['setPaintProperty']>[2])
-            }
-          })
-        }
-
+      if (!opacityProperty || !transitionProperty) {
         return
       }
 
-      if (opacityProperty && transitionProperty) {
-        mapObj.setPaintProperty(layerId, typedTransitionProperty, {
-          duration: 1000,
-          delay: 0,
-        } as Parameters<MapboxMap['setPaintProperty']>[2])
-        mapObj.setPaintProperty(layerId, typedOpacityProperty, 0 as Parameters<MapboxMap['setPaintProperty']>[2])
-
-        const timeoutId = window.setTimeout(() => {
-          if (mapObj.getLayer(layerId)) {
-            mapObj.setLayoutProperty(layerId, 'visibility', 'none')
-          }
-        }, 1000)
-
-        hideTimeoutsRef.current.push(timeoutId)
-        return
-      }
-
-      mapObj.setLayoutProperty(layerId, 'visibility', 'none')
+      mapObj.setLayoutProperty(layerId, 'visibility', 'visible')
+      mapObj.setPaintProperty(layerId, typedTransitionProperty, {
+        duration: crossfadeMs,
+        delay: 0,
+      } as Parameters<MapboxMap['setPaintProperty']>[2])
+      mapObj.setPaintProperty(layerId, typedOpacityProperty, opacity as Parameters<MapboxMap['setPaintProperty']>[2])
     }
 
-    const toggleLayers = (toShow: string[] = [], toHide: string[] = []) => {
-      const apply = () => {
-        toShow.forEach((id) => setLayerVisibility(id, true))
-        toHide.forEach((id) => setLayerVisibility(id, false))
-      }
-
-      if (!mapObj.isStyleLoaded?.()) {
-        mapObj.once('styledata', apply)
-        return
-      }
-
-      apply()
-    }
-
-    const cycle = () => {
+    const getExistingLayerIds = () => {
       const idsThatExist = cycleLayerIds.filter((id) => !!mapObj.getLayer(id))
-      if (idsThatExist.length === 0) return
+      if (idsThatExist.length === 0) {
+        console.warn('No salinity animation layers found')
+      }
 
-      const current = idsThatExist[idx % idsThatExist.length]
-      toggleLayers([current], idsThatExist.filter((id) => id !== current))
-      idx += 1
+      return idsThatExist
     }
 
     const start = () => {
-      clearHideTimeouts()
-      cycle()
-      intervalId = window.setInterval(cycle, 2000)
+      const idsThatExist = getExistingLayerIds()
+      if (idsThatExist.length === 0) return
+
+      idsThatExist.forEach((id, layerIdx) => setLayerOpacity(id, layerIdx === 0 ? 1 : 0))
+
+      intervalId = window.setInterval(() => {
+        idx = (idx + 1) % idsThatExist.length
+        idsThatExist.forEach((id, layerIdx) => setLayerOpacity(id, layerIdx === idx ? 1 : 0))
+      }, cycleMs)
     }
 
     if (!mapObj.isStyleLoaded?.()) {
@@ -148,21 +122,27 @@ export default function HeroMap() {
       if (intervalId) {
         window.clearInterval(intervalId)
       }
-      clearHideTimeouts()
       mapObj.off('styledata', start)
     }
   }, [mapObj])
+
+  useEffect(() => {
+    if (!mapObj) return
+
+    mapObj.easeTo({
+      center: [heroViewState.longitude, heroViewState.latitude],
+      zoom: heroViewState.zoom,
+      duration: 650,
+      essential: true,
+    })
+  }, [heroViewState.latitude, heroViewState.longitude, heroViewState.zoom, mapObj])
 
   return (
     <Box component="section" id="top" sx={{ position: 'relative', width: '100%', height: '90vh' }}>
       <Box sx={mapContainerStyle}>
         <Map
-          initialViewState={{
-            longitude: -121.95,
-            latitude: 38.1,
-            zoom: 10,
-          }}
-          mapStyle="mapbox://styles/justtransition/cmoxeqs5l008b01sx352zdicj"
+          initialViewState={heroViewState}
+          mapStyle="mapbox://styles/justtransition/cmqa9drzx000p01rh2s259fpn"
           mapboxAccessToken={mapboxToken}
           style={mapStyle}
           interactive={false}
@@ -173,13 +153,13 @@ export default function HeroMap() {
       <Box
         sx={{
           position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          height: '40vh',
-          zIndex: 22,
+          inset: 0,
+          zIndex: 21,
           pointerEvents: 'none',
-          background: 'radial-gradient(ellipse at center bottom, rgba(37, 52, 57, 0.96) 0%, rgba(37, 52, 57, 0.75) 34%, rgba(37, 52, 57, 0.3) 52%, rgba(37, 52, 57, 0) 70%)',
+          background: {
+            xs: 'linear-gradient(180deg, rgba(16,22,24,0.04) 0%, rgba(16,22,24,0.18) 36%, rgba(37,52,57,0.84) 100%)',
+            md: 'radial-gradient(ellipse at 22% 76%, rgba(37,52,57,0.88) 0%, rgba(37,52,57,0.64) 12%, rgba(37,52,57,0.18) 33%, rgba(37,52,57,0) 58%)',
+          },
         }}
       />
 
@@ -202,7 +182,7 @@ export default function HeroMap() {
           pointerEvents: 'none',
         }}
       >
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: theme.jtSpacing.component.xs, color: 'common.white', textShadow: '0 1px 8px rgba(0, 0, 0, 0.45)' }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, flexDirection: 'column', alignItems: 'center', gap: theme.jtSpacing.component.xs, color: 'common.white', textShadow: '0 1px 8px rgba(0, 0, 0, 0.45)' }}>
             <KeyboardDoubleArrowDownRoundedIcon sx={{ fontSize: { xs: theme.typography.h4.fontSize, md: theme.typography.h3.fontSize } }} />
             <Typography variant="button" component="span" sx={{ fontSize: { xs: theme.typography.button.fontSize, md: theme.typography.body1.fontSize }, letterSpacing: '0.18em' }}>
             Scroll
@@ -213,38 +193,65 @@ export default function HeroMap() {
       <Box
         sx={{
           position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: theme.spacing(20),
+          left: { xs: 0, sm: theme.spacing(4), md: theme.spacing(8), lg: theme.spacing(10) },
+          right: { xs: 0, sm: 'auto' },
+          bottom: { xs: theme.spacing(11), sm: theme.spacing(12), md: theme.spacing(14), lg: theme.spacing(15) },
           zIndex: 24,
           pointerEvents: 'auto',
           color: 'common.white',
-          /* avoid overriding heading font; apply Nunito only to body text below */
-          px: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.component.xl },
-          py: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
-          borderRadius: theme.shape.borderRadius,
-          maxWidth: { xs: '92%', md: '55%' },
+          width: { xs: '100%', sm: 'min(72vw, 660px)', md: 'min(68vw, 860px)', lg: 'min(72vw, 1120px)' },
+          px: { xs: theme.jtSpacing.component.md, sm: 0 },
           boxSizing: 'border-box',
-          overflowWrap: 'anywhere',
-          wordBreak: 'break-word',
         }}
       >
-        <Eyebrow sx={{ mb: theme.jtSpacing.component.sm, textShadow: '0 1px 8px rgba(16,22,24,0.6)' }}>
-          {HERO.eyebrow}
-        </Eyebrow>
-        <Typography variant="h1" sx={{ maxWidth: '16ch', textShadow: '0 2px 30px rgba(16,22,24,0.5)' }}>
-          {HERO.titleLine1}<br />{HERO.titleLine2}
-        </Typography>
-        <Typography
-          variant="h4"
-          sx={{ mt: theme.jtSpacing.component.sm, maxWidth: '46ch', textTransform: 'none', fontFamily: '"Nunito Sans", "Helvetica Neue", Arial, sans-serif', color: 'rgba(242,240,239,0.92)' }}
+        <Box
+          sx={{
+            maxWidth: { xs: '30rem', sm: '38rem', md: '52rem', lg: '68rem' },
+            mx: { xs: 'auto', sm: 0 },
+            pl: { xs: 0, md: theme.jtSpacing.component.md },
+            borderLeft: { xs: 0, md: '3px solid' },
+            borderColor: { md: 'primary.main' },
+          }}
         >
-          {HERO.lede}
-        </Typography>
-        <Box sx={{ mt: theme.jtSpacing.component.md, display: 'flex', flexWrap: 'wrap', gap: theme.jtSpacing.gap.sm }}>
-          <Button href="#approach" variant="outlined" color="primary">
-            Our Approach
-          </Button>
+          <Eyebrow sx={{ mb: { xs: 1, md: theme.jtSpacing.component.sm }, textShadow: '0 1px 8px rgba(16,22,24,0.6)' }}>
+            {HERO.eyebrow}
+          </Eyebrow>
+          <Typography
+            variant="logoHero"
+            component="h1"
+            sx={{
+              textShadow: '0 2px 30px rgba(16,22,24,0.52)',
+              textWrap: 'balance',
+            }}
+          >
+            <Box component="span" sx={{ display: 'inline-block', whiteSpace: 'nowrap' }}>
+              {HERO.titleLine1}
+            </Box>
+            <br />
+            {HERO.titleLine2}
+          </Typography>
+          <Typography
+            variant="body1"
+            component="p"
+            sx={{
+              mt: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
+              mb: 0,
+              maxWidth: { xs: 'min(100%, 35rem)', sm: '42rem', md: '54rem' },
+              color: 'rgba(242,240,239,0.92)',
+              fontSize: { xs: 'clamp(0.6rem, 2.5vw, 1.05rem)', sm: '1.16rem', md: '1.28rem' },
+              lineHeight: { xs: 1.35, md: 1.6 },
+              textShadow: '0 1px 12px rgba(16,22,24,0.58)',
+              hyphens: 'none',
+              overflowWrap: 'normal',
+              wordBreak: 'normal',
+              textWrap: 'balance',
+            }}
+          >
+            {heroLede}{' '}
+            <Box component="span" sx={{ whiteSpace: 'nowrap' }}>
+              sea-level rise.
+            </Box>
+          </Typography>
         </Box>
       </Box>
     </Box>

@@ -22,6 +22,56 @@ const contentMotion = {
   transition: { duration: 0.28, ease: 'easeOut' as const },
 };
 
+// Theme variants define the logo text identity; these local values only make
+// each navbar state fit its available space.
+const logoFit = {
+  desktopMinWidth: 360,
+  containerLineHeight: 1.05,
+  subtitleMarginTop: 0.2,
+  titleFontSize: {
+    mobile: 'clamp(1.05rem, 4vw, 1.2rem)',
+    tablet: 'clamp(1.35rem, 3vw, 1.6rem)',
+    tabletCompressed: 'clamp(1.1rem, 2.4vw, 1.25rem)',
+    desktop: { md: 'clamp(1.7rem, 2vw, 1.9rem)', lg: 'clamp(1.9rem, 1.8vw, 2.1rem)' },
+    desktopCompressed: { md: 'clamp(1.2rem, 1.6vw, 1.35rem)', lg: 'clamp(1.35rem, 1.35vw, 1.5rem)' },
+  },
+} as const;
+
+function getLogoTitleFontSize(variant: LogoVariant, compressed: boolean) {
+  if (variant === 'mobile') {
+    return logoFit.titleFontSize.mobile;
+  }
+
+  if (variant === 'tablet') {
+    return compressed ? logoFit.titleFontSize.tabletCompressed : logoFit.titleFontSize.tablet;
+  }
+
+  return compressed ? logoFit.titleFontSize.desktopCompressed : logoFit.titleFontSize.desktop;
+}
+
+function LogoTitleText({
+  children,
+  fontSize,
+  noWrap = false,
+}: {
+  children: string;
+  fontSize: ReturnType<typeof getLogoTitleFontSize>;
+  noWrap?: boolean;
+}) {
+  return (
+    <Typography
+      variant="logo"
+      component="span"
+      sx={{
+        fontSize,
+        ...(noWrap ? { whiteSpace: 'nowrap' } : {}),
+      }}
+    >
+      {children}
+    </Typography>
+  );
+}
+
 function useActiveLogoVariant(): LogoVariant {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -41,6 +91,8 @@ function useActiveLogoVariant(): LogoVariant {
 export function LogoWordmark({ variant, linkToHome = true, compressed = false }: LogoWordmarkProps) {
   const isMobile = variant === 'mobile';
   const isDesktop = variant === 'desktop';
+  const compactTitle = 'Just Transitions in the Delta';
+  const titleFontSize = getLogoTitleFontSize(variant, compressed);
   const theme = useTheme();
 
   return (
@@ -50,12 +102,12 @@ export function LogoWordmark({ variant, linkToHome = true, compressed = false }:
       sx={{
         textDecoration: 'none',
         color: 'primary.main',
-        minWidth: isDesktop ? 360 : 'auto',
+        minWidth: isDesktop ? logoFit.desktopMinWidth : 'auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
         textAlign: 'right',
-        lineHeight: 1.05,
+        lineHeight: logoFit.containerLineHeight,
         py: theme.jtSpacing.component.xs,
       }}
     >
@@ -75,18 +127,9 @@ export function LogoWordmark({ variant, linkToHome = true, compressed = false }:
               transition={contentMotion.transition}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
             >
-              <Typography
-                variant="h4"
-                component="span"
-                sx={{
-                  color: 'primary.main',
-                  textTransform: 'uppercase',
-                  fontSize: '1.2rem',
-                  lineHeight: 1,
-                }}
-              >
-                {compressed ? 'Just Transitions' : 'Just Transitions in the Delta'}
-              </Typography>
+              <LogoTitleText fontSize={titleFontSize} noWrap>
+                {compactTitle}
+              </LogoTitleText>
             </motion.div>
           ) : (
             <motion.div
@@ -97,43 +140,26 @@ export function LogoWordmark({ variant, linkToHome = true, compressed = false }:
               transition={contentMotion.transition}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
             >
-              <Typography
-                variant="h4"
-                component="span"
-                sx={{
-                  color: 'primary.main',
-                  textTransform: 'uppercase',
-                  fontSize: isDesktop ? { md: '1.9rem', lg: '2.1rem' } : '1.6rem',
-                  lineHeight: 1,
-                }}
-              >
-                Just Transitions
-              </Typography>
-              {!compressed && (
-                <Typography
-                  variant="h4"
-                  component="span"
-                  sx={{
-                    color: 'primary.main',
-                    textTransform: 'uppercase',
-                    fontSize: isDesktop ? { md: '1.9rem', lg: '2.1rem' } : '1.6rem',
-                    lineHeight: 1,
-                  }}
-                >
-                  in the Delta
-                </Typography>
+              {compressed ? (
+                <LogoTitleText fontSize={titleFontSize} noWrap>
+                  {compactTitle}
+                </LogoTitleText>
+              ) : (
+                <>
+                  <LogoTitleText fontSize={titleFontSize}>
+                    Just Transitions
+                  </LogoTitleText>
+                  <LogoTitleText fontSize={titleFontSize}>
+                    in the Delta
+                  </LogoTitleText>
+                </>
               )}
               {isDesktop && !compressed && (
                 <Typography
-                  variant="caption"
+                  variant="logoSubtitle"
                   component="span"
                   sx={{
-                    color: 'primary.main',
-                    letterSpacing: '0.02em',
-                    textTransform: 'none',
-                    fontSize: { md: '1.2rem' },
-                    lineHeight: 1.2,
-                    mt: 0.2,
+                    mt: logoFit.subtitleMarginTop,
                   }}
                 >
                   Drought, salinity, and sea-level rise

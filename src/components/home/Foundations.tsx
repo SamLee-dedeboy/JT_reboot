@@ -33,9 +33,9 @@ export default function Foundations() {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: '1.2rem' }}>
-                <Box component="span" sx={{ fontFamily: 'var(--font-heading)', fontSize: '2.4rem', color: 'rgba(242,240,239,0.18)', letterSpacing: '0.04em', lineHeight: 1 }}>
+                <Typography variant="numberGhost" component="span">
                   {f.n}
-                </Box>
+                </Typography>
                 <Icon name={f.icon} size={28} stroke="var(--mui-palette-primary-main)" />
               </Box>
               <Typography variant="h3" component="h3" sx={{ mb: '1rem', color: 'primary.main' }}>

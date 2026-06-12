@@ -2,14 +2,44 @@ import { Box, Tooltip, Typography as MuiTypography, type TypographyProps, useThe
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { describeTypographyFontSize, type TypographyToken } from './helperUtils';
 
-const TooltipTypography = forwardRef<HTMLSpanElement, TypographyProps>(function TooltipTypography(
-  { variant = 'body2', children, ...props },
+type TooltipTypographyProps = TypographyProps & {
+  tooltipLabel?: string;
+};
+
+const TooltipTypography = forwardRef<HTMLSpanElement, TooltipTypographyProps>(function TooltipTypography(
+  { variant = 'body2', tooltipLabel, children, ...props },
   ref,
 ) {
-  const tooltipLabel = typeof variant === 'string' ? variant : 'body2';
+  const tooltipVariantLabel = tooltipLabel ?? (typeof variant === 'string' ? variant : 'body2');
 
   return (
-    <Tooltip title={tooltipLabel} arrow placement="top">
+    <Tooltip
+      arrow
+      placement="top"
+      title={
+        <Box sx={{ px: 0.3, py: 0.2 }}>
+          <Box sx={{ fontSize: '0.68rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'primary.main', lineHeight: 1.2 }}>
+            Typography Variant
+          </Box>
+          <Box sx={{ fontFamily: 'var(--font-heading)', fontSize: '0.95rem', textTransform: 'uppercase', lineHeight: 1.25 }}>
+            {tooltipVariantLabel}
+          </Box>
+        </Box>
+      }
+      slotProps={{
+        tooltip: {
+          sx: {
+            bgcolor: 'base.800',
+            color: 'common.white',
+            border: '1px solid rgba(126,217,87,0.3)',
+            boxShadow: '0 10px 28px rgba(16,22,24,0.45)',
+          },
+        },
+        arrow: {
+          sx: { color: 'base.800' },
+        },
+      }}
+    >
       <MuiTypography ref={ref} variant={variant} {...props}>
         {children}
       </MuiTypography>
@@ -20,9 +50,11 @@ const TooltipTypography = forwardRef<HTMLSpanElement, TypographyProps>(function 
 export function TypographyPreviewItem({
   label,
   variant,
+  variantName,
 }: {
   label: string;
   variant: TypographyToken;
+  variantName?: string;
 }) {
   const previewRef = useRef<HTMLDivElement | null>(null);
   const [computedFontSize, setComputedFontSize] = useState('');
@@ -56,11 +88,11 @@ export function TypographyPreviewItem({
 
   return (
     <Box className="type-item">
-      <TooltipTypography ref={previewRef} variant="inherit" component="div" className="type-sample" sx={{
+      <TooltipTypography ref={previewRef} variant="inherit" tooltipLabel={variantName} component="div" className="type-sample" sx={{
         ...variant,
         mb: theme.jtSpacing.component.xs,
       }}>
-        {label} — Example headline
+        {label} - Example headline
       </TooltipTypography>
       <TooltipTypography variant="body2" component="div" className="type-meta">
         {`${variant.fontSize ?? 'inherit'} / ${variant.fontWeight ?? 'inherit'} / ${variant.lineHeight ?? 'inherit'} / ${variant.fontFamily ?? 'inherit'}`}

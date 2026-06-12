@@ -1,4 +1,30 @@
+import type { CSSProperties } from 'react';
+
 declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    captionSmall: CSSProperties;
+    eyebrow: CSSProperties;
+    logo: CSSProperties;
+    logoSubtitle: CSSProperties;
+    logoHero: CSSProperties;
+    numberGhost: CSSProperties;
+    numberArticle: CSSProperties;
+    numberTimeline: CSSProperties;
+    numberBadge: CSSProperties;
+  }
+
+  interface TypographyVariantsOptions {
+    captionSmall?: CSSProperties;
+    eyebrow?: CSSProperties;
+    logo?: CSSProperties;
+    logoSubtitle?: CSSProperties;
+    logoHero?: CSSProperties;
+    numberGhost?: CSSProperties;
+    numberArticle?: CSSProperties;
+    numberTimeline?: CSSProperties;
+    numberBadge?: CSSProperties;
+  }
+
   interface Theme {
     jtSpacing: {
       component: {
@@ -38,9 +64,45 @@ declare module '@mui/material/styles' {
         compact: string;
       };
     };
+    numbering: {
+      color: {
+        primary: string;
+        ghost: string;
+      };
+      grid: {
+        inlineTemplate: string;
+        inlineGap: string;
+      };
+      badge: {
+        size: string;
+        border: string;
+        radius: string;
+      };
+      article: {
+        width: {
+          xs: string;
+          sm: string;
+        };
+      };
+    };
   }
 
   interface ThemeOptions {
     jtSpacing?: Theme['jtSpacing'];
+    numbering?: Theme['numbering'];
+  }
+}
+
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    captionSmall: true;
+    eyebrow: true;
+    logo: true;
+    logoSubtitle: true;
+    logoHero: true;
+    numberGhost: true;
+    numberArticle: true;
+    numberTimeline: true;
+    numberBadge: true;
   }
 }

@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles';
+import type { CSSProperties } from 'react';
 
 /* 
  * 1. Colors
@@ -34,7 +35,7 @@ export const palette = {
     900: "#101618",
   },
   surface:  "rgba(81, 93, 97, 0.3)", // 400 with 30% opacity, can be used for cards and surfaces
-  surfaceStrong: "rgba(81, 93, 97, 0.45)", // card hover fill
+  surfaceStrong: "#39474B", // 400 with 45% opacity,card hover fill 
   footerBg: "#343c40",
 }
 
@@ -87,6 +88,25 @@ export const jtSpacing = {
 const fontHeading= '"Hammersmith One", sans-serif';
 const fontBody = '"Nunito Sans", "Proxima Nova", "Helvetica Neue", Arial, sans-serif';
 
+export const numbering = {
+  color: {
+    primary: palette.brand.primaryGreen,
+    ghost: palette.base[100],
+  },
+  grid: {
+    inlineTemplate: '1.85rem minmax(0, 1fr)',
+    inlineGap: '0.65rem',
+  },
+  badge: {
+    size: '1.9rem',
+    border: '1px solid rgba(126,217,87,0.4)',
+    radius: '999px',
+  },
+  article: {
+    width: { xs: 'auto', sm: '2.4rem' },
+  },
+} as const;
+
 
 /* 
  * 4. Theme
@@ -137,9 +157,10 @@ const themeOptions = {
       divider: palette.base[400],
     },
     shape: {
-        borderRadius: 12,
+        borderRadius: 8,
     },
     jtSpacing,
+    numbering,
     typography: {
         fontFamily: fontBody,
         h1: {
@@ -170,26 +191,98 @@ const themeOptions = {
             letterSpacing: '0.03em',
             textTransform: 'uppercase',
         },
+        h5: {
+            fontFamily: fontBody,
+            fontSize: 'clamp(1rem, 0.7rem + 0.5vw, 1.05rem)',
+            lineHeight: 1.2,
+            fontWeight: 800,
+        },
         body1: {
-            fontSize: '1.25rem',
+            fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.25rem)',
             lineHeight: 1.75,
         },
         body2: {
-            fontSize: '1.1rem',
+            fontSize: 'clamp(0.98rem, 0.9rem + 0.28vw, 1.1rem)',
             lineHeight: 1.6,
-            opacity: 0.8,
+            color: palette.base[100],
         },
         caption: {
-            fontSize: '1.15rem',
+            fontSize: 'clamp(0.98rem, 0.85rem + 0.35vw, 1.15rem)',
             lineHeight: 1,
-            opacity: 0.75,
+            color: palette.base[100],
+        },
+        captionSmall: {
+            fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+            lineHeight: 1.2,
+            color: palette.base[100],
         },
         button: {
             fontFamily: fontHeading,
             fontWeight: 300,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            fontSize: '1.15rem',
+            fontSize: 'clamp(1rem, 0.9rem + 0.3vw, 1.15rem)',
+        },
+        eyebrow: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(0.78rem, 0.7rem + 0.2vw, 0.85rem)',
+            lineHeight: 1.2,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: palette.brand.primaryGreen,
+        },
+        logo: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(1.2rem, 2vw, 2.1rem)',
+            lineHeight: 1,
+            fontWeight: 400,
+            letterSpacing: '0.03em',
+            textTransform: 'uppercase',
+            color: palette.brand.primaryGreen,
+        },
+        logoSubtitle: {
+            fontFamily: fontBody,
+            fontSize: 'clamp(1rem, 1.2vw, 1.2rem)',
+            lineHeight: 1,
+            letterSpacing: '0.03em',
+            color: palette.brand.primaryGreen,
+        },
+        logoHero: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(2.65rem, 1.5rem + 4vw, 4.7rem)',
+            lineHeight: 0.95,
+            fontWeight: 300,
+            letterSpacing: '0.015em',
+            textTransform: 'uppercase',
+            color: palette.common.white,
+        },
+        numberGhost: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(1.8rem, 1.4rem + 1vw, 2.2rem)',
+            lineHeight: 1,
+            letterSpacing: '0.04em',
+            color: numbering.color.ghost,
+        },
+        numberArticle: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem)',
+            lineHeight: 1,
+            letterSpacing: '0.06em',
+            color: numbering.color.primary,
+        },
+        numberTimeline: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(2.2rem, 4vw, 3rem)',
+            lineHeight: 1,
+            letterSpacing: '0.04em',
+            color: numbering.color.primary,
+        },
+        numberBadge: {
+            fontFamily: fontHeading,
+            fontSize: 'clamp(0.8rem, 0.72rem + 0.2vw, 0.9rem)',
+            lineHeight: 1,
+            letterSpacing: '0.08em',
+            color: numbering.color.primary,
         },
     },
   components: {
@@ -335,33 +428,58 @@ const themeOptions = {
       },
     },
   },
-} as Parameters<typeof createTheme>[0] & { jtSpacing: typeof jtSpacing };
+} as Parameters<typeof createTheme>[0] & { jtSpacing: typeof jtSpacing; numbering: typeof numbering };
 
 
 const theme = createTheme(themeOptions);
 
-//TODO: this hookup doesn't work
-// Attach jtSpacing onto theme.spacing so you can call `theme.spacing.section.md`
-/* eslint-disable @typescript-eslint/no-explicit-any */
-(theme.spacing as any).component = jtSpacing.component;
-(theme.spacing as any).section = jtSpacing.section;
-(theme.spacing as any).gap = jtSpacing.gap;
-(theme.spacing as any).page = jtSpacing.page;
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
 declare module '@mui/material/styles' {
+  interface TypographyVariants {
+    captionSmall: CSSProperties;
+    eyebrow: CSSProperties;
+    logo: CSSProperties;
+    logoSubtitle: CSSProperties;
+    logoHero: CSSProperties;
+    numberGhost: CSSProperties;
+    numberArticle: CSSProperties;
+    numberTimeline: CSSProperties;
+    numberBadge: CSSProperties;
+  }
+
+  interface TypographyVariantsOptions {
+    captionSmall?: CSSProperties;
+    eyebrow?: CSSProperties;
+    logo?: CSSProperties;
+    logoSubtitle?: CSSProperties;
+    logoHero?: CSSProperties;
+    numberGhost?: CSSProperties;
+    numberArticle?: CSSProperties;
+    numberTimeline?: CSSProperties;
+    numberBadge?: CSSProperties;
+  }
+
   interface Theme {
     jtSpacing: typeof jtSpacing;
-    spacing: ((value: number | string) => string) & {
-      component: typeof jtSpacing.component;
-      section: typeof jtSpacing.section;
-      gap: typeof jtSpacing.gap;
-      page: typeof jtSpacing.page;
-    };
+    numbering: typeof numbering;
   }
 
   interface ThemeOptions {
     jtSpacing?: Theme['jtSpacing'];
+    numbering?: Theme['numbering'];
+  }
+}
+
+declare module '@mui/material/Typography' {
+  interface TypographyPropsVariantOverrides {
+    captionSmall: true;
+    eyebrow: true;
+    logo: true;
+    logoSubtitle: true;
+    logoHero: true;
+    numberGhost: true;
+    numberArticle: true;
+    numberTimeline: true;
+    numberBadge: true;
   }
 }
 

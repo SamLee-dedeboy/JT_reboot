@@ -1,28 +1,23 @@
-import { Box } from '@mui/material';
-import type { BoxProps } from '@mui/material';
+import { Typography } from '@mui/material';
+import type { TypographyProps } from '@mui/material';
 
 /**
- * Small Hammersmith One eyebrow label — uppercase, wide tracking, green.
- * Matches the design prototype's `.eyebrow`.
+ * Small section label backed by the MUI `eyebrow` typography variant.
  */
-export default function Eyebrow({ sx, children, ...rest }: BoxProps) {
+export default function Eyebrow({ sx, children, ...rest }: TypographyProps) {
   return (
-    <Box
+    <Typography
+      variant="eyebrow"
       component="span"
       sx={[
         {
           display: 'block',
-          fontFamily: 'var(--font-heading, "Hammersmith One", sans-serif)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.22em',
-          fontSize: '0.85rem',
-          color: 'primary.main',
         },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
       {...rest}
     >
       {children}
-    </Box>
+    </Typography>
   );
 }

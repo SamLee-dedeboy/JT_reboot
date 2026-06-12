@@ -26,9 +26,9 @@ export default function StudioShowcase() {
   return (
     <Box>
       <Reveal sx={{ display: 'flex', alignItems: 'baseline', gap: '1rem', mb: '2.4rem', flexWrap: 'wrap' }}>
-        <Box component="span" sx={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(2rem, 3.5vw, 2.8rem)', color: 'primary.main', letterSpacing: '0.04em', lineHeight: 1 }}>
+        <Typography variant="numberTimeline" component="span">
           2025
-        </Box>
+        </Typography>
         <Eyebrow sx={{ color: 'secondary.main' }}>Undergraduate Design Studios</Eyebrow>
       </Reveal>
 
@@ -61,7 +61,7 @@ export default function StudioShowcase() {
             </Box>
             <Box>
               <Box sx={badgeSx}>Design Studio</Box>
-              <Box sx={{ fontFamily: 'var(--font-heading)', fontSize: '2.2rem', color: 'rgba(242,240,239,0.16)', lineHeight: 1, mb: '0.6rem' }}>{s.n}</Box>
+              <Typography variant="numberGhost" component="div" sx={{ mb: '0.6rem' }}>{s.n}</Typography>
               <Typography sx={{ fontFamily: 'var(--font-heading)', textTransform: 'uppercase', fontSize: 'clamp(1.7rem, 2.6vw, 2.3rem)', letterSpacing: '0.02em', lineHeight: 1.08, color: 'primary.main', mb: '0.9rem' }}>
                 {s.title}
               </Typography>

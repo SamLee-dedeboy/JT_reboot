@@ -44,9 +44,9 @@ export default function Timeline() {
               },
             }}
           >
-            <Box sx={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(2.2rem, 4vw, 3rem)', color: 'primary.main', letterSpacing: '0.04em', lineHeight: 1 }}>
+            <Typography variant="numberTimeline" component="div">
               {y.year}
-            </Box>
+            </Typography>
           </Reveal>
 
           {y.workshops.map((w) => (
