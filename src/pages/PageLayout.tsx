@@ -6,25 +6,28 @@ interface PageLayoutProps {
   title: string;
   children: React.ReactNode;
   fullWidthContent?: boolean;
+  hideTitle?: boolean;
 }
 
-export default function PageLayout({ title, children, fullWidthContent = false }: PageLayoutProps) {
+export default function PageLayout({ title, children, fullWidthContent = false, hideTitle = false }: PageLayoutProps) {
   return (
     <>
       <Navbar />
       <Box component="main" sx={{ minHeight: '100vh', bgcolor: 'brand.base', color: 'common.white' }}>
-        <Box
-          sx={(theme) => ({
-            bgcolor: 'brand.base',
-            color: 'common.white',
-            pt: theme.jtSpacing.section.md,
-            pb: theme.jtSpacing.section.xs,
-          })}
-        >
-          <Container>
-            <Typography variant="h2" component="h1">{title}</Typography>
-          </Container>
-        </Box>
+        {!hideTitle && (
+          <Box
+            sx={(theme) => ({
+              bgcolor: 'brand.base',
+              color: 'common.white',
+              pt: theme.jtSpacing.section.md,
+              pb: theme.jtSpacing.section.xs,
+            })}
+          >
+            <Container>
+              <Typography variant="h2" component="h1">{title}</Typography>
+            </Container>
+          </Box>
+        )}
 
         {fullWidthContent ? (
           <Box sx={(theme) => contentSx(theme)}>{children}</Box>

@@ -225,7 +225,7 @@ const themeOptions = {
         },
         eyebrow: {
             fontFamily: fontHeading,
-            fontSize: 'clamp(0.78rem, 0.7rem + 0.2vw, 0.85rem)',
+            fontSize: 'clamp(0.8rem, 0.82rem + 0.2vw, 1rem)',
             lineHeight: 1.2,
             letterSpacing: '0.22em',
             textTransform: 'uppercase',
