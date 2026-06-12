@@ -1,10 +1,27 @@
 import { Link } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
+import type { ReactNode } from 'react';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
 import Reveal from '../common/Reveal';
+import Hl from '../common/Highlight';
 import { assetUrl } from '../../utils/baseUrl';
 import { APPROACH_QUOTE, APPROACH_MODES } from '../../data/homeContent';
+
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const blueHighlight = 'rgba(81,162,189,0.38)';
+
+function highlightApproachModes(text: string): ReactNode {
+  const re = new RegExp(`(${APPROACH_MODES.map(escapeRe).join('|')})`, 'g');
+
+  return text.split(re).map((part, index) =>
+    APPROACH_MODES.includes(part) ? (
+      <Hl key={index} color={blueHighlight}>{part}</Hl>
+    ) : (
+      part
+    ),
+  );
+}
 
 export default function OurApproachSection() {
   return (
@@ -32,35 +49,9 @@ export default function OurApproachSection() {
               lineHeight: 1.8,
             }}
           >
-            {APPROACH_QUOTE}
+            {highlightApproachModes(APPROACH_QUOTE)}
           </Reveal>
-          <Reveal delay={0.12} sx={{ display: 'flex', flexWrap: 'wrap', gap: '0.7rem', mt: '1.8rem' }}>
-            {APPROACH_MODES.map((m) => (
-              <Box
-                key={m}
-                sx={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  whiteSpace: 'nowrap',
-                  px: '1rem',
-                  py: '0.5rem',
-                  borderRadius: '999px',
-                  border: '1px solid',
-                  borderColor: 'base.300',
-                  bgcolor: 'surface',
-                  fontSize: '0.98rem',
-                  lineHeight: 1,
-                  transition: 'border-color 180ms ease, transform 180ms ease',
-                  '&:hover': { borderColor: 'primary.main', transform: 'translateY(-1px)' },
-                }}
-              >
-                <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: 'primary.main', flex: 'none' }} />
-                {m}
-              </Box>
-            ))}
-          </Reveal>
-          <Reveal delay={0.18} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: '2.2rem' }}>
+          <Reveal delay={0.12} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: '2.2rem' }}>
             <Button component={Link} to="/pages/project-documentation" variant="contained" color="primary">
               Project Documentation &amp; Reports
             </Button>

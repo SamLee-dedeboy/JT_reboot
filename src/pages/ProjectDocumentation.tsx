@@ -8,7 +8,6 @@ export default function ProjectDocumentation() {
   return (
     <RepoLayout
       current="docs"
-      eyebrow="Repository · 01"
       title={<>Project Documentation <Box component="span" sx={{ color: 'primary.main' }}>&amp; Reports</Box></>}
       lede="Here's a look at our project findings and outreach tools. This page will be updated with more content as public engagement and scenario refinement continue."
       meta={

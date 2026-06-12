@@ -49,7 +49,7 @@ function TypographySpecimen({
 export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme> }) {
   const theme = useTheme();
   const typography = [
-    { label: 'H1', variantName: 'h1', variant: theme.typography.h1 as TypographyToken, content: 'Landing page title' },
+    { label: 'H1', variantName: 'h1', variant: theme.typography.h1 as TypographyToken, content: 'Page title' },
     { label: 'H2', variantName: 'h2', variant: theme.typography.h2 as TypographyToken, content: 'Section heading' },
     { label: 'H3', variantName: 'h3', variant: theme.typography.h3 as TypographyToken, content: 'Subsection heading' },
     { label: 'H4', variantName: 'h4', variant: theme.typography.h4 as TypographyToken, content: 'Small heading / Card Titles' },

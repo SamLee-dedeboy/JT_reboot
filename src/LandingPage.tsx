@@ -1,6 +1,6 @@
 import Navbar from './components/Navbar'
 import HeroMap from './components/maps/HeroMap'
-import Funding from './components/Funding'
+import Footer from './components/Footer'
 import WhatIfSectionEditorial from './components/home/WhatIfSectionEditorial'
 import Foundations from './components/home/Foundations'
 import OurApproachSection from './components/home/OurApproachSection'
@@ -20,7 +20,7 @@ function LandingPage() {
         <Stakes />
         <MissionBand />
         <HowItWorks />
-        <Funding />
+        <Footer />
       </main>
     </>
   )

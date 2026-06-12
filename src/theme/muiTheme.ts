@@ -165,8 +165,8 @@ const themeOptions = {
         fontFamily: fontBody,
         h1: {
             fontFamily: fontHeading,
-            fontSize: 'clamp(3.6rem, 1.5rem + 4vw, 5rem)',
-            lineHeight: 1.2,
+            fontSize: 'clamp(2.65rem, 1.2rem + 3vw, 4rem)',
+            lineHeight: 1.08,
             fontWeight: 300,
             letterSpacing: '0.02em',
             textTransform: 'uppercase',

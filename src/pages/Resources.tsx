@@ -14,7 +14,6 @@ export default function Resources() {
   return (
     <RepoLayout
       current="resources"
-      eyebrow="Repository · 03"
       title={<>References <Box component="span" sx={{ color: 'primary.main' }}>&amp; Resources</Box></>}
       lede="A curated collection of reference literature that has informed the Just Transitions project — spanning disciplines, concerns, and public interests across the Delta."
     >

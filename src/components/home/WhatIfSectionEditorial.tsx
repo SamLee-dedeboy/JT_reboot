@@ -1,4 +1,5 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
+import Icon from '../common/Icon';
 import Section from '../common/Section';
 import Reveal from '../common/Reveal';
 import { highlightKeywords } from '../common/highlightText';
@@ -137,6 +138,17 @@ export default function WhatIfSectionEditorial() {
               </Typography>
             ))}
           </Box>
+        </Reveal>
+        <Reveal delay={0.18} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: (theme) => theme.jtSpacing.component.sm }}>
+            <Button
+              variant="contained"
+              color="primary"
+              disabled
+              title="Coming soon"
+              endIcon={<Icon name="arrow-right" size={18} />}
+            >
+              View Adaptation Scenarios
+            </Button>
         </Reveal>
       </Box>
     </Section>

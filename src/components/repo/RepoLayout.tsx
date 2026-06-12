@@ -1,11 +1,10 @@
 import type { ReactNode } from 'react';
 import Navbar from '../Navbar';
+import Footer from '../Footer';
 import RepoHero from './RepoHero';
-import RepoFooter from './RepoFooter';
-import type { RepoTabKey } from './RepoTabs';
+import RepoTabs, { type RepoTabKey } from './RepoTabs';
 
 interface RepoLayoutProps {
-  eyebrow: string;
   title: ReactNode;
   lede: string;
   current: RepoTabKey;
@@ -13,14 +12,15 @@ interface RepoLayoutProps {
   children: ReactNode;
 }
 
-/** Page wrapper for the repository pages: Navbar + RepoHero + content + RepoFooter. */
-export default function RepoLayout({ eyebrow, title, lede, current, meta, children }: RepoLayoutProps) {
+/** Page wrapper for the repository pages: Navbar + RepoHero + content + shared Footer. */
+export default function RepoLayout({ title, lede, current, meta, children }: RepoLayoutProps) {
   return (
     <>
       <Navbar />
-      <RepoHero eyebrow={eyebrow} title={title} lede={lede} current={current} meta={meta} />
+      <RepoTabs current={current} />
+      <RepoHero title={title} lede={lede} meta={meta} />
       <main>{children}</main>
-      <RepoFooter />
+      <Footer />
     </>
   );
 }

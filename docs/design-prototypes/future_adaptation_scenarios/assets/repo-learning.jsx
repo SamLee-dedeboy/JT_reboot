@@ -87,7 +87,7 @@ function LearningApp() {
       <RepoHero
         current="learning"
         eyebrow="Repository · 02"
-        title={<>Service Learning &amp; <span className="green">Design Studios</span></>}
+        title={<>Service Learning <span className="green">&amp; Design Studios</span></>}
         lede="Here's a look at University of California undergraduate coursework focused on service learning and education through publicly engaged design studios. This page will be updated with more content as public engagement continues."
       />
       <main className="section">
