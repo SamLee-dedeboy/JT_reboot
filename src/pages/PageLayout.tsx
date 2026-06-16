@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from '@mui/material';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from '../components/common/Navbar';
+import Footer from '../components/common/Footer';
 
 interface PageLayoutProps {
   title: string;

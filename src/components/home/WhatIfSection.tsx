@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import { WHATIF_QUESTIONS } from '../../data/homeContent';
-import { highlightKeywords } from '../common/highlightText';
+import { highlightKeywords } from '../../utils/highlightText';
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&

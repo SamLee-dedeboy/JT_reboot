@@ -17,7 +17,7 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
       aria-label="Repository sections"
       sx={{
         position: 'sticky',
-        top: { xs: 72, md: 126 },
+        top: { xs: 72, md: 76 },
         zIndex: 90,
         bgcolor: 'rgba(34,47,52,0.96)',
         backdropFilter: 'blur(12px)',

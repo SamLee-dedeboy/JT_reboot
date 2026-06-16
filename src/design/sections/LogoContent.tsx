@@ -1,6 +1,6 @@
 import { Box, Stack, useMediaQuery, useTheme, type SxProps, type Theme, type TypographyProps } from '@mui/material';
 import { useRef, type ComponentType, type RefObject } from 'react';
-import { LogoWordmark, type LogoVariant } from '../../components/Logo';
+import { LogoWordmark, type LogoVariant } from '../../components/common/Logo';
 import { displayItemSx } from '../common/displayStyles';
 import { jtSpacing } from '../../theme/muiTheme';
 

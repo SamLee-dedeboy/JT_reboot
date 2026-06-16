@@ -80,8 +80,7 @@ export default function NavRail() {
             <Box
               className="rail-label"
               sx={{
-                fontFamily: 'var(--font-heading)',
-                textTransform: 'uppercase',
+                typography: 'eyebrow',
                 letterSpacing: '0.08em',
                 fontSize: '0.72rem',
                 color: on ? 'primary.main' : 'common.white',

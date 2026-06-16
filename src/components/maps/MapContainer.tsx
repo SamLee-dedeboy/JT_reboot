@@ -6,37 +6,55 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import MapLayerOrchestrator from './MapLayerOrchestrator';
 import { DELTA_STATION_POINTS_LAYER_ID } from './layers/deltaStationConstants';
 
-const mapContainerStyle = { position: 'relative', width: '100%', height: '100%' } as const;
 const mapStyle = { width: '100%', height: '100%' } as const;
-const tooltipSx: SxProps<Theme> = {
+const mapContainerSx: SxProps<Theme> = {
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+};
+
+function getTooltipSx(tooltip: TooltipState): SxProps<Theme> {
+  return (theme) => ({
   position: 'absolute',
-  backgroundColor: 'rgba(22, 22, 22, 0.94)',
-  color: 'grey.100',
-  border: '1px solid rgba(242, 200, 32, 0.75)',
+  left: `calc(${tooltip.x}px + ${theme.spacing(theme.jtSpacing.component.sm)})`,
+  top: `calc(${tooltip.y}px + ${theme.spacing(theme.jtSpacing.component.sm)})`,
+  bgcolor: 'rgba(37,52,57,0.94)',
+  color: 'common.white',
+  border: '1px solid',
+  borderColor: 'rgba(242,200,32,0.65)',
   borderRadius: 1,
-  px: 1,
-  py: 0.5,
+  px: theme.jtSpacing.component.xs,
+  py: theme.jtSpacing.component.xs / 2,
   typography: 'body2',
   lineHeight: 1.4,
   pointerEvents: 'none',
   zIndex: 20,
   maxWidth: 220,
-};
-const dateBadgeSx: SxProps<Theme> = {
+  });
+}
+
+const dateBadgeSx: SxProps<Theme> = (theme) => ({
   position: 'absolute',
-  top: 1,
-  left: 1,
-  backgroundColor: 'rgba(22, 22, 22, 0.9)',
-  color: 'grey.100',
-  border: '2px solid rgba(126, 217, 87, 0.75)',
+  top: theme.jtSpacing.component.xs,
+  left: theme.jtSpacing.component.xs,
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: theme.jtSpacing.component.xs,
+  bgcolor: 'rgba(37,52,57,0.82)',
+  color: 'common.white',
+  border: '1px solid',
+  borderColor: 'rgba(155,162,164,0.28)',
   borderRadius: 1,
-  px: 1,
-  py: 0.5,
-  typography: 'body2',
-  lineHeight: 1.35,
+  mx: theme.jtSpacing.component.xs,
+  my: theme.jtSpacing.component.xs,
+  px: theme.jtSpacing.component.xs,
+  py: theme.jtSpacing.component.xs,
+  boxShadow: '0 6px 18px rgba(16,22,24,0.22)',
+  backdropFilter: 'blur(8px)',
   zIndex: 21,
   pointerEvents: 'none',
-};
+  maxWidth: `calc(100% - ${theme.spacing(theme.jtSpacing.component.sm * 2)})`,
+});
 
 interface TooltipState {
   x: number;
@@ -78,14 +96,24 @@ export default function MapContainer({
 
   if (!mapboxToken) {
     return (
-      <div className="playground-map-fallback">
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'common.white',
+          typography: 'body2',
+        }}
+      >
         Add VITE_MAPBOX_TOKEN to render the map.
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div style={mapContainerStyle}>
+    <Box sx={mapContainerSx}>
       <Map
         initialViewState={{
           longitude: -121.95,
@@ -116,13 +144,7 @@ export default function MapContainer({
       </Map>
 
       {tooltip && (
-        <Box
-          sx={{
-            ...tooltipSx,
-            left: tooltip.x + 12,
-            top: tooltip.y + 12,
-          }}
-        >
+        <Box sx={getTooltipSx(tooltip)}>
           <Typography variant="body2" component="div"><strong>Index:</strong> {tooltip.stationIndex}</Typography>
           <Typography variant="body2" component="div"><strong>ID:</strong> {tooltip.stationID}</Typography>
           <Typography variant="body2" component="div"><strong>Name:</strong> {tooltip.stationName}</Typography>
@@ -130,8 +152,13 @@ export default function MapContainer({
       )}
 
       <Box sx={dateBadgeSx}>
-        <Typography variant="body2" component="strong">Currently Viewing:</Typography> {currentViewingDate ?? 'N/A'}
+        <Typography variant="eyebrow" component="span" sx={{ color: 'primary.main', fontSize: '0.66rem', lineHeight: 1, whiteSpace: 'nowrap' }}>
+          Date
+        </Typography>
+        <Typography variant="captionSmall" component="span" sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1, whiteSpace: 'nowrap' }}>
+          {currentViewingDate ?? 'Hover timeline'}
+        </Typography>
       </Box>
-    </div>
+    </Box>
   );
 }

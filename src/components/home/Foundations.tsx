@@ -4,7 +4,7 @@ import SectionHead from '../common/SectionHead';
 import Reveal from '../common/Reveal';
 import Icon from '../common/Icon';
 import { FOUNDATIONS } from '../../data/homeContent';
-import { splitLead } from '../common/highlightText';
+import { splitLead } from '../../utils/highlightText';
 
 export default function Foundations() {
   return (

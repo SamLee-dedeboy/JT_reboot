@@ -2,7 +2,7 @@ import { Box, Button, Typography } from '@mui/material';
 import Icon from '../common/Icon';
 import Section from '../common/Section';
 import Reveal from '../common/Reveal';
-import { highlightKeywords } from '../common/highlightText';
+import { highlightKeywords } from '../../utils/highlightText';
 
 const framingQuestion = {
   text: 'What if Delta communities could compare different water futures before decisions are made?',

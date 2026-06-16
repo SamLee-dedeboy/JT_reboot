@@ -1,6 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
+  Slider,
+  Stack,
+  Switch,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import * as d3 from 'd3';
-import './GanttChart.css';
+import { palette } from '../../theme/muiTheme';
 
 type WaterQualityStatus = 'acceptable' | 'unacceptable' | string;
 type VulnerabilityGroup = 'HIGHEST' | 'HIGH' | 'MODERATE';
@@ -108,6 +123,12 @@ const DATASET_PATHS: Record<ConfigurationMode, Record<DatasetMode, string>> = {
     run16: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run16.json`,
     run17: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run17.json`,
   },
+};
+
+const categoryColors = {
+  good: palette.brand.primaryBlue,
+  acceptable: alpha(palette.brand.primaryBlue, 0.5),
+  unacceptable: palette.accent.orange,
 };
 
 interface RenderSegment {
@@ -332,6 +353,7 @@ export default function GanttChart({
   onHoverStationIndexChange,
   onStationCategoryListsChange,
 }: GanttChartProps) {
+  const theme = useTheme();
   const [data, setData] = useState<WaterQualityData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -346,6 +368,22 @@ export default function GanttChart({
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const canvasWrapRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const chartColors = useMemo(
+    () => ({
+      axisDomain: palette.base[400],
+      axisTick: palette.base[700],
+      brushLane: palette.base[800],
+      brushStroke: palette.base[600],
+      focus: palette.brand.primaryGreen,
+      focusWash: alpha(palette.brand.primaryGreen, 0.47),
+      rowFill: alpha(palette.base[800], 0.24),
+      text: palette.common.white,
+      mutedText: palette.base[100],
+      groupText: '#8bc4d4',
+      ...categoryColors,
+    }),
+    [],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -544,18 +582,16 @@ export default function GanttChart({
 
     const containerWidth = canvasSize.width;
     const containerHeight = canvasSize.height;
-    const isLargeViewport = containerWidth >= 1024;
-    const chartWidth = isLargeViewport ? Math.max(containerWidth, 900) : 1100;
-    const brushHeight = 24;
-    const margin = { top: 32, right: 18, bottom: 22, left: 84 };
+    const svgFontFamily = theme.typography.fontFamily ?? 'Nunito Sans, Arial, sans-serif';
+    const chartWidth = Math.max(containerWidth, 620);
+    const brushHeight = 8;
+    const margin = { top: 30, right: 14, bottom: 10, left: 38 };
     const brushGap = partitionByVulnerability ? 20 : 8;
-    const defaultRowHeight = 16;
-    const defaultInnerHeight = Math.max(displayRows.length * defaultRowHeight, 100);
     const availableInnerHeight = Math.max(
       containerHeight - (margin.top + brushHeight + brushGap + margin.bottom),
       100,
     );
-    const innerHeight = isLargeViewport && containerHeight > 0 ? availableInnerHeight : defaultInnerHeight;
+    const innerHeight = containerHeight > 0 ? availableInnerHeight : Math.max(displayRows.length * 9, 100);
     const barsTop = margin.top + brushHeight + brushGap;
     const brushTop = margin.top;
     const chartHeight = barsTop + innerHeight + margin.bottom;
@@ -583,8 +619,8 @@ export default function GanttChart({
       .scaleBand<string>()
       .domain(displayRows.map((row) => row.key))
       .range([barsTop, barsTop + innerHeight])
-      .paddingInner(0.32)
-      .paddingOuter(0.1);
+      .paddingInner(0.35)
+      .paddingOuter(0.2);
 
     const axis = d3
       .axisTop<Date>(x)
@@ -598,9 +634,14 @@ export default function GanttChart({
       .attr('transform', `translate(0, ${margin.top - 8})`)
       .call(axis);
 
-    axisGroup.select('.domain').attr('stroke', '#5e5e5e');
-    axisGroup.selectAll('.tick line').attr('stroke', '#404040');
-    axisGroup.selectAll('.tick text').attr('fill', '#cfcfcf').attr('font-size', '0.9rem');
+    axisGroup.select('.domain').attr('stroke', chartColors.axisDomain);
+    axisGroup.selectAll('.tick line').attr('stroke', chartColors.axisTick);
+    axisGroup
+      .selectAll('.tick text')
+      .attr('fill', chartColors.mutedText)
+      .style('font-size', '0.5rem')
+      .style('font-family', svgFontFamily)
+      .style('font-weight', 400);
 
     const plotGroup = svg.append('g').attr('class', 'gantt-plot');
 
@@ -614,21 +655,28 @@ export default function GanttChart({
     rowGroups
       .filter(isGapRow)
       .append('text')
-      .attr('class', 'gantt-gap-label')
-      .attr('x', margin.left - 8)
+      .attr('x', margin.left - 6)
       .attr('y', (y.bandwidth() / 2) + 0.5)
       .attr('dy', '0.35em')
       .attr('text-anchor', 'end')
+      .attr('fill', chartColors.groupText)
+      .style('font-size', '0.5rem')
+      .style('font-family', svgFontFamily)
+      .style('font-weight', 700)
+      .attr('letter-spacing', '0.06em')
+      .attr('text-transform', 'uppercase')
       .text((row: DisplayRow) => formatVulnerabilityLabel(getGapVulnerability(row)));
 
     rowGroups
       .filter(isStationRow)
       .append('text')
-      .attr('class', 'gantt-station-label')
-      .attr('x', margin.left - 8)
+      .attr('x', margin.left - 6)
       .attr('y', (y.bandwidth() / 2) + 0.5)
       .attr('dy', '0.35em')
       .attr('text-anchor', 'end')
+      .style('font-size', '0.5rem')
+      .style('font-family', svgFontFamily)
+      .style('text-transform', 'uppercase')
       .attr('font-weight', (row: DisplayRow) => {
         const record = getStationRecord(row);
         return focusedStationIndexSet.has(record.station_index) ? 700 : 400;
@@ -637,14 +685,14 @@ export default function GanttChart({
         const record = getStationRecord(row);
 
         if (unacceptableOver75Set.has(record.station_index)) {
-          return '#f77c3b';
+          return chartColors.unacceptable;
         }
 
         if (goodOver75Set.has(record.station_index)) {
-          return '#51a2bd';
+          return chartColors.good;
         }
 
-        return '#cfcfcf';
+        return chartColors.mutedText;
       })
       .style('cursor', 'pointer')
       .text((row: DisplayRow) => {
@@ -662,11 +710,11 @@ export default function GanttChart({
     rowGroups
       .filter(isStationRow)
       .append('rect')
-      .attr('class', 'gantt-row-default')
       .attr('x', margin.left)
       .attr('y', 0)
       .attr('height', y.bandwidth())
-      .attr('width', chartWidth - margin.left - margin.right);
+      .attr('width', chartWidth - margin.left - margin.right)
+      .attr('fill', chartColors.rowFill);
 
     rowGroups
       .filter(isStationRow)
@@ -684,10 +732,21 @@ export default function GanttChart({
           .filter((entry) => entry.endDate >= domainStart && entry.startDate <= domainEnd),
       )
       .join('rect')
-      .attr('class', (d: RenderSegment) => `gantt-segment ${d.segment.status}`)
       .attr('x', (d: RenderSegment) => x(d.startDate < domainStart ? domainStart : d.startDate))
       .attr('y', 0)
       .attr('height', y.bandwidth())
+      .attr('fill', (d: RenderSegment) => {
+        if (d.segment.status === 'acceptable') {
+          return chartColors.acceptable;
+        }
+
+        if (d.segment.status === 'unacceptable') {
+          return chartColors.unacceptable;
+        }
+
+        return chartColors.good;
+      })
+      .attr('shape-rendering', 'geometricPrecision')
       .attr('width', (d: RenderSegment) => {
         const visibleStart = d.startDate < domainStart ? domainStart : d.startDate;
         const visibleEnd = d.endDate > domainEnd ? domainEnd : d.endDate;
@@ -725,21 +784,22 @@ export default function GanttChart({
 
     const zoomOverlay = svg
       .append('rect')
-      .attr('class', 'gantt-zoom-overlay')
       .attr('x', margin.left)
       .attr('y', barsTop)
       .attr('width', chartWidth - margin.left - margin.right)
       .attr('height', innerHeight)
       .style('fill', 'transparent')
       .style('pointer-events', 'all')
+      .style('cursor', 'grab')
       .call(zoom);
 
     const hoverLayer = svg.append('g').attr('class', 'gantt-hover-layer');
     const hoverLine = hoverLayer
       .append('line')
-      .attr('class', 'gantt-hover-line')
       .attr('y1', barsTop)
       .attr('y2', barsTop + innerHeight)
+      .attr('stroke', chartColors.focus)
+      .attr('stroke-width', 1)
       .style('display', 'none');
 
     const bisectCenter = d3.bisector((d: { label: string; date: Date }) => d.date).center;
@@ -781,15 +841,18 @@ export default function GanttChart({
 
     svg
       .append('rect')
-      .attr('class', 'gantt-brush-lane')
       .attr('x', margin.left)
       .attr('y', brushTop)
       .attr('width', chartWidth - margin.left - margin.right)
       .attr('height', brushHeight)
-      .attr('rx', 3);
+      .attr('rx', 2)
+      .attr('fill', chartColors.brushLane)
+      .attr('stroke', chartColors.brushStroke)
+      .attr('stroke-width', 1);
 
     const brush = d3
       .brushX()
+      .handleSize(4)
       .extent([
         [margin.left, brushTop],
         [chartWidth - margin.right, brushTop + brushHeight],
@@ -818,6 +881,21 @@ export default function GanttChart({
     const brushGroup = svg.append('g').attr('class', 'gantt-brush').call(brush);
 
     brushGroup.call(brush.move, [xOverview(domainStart), xOverview(domainEnd)]);
+
+    brushGroup.selectAll('.overlay').style('cursor', 'crosshair');
+    brushGroup
+      .selectAll('.selection')
+      .attr('fill', chartColors.focusWash)
+      .attr('stroke', chartColors.focus)
+      .attr('stroke-width', 1)
+      .attr('height', brushHeight)
+      .attr('y', brushTop);
+    brushGroup
+      .selectAll('.handle')
+      .attr('fill', chartColors.focus)
+      .attr('height', brushHeight + 2)
+      .attr('y', brushTop - 1)
+      .attr('rx', 1.5);
   }, [
     data,
     bounds,
@@ -830,140 +908,262 @@ export default function GanttChart({
     unacceptableOver75Set,
     goodOver75Set,
     stationShortNameByIndex,
+    chartColors,
+    theme.typography.fontFamily,
     onHoverDateChange,
     onHoverStationIndexChange,
   ]);
 
   if (loading) {
-    return <div className="gantt-state">Loading water quality timeline...</div>;
+    return (
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'common.white',
+          p: theme.jtSpacing.component.md,
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="body2">Loading water quality timeline...</Typography>
+      </Box>
+    );
   }
 
   if (error || !data || !bounds) {
-    return <div className="gantt-state">{error ?? 'No timeline data available.'}</div>;
+    return (
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'common.white',
+          p: theme.jtSpacing.component.md,
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="body2">{error ?? 'No timeline data available.'}</Typography>
+      </Box>
+    );
   }
 
+  const compactFieldSx = {
+    '& .MuiInputLabel-root': {
+      typography: 'captionSmall',
+      lineHeight: 1,
+      transform: 'translate(10px, 7px) scale(1)',
+      '&.MuiInputLabel-shrink': {
+        transform: 'translate(10px, -6px) scale(0.78)',
+      },
+    },
+    '& .MuiOutlinedInput-root': {
+      minHeight: 30,
+      typography: 'captionSmall',
+    },
+    '& .MuiSelect-select': {
+      py: 0.55,
+      pl: 1.2,
+      pr: '26px !important',
+      lineHeight: 1.15,
+      minHeight: 'unset !important',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+  } as const;
+
   return (
-    <div className="gantt-chart" aria-label="Water quality gantt chart">
-      <div className="gantt-header">
-        <div className="gantt-title-block">
-          <h3>Water Quality Timeline</h3>
-          <p>{data.timestamps[0]} to {data.timestamps[data.timestamps.length - 1]}</p>
-          <div className="gantt-interaction-notes" aria-label="Chart interaction notes">
-            <p className="gantt-interaction-note">Use the brush to focus on certain time window. Click outside to reset.</p>
-            <p className="gantt-interaction-note">Hover a station index to highlight that station on the map.</p>
-          </div>
-          <div className="gantt-dataset-controls" aria-label="Run options">
-            <label htmlFor="gantt-dataset-select">Run</label>
-            <select
+    <Box
+      aria-label="Water quality gantt chart"
+      sx={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.jtSpacing.component.xs,
+        p: theme.jtSpacing.component.xs,
+        bgcolor: 'base.700',
+        color: 'common.white',
+      }}
+    >
+      <Box
+        component="header"
+        sx={{
+          display: 'grid',
+          gridTemplateRows: 'auto auto',
+          gap: 0.5,
+          px: theme.jtSpacing.component.xs,
+          py: 0,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr 1fr' },
+            gap: 0.75,
+            alignItems: 'center',
+          }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="h4" component="h4" sx={{color: "brand.primaryGreen"}}>
+              Water Quality
+            </Typography>
+            <Typography variant="captionSmall" component="p" sx={{ color: 'base.100', lineHeight: 1.1, mb: 0 }}>
+              {data.timestamps[0]} - {data.timestamps[data.timestamps.length - 1]}
+            </Typography>
+          </Box>
+
+          <FormControl size="small" sx={compactFieldSx}>
+            <InputLabel id="gantt-dataset-label">Run</InputLabel>
+            <Select
+              labelId="gantt-dataset-label"
               id="gantt-dataset-select"
-              className="gantt-dataset-select"
+              label="Run"
               value={datasetMode}
               onChange={(event) => {
                 setFocusDomain(null);
                 setDatasetMode(event.target.value as DatasetMode);
               }}
             >
-              <option value="run15">Run 15 - Historical</option>
-              <option value="run16">Run 16 - 10decrease</option>
-              <option value="run17">Run 17 - 30increase</option>
-            </select>
-          </div>
-          <div className="gantt-dataset-controls" aria-label="Configuration options">
-            <label htmlFor="gantt-configuration-select">Configuration</label>
-            <select
+              <MenuItem value="run15">Run 15 - Historical</MenuItem>
+              <MenuItem value="run16">Run 16 - 10decrease</MenuItem>
+              <MenuItem value="run17">Run 17 - 30increase</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={compactFieldSx}>
+            <InputLabel id="gantt-configuration-label">Configuration</InputLabel>
+            <Select
+              labelId="gantt-configuration-label"
               id="gantt-configuration-select"
-              className="gantt-dataset-select"
+              label="Configuration"
               value={configurationMode}
               onChange={(event) => {
                 setFocusDomain(null);
                 setConfigurationMode(event.target.value as ConfigurationMode);
               }}
             >
-              <option value="max-base">Max daily - base thresholds</option>
-              <option value="max-deanna">Max daily - Deanna thresholds</option>
-              <option value="mean-base">Mean daily - base thresholds</option>
-              <option value="mean-stringent">Mean daily - stringent thresholds</option>
-            </select>
-          </div>
-        </div>
-        <div className="gantt-controls">
-          <div className="gantt-legend" aria-label="Legend">
-            <span><i className="dot good" />Good</span>
-            <span><i className="dot acceptable" />Acceptable</span>
-            <span><i className="dot unacceptable" />Unacceptable</span>
-            {focusDomain && (
-              <button
-                type="button"
-                className="gantt-reset-btn"
-                onClick={() => setFocusDomain(null)}
-              >
-                Reset Time Focus
-              </button>
-            )}
-          </div>
-          <div className="gantt-sort-controls" aria-label="Sort options">
-            <label htmlFor="gantt-sort-select">Sort stations</label>
-            <select
+              <MenuItem value="max-base">Max daily - base thresholds</MenuItem>
+              <MenuItem value="max-deanna">Max daily - Deanna thresholds</MenuItem>
+              <MenuItem value="mean-base">Mean daily - base thresholds</MenuItem>
+              <MenuItem value="mean-stringent">Mean daily - stringent thresholds</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl size="small" sx={compactFieldSx}>
+            <InputLabel id="gantt-sort-label">Sort Stations</InputLabel>
+            <Select
+              labelId="gantt-sort-label"
               id="gantt-sort-select"
-              className="gantt-sort-select"
+              label="Sort Stations"
               value={sortMode}
               onChange={(event) => setSortMode(event.target.value as SortMode)}
             >
-              <option value="unacceptable">Sorted by unacceptable</option>
-              <option value="good">Sorted by good</option>
-              <option value="station-index">Sorted by station index</option>
-            </select>
-          </div>
-          <div className="gantt-toggle-controls">
-            <label className="gantt-toggle-label" htmlFor="gantt-partition-toggle">
-              <input
+              <MenuItem value="unacceptable">Sorted by unacceptable</MenuItem>
+              <MenuItem value="good">Sorted by good</MenuItem>
+              <MenuItem value="station-index">Sorted by station index</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '150px minmax(150px, 1fr) minmax(170px, 1fr) 1fr' },
+            gap: 4,
+            alignItems: 'center',
+          }}
+        >
+          <FormControlLabel
+            control={
+              <Switch
+                size="small"
                 id="gantt-partition-toggle"
-                className="gantt-partition-toggle"
-                type="checkbox"
                 checked={partitionByVulnerability}
                 onChange={(event) => setPartitionByVulnerability(event.target.checked)}
               />
-              Group by vulnerability
-            </label>
-          </div>
-          <div className="gantt-threshold-controls" aria-label="Focus threshold options">
-            <div className="gantt-threshold-group">
-              <label className="gantt-threshold-label" htmlFor="gantt-unacceptable-threshold">
-                Unacceptable Exceedance: <span className="gantt-threshold-value-unacceptable">{unacceptableFocusThreshold}%</span>
-              </label>
-              <input
-                id="gantt-unacceptable-threshold"
-                className="gantt-threshold-slider gantt-threshold-slider-unacceptable"
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={unacceptableFocusThreshold}
-                onChange={(event) => setUnacceptableFocusThreshold(Number(event.target.value))}
-              />
-            </div>
-            <div className="gantt-threshold-group">
-              <label className="gantt-threshold-label" htmlFor="gantt-good-threshold">
-                Good Exceedance: <span>{goodFocusThreshold}%</span>
-              </label>
-              <input
-                id="gantt-good-threshold"
-                className="gantt-threshold-slider"
-                type="range"
-                min={0}
-                max={100}
-                step={1}
-                value={goodFocusThreshold}
-                onChange={(event) => setGoodFocusThreshold(Number(event.target.value))}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+            }
+            label="Group by Vulnerability"
+            sx={{
+              color: 'base.100',
+              m: 0,
+              '& .MuiFormControlLabel-label': { typography: 'captionSmall' },
+            }}
+          />
 
-      <div ref={canvasWrapRef} className="gantt-canvas-wrap" role="img" aria-label="Water quality timeline chart">
-        <svg ref={svgRef} className="gantt-svg" />
-      </div>
-    </div>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', minWidth: 0 }}>
+            <Typography id="gantt-unacceptable-threshold-label" variant="captionSmall" sx={{ color: 'accent.orange', whiteSpace: 'nowrap' }}>
+              Unacceptable {unacceptableFocusThreshold}%
+            </Typography>
+            <Slider
+              aria-labelledby="gantt-unacceptable-threshold-label"
+              min={0}
+              max={100}
+              step={1}
+              value={unacceptableFocusThreshold}
+              onChange={(_, value) => setUnacceptableFocusThreshold(Array.isArray(value) ? value[0] : value)}
+              size="small"
+              sx={{ color: 'accent.orange', py: 0.25 }}
+            />
+          </Stack>
+
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', minWidth: 0 }}>
+            <Typography id="gantt-good-threshold-label" variant="captionSmall" sx={{ color: 'secondary.light', whiteSpace: 'nowrap' }}>
+              Good {goodFocusThreshold}%
+            </Typography>
+            <Slider
+              aria-labelledby="gantt-good-threshold-label"
+              min={0}
+              max={100}
+              step={1}
+              value={goodFocusThreshold}
+              onChange={(_, value) => setGoodFocusThreshold(Array.isArray(value) ? value[0] : value)}
+              size="small"
+              sx={{ color: 'secondary.main', py: 0.25 }}
+            />
+          </Stack>
+
+          <Stack direction="row" spacing={0.85} useFlexGap aria-label="Legend" sx={{ alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+            {[
+              { label: 'Good', color: categoryColors.good },
+              { label: 'Acceptable', color: categoryColors.acceptable },
+              { label: 'Unacceptable', color: categoryColors.unacceptable },
+            ].map((item) => (
+              <Stack key={item.label} component="span" direction="row" spacing={1} sx={{ alignItems: 'center', color: 'base.100' }}>
+                <Box component="i" aria-hidden sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: item.color }} />
+                <Typography variant="captionSmall" component="span" sx={{ color: 'inherit', whiteSpace: 'nowrap', }}>
+                  {item.label}
+                </Typography>
+              </Stack>
+            ))}
+            {focusDomain && (
+              <Button variant="outlined" size="small" onClick={() => setFocusDomain(null)} sx={{ py: 0.25, px: 1,  }}>
+                Reset
+              </Button>
+            )}
+          </Stack>
+        </Box>
+      </Box>
+
+      <Box
+        ref={canvasWrapRef}
+        role="img"
+        aria-label="Water quality timeline chart"
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflow: 'hidden',
+          borderTop: '1px solid',
+          borderColor: 'rgba(155,162,164,0.18)',
+        }}
+      >
+        <Box component="svg" ref={svgRef} sx={{ width: '100%', height: '100%', display: 'block' }} />
+      </Box>
+    </Box>
   );
 }

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import Hl from './Highlight';
+import Hl from '../components/common/Highlight';
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Container, List, ListItem, Typography, useTheme } from '@mui/material';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import Navbar from '../components/common/Navbar';
+import Footer from '../components/common/Footer';
 import { assetUrl } from '../utils/baseUrl';
 
 // The sticky scenario sub-nav must sit flush under the sticky navbar. The navbar's

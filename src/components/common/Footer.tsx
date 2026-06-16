@@ -1,5 +1,5 @@
 import { Box, Container, Link, Typography, useTheme } from '@mui/material';
-import { assetUrl } from '../utils/baseUrl';
+import { assetUrl } from '../../utils/baseUrl';
 
 export default function Footer() {
   const theme = useTheme();

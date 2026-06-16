@@ -4,7 +4,7 @@ import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
 import Reveal from '../common/Reveal';
 import Icon from '../common/Icon';
-import { emphasize, splitLead } from '../common/highlightText';
+import { emphasize, splitLead } from '../../utils/highlightText';
 import { STAKE, DROUGHT, type StakeBlock } from '../../data/homeContent';
 
 function ExpandableProse({ block }: { block: StakeBlock }) {
