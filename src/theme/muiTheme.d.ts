@@ -5,7 +5,6 @@ declare module '@mui/material/styles' {
     captionSmall: CSSProperties;
     eyebrow: CSSProperties;
     logo: CSSProperties;
-    logoSubtitle: CSSProperties;
     logoHero: CSSProperties;
     numberGhost: CSSProperties;
     numberArticle: CSSProperties;
@@ -17,7 +16,6 @@ declare module '@mui/material/styles' {
     captionSmall?: CSSProperties;
     eyebrow?: CSSProperties;
     logo?: CSSProperties;
-    logoSubtitle?: CSSProperties;
     logoHero?: CSSProperties;
     numberGhost?: CSSProperties;
     numberArticle?: CSSProperties;
@@ -98,7 +96,6 @@ declare module '@mui/material/Typography' {
     captionSmall: true;
     eyebrow: true;
     logo: true;
-    logoSubtitle: true;
     logoHero: true;
     numberGhost: true;
     numberArticle: true;

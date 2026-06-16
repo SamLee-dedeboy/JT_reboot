@@ -240,13 +240,6 @@ const themeOptions = {
             textTransform: 'uppercase',
             color: palette.brand.primaryGreen,
         },
-        logoSubtitle: {
-            fontFamily: fontBody,
-            fontSize: 'clamp(1rem, 1.2vw, 1.2rem)',
-            lineHeight: 1,
-            letterSpacing: '0.03em',
-            color: palette.brand.primaryGreen,
-        },
         logoHero: {
             fontFamily: fontHeading,
             fontSize: 'clamp(2.65rem, 1.5rem + 4vw, 4.7rem)',
@@ -438,7 +431,6 @@ declare module '@mui/material/styles' {
     captionSmall: CSSProperties;
     eyebrow: CSSProperties;
     logo: CSSProperties;
-    logoSubtitle: CSSProperties;
     logoHero: CSSProperties;
     numberGhost: CSSProperties;
     numberArticle: CSSProperties;
@@ -450,7 +442,6 @@ declare module '@mui/material/styles' {
     captionSmall?: CSSProperties;
     eyebrow?: CSSProperties;
     logo?: CSSProperties;
-    logoSubtitle?: CSSProperties;
     logoHero?: CSSProperties;
     numberGhost?: CSSProperties;
     numberArticle?: CSSProperties;
@@ -474,7 +465,6 @@ declare module '@mui/material/Typography' {
     captionSmall: true;
     eyebrow: true;
     logo: true;
-    logoSubtitle: true;
     logoHero: true;
     numberGhost: true;
     numberArticle: true;

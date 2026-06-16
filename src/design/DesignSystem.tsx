@@ -1,7 +1,7 @@
 import { Box, Button, FormControlLabel, Stack, Switch, Tooltip, Typography as MuiTypography, useTheme, type TypographyProps } from '@mui/material';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Eyebrow from '../components/common/Eyebrow';
-import Hl from '../components/common/Highlight';
+import Hl, { type HighlightStyleVariant } from '../components/common/Highlight';
 import Icon from '../components/common/Icon';
 import DocCard from '../components/repo/DocCard';
 import ReferenceCard from '../components/repo/ReferenceCard';
@@ -226,14 +226,35 @@ const sampleReference = {
 };
 
 const highlightColors = [
-  { label: 'Primary Green', value: 'rgba(126,217,87,0.28)', swatch: '#7ed957' },
-  { label: 'Primary Blue', value: 'rgba(81,162,189,0.34)', swatch: '#51a2bd' },
-  { label: 'Accent Blue', value: 'rgba(121,225,228,0.32)', swatch: '#79e1e4' },
-  { label: 'Accent Orange', value: 'rgba(247,124,59,0.32)', swatch: '#f77c3b' },
-  { label: 'Accent Yellow', value: 'rgba(242,200,32,0.34)', swatch: '#f2c820' },
-  { label: 'Accent Purple', value: 'rgba(178,128,255,0.32)', swatch: '#b280ff' },
-  { label: 'Accent Pink', value: 'rgba(255,103,125,0.32)', swatch: '#ff677d' },
+  { label: 'Primary Green', swatch: '#7ed957' },
+  { label: 'Primary Blue', swatch: '#51a2bd' },
+  { label: 'Accent Blue', swatch: '#79e1e4' },
+  { label: 'Accent Orange', swatch: '#f77c3b' },
+  { label: 'Accent Yellow', swatch: '#f2c820' },
+  { label: 'Accent Purple', swatch: '#b280ff' },
+  { label: 'Accent Pink', swatch: '#ff677d' },
 ];
+
+const highlightStyles: Array<{ label: string; value: HighlightStyleVariant }> = [
+  { label: 'Underline', value: 'underline' },
+  { label: 'Soft Fill', value: 'wash' },
+  { label: 'Pill', value: 'pill' },
+];
+
+const highlightVibrancyOptions = [
+  { label: 'Subtle', alpha: 0.18 },
+  { label: 'Balanced', alpha: 0.32 },
+  { label: 'Vibrant', alpha: 0.52 },
+];
+
+function hexToRgba(hex: string, alpha: number) {
+  const value = hex.replace('#', '');
+  const red = Number.parseInt(value.slice(0, 2), 16);
+  const green = Number.parseInt(value.slice(2, 4), 16);
+  const blue = Number.parseInt(value.slice(4, 6), 16);
+
+  return `rgba(${red},${green},${blue},${alpha})`;
+}
 
 const statCardSx = {
   bgcolor: 'surface',
@@ -389,7 +410,9 @@ export default function DesignSystem() {
   const theme = useTheme()
   const [showSpacingGuides, setShowSpacingGuides] = useState(false)
   const [showSpacingPixels, setShowSpacingPixels] = useState(true)
-  const [highlightColor, setHighlightColor] = useState(highlightColors[0].value)
+  const [highlightSwatch, setHighlightSwatch] = useState(highlightColors[0].swatch)
+  const [highlightStyle, setHighlightStyle] = useState<HighlightStyleVariant>('underline')
+  const [highlightVibrancy, setHighlightVibrancy] = useState(highlightVibrancyOptions[1].alpha)
 
   // Refs for measuring actual computed spacing
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -412,6 +435,7 @@ export default function DesignSystem() {
         },
       }
     : undefined
+  const activeHighlightColor = hexToRgba(highlightSwatch, highlightVibrancy)
 
   return (
     <>
@@ -469,7 +493,7 @@ export default function DesignSystem() {
           <>
             <TooltipTypography variant="body1">The production logo is a responsive text wordmark that echoes the source ArcGIS header while fitting the new sticky MUI navbar.</TooltipTypography>
             <ComponentMeta>
-              <StyleLine token>Logo text uses MUI `logo` and `logoSubtitle` typography variants.</StyleLine>
+              <StyleLine token>Logo text uses the MUI `logo` typography variant with viewport-specific fit sizing.</StyleLine>
               <StyleLine token>Logo color uses primary.main and nav placement uses the shared Navbar/AppBar shell.</StyleLine>
             </ComponentMeta>
           </>
@@ -884,40 +908,94 @@ export default function DesignSystem() {
             <TooltipTypography variant="body2" sx={{ maxWidth: '64ch' }}>Interactive color controls and preview copy use the shared display-shell treatment.</TooltipTypography>
           </Box>
           <Box sx={displayItemSx}>
-            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              {highlightColors.map((c) => (
-                <Box
-                  key={c.label}
-                  component="button"
-                  onClick={() => setHighlightColor(c.value)}
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.8,
-                    px: 1.2,
-                    py: 0.7,
-                    borderRadius: '999px',
-                    border: '1px solid',
-                    borderColor: highlightColor === c.value ? 'primary.main' : 'rgba(155,162,164,0.32)',
-                    bgcolor: highlightColor === c.value ? 'rgba(126,217,87,0.1)' : 'transparent',
-                    color: 'common.white',
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-heading)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    fontSize: '0.78rem',
-                  }}
-                >
-                  <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: c.swatch }} />
-                  {c.label}
-                </Box>
-              ))}
+            <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.sm }}>
+              <TooltipTypography variant="captionSmall" component="div">Style</TooltipTypography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {highlightStyles.map((style) => (
+                  <Box
+                    key={style.value}
+                    component="button"
+                    onClick={() => setHighlightStyle(style.value)}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      px: 1.2,
+                      py: 0.7,
+                      borderRadius: '999px',
+                      border: 1,
+                      borderColor: highlightStyle === style.value ? 'primary.main' : 'divider',
+                      bgcolor: highlightStyle === style.value ? 'surface' : 'transparent',
+                      color: highlightStyle === style.value ? 'primary.main' : 'base.100',
+                      cursor: 'pointer',
+                      typography: 'eyebrow',
+                    }}
+                  >
+                    {style.label}
+                  </Box>
+                ))}
+              </Box>
+
+              <TooltipTypography variant="captionSmall" component="div">Vibrancy</TooltipTypography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {highlightVibrancyOptions.map((option) => (
+                  <Box
+                    key={option.label}
+                    component="button"
+                    onClick={() => setHighlightVibrancy(option.alpha)}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.8,
+                      px: 1.2,
+                      py: 0.7,
+                      borderRadius: '999px',
+                      border: 1,
+                      borderColor: highlightVibrancy === option.alpha ? 'primary.main' : 'divider',
+                      bgcolor: highlightVibrancy === option.alpha ? hexToRgba(highlightSwatch, 0.16) : 'transparent',
+                      color: highlightVibrancy === option.alpha ? 'common.white' : 'base.100',
+                      cursor: 'pointer',
+                      typography: 'eyebrow',
+                    }}
+                  >
+                    <Box sx={{ width: 28, height: 10, borderRadius: 999, bgcolor: hexToRgba(highlightSwatch, option.alpha), border: 1, borderColor: 'divider' }} />
+                    {option.label}
+                  </Box>
+                ))}
+              </Box>
+
+              <TooltipTypography variant="captionSmall" component="div">Accent hue</TooltipTypography>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {highlightColors.map((c) => (
+                  <Box
+                    key={c.label}
+                    component="button"
+                    onClick={() => setHighlightSwatch(c.swatch)}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.8,
+                      px: 1.2,
+                      py: 0.7,
+                      borderRadius: '999px',
+                      border: '1px solid',
+                      borderColor: highlightSwatch === c.swatch ? 'primary.main' : 'divider',
+                      bgcolor: highlightSwatch === c.swatch ? hexToRgba(c.swatch, 0.12) : 'transparent',
+                      color: 'common.white',
+                      cursor: 'pointer',
+                      typography: 'eyebrow',
+                    }}
+                  >
+                    <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: c.swatch }} />
+                    {c.label}
+                  </Box>
+                ))}
+              </Box>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: '1rem 2rem', maxWidth: 1080 }}>
               {[
-                ['01', <>Who <Hl color={highlightColor}>benefits</Hl>, and who carries the <Hl color={highlightColor}>tradeoffs</Hl>?</>],
-                ['02', <>How do <Hl color={highlightColor}>social and ecological needs</Hl> shift across scenarios?</>],
-                ['03', <>How can these scenarios support a <Hl color={highlightColor}>just transition</Hl>?</>],
+                ['01', <>Who <Hl color={activeHighlightColor} styleVariant={highlightStyle}>benefits</Hl>, and who carries the <Hl color={activeHighlightColor} styleVariant={highlightStyle}>tradeoffs</Hl>?</>],
+                ['02', <>How do <Hl color={activeHighlightColor} styleVariant={highlightStyle}>social and ecological needs</Hl> shift across scenarios?</>],
+                ['03', <>How can these scenarios support a <Hl color={activeHighlightColor} styleVariant={highlightStyle}>just transition</Hl>?</>],
                 ['04', <>Use highlights for exact phrases, then let plain body text do the rest.</>],
               ].map(([n, text]) => (
                 <TooltipTypography key={String(n)} component="p" sx={{ m: 0, display: 'grid', gridTemplateColumns: theme.numbering.grid.inlineTemplate, gap: theme.numbering.grid.inlineGap, alignItems: 'baseline', color: 'rgba(242,240,239,0.84)', fontSize: '1.1rem', lineHeight: 1.55 }}>
@@ -928,7 +1006,7 @@ export default function DesignSystem() {
             </Box>
             <ComponentMeta>
               <StyleLine token>Color choices come from brand primary green, brand primary blue, and every color in the accent palette.</StyleLine>
-              <StyleLine custom>The highlight itself still uses a custom underline gradient stop and alpha values rather than theme tokens.</StyleLine>
+              <StyleLine token>Vibrancy controls adjust the accent color alpha while keeping the palette hue fixed.</StyleLine>
               <StyleLine custom>The color-choice controls are custom pills; they are not MUI Buttons or Chips yet.</StyleLine>
             </ComponentMeta>
           </Box>

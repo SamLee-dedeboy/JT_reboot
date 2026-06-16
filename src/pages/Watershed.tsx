@@ -18,6 +18,7 @@ import Section from '../components/common/Section';
 import SectionHead from '../components/common/SectionHead';
 import Reveal from '../components/common/Reveal';
 import Icon, { type IconName } from '../components/common/Icon';
+import Hl from '../components/common/Highlight';
 import { assetUrl } from '../utils/baseUrl';
 
 interface WatershedMetricRecord {
@@ -59,7 +60,21 @@ interface AttentionScenario {
   segments: AttentionSegment[];
 }
 
+interface ChartTooltipState {
+  x: number;
+  y: number;
+  title: string;
+  subtitle: string;
+  color: string;
+  rows: Array<{
+    label: string;
+    value: string;
+    color: string;
+  }>;
+}
+
 type AttentionCompareMode = 'acres' | 'percent';
+type AttentionScaleMode = 'linear' | 'log';
 
 const RESTORATION_LEVEL_ORDER = ['min', 'med', 'max'];
 const RESTORATION_LEVEL_LABELS: Record<string, string> = {
@@ -87,8 +102,8 @@ const HABITAT_META: Record<
     label: 'Forests',
     singular: 'forest',
     icon: 'layers',
-    baseColor: '#458d63',
-    shadeRange: ['#b7d6bd', '#458d63'],
+    baseColor: '#4fb06f',
+    shadeRange: ['#b7d6bd', '#4fb06f'],
     restorableAcres: 11700000,
     acreageMetric: 'change in et',
   },
@@ -96,8 +111,8 @@ const HABITAT_META: Record<
     label: 'Meadows',
     singular: 'meadow',
     icon: 'compass',
-    baseColor: '#caa62f',
-    shadeRange: ['#eee59a', '#caa62f'],
+    baseColor: '#d8bf42',
+    shadeRange: ['#eee59a', '#d8bf42'],
     restorableAcres: 115863.6,
     acreageMetric: 'change in et**',
   },
@@ -105,39 +120,37 @@ const HABITAT_META: Record<
     label: 'Floodplains',
     singular: 'floodplain',
     icon: 'waves',
-    baseColor: '#4e96b8',
-    shadeRange: ['#b9ddec', '#4e96b8'],
+    baseColor: '#62b6d9',
+    shadeRange: ['#b9ddec', '#62b6d9'],
     restorableAcres: 63600,
     acreageMetric: 'change in gw recharge',
   },
 };
 
-const RIGHT_COLUMN_METRICS = new Set(['change in et', 'change in forest cover']);
-
 const SCENARIO_LEDE =
   'The New Green Watershed scenario imagines ecological restoration and land-use adaptation as tools for addressing subsidence, flooding, habitat stress, and the transition toward a more regenerative Delta economy.';
 
 const SCENARIO_DETAIL =
-  'Rather than treating each island, channel, and habitat type as an isolated management problem, this page frames the scenario as a watershed-scale comparison of restoration priorities and modeled tradeoffs.';
+  'Placeholder text... This page helps compare how restoration priorities change modeled watershed outcomes across habitat focus areas and restoration levels.';
 
 const watershedHighlights: Array<{ n: string; icon: IconName; title: string; body: string }> = [
   {
     n: '01',
     icon: 'waves',
     title: 'Watershed Connections',
-    body: 'Compare how habitat choices ripple across broader Delta water, land, and restoration priorities.',
+    body: 'Placeholder text',
   },
   {
     n: '02',
     icon: 'compass',
     title: 'Scenario Indicators',
-    body: 'Track modeled metric ranges across habitat focus areas, scenario habitats, and restoration intensities.',
+    body: 'Placeholder text',
   },
   {
     n: '03',
     icon: 'layers',
     title: 'Habitat Restoration',
-    body: 'Read restoration levels as planning levers, from minimum intervention to larger landscape transformation.',
+    body: 'Placeholder text',
   },
 ];
 
@@ -161,6 +174,22 @@ function formatLabel(value: string) {
 
 function formatRestorationLevel(level: string) {
   return RESTORATION_LEVEL_LABELS[level] ?? formatLabel(level);
+}
+
+function formatRestorationShort(level: string) {
+  if (level === 'min') {
+    return 'Minimum';
+  }
+
+  if (level === 'med') {
+    return 'Medium';
+  }
+
+  if (level === 'max') {
+    return 'Maximum';
+  }
+
+  return formatLabel(level);
 }
 
 function formatScenarioHabitat(habitat: string) {
@@ -223,10 +252,176 @@ function formatPercent(value: number) {
   return `${d3.format(',.1f')(value)}%`;
 }
 
-function orderScenarioRecords(a: WatershedMetricRecord, b: WatershedMetricRecord) {
+function truncateChartLabel(label: string, availableWidth: number) {
+  const maxCharacters = Math.max(16, Math.floor(availableWidth / 9.2));
+
+  if (label.length <= maxCharacters) {
+    return label;
+  }
+
+  return `${label.slice(0, Math.max(maxCharacters - 3, 1)).trim()}...`;
+}
+
+function formatTooltipValue(value: number | null, unit: string) {
+  if (!isFiniteNumber(value)) {
+    return 'No data';
+  }
+
+  const absoluteValue = Math.abs(value);
+  const formattedValue =
+    absoluteValue >= 1000
+      ? d3.format('.3~s')(value).replace('G', 'B')
+      : absoluteValue >= 10
+        ? d3.format(',.1f')(value)
+        : d3.format(',.2~f')(value);
+  return unit ? `${formattedValue} ${unit}` : formattedValue;
+}
+
+function formatRangeTooltipRows(records: WatershedMetricRecord[], unit: string) {
+  return [...records]
+    .sort(
+      (a, b) =>
+        orderByList(a.restoration_level, RESTORATION_LEVEL_ORDER) - orderByList(b.restoration_level, RESTORATION_LEVEL_ORDER),
+    )
+    .map((record) => ({
+      label: formatRestorationShort(record.restoration_level),
+      value: `${formatTooltipValue(record.value_low, unit)} to ${formatTooltipValue(record.value_high, unit)}`,
+      color: colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level),
+    }));
+}
+
+function getTooltipPosition(event: MouseEvent, containerElement: HTMLDivElement | null) {
+  const bounds = containerElement?.getBoundingClientRect();
+
+  if (!bounds) {
+    return { x: 0, y: 0 };
+  }
+
+  return {
+    x: Math.min(Math.max(event.clientX - bounds.left + 14, 12), Math.max(bounds.width - 260, 12)),
+    y: event.clientY - bounds.top,
+  };
+}
+
+function ChartTooltip({ tooltip }: { tooltip: ChartTooltipState | null }) {
+  if (!tooltip) {
+    return null;
+  }
+
   return (
-    orderByList(a.restoration_level, RESTORATION_LEVEL_ORDER) - orderByList(b.restoration_level, RESTORATION_LEVEL_ORDER) ||
-    orderByList(a.scenario_habitat, SCENARIO_HABITAT_ORDER) - orderByList(b.scenario_habitat, SCENARIO_HABITAT_ORDER)
+    <Box
+      sx={{
+        position: 'absolute',
+        left: tooltip.x,
+        top: tooltip.y,
+        transform: 'translateY(-50%)',
+        width: 248,
+        maxWidth: 'calc(100% - 24px)',
+        pointerEvents: 'none',
+        zIndex: 4,
+        borderRadius: 1,
+        boxShadow: '0 18px 42px rgba(0,0,0,0.35)',
+        overflow: 'hidden',
+        bgcolor: 'rgba(16,22,24,0.96)',
+        border: '1px solid rgba(155,162,164,0.18)',
+      }}
+    >
+      <Typography
+        variant="eyebrow"
+        component="p"
+        sx={{
+          color: 'common.black',
+          bgcolor: tooltip.color,
+          px: 1.15,
+          py: 0.7,
+          lineHeight: 1,
+          letterSpacing: '0.12em',
+        }}
+      >
+        {tooltip.subtitle.toUpperCase()}
+      </Typography>
+      <Box sx={{ p: 1.2 }}>
+        <Typography variant="body2" component="p" sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1.25, mb: 0.85 }}>
+          {tooltip.title}
+        </Typography>
+        <Stack spacing={0.55}>
+          {tooltip.rows.map((row) => (
+            <Box
+              key={`${row.label}-${row.value}`}
+              sx={{ display: 'grid', gridTemplateColumns: '82px minmax(0, 1fr)', gap: 0.85, alignItems: 'baseline' }}
+            >
+              <Typography variant="captionSmall" component="span" sx={{ color: row.color, fontWeight: 800 }}>
+                {row.label}
+              </Typography>
+              <Typography variant="captionSmall" component="span" sx={{ color: 'text.secondary', lineHeight: 1.25 }}>
+                {row.value}
+              </Typography>
+            </Box>
+          ))}
+        </Stack>
+      </Box>
+    </Box>
+  );
+}
+
+function getRestorationOffset(level: string, activeLevels: string[]) {
+  if (activeLevels.length <= 1) {
+    return 0;
+  }
+
+  const index = Math.max(activeLevels.indexOf(level), 0);
+  return (index - (activeLevels.length - 1) / 2) * 8;
+}
+
+function RestorationLevelLegend() {
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: 1.2,
+        mb: 2.5,
+      }}
+    >
+      <Typography variant="captionSmall" sx={{ color: 'text.secondary', letterSpacing: '0.08em' }}>
+        RESTORATION LEVEL
+      </Typography>
+      <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
+        {RESTORATION_LEVEL_ORDER.map((level) => (
+          <Box
+            key={level}
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.65,
+              border: '1px solid rgba(242,240,239,0.22)',
+              borderRadius: 999,
+              px: 1,
+              py: 0.45,
+              bgcolor: 'rgba(16,22,24,0.22)',
+            }}
+          >
+            <Stack direction="row" spacing={0.25} aria-hidden>
+              {SCENARIO_HABITAT_ORDER.map((habitat) => (
+                <Box
+                  key={`${level}-${habitat}`}
+                  sx={{
+                    width: 9,
+                    height: 9,
+                    borderRadius: 999,
+                    bgcolor: colorForScenarioHabitatLevel(habitat, level),
+                  }}
+                />
+              ))}
+            </Stack>
+            <Typography variant="captionSmall" component="span">
+              {formatRestorationShort(level)}
+            </Typography>
+          </Box>
+        ))}
+      </Stack>
+    </Box>
   );
 }
 
@@ -235,17 +430,23 @@ function WatershedMetricsChart({
   habitatFocus,
   selectedRestorationLevel,
   selectedScenarioHabitat,
+  showTitle = true,
 }: {
   records: WatershedMetricRecord[];
   habitatFocus: string;
   selectedRestorationLevel: string;
   selectedScenarioHabitat: string;
+  showTitle?: boolean;
 }) {
   const chartRef = useRef<SVGSVGElement | null>(null);
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const [chartWidth, setChartWidth] = useState(320);
+  const [tooltip, setTooltip] = useState<ChartTooltipState | null>(null);
   const theme = useTheme();
   const chartFontSize = String(theme.typography.body2.fontSize ?? '0.875rem');
+  const chartCaptionFontSize = String(theme.typography.captionSmall.fontSize ?? '0.75rem');
+  const chartEyebrowFontSize = String(theme.typography.eyebrow.fontSize ?? chartFontSize);
+  const chartEyebrowFontFamily = String(theme.typography.eyebrow.fontFamily ?? theme.typography.fontFamily);
   const focusMeta = HABITAT_META[habitatFocus];
 
   const facets = useMemo<WatershedChartFacet[]>(() => {
@@ -313,20 +514,13 @@ function WatershedMetricsChart({
       return;
     }
 
-    const margin = { top: 22, right: 24, bottom: 66, left: 54 };
-    const columnGap = 32;
+    const margin = { top: 24, right: 24, bottom: 36, left: 150 };
     const rowGap = 34;
-    const columns = chartWidth < 760 ? 1 : 2;
-    const facetTitleHeight = 42;
-    const facetChartHeight = 180;
-    const axisLabelOffset = 50;
-    const facetBlockHeight = facetTitleHeight + facetChartHeight + margin.bottom;
-    const facetCellWidth = Math.max((chartWidth - columnGap * (columns - 1)) / columns, 320);
-    const innerWidth = facetCellWidth - margin.left - margin.right;
-    const leftColumnFacets = columns === 1 ? facets : facets.filter((facet) => !RIGHT_COLUMN_METRICS.has(facet.metric.toLowerCase()));
-    const rightColumnFacets = columns === 1 ? [] : facets.filter((facet) => RIGHT_COLUMN_METRICS.has(facet.metric.toLowerCase()));
-    const rows = columns === 1 ? facets.length : Math.max(leftColumnFacets.length, rightColumnFacets.length);
-    const height = rows * facetBlockHeight + Math.max(0, rows - 1) * rowGap + margin.top;
+    const facetTitleHeight = 34;
+    const chartRowHeight = 46;
+    const innerWidth = chartWidth - margin.left - margin.right;
+    const facetHeights = facets.map((facet) => facetTitleHeight + facet.scenarioHabitats.length * chartRowHeight + margin.bottom);
+    const height = d3.sum(facetHeights) + Math.max(0, facets.length - 1) * rowGap + margin.top;
 
     svg
       .attr('viewBox', `0 0 ${chartWidth} ${height}`)
@@ -336,171 +530,184 @@ function WatershedMetricsChart({
       .attr('aria-label', `${focusMeta?.label ?? formatLabel(habitatFocus)} metrics chart`);
 
     const root = svg.append('g').attr('transform', `translate(0, ${margin.top})`);
+    let facetOffsetY = 0;
 
-    [...leftColumnFacets, ...rightColumnFacets].forEach((facet) => {
-      const isRightColumn = columns > 1 && RIGHT_COLUMN_METRICS.has(facet.metric.toLowerCase());
-      const columnIndex = isRightColumn ? 1 : 0;
-      const rowIndex = isRightColumn ? rightColumnFacets.indexOf(facet) : leftColumnFacets.indexOf(facet);
-      const facetOffsetX = columnIndex * (facetCellWidth + columnGap);
-      const facetOffsetY = rowIndex * (facetBlockHeight + rowGap);
-      const facetGroup = root.append('g').attr('transform', `translate(${facetOffsetX}, ${facetOffsetY})`);
+    facets.forEach((facet, facetIndex) => {
+      const facetGroup = root.append('g').attr('transform', `translate(0, ${facetOffsetY})`);
+      const allValues = facet.records.flatMap((record) => [record.value_low, record.value_high].filter(isFiniteNumber));
+      const [minimumRaw, maximumRaw] = d3.extent(allValues);
+      const minimum = Math.min(minimumRaw ?? 0, 0);
+      const maximum = Math.max(maximumRaw ?? 1, 0);
+      const span = maximum - minimum || 1;
+      const padding = span * 0.08;
+      const x = d3
+        .scaleLinear()
+        .domain([minimum - padding, maximum + padding])
+        .nice()
+        .range([0, innerWidth]);
+      const chartHeight = facet.scenarioHabitats.length * chartRowHeight;
+      const y = d3
+        .scaleBand<string>()
+        .domain(facet.scenarioHabitats)
+        .range([0, chartHeight])
+        .padding(0.28);
+      const activeRestorationLevels = facet.restorationLevels;
 
       facetGroup
         .append('text')
-        .attr('x', margin.left)
+        .attr('x', margin.left / 2)
         .attr('y', 0)
         .attr('fill', 'currentColor')
         .attr('font-size', chartFontSize)
         .attr('font-weight', 700)
         .attr('text-transform', 'uppercase')
-        .text(facet.unit ? `${facet.metric}` : facet.metric);
+        .text(truncateChartLabel(facet.unit ? `${facet.metric} (${facet.unit})` : facet.metric, innerWidth));
 
       const chartGroup = facetGroup.append('g').attr('transform', `translate(${margin.left}, ${facetTitleHeight})`);
 
-      const x0 = d3
-        .scaleBand<string>()
-        .domain(facet.scenarioHabitats)
-        .range([0, innerWidth])
-        .paddingInner(0.22)
-        .paddingOuter(0.08);
-
-      const x1 = d3
-        .scaleBand<string>()
-        .domain(facet.restorationLevels)
-        .range([0, x0.bandwidth()])
-        .padding(0.15);
-
-      const allValues = facet.records.flatMap((record) => [record.value_low, record.value_high].filter(isFiniteNumber));
-      const [minimumRaw, maximumRaw] = d3.extent(allValues);
-      const minimum = minimumRaw ?? 0;
-      const maximum = maximumRaw ?? 1;
-      const span = maximum - minimum;
-      const padding = span === 0 ? Math.max(Math.abs(maximum) * 0.15, 1) : span * 0.08;
-
-      const y = d3
-        .scaleLinear()
-        .domain([minimum - padding, maximum + padding])
-        .nice()
-        .range([facetChartHeight, 0]);
-
-      chartGroup
-        .append('g')
-        .call(d3.axisLeft(y).ticks(5).tickFormat((value) => d3.format('.2~s')(Number(value))))
-        .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartFontSize))
-        .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', 'rgba(242, 240, 239, 0.35)'));
-
-      if (y.domain()[0] < 0 && y.domain()[1] > 0) {
+      if (x.domain()[0] < 0 && x.domain()[1] > 0) {
         chartGroup
           .append('line')
-          .attr('x1', 0)
-          .attr('x2', innerWidth)
-          .attr('y1', y(0))
-          .attr('y2', y(0))
+          .attr('x1', x(0))
+          .attr('x2', x(0))
+          .attr('y1', 0)
+          .attr('y2', chartHeight)
           .attr('stroke', 'rgba(242, 240, 239, 0.45)')
           .attr('stroke-dasharray', '4 4');
       }
 
+      chartGroup
+        .append('g')
+        .call(
+          d3
+            .axisLeft(y)
+            .tickSize(0)
+            .tickFormat((scenario) => {
+              return formatScenarioHabitat(String(scenario)).toUpperCase();
+            }),
+        )
+        .call((axisGroup) =>
+          axisGroup
+            .selectAll<SVGTextElement, string>('text')
+            .attr('fill', (scenario) => {
+              return HABITAT_META[`${scenario}s`]?.baseColor ?? 'currentColor';
+            })
+            .attr('font-family', chartEyebrowFontFamily)
+            .attr('font-size', chartEyebrowFontSize)
+            .attr('font-weight', 400)
+            .attr('letter-spacing', '0.12em')
+            .attr('text-transform', 'uppercase')
+            .attr('dx', '-0.25em'),
+        )
+        .call((axisGroup) => axisGroup.selectAll('path').remove());
+
       const scenarioGroups = chartGroup
-        .selectAll<SVGGElement, [string, WatershedMetricRecord[]]>('.watershed-scenario-group')
-        .data(d3.groups(facet.records, (record) => record.scenario_habitat))
+        .selectAll<SVGGElement, WatershedMetricRecord>('.watershed-scenario-group')
+        .data(facet.records)
         .enter()
         .append('g')
         .attr('class', 'watershed-scenario-group')
-        .attr('transform', ([scenarioHabitat]) => `translate(${x0(scenarioHabitat) ?? 0}, 0)`);
+        .attr(
+          'transform',
+          (record) =>
+            `translate(0, ${(y(record.scenario_habitat) ?? 0) + y.bandwidth() / 2 + getRestorationOffset(record.restoration_level, activeRestorationLevels)})`,
+        );
 
       scenarioGroups
-        .selectAll<SVGRectElement, WatershedMetricRecord>('rect')
-        .data(([, scenarioRecords]) => scenarioRecords.filter((record) => isFiniteNumber(record.value_low) && isFiniteNumber(record.value_high)))
-        .enter()
-        .append('rect')
-        .attr('x', (record) => x1(record.restoration_level) ?? 0)
-        .attr('y', (record) => y(Math.max(record.value_low ?? 0, record.value_high ?? 0)))
-        .attr('width', x1.bandwidth())
-        .attr('height', (record) => Math.abs(y(record.value_low ?? 0) - y(record.value_high ?? 0)))
-        .attr('rx', 2)
+        .append('line')
+        .attr('x1', (record) => x(Math.min(record.value_low ?? 0, record.value_high ?? 0)))
+        .attr('x2', (record) => x(Math.max(record.value_low ?? 0, record.value_high ?? 0)))
+        .attr('y1', 0)
+        .attr('y2', 0)
+        .attr('stroke', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level))
+        .attr('stroke-width', 5)
+        .attr('stroke-linecap', 'round');
+
+      scenarioGroups
+        .append('circle')
+        .attr('cx', (record) => x(record.value_low ?? 0))
+        .attr('cy', 0)
+        .attr('r', 3.5)
         .attr('fill', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level))
-        .attr('stroke', 'rgba(242, 240, 239, 0.28)')
-        .attr('stroke-width', 1);
+        .attr('stroke', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level))
+        .attr('stroke-width', 0);
+
+      scenarioGroups
+        .append('circle')
+        .attr('cx', (record) => x(record.value_high ?? 0))
+        .attr('cy', 0)
+        .attr('r', 3.5)
+        .attr('fill', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level));
 
       chartGroup
         .append('g')
-        .attr('transform', `translate(0, ${facetChartHeight})`)
-        .call(d3.axisBottom(x0).tickFormat((value) => formatScenarioHabitat(String(value))))
-        .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartFontSize))
+        .attr('transform', `translate(0, ${chartHeight + 8})`)
+        .call(d3.axisBottom(x).ticks(4).tickFormat((value) => d3.format('.2~s')(Number(value))))
+        .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartCaptionFontSize))
         .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', 'rgba(242, 240, 239, 0.35)'));
 
       chartGroup
-        .append('text')
-        .attr('x', innerWidth / 2)
-        .attr('y', facetChartHeight + axisLabelOffset)
-        .attr('fill', 'currentColor')
-        .attr('font-size', chartFontSize)
-        .attr('font-weight', 700)
-        .attr('text-anchor', 'middle')
-        .text('Scenarios');
+        .append('g')
+        .selectAll<SVGRectElement, string>('.habitat-hover-target')
+        .data(facet.scenarioHabitats)
+        .enter()
+        .append('rect')
+        .attr('class', 'habitat-hover-target')
+        .attr('x', -margin.left + 4)
+        .attr('y', (habitat) => (y(habitat) ?? 0) - (chartRowHeight - y.bandwidth()) / 2)
+        .attr('width', innerWidth + margin.left - 4)
+        .attr('height', chartRowHeight)
+        .attr('fill', 'transparent')
+        .style('pointer-events', 'all')
+        .style('cursor', 'default')
+        .on('mousemove', (event: MouseEvent, habitat) => {
+          const habitatRecords = facet.records.filter((record) => record.scenario_habitat === habitat);
+          const meta = HABITAT_META[`${habitat}s`];
+
+          setTooltip({
+            ...getTooltipPosition(event, containerElement),
+            title: facet.unit ? `${facet.metric} (${facet.unit})` : facet.metric,
+            subtitle: formatScenarioHabitat(habitat),
+            color: meta?.baseColor ?? 'currentColor',
+            rows: formatRangeTooltipRows(habitatRecords, facet.unit),
+          });
+        })
+        .on('mouseleave', () => setTooltip(null));
+
+      facetOffsetY += facetHeights[facetIndex] + rowGap;
     });
-  }, [chartWidth, facets, habitatFocus, focusMeta?.label, chartFontSize]);
+  }, [
+    chartWidth,
+    facets,
+    habitatFocus,
+    focusMeta?.label,
+    chartFontSize,
+    chartCaptionFontSize,
+    chartEyebrowFontFamily,
+    chartEyebrowFontSize,
+    containerElement,
+  ]);
 
   return (
-    <Box ref={setContainerElement} sx={{ width: '100%' }}>
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="h4" component="h3" sx={{ color: 'primary.main', mb: 1 }}>
-          {focusMeta?.label ?? formatLabel(habitatFocus)}
-        </Typography>
-      </Box>
+    <Box ref={setContainerElement} sx={{ width: '100%', position: 'relative' }}>
+      {showTitle && (
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h4" component="h3" sx={{ color: 'primary.main', mb: 1 }}>
+            {focusMeta?.label ?? formatLabel(habitatFocus)}
+          </Typography>
+        </Box>
+      )}
 
       {facets.length > 0 ? (
         <>
-          <PriorityColorLegend focus={focusMeta?.singular}/>
           <svg ref={chartRef} style={{ display: 'block', width: '100%' }} />
+          <ChartTooltip tooltip={tooltip} />
         </>
       ) : (
         <Typography variant="body1" component="p">
           No complete metric ranges are available for this filter combination.
         </Typography>
       )}
-    </Box>
-  );
-}
-
-function PriorityColorLegend({ focus }: { focus: string }) {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: 'repeat(1, minmax(0, 1fr))' },
-        gap: 1.5,
-        mb: 2,
-      }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 1,
-          border: '1px solid rgba(155,162,164,0.18)',
-          borderRadius: 1,
-          px: 1.2,
-          py: 0.9,
-        }}
-      >
-        <Typography variant="captionSmall">Restoration Level</Typography>
-        <Stack direction="row" spacing={0.5} aria-hidden>
-          {RESTORATION_LEVEL_ORDER.map((level) => (
-            <Box
-              key={level}
-              sx={{
-                width: 16,
-                height: 16,
-                borderRadius: 999,
-                bgcolor: colorForScenarioHabitatLevel(focus, level),
-                border: '1px solid rgba(242,240,239,0.25)',
-              }}
-            />
-          ))}
-        </Stack>
-      </Box>
     </Box>
   );
 }
@@ -561,6 +768,7 @@ function AttentionStackedChart({
   compareMode: AttentionCompareMode;
   onCompareModeChange: (mode: AttentionCompareMode) => void;
 }) {
+  const [scaleMode, setScaleMode] = useState<AttentionScaleMode>('linear');
   const scenarios = useMemo<AttentionScenario[]>(
     () => buildAttentionScenarios(records, selectedRestorationLevel, selectedScenarioHabitat),
     [records, selectedRestorationLevel, selectedScenarioHabitat],
@@ -569,9 +777,18 @@ function AttentionStackedChart({
     const totals = scenarios.map((scenario) =>
       d3.sum(scenario.segments, (segment) => (compareMode === 'acres' ? segment.acres : segment.percent)),
     );
+    const scaledTotals = totals.map((total) => (compareMode === 'acres' && scaleMode === 'log' ? Math.log10(total + 1) : total));
 
-    return Math.max(...totals, 1);
-  }, [scenarios, compareMode]);
+    return Math.max(...scaledTotals, 1);
+  }, [scenarios, compareMode, scaleMode]);
+  const scenariosByRestorationLevel = useMemo(
+    () =>
+      RESTORATION_LEVEL_ORDER.map((level) => ({
+        level,
+        scenarios: scenarios.filter((scenario) => scenario.restorationLevel === level),
+      })).filter((group) => group.scenarios.length > 0),
+    [scenarios],
+  );
 
   if (!scenarios.length) {
     return (
@@ -596,135 +813,224 @@ function AttentionStackedChart({
             Habitat Attention Across Scenarios
           </Typography>
           <Typography variant="body2" sx={{ maxWidth: '76ch' }}>
-            Stacked bars show how much each scenario emphasizes forests, meadows, and floodplains. Compare actual
-            restored acreage or the share of each habitat focus&apos;s restorable baseline.
+            Stacked bars show how much each scenario prioritizes forests, meadows, and floodplains.
+            Compare the share of each habitat focus&apos;s restorable baseline or the restored acreage <Hl>using the tabs on the right.</Hl>
+            For acreage, the chart can be displayed on a linear or logarithmic scale.
           </Typography>
         </Box>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={compareMode}
-          onChange={(_, value: AttentionCompareMode | null) => {
-            if (value) {
-              onCompareModeChange(value);
-            }
-          }}
-          aria-label="Compare attention chart values"
-          sx={{
-            justifySelf: { xs: 'start', md: 'end' },
-            '& .MuiToggleButton-root': {
-              color: 'common.white',
-              borderColor: 'rgba(155,162,164,0.35)',
-              px: 1.6,
-              '&.Mui-selected': {
-                bgcolor: 'primary.main',
-                color: 'common.black',
-                '&:hover': { bgcolor: 'primary.light' },
+        <Stack spacing={1} sx={{ justifySelf: { xs: 'start', md: 'end' }, alignItems: { xs: 'flex-start', md: 'flex-end' } }}>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={compareMode}
+            onChange={(_, value: AttentionCompareMode | null) => {
+              if (value) {
+                onCompareModeChange(value);
+              }
+            }}
+            aria-label="Compare attention chart values"
+            sx={{
+              '& .MuiToggleButton-root': {
+                color: 'common.white',
+                borderColor: 'rgba(155,162,164,0.35)',
+                px: 1.6,
+                '&.Mui-selected': {
+                  bgcolor: 'primary.main',
+                  color: 'common.black',
+                  '&:hover': { bgcolor: 'primary.light' },
+                },
               },
-            },
-          }}
-        >
-          <ToggleButton value="acres" aria-label="Compare actual acreage">
-            Acres
-          </ToggleButton>
-          <ToggleButton value="percent" aria-label="Compare percentages">
-            Percent
-          </ToggleButton>
-        </ToggleButtonGroup>
+            }}
+          >
+            <ToggleButton value="acres" aria-label="Compare actual acreage">
+              Acres
+            </ToggleButton>
+            <ToggleButton value="percent" aria-label="Compare percentages">
+              Percent
+            </ToggleButton>
+          </ToggleButtonGroup>
+          {compareMode === 'acres' && (
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={scaleMode}
+              onChange={(_, value: AttentionScaleMode | null) => {
+                if (value) {
+                  setScaleMode(value);
+                }
+              }}
+              aria-label="Compare acreage scale"
+              sx={{
+                '& .MuiToggleButton-root': {
+                  color: 'common.white',
+                  borderColor: 'rgba(155,162,164,0.35)',
+                  px: 1.2,
+                  '&.Mui-selected': {
+                    bgcolor: 'secondary.main',
+                    color: 'common.black',
+                    '&:hover': { bgcolor: 'secondary.light' },
+                  },
+                },
+              }}
+            >
+              <ToggleButton value="linear" aria-label="Use linear acreage scale">
+                Linear
+              </ToggleButton>
+              <ToggleButton value="log" aria-label="Use logarithmic acreage scale">
+                Log
+              </ToggleButton>
+            </ToggleButtonGroup>
+          )}
+        </Stack>
       </Box>
 
-      <Stack spacing={1.2}>
-        {scenarios.map((scenario) => {
-          const scenarioTotal = d3.sum(scenario.segments, (segment) =>
-            compareMode === 'acres' ? segment.acres : segment.percent,
-          );
-          const totalWidth = `${(scenarioTotal / maxScenarioTotal) * 100}%`;
-
-          return (
+      <Stack spacing={2}>
+        {scenariosByRestorationLevel.map(({ level, scenarios: groupedScenarios }) => (
+          <Box
+            key={level}
+            sx={{
+              border: '1px solid rgba(155,162,164,0.2)',
+              borderRadius: 1,
+              bgcolor: 'rgba(16,22,24,0.22)',
+              overflow: 'hidden',
+            }}
+          >
             <Box
-              key={scenario.id}
               sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'minmax(220px, 0.35fr) minmax(0, 1fr)' },
-                gap: { xs: 0.8, md: 1.6 },
-                alignItems: 'center',
+                display: 'flex',
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                justifyContent: 'space-between',
+                gap: 1.2,
+                flexDirection: { xs: 'column', sm: 'row' },
+                px: { xs: 1.4, md: 1.8 },
+                py: 1.2,
+                bgcolor: 'rgba(81,93,97,0.26)',
+                borderBottom: '1px solid rgba(155,162,164,0.18)',
               }}
             >
               <Box>
-                <Typography variant="h5" component="h4">
-                  {formatRestorationLevel(scenario.restorationLevel)}
+                <Typography variant="h5" component="h4" sx={{ color: 'common.white' }}>
+                  <Box component="span" sx={{ fontWeight: 800 }}>
+                    {level === 'min' ? 'Minimum' : level === 'med' ? 'Medium' : 'Maximum'}
+                  </Box>{' '}
+                  Restoration
                 </Typography>
-                <Typography variant="captionSmall" component="p" sx={{ color: 'secondary.main' }}>
-                  {formatScenarioHabitat(scenario.scenarioHabitat)}
+                <Typography variant="captionSmall" component="p">
+                  Placeholder caption
                 </Typography>
-              </Box>
-              <Box>
-                <Box
-                  sx={{
-                    display: 'flex',
-                    width: totalWidth,
-                    minHeight: 25,
-                    overflow: 'hidden',
-                    borderRadius: 1,
-                    border: '1px solid rgba(155,162,164,0.18)',
-                    bgcolor: 'rgba(16,22,24,0.45)',
-                  }}
-                >
-                  {scenario.segments.map((segment) => {
-                    const meta = HABITAT_META[segment.habitatFocus];
-                    const value = compareMode === 'acres' ? segment.acres : segment.percent;
-                    const width = scenarioTotal > 0 ? `${(value / scenarioTotal) * 100}%` : '0%';
-                    const label = compareMode === 'acres' ? formatNumber(segment.acres) : formatPercent(segment.percent);
-
-                    return (
-                      <Box
-                        key={segment.habitatFocus}
-                        sx={{
-                          width,
-                          bgcolor: meta.baseColor,
-                          color: 'common.white',
-                          px: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          textAlign: 'center',
-                          borderRight: '1px solid rgba(242,240,239,0.25)',
-                          '&:last-of-type': { borderRight: 0 },
-                        }}
-                        title={`${meta.label}: ${formatPercent(segment.percent)} / ${formatNumber(segment.acres)} acres`}
-                      >
-                        <Typography variant="captionSmall" component="span" sx={{ color: 'inherit', lineHeight: 1.15 }}>
-                          {label}
-                        </Typography>
-                      </Box>
-                    );
-                  })}
-                </Box>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, minmax(0, 1fr))' },
-                    gap: 0.8,
-                    mt: 0.8,
-                  }}
-                >
-                  {scenario.segments.map((segment) => {
-                    const meta = HABITAT_META[segment.habitatFocus];
-
-                    return (
-                      <Typography key={segment.habitatFocus} variant="captionSmall" component="p">
-                        <Box component="span" sx={{ color: meta.baseColor, fontWeight: 800 }}>
-                          {meta.label}:
-                        </Box>{' '}
-                        {formatNumber(segment.acres)} acres
-                      </Typography>
-                    );
-                  })}
-                </Box>
               </Box>
             </Box>
-          );
-        })}
+
+            <Stack spacing={1.4} sx={{ p: { xs: 1.4, md: 1.8 } }}>
+              {groupedScenarios.map((scenario) => {
+                const scenarioTotal = d3.sum(scenario.segments, (segment) =>
+                  compareMode === 'acres' ? segment.acres : segment.percent,
+                );
+                const scaledScenarioTotal = compareMode === 'acres' && scaleMode === 'log' ? Math.log10(scenarioTotal + 1) : scenarioTotal;
+                const totalWidth = `${(scaledScenarioTotal / maxScenarioTotal) * 100}%`;
+                const priorityMeta = HABITAT_META[`${scenario.scenarioHabitat}s`];
+
+                return (
+                  <Box
+                    key={scenario.id}
+                    sx={{
+                      borderTop: '1px solid rgba(155,162,164,0.14)',
+                      pt: 1.2,
+                      '&:first-of-type': { borderTop: 0, pt: 0 },
+                    }}
+                  >
+                    <Typography
+                      variant="eyebrow"
+                      component="p"
+                      sx={{
+                        mb: 0.8,
+                        color: priorityMeta?.baseColor ?? 'secondary.main',
+                        letterSpacing: '0.16em',
+                      }}
+                    >
+                      {formatScenarioHabitat(scenario.scenarioHabitat)}
+                    </Typography>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          width: totalWidth,
+                          minHeight: 25,
+                          overflow: 'hidden',
+                          borderRadius: 0,
+                          border: '1px solid rgba(155,162,164,0.18)',
+                          bgcolor: 'rgba(16,22,24,0.45)',
+                        }}
+                        aria-label={`${formatRestorationLevel(scenario.restorationLevel)} ${formatScenarioHabitat(scenario.scenarioHabitat)} habitat attention`}
+                      >
+                        {scenario.segments.map((segment) => {
+                          const meta = HABITAT_META[segment.habitatFocus];
+                          const value = compareMode === 'acres' ? segment.acres : segment.percent;
+                          const width = scenarioTotal > 0 ? `${(value / scenarioTotal) * 100}%` : '0%';
+
+                          return (
+                            <Box
+                              key={segment.habitatFocus}
+                              sx={{
+                                width,
+                                bgcolor: meta.baseColor,
+                                borderRight: '1px solid rgba(242,240,239,0.25)',
+                                '&:last-of-type': { borderRight: 0 },
+                              }}
+                              title={`${meta.label} – ${formatPercent(segment.percent)} / ${formatNumber(segment.acres)} acres`}
+                            />
+                          );
+                        })}
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, minmax(0, 1fr))' },
+                          gap: 0.8,
+                          mt: 0.8,
+                        }}
+                      >
+                        {scenario.segments.map((segment) => {
+                          const meta = HABITAT_META[segment.habitatFocus];
+                          const label = compareMode === 'acres' ? `${formatNumber(segment.acres)} acres` : formatPercent(segment.percent);
+                          const isFocusedHabitat = segment.habitatFocus === `${scenario.scenarioHabitat}s`;
+
+                          return (
+                            <Box
+                              key={segment.habitatFocus}
+                              sx={{
+                                display: 'inline-flex',
+                                width: 'fit-content',
+                                alignItems: 'center',
+                                minHeight: isFocusedHabitat ? 28 : 'auto',
+                                border: isFocusedHabitat ? `1px solid ${meta.baseColor}` : '1px solid transparent',
+                                borderRadius: 999,
+                                px: isFocusedHabitat ? 1 : 0,
+                                py: 0,
+                              }}
+                            >
+                              <Typography
+                                variant="captionSmall"
+                                component="span"
+                                sx={{ color: meta.baseColor, m: 0, lineHeight: 1, display: 'flex', alignItems: 'center' }}
+                              >
+                                <span style={{ fontWeight: 800 }}>
+                                  {meta.label}
+                                </span>
+                                {'\u00a0–\u00a0'}
+                                {label}
+                              </Typography>
+                            </Box>
+                          );
+                        })}
+                      </Box>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Stack>
+          </Box>
+        ))}
       </Stack>
     </Stack>
   );
@@ -742,19 +1048,37 @@ function ChangesComparisonChart({
   const chartRef = useRef<SVGSVGElement | null>(null);
   const [containerElement, setContainerElement] = useState<HTMLDivElement | null>(null);
   const [chartWidth, setChartWidth] = useState(320);
+  const [tooltip, setTooltip] = useState<ChartTooltipState | null>(null);
   const theme = useTheme();
   const chartFontSize = String(theme.typography.body2.fontSize ?? '0.875rem');
+  const chartCaptionFontSize = String(theme.typography.captionSmall.fontSize ?? '0.75rem');
+  const chartEyebrowFontSize = String(theme.typography.eyebrow.fontSize ?? chartFontSize);
+  const chartEyebrowFontFamily = String(theme.typography.eyebrow.fontFamily ?? theme.typography.fontFamily);
 
   const facets = useMemo(() => {
     const filteredRecords = getCompleteRecords(
       records.filter((record) => matchesFilters(record, selectedRestorationLevel, selectedScenarioHabitat)),
     );
 
-    return Array.from(d3.group(filteredRecords, (record) => record.metric), ([metric, metricRecords]) => ({
-      metric,
-      unit: metricRecords[0]?.unit ?? '',
-      records: [...metricRecords].sort(orderScenarioRecords),
-    })).filter((facet) => facet.records.length > 0);
+    return Array.from(d3.group(filteredRecords, (record) => record.metric), ([metric, metricRecords]) => {
+      const sortedRecords = [...metricRecords].sort(
+        (a, b) =>
+          orderByList(a.scenario_habitat, SCENARIO_HABITAT_ORDER) - orderByList(b.scenario_habitat, SCENARIO_HABITAT_ORDER) ||
+          orderByList(a.restoration_level, RESTORATION_LEVEL_ORDER) - orderByList(b.restoration_level, RESTORATION_LEVEL_ORDER),
+      );
+
+      return {
+        metric,
+        unit: metricRecords[0]?.unit ?? '',
+        records: sortedRecords,
+        scenarioHabitats: SCENARIO_HABITAT_ORDER.filter((habitat) =>
+          sortedRecords.some((record) => record.scenario_habitat === habitat),
+        ),
+        restorationLevels: RESTORATION_LEVEL_ORDER.filter((level) =>
+          sortedRecords.some((record) => record.restoration_level === level),
+        ),
+      };
+    }).filter((facet) => facet.records.length > 0);
   }, [records, selectedRestorationLevel, selectedScenarioHabitat]);
 
   useEffect(() => {
@@ -792,13 +1116,18 @@ function ChangesComparisonChart({
     const columns = chartWidth < 860 ? 1 : 2;
     const columnGap = 34;
     const rowGap = 34;
-    const margin = { top: 28, right: 28, bottom: 38, left: 126 };
+    const cardPaddingX = 18;
+    const cardPaddingTop = 30;
+    const cardPaddingBottom = 8;
+    const margin = { top: 28, right: 28, bottom: 38, left: 150 };
     const facetTitleHeight = 36;
-    const chartRowHeight = 24;
-    const facetChartHeight = (facet: (typeof facets)[number]) => facet.records.length * chartRowHeight + 18;
-    const facetHeights = facets.map((facet) => facetTitleHeight + facetChartHeight(facet) + margin.bottom);
+    const chartRowHeight = 46;
+    const facetChartHeight = (facet: (typeof facets)[number]) => facet.scenarioHabitats.length * chartRowHeight + 18;
+    const facetHeights = facets.map(
+      (facet) => cardPaddingTop + cardPaddingBottom + facetTitleHeight + facetChartHeight(facet) + margin.bottom,
+    );
     const columnWidth = Math.max((chartWidth - columnGap * (columns - 1)) / columns, 320);
-    const innerWidth = columnWidth - margin.left - margin.right;
+    const innerWidth = columnWidth - margin.left - margin.right - cardPaddingX * 2;
     const columnHeights = Array.from({ length: columns }, () => 0);
     const placements = facets.map((facet, index) => {
       const column = columns === 1 ? 0 : index % columns;
@@ -818,7 +1147,7 @@ function ChangesComparisonChart({
 
     const root = svg.append('g').attr('transform', `translate(0, ${margin.top})`);
 
-    placements.forEach(({ facet, x, y: facetY }) => {
+    placements.forEach(({ facet, x, y: facetY, height: facetHeight }) => {
       const values = facet.records.flatMap((record) => [record.value_low, record.value_high].filter(isFiniteNumber));
       const [extentMinRaw, extentMaxRaw] = d3.extent(values);
       const extentMin = Math.min(extentMinRaw ?? 0, 0);
@@ -830,24 +1159,35 @@ function ChangesComparisonChart({
         .domain([extentMin - padding, extentMax + padding])
         .nice()
         .range([0, innerWidth]);
-      const yScale = d3
-        .scaleBand<string>()
-        .domain(facet.records.map((record) => record.scenario))
-        .range([0, facet.records.length * chartRowHeight])
-        .padding(0.25);
+      const chartHeight = facet.scenarioHabitats.length * chartRowHeight;
+      const yScale = d3.scaleBand<string>().domain(facet.scenarioHabitats).range([0, chartHeight]).padding(0.28);
+      const activeRestorationLevels = facet.restorationLevels;
       const facetGroup = root.append('g').attr('transform', `translate(${x}, ${facetY})`);
 
       facetGroup
-        .append('text')
-        .attr('x', margin.left)
+        .append('rect')
+        .attr('x', 0)
         .attr('y', 0)
+        .attr('width', columnWidth)
+        .attr('height', facetHeight)
+        .attr('rx', 4)
+        .attr('fill', 'rgba(16,22,24,0.22)')
+        .attr('stroke', 'rgba(155,162,164,0.18)')
+        .attr('stroke-width', 1);
+
+      facetGroup
+        .append('text')
+        .attr('x', cardPaddingX + margin.left / 2)
+        .attr('y', cardPaddingTop)
         .attr('fill', 'currentColor')
         .attr('font-size', chartFontSize)
         .attr('font-weight', 700)
         .attr('text-transform', 'uppercase')
-        .text(facet.unit ? `${facet.metric} (${facet.unit})` : facet.metric);
+        .text(truncateChartLabel(facet.unit ? `${facet.metric} (${facet.unit})` : facet.metric, innerWidth));
 
-      const chartGroup = facetGroup.append('g').attr('transform', `translate(${margin.left}, ${facetTitleHeight})`);
+      const chartGroup = facetGroup
+        .append('g')
+        .attr('transform', `translate(${cardPaddingX + margin.left}, ${cardPaddingTop + facetTitleHeight})`);
 
       if (xScale.domain()[0] < 0 && xScale.domain()[1] > 0) {
         chartGroup
@@ -855,22 +1195,37 @@ function ChangesComparisonChart({
           .attr('x1', xScale(0))
           .attr('x2', xScale(0))
           .attr('y1', 0)
-          .attr('y2', facet.records.length * chartRowHeight)
+          .attr('y2', chartHeight)
           .attr('stroke', 'rgba(242,240,239,0.42)')
           .attr('stroke-dasharray', '4 4');
       }
 
       chartGroup
         .append('g')
-        .call(d3.axisLeft(yScale).tickSize(0))
-        .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartFontSize))
+        .call(
+          d3
+            .axisLeft(yScale)
+            .tickSize(0)
+            .tickFormat((habitat) => formatScenarioHabitat(String(habitat)).toUpperCase()),
+        )
+        .call((axisGroup) =>
+          axisGroup
+            .selectAll<SVGTextElement, string>('text')
+            .attr('fill', (habitat) => HABITAT_META[`${habitat}s`]?.baseColor ?? 'currentColor')
+            .attr('font-family', chartEyebrowFontFamily)
+            .attr('font-size', chartEyebrowFontSize)
+            .attr('font-weight', 400)
+            .attr('letter-spacing', '0.12em')
+            .attr('text-transform', 'uppercase')
+            .attr('dx', '-0.25em'),
+        )
         .call((axisGroup) => axisGroup.selectAll('path').remove());
 
       chartGroup
         .append('g')
-        .attr('transform', `translate(0, ${facet.records.length * chartRowHeight + 8})`)
+        .attr('transform', `translate(0, ${chartHeight + 8})`)
         .call(d3.axisBottom(xScale).ticks(4).tickFormat((value) => d3.format('.2~s')(Number(value))))
-        .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartFontSize))
+        .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartCaptionFontSize))
         .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', 'rgba(242,240,239,0.35)'));
 
       const scenarioGroups = chartGroup
@@ -879,7 +1234,11 @@ function ChangesComparisonChart({
         .enter()
         .append('g')
         .attr('class', 'change-range-row')
-        .attr('transform', (record) => `translate(0, ${(yScale(record.scenario) ?? 0) + yScale.bandwidth() / 2})`);
+        .attr(
+          'transform',
+          (record) =>
+            `translate(0, ${(yScale(record.scenario_habitat) ?? 0) + yScale.bandwidth() / 2 + getRestorationOffset(record.restoration_level, activeRestorationLevels)})`,
+        );
 
       scenarioGroups
         .append('line')
@@ -896,9 +1255,9 @@ function ChangesComparisonChart({
         .attr('cx', (record) => xScale(record.value_low ?? 0))
         .attr('cy', 0)
         .attr('r', 3.5)
-        .attr('fill', '#f2f0ef')
+        .attr('fill', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level))
         .attr('stroke', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level))
-        .attr('stroke-width', 2);
+        .attr('stroke-width', 0);
 
       scenarioGroups
         .append('circle')
@@ -906,22 +1265,54 @@ function ChangesComparisonChart({
         .attr('cy', 0)
         .attr('r', 3.5)
         .attr('fill', (record) => colorForScenarioHabitatLevel(record.scenario_habitat, record.restoration_level));
+
+      chartGroup
+        .append('g')
+        .selectAll<SVGRectElement, string>('.habitat-hover-target')
+        .data(facet.scenarioHabitats)
+        .enter()
+        .append('rect')
+        .attr('class', 'habitat-hover-target')
+        .attr('x', -margin.left + 4)
+        .attr('y', (habitat) => (yScale(habitat) ?? 0) - (chartRowHeight - yScale.bandwidth()) / 2)
+        .attr('width', innerWidth + margin.left - 4)
+        .attr('height', chartRowHeight)
+        .attr('fill', 'transparent')
+        .style('pointer-events', 'all')
+        .style('cursor', 'default')
+        .on('mousemove', (event: MouseEvent, habitat) => {
+          const habitatRecords = facet.records.filter((record) => record.scenario_habitat === habitat);
+          const meta = HABITAT_META[`${habitat}s`];
+
+          setTooltip({
+            ...getTooltipPosition(event, containerElement),
+            title: facet.unit ? `${facet.metric} (${facet.unit})` : facet.metric,
+            subtitle: formatScenarioHabitat(habitat),
+            color: meta?.baseColor ?? 'currentColor',
+            rows: formatRangeTooltipRows(habitatRecords, facet.unit),
+          });
+        })
+        .on('mouseleave', () => setTooltip(null));
     });
-  }, [chartWidth, facets, chartFontSize]);
+  }, [chartWidth, facets, chartFontSize, chartCaptionFontSize, chartEyebrowFontFamily, chartEyebrowFontSize, containerElement]);
 
   return (
-    <Box ref={setContainerElement} sx={{ width: '100%' }}>
+    <Box ref={setContainerElement} sx={{ width: '100%', position: 'relative' }}>
       <Box sx={{ mb: 2 }}>
         <Typography variant="h4" component="h3" sx={{ color: 'primary.main', mb: 1 }}>
-          Scenario Change Ranges
+          Possible Change Ranges
         </Typography>
         <Typography variant="body2" sx={{ maxWidth: '76ch' }}>
-          Low-to-high ranges from Table 2, grouped by metric and filtered by the same restoration and habitat-priority
-          controls.
+          Low-to-high ranges from <Hl>Table 2</Hl> in the excel sheet, grouped by metric and filtered by the same restoration and habitat-priority
+          controls. Restoration levels are drawn in order <Hl>Minimum to Medium to Maximum</Hl> within each habitat row. <Hl>Hover over</Hl> the chart to see actual numbers.
         </Typography>
       </Box>
       {facets.length > 0 ? (
-        <svg ref={chartRef} style={{ display: 'block', width: '100%' }} />
+        <>
+          <RestorationLevelLegend />
+          <svg ref={chartRef} style={{ display: 'block', width: '100%' }} />
+          <ChartTooltip tooltip={tooltip} />
+        </>
       ) : (
         <Typography variant="body1" component="p">
           No change ranges are available for this filter combination.
@@ -968,6 +1359,54 @@ export default function Watershed() {
       isMounted = false;
     };
   }, []);
+
+  const renderHabitatChangeCard = (habitatFocus: string) => {
+    const meta = HABITAT_META[habitatFocus];
+
+    return (
+      <Box
+        key={habitatFocus}
+        sx={{
+          border: `1px solid ${meta.baseColor}`,
+          borderRadius: 1,
+          bgcolor: 'rgba(16,22,24,0.22)',
+          overflow: 'hidden',
+          minWidth: 0,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 1,
+            px: { xs: 1.4, md: 1.6 },
+            py: 1.1,
+            bgcolor: 'rgba(81,93,97,0.26)',
+            borderBottom: `1px solid ${meta.baseColor}`,
+          }}
+        >
+          <Box>
+            <Typography variant="h5" component="h4" sx={{ color: meta.baseColor }}>
+              {meta.label}
+            </Typography>
+            <Typography variant="captionSmall" component="p">
+              Placeholder caption
+            </Typography>
+          </Box>
+        </Box>
+        <Box sx={{ p: { xs: 1.4, md: 1.6 } }}>
+          <WatershedMetricsChart
+            records={metrics.filter((d) => !['Change in ET**', 'Change in wetland cover'].includes(d.metric))}
+            habitatFocus={habitatFocus}
+            selectedRestorationLevel={selectedRestorationLevel}
+            selectedScenarioHabitat={selectedScenarioHabitat}
+            showTitle={false}
+          />
+        </Box>
+      </Box>
+    );
+  };
 
   return (
     <PageLayout title="New Green Watershed" fullWidthContent hideTitle>
@@ -1061,10 +1500,10 @@ export default function Watershed() {
                   Scenario Metrics
                 </Typography>
                 <Typography variant="h2" sx={{ mb: 1, '&&': { color: 'common.white' } }}>
-                  Compare Modeled Tradeoffs
+                  Compare Nine Scenarios
                 </Typography>
-                <Typography variant="body2" component="p" sx={{ maxWidth: '70ch' }}>
-                  Use the controls to isolate one restoration level, one habitat-priority scenario, or a single
+                <Typography variant="body2" component="p" sx={{ maxWidth: '75ch' }}>
+                  <Hl>Use the controls</Hl> to isolate one restoration level, one habitat prioritization, or a single
                   combination. Leave both controls on all scenarios to compare the full nine-scenario matrix.
                 </Typography>
               </Box>
@@ -1130,31 +1569,32 @@ export default function Watershed() {
                   selectedScenarioHabitat={selectedScenarioHabitat}
                 />
 
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', lg: 'repeat(3, minmax(0, 1fr))' },
-                    gap: { xs: 2, lg: 2.5 },
-                    alignItems: 'start',
-                  }}
-                >
-                  {HABITAT_FOCUS_ORDER.map((habitatFocus) => (
-                    <Box
-                      key={habitatFocus}
-                      sx={{
-                        borderTop: '1px solid rgba(155,162,164,0.18)',
-                        pt: 2.5,
-                        minWidth: 0,
-                      }}
-                    >
-                      <WatershedMetricsChart
-                        records={metrics.filter((d) => !["Change in ET**", "Change in wetland cover"].includes(d.metric))}
-                        habitatFocus={habitatFocus}
-                        selectedRestorationLevel={selectedRestorationLevel}
-                        selectedScenarioHabitat={selectedScenarioHabitat}
-                      />
-                    </Box>
-                  ))}
+                <Box>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="h4" component="h3" sx={{ color: 'primary.main', mb: 1 }}>
+                      Important Metrics within Each Habitat
+                    </Typography>
+                    <Typography variant="body2" sx={{ maxWidth: '76ch' }}>
+                      Horizontal low-to-high ranges by habitat focus, using the same scenario filters. Restoration levels
+                      are drawn in order <Hl>Minimum to Medium to Maximum</Hl> within each habitat row. <Hl>Hover over</Hl> the chart to see actual numbers.
+                      This is using <Hl>Table 1</Hl> from the excel sheet.
+                    </Typography>
+                  </Box>
+                  <RestorationLevelLegend />
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gridTemplateColumns: { xs: '1fr', lg: 'repeat(2, minmax(0, 1fr))' },
+                      gap: { xs: 2, lg: 2.5 },
+                      alignItems: 'start',
+                    }}
+                  >
+                    {renderHabitatChangeCard('forests')}
+                    <Stack spacing={{ xs: 2, lg: 2.5 }}>
+                      {renderHabitatChangeCard('meadows')}
+                      {renderHabitatChangeCard('floodplains')}
+                    </Stack>
+                  </Box>
                 </Box>
               </Stack>
             ) : (

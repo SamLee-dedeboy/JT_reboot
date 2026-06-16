@@ -1,5 +1,5 @@
-import { Box, FormControlLabel, Stack, Switch, useMediaQuery, useTheme, type SxProps, type Theme, type TypographyProps } from '@mui/material';
-import { useRef, useState, type ComponentType, type RefObject } from 'react';
+import { Box, Stack, useMediaQuery, useTheme, type SxProps, type Theme, type TypographyProps } from '@mui/material';
+import { useRef, type ComponentType, type RefObject } from 'react';
 import { LogoWordmark, type LogoVariant } from '../../components/Logo';
 import { displayItemSx } from '../common/displayStyles';
 import { jtSpacing } from '../../theme/muiTheme';
@@ -20,7 +20,6 @@ type LogoContentProps = {
 
 function LogoVariantPreview({
   variant,
-  compressedLogos,
   showSpacingGuides,
   showSpacingPixels,
   SpacingMetrics,
@@ -28,7 +27,6 @@ function LogoVariantPreview({
   TooltipTypography,
 }: {
   variant: { key: LogoVariant; label: string };
-  compressedLogos: boolean;
   showSpacingGuides: boolean;
   showSpacingPixels: boolean;
   SpacingMetrics: LogoContentProps['SpacingMetrics'];
@@ -54,7 +52,7 @@ function LogoVariantPreview({
       {showSpacingGuides && <SpacingMetrics elementRef={ref} showPixels={showSpacingPixels} />}
       <TooltipTypography variant="h4" component="div">{variant.label}</TooltipTypography>
       <Box sx={{ minWidth: 0, overflow: 'hidden', display: 'flex', justifyContent: 'flex-end' }}>
-        <LogoWordmark variant={variant.key} compressed={compressedLogos} linkToHome={false} />
+        <LogoWordmark variant={variant.key} linkToHome={false} />
       </Box>
     </Box>
   );
@@ -68,7 +66,6 @@ export default function LogoContent({
   tooltipTypography: TooltipTypography,
 }: LogoContentProps) {
   const theme = useTheme();
-  const [compressedLogos, setCompressedLogos] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
   const activePreviewRef = useRef<HTMLDivElement>(null);
@@ -84,21 +81,9 @@ export default function LogoContent({
               {activeLogoVariant}
             </Box>
           </TooltipTypography>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={compressedLogos}
-                onChange={(event) => setCompressedLogos(event.target.checked)}
-                color="primary"
-              />
-            }
-            label={
-              <TooltipTypography variant="body1">
-                {compressedLogos ? 'Compressed logo state' : 'Expanded logo state'}
-              </TooltipTypography>
-            }
-            sx={{ py: jtSpacing.component.sm, alignItems: 'center' }}
-          />
+          <TooltipTypography variant="body2" sx={{ mt: jtSpacing.component.sm }}>
+            The production wordmark is always a single-line logo; only the viewport-specific sizing changes.
+          </TooltipTypography>
         </Box>
         <Box
           ref={activePreviewRef}
@@ -113,7 +98,7 @@ export default function LogoContent({
           {showSpacingGuides && <SpacingMetrics elementRef={activePreviewRef} showPixels={showSpacingPixels} />}
           <TooltipTypography variant="h4" component="div">Active preview</TooltipTypography>
           <Box sx={{ mt: jtSpacing.component.md, minWidth: 0, overflow: 'hidden' }}>
-            <LogoWordmark variant={activeLogoVariant} compressed={compressedLogos} linkToHome={false} />
+            <LogoWordmark variant={activeLogoVariant} linkToHome={false} />
           </Box>
         </Box>
       </Box>
@@ -123,7 +108,6 @@ export default function LogoContent({
           <LogoVariantPreview
             key={variant.key}
             variant={variant}
-            compressedLogos={compressedLogos}
             showSpacingGuides={showSpacingGuides}
             showSpacingPixels={showSpacingPixels}
             SpacingMetrics={SpacingMetrics}

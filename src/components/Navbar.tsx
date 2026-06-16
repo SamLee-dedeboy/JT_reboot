@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Box, Button, Drawer, IconButton, List, ListItemButton, ListItemText, Menu, MenuItem, Stack, Typography, Collapse, useMediaQuery, useTheme } from '@mui/material';
-import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
 import Logo from './Logo';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -76,20 +75,11 @@ export default function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [desktopAnchorEl, setDesktopAnchorEl] = useState<HTMLElement | null>(null);
   const [desktopMenuIndex, setDesktopMenuIndex] = useState<number | null>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const location = useLocation();
-  const { scrollY } = useScroll();
   const theme = useTheme();
   const isDesktopNav = useMediaQuery(theme.breakpoints.up('md'));
 
-  const isLandingPage = location.pathname === '/';
-  const shouldCompressLogo = isLandingPage && isScrolled;
-  const navHeight = isDesktopNav ? (shouldCompressLogo ? 76 : 126) : 72;
+  const navHeight = isDesktopNav ? 76 : 72;
   const activeDesktopMenu = desktopMenuIndex !== null ? navItems[desktopMenuIndex] : null;
-
-  useMotionValueEvent(scrollY, 'change', (latest) => {
-    setIsScrolled(latest > 80);
-  });
 
   const handleDesktopMenuOpen = (event: React.MouseEvent<HTMLElement>, index: number) => {
     setDesktopAnchorEl(event.currentTarget);
@@ -152,15 +142,11 @@ export default function Navbar() {
   return (
     <AppBar position="sticky" component="nav" color="transparent" elevation={4} sx={{ height: 'auto', overflow: 'hidden' }}>
       <Box
-        component={motion.div}
-        initial={false}
-        animate={{ height: navHeight }}
-        transition={{ duration: 0.38, ease: [0.4, 0, 0.2, 1] }}
-        sx={{ display: 'flex', alignItems: 'center', width: '100%' }}
+        sx={{ display: 'flex', alignItems: 'center', width: '100%', height: navHeight }}
       >
         <Toolbar sx={{ maxWidth: '1400px', margin: '0 auto', width: '100%', height: '100%' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 2 }}>
-            <Logo compressed={shouldCompressLogo} />
+            <Logo />
 
             <Box sx={{ display: { xs: 'inline-flex', md: 'none' } }}>
               <IconButton aria-label="Toggle menu" onClick={() => setMobileOpen((current) => !current)} sx={{ color: 'brand.primaryGreen' }}>

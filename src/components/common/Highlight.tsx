@@ -1,17 +1,43 @@
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
 
-/** Green underline-style inline highlight (the design's `.hl`). */
-export default function Hl({ children, color = 'rgba(126,217,87,0.28)' }: { children: ReactNode; color?: string }) {
+export type HighlightStyleVariant = 'underline' | 'wash' | 'pill';
+
+/** Semantic inline highlight, with style variants for design-system exploration. */
+export default function Hl({
+  children,
+  color = 'rgba(126,217,87,0.28)',
+  styleVariant = 'underline',
+}: {
+  children: ReactNode;
+  color?: string;
+  styleVariant?: HighlightStyleVariant;
+}) {
+  const styleByVariant = {
+    underline: {
+      background: `linear-gradient(transparent 62%, ${color} 62%)`,
+      px: '0.1em',
+      borderRadius: '2px',
+    },
+    wash: {
+      background: color,
+      px: '0.16em',
+      borderRadius: '4px',
+    },
+    pill: {
+      background: color,
+      px: '0.38em',
+      py: '0.03em',
+      borderRadius: '999px',
+    },
+  } as const;
+
   return (
     <Box
       component="mark"
       sx={{
-        background:
-          `linear-gradient(transparent 62%, ${color} 62%)`,
         color: 'common.white',
-        px: '0.1em',
-        borderRadius: '2px',
+        ...styleByVariant[styleVariant],
       }}
     >
       {children}

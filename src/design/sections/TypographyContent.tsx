@@ -61,7 +61,6 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
     { label: 'Button', variantName: 'button', variant: theme.typography.button as TypographyToken, content: 'Button text: Hammersmith One / 300 / uppercase / 0.08em tracking / 1.15rem' },
     { label: 'Eyebrow', variantName: 'eyebrow', variant: theme.typography.eyebrow as TypographyToken, content: 'Small uppercase section label.' },
     { label: 'Logo', variantName: 'logo', variant: theme.typography.logo as TypographyToken, content: 'Logo wordmark text.' },
-    { label: 'Logo Subtitle', variantName: 'logoSubtitle', variant: theme.typography.logoSubtitle as TypographyToken, content: 'Desktop logo tagline text.' },
     { label: 'Logo Hero', variantName: 'logoHero', variant: theme.typography.logoHero as TypographyToken, content: 'Hero logo text.' },
     { label: 'Number Ghost', variantName: 'numberGhost', variant: theme.typography.numberGhost as TypographyToken, content: 'Card corner and studio feature ghost number' },
     { label: 'Number Article', variantName: 'numberArticle', variant: theme.typography.numberArticle as TypographyToken, content: 'Article accordion index' },
@@ -88,7 +87,7 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
     {
       title: 'Button',
       description: 'Action text style used by themed buttons and button-like controls, plus logo-specific navigation text.',
-      items: typography.filter((t) => ['Button', 'Eyebrow', 'Logo', 'Logo Subtitle', 'Logo Hero'].includes(t.label)),
+      items: typography.filter((t) => ['Button', 'Eyebrow', 'Logo', 'Logo Hero'].includes(t.label)),
     },
   ];
 
