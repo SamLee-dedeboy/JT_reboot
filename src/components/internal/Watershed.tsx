@@ -2,6 +2,8 @@
 // modeled change ranges.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import ForestRoundedIcon from '@mui/icons-material/ForestRounded';
+import GrassRoundedIcon from '@mui/icons-material/GrassRounded';
 import {
   Box,
   FormControl,
@@ -19,7 +21,7 @@ import PageLayout from './PageLayout';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
 import ScrollReveal from '../animation/ScrollReveal';
-import Icon, { type IconName } from '../common/Icon';
+import Icon, { FloodplainTileIcon, type IconName } from '../common/Icon';
 import Hl from '../common/Highlight';
 import { assetUrl } from '../../utils/baseUrl';
 import { palette } from '../../theme/muiTheme';
@@ -78,6 +80,7 @@ interface ChartTooltipState {
 
 type AttentionCompareMode = 'acres' | 'percent';
 type AttentionScaleMode = 'linear' | 'log';
+type AttentionDesignMode = 'bars' | 'icons' | 'area';
 
 const RESTORATION_LEVEL_ORDER = ['min', 'med', 'max'];
 const RESTORATION_LEVEL_LABELS: Record<string, string> = {
@@ -253,6 +256,363 @@ function formatNumber(value: number) {
 
 function formatPercent(value: number) {
   return `${d3.format(',.1f')(value)}%`;
+}
+
+function formatCompactPercent(value: number) {
+  return value >= 100 ? `${d3.format(',.0f')(value)}%` : formatPercent(value);
+}
+
+const HABITAT_ATTENTION_ICONS = {
+  forests: ForestRoundedIcon,
+  meadows: GrassRoundedIcon,
+} as const;
+
+function FilledHabitatIcon({
+  habitatFocus,
+  percent,
+  size = 52,
+  fillOpacity = 1,
+}: {
+  habitatFocus: string;
+  percent: number;
+  size?: number;
+  fillOpacity?: number;
+}) {
+  const meta = HABITAT_META[habitatFocus];
+  const HabitatIcon = HABITAT_ATTENTION_ICONS[habitatFocus as keyof typeof HABITAT_ATTENTION_ICONS];
+  const fillPercent = Math.max(0, Math.min(percent, 100));
+
+  if (habitatFocus === 'floodplains') {
+    return (
+      <Box sx={{ position: 'relative', width: size, height: size, flex: '0 0 auto' }} aria-hidden>
+        <FloodplainTileIcon size={size} sx={{ position: 'absolute', inset: 0, color: 'rgba(242,240,239,0.18)' }} />
+        <FloodplainTileIcon
+          size={size}
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            color: meta.baseColor,
+            opacity: fillOpacity,
+            clipPath: `inset(${100 - fillPercent}% 0 0 0)`,
+          }}
+        />
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ position: 'relative', width: size, height: size, flex: '0 0 auto' }} aria-hidden>
+      <HabitatIcon sx={{ position: 'absolute', inset: 0, width: size, height: size, color: 'rgba(242,240,239,0.18)' }} />
+      <HabitatIcon
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          width: size,
+          height: size,
+          color: meta.baseColor,
+          opacity: fillOpacity,
+          clipPath: `inset(${100 - fillPercent}% 0 0 0)`,
+        }}
+      />
+    </Box>
+  );
+}
+
+function HabitatAttentionIconSet({
+  segment,
+}: {
+  segment: AttentionSegment;
+}) {
+  const isFloodplain = segment.habitatFocus === 'floodplains';
+  const isMeadow = segment.habitatFocus === 'meadows';
+
+  if (isFloodplain) {
+    const expansionIconCount = Math.max(1, Math.min(Math.ceil(segment.percent / 100), 6));
+
+    return (
+      <Stack direction="row" spacing={0.55} useFlexGap sx={{ alignItems: 'center', flexWrap: 'nowrap' }}>
+        <FilledHabitatIcon habitatFocus={segment.habitatFocus} percent={100} size={62} />
+        {Array.from({ length: expansionIconCount }).map((_, index) => {
+          const remainingPercent = segment.percent - index * 100;
+          const fillPercent = Math.max(0, Math.min(remainingPercent, 100));
+
+          return <FilledHabitatIcon key={`${segment.habitatFocus}-${index}`} habitatFocus={segment.habitatFocus} percent={fillPercent} size={38} />;
+        })}
+      </Stack>
+    );
+  }
+
+  if (isMeadow) {
+    const expansionPercent = Math.max(segment.percent - 100, 0);
+    const expansionIcons = Math.min(Math.ceil(expansionPercent / 100), 4);
+
+    return (
+      <Stack direction="row" spacing={0.6} useFlexGap sx={{ alignItems: 'center', flexWrap: 'nowrap' }}>
+        <FilledHabitatIcon habitatFocus={segment.habitatFocus} percent={Math.min(segment.percent, 100)} size={62} fillOpacity={0.5} />
+        {expansionIcons > 0 && (
+          <Stack direction="row" spacing={0.25} useFlexGap sx={{ alignItems: 'center', flexWrap: 'nowrap' }}>
+            {Array.from({ length: expansionIcons }).map((_, index) => {
+              const remainingPercent = expansionPercent - index * 100;
+              const fillPercent = Math.max(0, Math.min(remainingPercent, 100));
+
+              return (
+                <FilledHabitatIcon
+                  key={`${segment.habitatFocus}-expansion-${index}`}
+                  habitatFocus={segment.habitatFocus}
+                  percent={fillPercent}
+                  size={34}
+                  fillOpacity={0.5}
+                />
+              );
+            })}
+          </Stack>
+        )}
+      </Stack>
+    );
+  }
+
+  return <FilledHabitatIcon habitatFocus={segment.habitatFocus} percent={segment.percent} size={62} />;
+}
+
+function HabitatAttentionIconCard({
+  segment,
+}: {
+  segment: AttentionSegment;
+}) {
+  const meta = HABITAT_META[segment.habitatFocus];
+  const modeLabel =
+    segment.habitatFocus === 'forests' ? 'Recovery' : segment.habitatFocus === 'floodplains' ? 'Expansion' : 'Recovery + Expansion';
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.65,
+        alignItems: 'flex-start',
+        p: { xs: 0.7, md: 0.9 },
+        minWidth: 0,
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: 250,
+          minHeight: 138,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          overflow: 'hidden',
+        }}
+      >
+        <HabitatAttentionIconSet segment={segment} />
+      </Box>
+      <Box sx={{ minWidth: 0 }}>
+        <Typography variant="captionSmall" component="p" sx={{ color: 'text.secondary', lineHeight: 1.15, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          {modeLabel}
+        </Typography>
+        <Typography variant="h5" component="p" sx={{ color: meta.baseColor, lineHeight: 1.05 }}>
+          <Box component="span" sx={{ fontWeight: 800 }}>
+            {meta.label}
+          </Box>
+          <Box component="span" sx={{ fontWeight: 300 }}>
+            {' '}• {formatNumber(segment.acres)} acres
+          </Box>
+        </Typography>
+        <Typography variant="captionSmall" component="p" sx={{ color: 'common.white', fontWeight: 800, mt: 0.25 }}>
+          {formatCompactPercent(segment.percent)}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+function AreaSquareGlyph({
+  segment,
+}: {
+  segment: AttentionSegment;
+}) {
+  const meta = HABITAT_META[segment.habitatFocus];
+  const baseSize = 78;
+  const isForest = segment.habitatFocus === 'forests';
+  const isFloodplain = segment.habitatFocus === 'floodplains';
+  const isMeadow = segment.habitatFocus === 'meadows';
+  const recoveryPercent = isFloodplain ? 0 : Math.min(segment.percent, 100);
+  const expansionPercent = isForest ? 0 : isMeadow ? Math.max(segment.percent - 100, 0) : segment.percent;
+  const recoverySize = Math.sqrt(recoveryPercent / 100) * baseSize;
+  const outerSize = Math.sqrt(1 + expansionPercent / 100) * baseSize;
+  const frameSize = 224;
+  const layerOpacity = isMeadow ? 0.5 : 1;
+  const originX = 66;
+  const originY = 18;
+  const calloutPercent = expansionPercent > 0 ? expansionPercent : recoveryPercent;
+  const calloutSize = expansionPercent > 0 ? outerSize : recoverySize;
+  const calloutY = originY + calloutSize;
+  const labelColumnWidth = 58;
+  const ruleStart = 62;
+  const panelBg = 'rgb(35, 51, 55)';
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: 260,
+        height: frameSize,
+        overflow: 'visible',
+      }}
+      aria-hidden
+    >
+      {expansionPercent > 0 && (
+        <>
+          <Box
+            sx={{
+              position: 'absolute',
+              left: originX,
+              bottom: originY,
+              width: outerSize,
+              height: outerSize,
+              bgcolor: meta.baseColor,
+              opacity: layerOpacity,
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              left: originX,
+              bottom: originY,
+              width: baseSize,
+              height: baseSize,
+              bgcolor: panelBg,
+            }}
+          />
+        </>
+      )}
+      <Box
+        sx={{
+          position: 'absolute',
+          left: originX,
+          bottom: originY,
+          width: baseSize,
+          height: baseSize,
+          border: `2px solid ${meta.baseColor}`,
+          bgcolor: 'rgba(16,22,24,0.16)',
+        }}
+      />
+      {recoveryPercent > 0 && (
+        <Box
+          sx={{
+            position: 'absolute',
+            left: originX,
+            bottom: originY,
+            width: recoverySize,
+            height: recoverySize,
+            bgcolor: meta.baseColor,
+            opacity: layerOpacity,
+          }}
+        />
+      )}
+      {calloutPercent > 0 && (
+        <>
+          <Typography
+            variant="h5"
+            component="span"
+            sx={{
+              position: 'absolute',
+              left: 0,
+              width: labelColumnWidth,
+              textAlign: 'right',
+              bottom: calloutY - 9,
+              color: meta.baseColor,
+              fontWeight: 800,
+              lineHeight: 1,
+            }}
+          >
+            {formatCompactPercent(calloutPercent)}
+          </Typography>
+          <Box
+            sx={{
+              position: 'absolute',
+              left: ruleStart,
+              bottom: calloutY - 2,
+              width: Math.max(0, originX + calloutSize - ruleStart),
+              borderTop: `2px solid ${meta.baseColor}`,
+              opacity: 0.95,
+            }}
+          />
+        </>
+      )}
+      <Typography
+        variant="captionSmall"
+        component="span"
+        sx={{
+          position: 'absolute',
+          left: 0,
+          width: labelColumnWidth,
+          textAlign: 'right',
+          bottom: originY + baseSize - 9,
+          color: 'text.secondary',
+          fontSize: '0.82rem',
+          lineHeight: 1,
+        }}
+      >
+        100%
+      </Typography>
+      <Box
+        sx={{
+          position: 'absolute',
+          left: ruleStart,
+          bottom: originY + baseSize - 2,
+          width: originX + baseSize - ruleStart + 6,
+          borderTop: '2px solid',
+          borderColor: 'text.secondary',
+          opacity: 0.65,
+        }}
+      />
+    </Box>
+  );
+}
+
+function HabitatAttentionAreaCell({
+  segment,
+}: {
+  segment: AttentionSegment;
+}) {
+  const meta = HABITAT_META[segment.habitatFocus];
+  const modeLabel =
+    segment.habitatFocus === 'forests'
+      ? 'Recovered Area'
+      : segment.habitatFocus === 'floodplains'
+        ? 'Expanded Area'
+        : 'Recovered + Expanded Area';
+
+  return (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 0.65,
+        alignItems: 'flex-start',
+        p: { xs: 0.7, md: 0.9 },
+        minWidth: 0,
+      }}
+    >
+      <AreaSquareGlyph segment={segment} />
+      <Box sx={{ minWidth: 0 }}>
+        <Typography variant="captionSmall" component="p" sx={{ color: 'text.secondary', lineHeight: 1.15, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          {modeLabel}
+        </Typography>
+        <Typography variant="h5" component="p" sx={{ color: meta.baseColor, lineHeight: 1.05 }}>
+          <Box component="span" sx={{ fontWeight: 800 }}>
+            {meta.label}
+          </Box>
+          <Box component="span" sx={{ fontWeight: 300 }}>
+            {' '}• {formatNumber(segment.acres)} acres
+          </Box>
+        </Typography>
+      </Box>
+    </Box>
+  );
 }
 
 function truncateChartLabel(label: string, availableWidth: number) {
@@ -773,6 +1133,7 @@ function AttentionStackedChart({
   onCompareModeChange: (mode: AttentionCompareMode) => void;
 }) {
   const [scaleMode, setScaleMode] = useState<AttentionScaleMode>('linear');
+  const [designMode, setDesignMode] = useState<AttentionDesignMode>('bars');
   const scenarios = useMemo<AttentionScenario[]>(
     () => buildAttentionScenarios(records, selectedRestorationLevel, selectedScenarioHabitat),
     [records, selectedRestorationLevel, selectedScenarioHabitat],
@@ -826,18 +1187,18 @@ function AttentionStackedChart({
           <ToggleButtonGroup
             exclusive
             size="small"
-            value={compareMode}
-            onChange={(_, value: AttentionCompareMode | null) => {
+            value={designMode}
+            onChange={(_, value: AttentionDesignMode | null) => {
               if (value) {
-                onCompareModeChange(value);
+                setDesignMode(value);
               }
             }}
-            aria-label="Compare attention chart values"
+            aria-label="Select habitat attention design"
             sx={{
               '& .MuiToggleButton-root': {
                 color: 'common.white',
                 borderColor: 'rgba(155,162,164,0.35)',
-                px: 1.6,
+                px: 1.4,
                 '&.Mui-selected': {
                   bgcolor: 'primary.main',
                   color: 'common.black',
@@ -846,15 +1207,50 @@ function AttentionStackedChart({
               },
             }}
           >
-            <ToggleButton value="acres" aria-label="Compare actual acreage">
-              Acres
+            <ToggleButton value="bars" aria-label="Show current stacked bar design">
+              Current
             </ToggleButton>
-            <ToggleButton value="percent" aria-label="Compare percentages">
-              Percent
+            <ToggleButton value="icons" aria-label="Show icon design">
+              Icon
+            </ToggleButton>
+            <ToggleButton value="area" aria-label="Show area square design">
+              Area
             </ToggleButton>
           </ToggleButtonGroup>
-          {compareMode === 'acres' && (
-            <ToggleButtonGroup
+          {designMode === 'bars' && (
+            <>
+              <ToggleButtonGroup
+                exclusive
+                size="small"
+                value={compareMode}
+                onChange={(_, value: AttentionCompareMode | null) => {
+                  if (value) {
+                    onCompareModeChange(value);
+                  }
+                }}
+                aria-label="Compare attention chart values"
+                sx={{
+                  '& .MuiToggleButton-root': {
+                    color: 'common.white',
+                    borderColor: 'rgba(155,162,164,0.35)',
+                    px: 1.6,
+                    '&.Mui-selected': {
+                      bgcolor: 'primary.main',
+                      color: 'common.black',
+                      '&:hover': { bgcolor: 'primary.light' },
+                    },
+                  },
+                }}
+              >
+                <ToggleButton value="acres" aria-label="Compare actual acreage">
+                  Acres
+                </ToggleButton>
+                <ToggleButton value="percent" aria-label="Compare percentages">
+                  Percent
+                </ToggleButton>
+              </ToggleButtonGroup>
+              {compareMode === 'acres' && (
+                <ToggleButtonGroup
               exclusive
               size="small"
               value={scaleMode}
@@ -883,7 +1279,9 @@ function AttentionStackedChart({
               <ToggleButton value="log" aria-label="Use logarithmic acreage scale">
                 Log
               </ToggleButton>
-            </ToggleButtonGroup>
+                </ToggleButtonGroup>
+              )}
+            </>
           )}
         </Stack>
       </Box>
@@ -954,7 +1352,8 @@ function AttentionStackedChart({
                     >
                       {formatScenarioHabitat(scenario.scenarioHabitat)}
                     </Typography>
-                    <Box sx={{ minWidth: 0 }}>
+                    {designMode === 'bars' ? (
+                      <Box sx={{ minWidth: 0 }}>
                       <Box
                         sx={{
                           display: 'flex',
@@ -1029,7 +1428,38 @@ function AttentionStackedChart({
                           );
                         })}
                       </Box>
-                    </Box>
+                      </Box>
+                    ) : designMode === 'icons' ? (
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))',
+                          columnGap: { xs: 0.8, md: 1 },
+                          rowGap: 0.8,
+                          alignItems: 'start',
+                          overflowX: 'auto',
+                        }}
+                      >
+                        {scenario.segments.map((segment) => (
+                          <HabitatAttentionIconCard key={segment.habitatFocus} segment={segment} />
+                        ))}
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, minmax(220px, 1fr))',
+                          columnGap: { xs: 0.8, md: 1 },
+                          rowGap: 0.8,
+                          alignItems: 'start',
+                          overflowX: 'auto',
+                        }}
+                      >
+                        {scenario.segments.map((segment) => (
+                          <HabitatAttentionAreaCell key={segment.habitatFocus} segment={segment} />
+                        ))}
+                      </Box>
+                    )}
                   </Box>
                 );
               })}

@@ -1,7 +1,9 @@
 // Central icon adapter that maps project icon names to MUI icon components.
 // Keeps call sites stable while the underlying icon library can change.
-import type { CSSProperties } from 'react';
+import { useId, type CSSProperties } from 'react';
 import type { SvgIconComponent } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded';
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded';
@@ -73,5 +75,40 @@ export default function Icon({
       }}
       style={style}
     />
+  );
+}
+
+export function FloodplainTileIcon({
+  size = 22,
+  sx,
+}: {
+  size?: number;
+  sx?: SxProps<Theme>;
+}) {
+  const maskId = useId().replace(/:/g, '');
+
+  return (
+    <Box
+      component="svg"
+      viewBox="0 0 64 64"
+      sx={{ width: size, height: size, display: 'block', ...sx }}
+      aria-hidden
+      focusable="false"
+    >
+      <defs>
+        <mask id={maskId}>
+          <rect x="6" y="6" width="52" height="52" rx="3" fill="white" />
+          <path
+            d="M38 7 C54 14 50 26 35 24 C18 22 15 34 31 37 C47 40 45 53 26 57"
+            fill="none"
+            stroke="black"
+            strokeWidth="8.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </mask>
+      </defs>
+      <rect x="6" y="6" width="52" height="52" rx="3" fill="currentColor" mask={`url(#${maskId})`} />
+    </Box>
   );
 }
