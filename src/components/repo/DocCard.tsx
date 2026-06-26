@@ -55,7 +55,7 @@ export default function DocCard({ doc, delay = 0 }: { doc: DocItem; delay?: numb
         transition: 'transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease',
         '&:hover': {
           transform: 'translateY(-3px)',
-          borderColor: 'rgba(126,217,87,0.45)',
+          borderColor: 'translucent.primaryGreen',
           boxShadow: '0 16px 40px rgba(16,22,24,0.45)',
         },
         '&:hover .doc-cover-img': { transform: 'scale(1.04)' },
@@ -86,7 +86,8 @@ export default function DocCard({ doc, delay = 0 }: { doc: DocItem; delay?: numb
             display: 'inline-flex',
             alignItems: 'center',
             bgcolor: 'rgba(16,22,24,0.78)',
-            border: '1px solid rgba(126,217,87,0.35)',
+            border: 1,
+            borderColor: 'translucent.primaryGreen',
             color: 'primary.main',
             fontFamily: 'var(--font-heading)',
             textTransform: 'uppercase',
@@ -109,7 +110,7 @@ export default function DocCard({ doc, delay = 0 }: { doc: DocItem; delay?: numb
         >
           {doc.title}
         </Typography>
-        <Typography sx={{ fontSize: '1.02rem', lineHeight: 1.5, color: 'rgba(242,240,239,0.78)' }}>{doc.desc}</Typography>
+        <Typography sx={{ fontSize: '1.02rem', lineHeight: 1.5, color: 'base.100' }}>{doc.desc}</Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', mt: 'auto', pt: '0.4rem' }}>
           {doc.actions.map((a, i) => <ActionLink key={i} a={a} />)}
         </Box>

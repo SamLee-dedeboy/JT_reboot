@@ -22,6 +22,7 @@ import ScrollReveal from '../animation/ScrollReveal';
 import Icon, { type IconName } from '../common/Icon';
 import Hl from '../common/Highlight';
 import { assetUrl } from '../../utils/baseUrl';
+import { palette } from '../../theme/muiTheme';
 
 interface WatershedMetricRecord {
   habitat_focus: string;
@@ -397,7 +398,8 @@ function RestorationLevelLegend() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 0.65,
-              border: '1px solid rgba(242,240,239,0.22)',
+              border: '1px solid',
+              borderColor: 'base.300',
               borderRadius: 999,
               px: 1,
               py: 0.45,
@@ -574,7 +576,7 @@ function WatershedMetricsChart({
           .attr('x2', x(0))
           .attr('y1', 0)
           .attr('y2', chartHeight)
-          .attr('stroke', 'rgba(242, 240, 239, 0.45)')
+          .attr('stroke', palette.base[300])
           .attr('stroke-dasharray', '4 4');
       }
 
@@ -646,7 +648,7 @@ function WatershedMetricsChart({
         .attr('transform', `translate(0, ${chartHeight + 8})`)
         .call(d3.axisBottom(x).ticks(4).tickFormat((value) => d3.format('.2~s')(Number(value))))
         .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartCaptionFontSize))
-        .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', 'rgba(242, 240, 239, 0.35)'));
+        .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', palette.base[300]));
 
       chartGroup
         .append('g')
@@ -976,7 +978,8 @@ function AttentionStackedChart({
                               sx={{
                                 width,
                                 bgcolor: meta.baseColor,
-                                borderRight: '1px solid rgba(242,240,239,0.25)',
+                                borderRight: '1px solid',
+                                borderColor: 'base.300',
                                 '&:last-of-type': { borderRight: 0 },
                               }}
                               title={`${meta.label} – ${formatPercent(segment.percent)} / ${formatNumber(segment.acres)} acres`}
@@ -1198,7 +1201,7 @@ function ChangesComparisonChart({
           .attr('x2', xScale(0))
           .attr('y1', 0)
           .attr('y2', chartHeight)
-          .attr('stroke', 'rgba(242,240,239,0.42)')
+          .attr('stroke', palette.base[300])
           .attr('stroke-dasharray', '4 4');
       }
 
@@ -1228,7 +1231,7 @@ function ChangesComparisonChart({
         .attr('transform', `translate(0, ${chartHeight + 8})`)
         .call(d3.axisBottom(xScale).ticks(4).tickFormat((value) => d3.format('.2~s')(Number(value))))
         .call((axisGroup) => axisGroup.selectAll('text').attr('fill', 'currentColor').attr('font-size', chartCaptionFontSize))
-        .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', 'rgba(242,240,239,0.35)'));
+        .call((axisGroup) => axisGroup.selectAll('path,line').attr('stroke', palette.base[300]));
 
       const scenarioGroups = chartGroup
         .selectAll<SVGGElement, WatershedMetricRecord>('.change-range-row')

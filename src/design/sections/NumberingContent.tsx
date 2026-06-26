@@ -5,14 +5,20 @@ import { displayItemSx, displayMetaSx } from '../common/displayStyles';
 
 function StyleLine({ children, token = false }: { children: ReactNode; token?: boolean }) {
   return (
-    <Typography
+    <Box
       component="div"
-      variant="caption"
-      sx={{ color: token ? 'base.100' : 'base.200', mb: 0.45 }}
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: '0.55rem minmax(0, 1fr)',
+        gap: 0.8,
+        alignItems: 'baseline',
+        color: token ? 'base.100' : 'base.200',
+        mb: 0.55,
+      }}
     >
-      {token ? 'Theme token: ' : ''}
-      {children}
-    </Typography>
+      <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: token ? 'primary.main' : 'base.200' }} />
+      <Typography component="span" variant="caption">{children}</Typography>
+    </Box>
   );
 }
 

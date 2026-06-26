@@ -27,9 +27,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    // Adaptation Scenarios is a future phase — keep the slot but disable it.
-    label: 'Scenarios',
-    disabled: true,
+    label: 'Adaptation Scenarios',
+    href: '/scenarios',
   },
   {
     label: 'Repository',
@@ -94,8 +93,8 @@ export default function Navbar() {
     whiteSpace: 'normal',
     transition: 'border-color 180ms ease, background-color 180ms ease, transform 180ms ease',
     '&:hover, &:focus-visible': {
-      bgcolor: 'rgba(126,217,87,0.08)',
-      borderColor: 'rgba(126,217,87,0.38)',
+      bgcolor: 'translucent.primaryGreen',
+      borderColor: 'translucent.primaryGreen',
       color: 'common.white',
       transform: 'translateY(-1px)',
       '& .dropdown-link-marker': {
@@ -112,7 +111,7 @@ export default function Navbar() {
     color: 'common.white',
     alignItems: 'flex-start',
     '&:hover': {
-      bgcolor: 'rgba(126,217,87,0.08)',
+      bgcolor: 'translucent.primaryGreen',
     },
   } as const;
 
@@ -125,8 +124,8 @@ export default function Navbar() {
     py: 1.25,
     transition: 'border-color 180ms ease, background-color 180ms ease, transform 180ms ease',
     '&:hover': {
-      borderColor: 'rgba(126,217,87,0.32)',
-      bgcolor: 'rgba(126,217,87,0.08)',
+      borderColor: 'translucent.primaryGreen',
+      bgcolor: 'translucent.primaryGreen',
       transform: 'translateY(-1px)',
     },
   } as const;
@@ -153,7 +152,7 @@ export default function Navbar() {
                     key={item.label}
                     disabled
                     sx={{
-                      minWidth: 140,
+                      minWidth: theme.navigation.desktopButtonMinWidth,
                       whiteSpace: 'nowrap',
                       '&.Mui-disabled': { color: 'base.300' },
                     }}
@@ -166,7 +165,7 @@ export default function Navbar() {
                     component={Link}
                     to={item.href}
                     sx={{
-                      minWidth: 140,
+                      minWidth: theme.navigation.desktopButtonMinWidth,
                       whiteSpace: 'nowrap',
                       color: 'common.white',
                     }}
@@ -177,11 +176,11 @@ export default function Navbar() {
                   <Button
                     key={item.label}
                     sx={{
-                      minWidth: 140,
+                      minWidth: theme.navigation.desktopButtonMinWidth,
                       whiteSpace: 'nowrap',
                       color: 'common.white',
-                      border: desktopMenuIndex === i ? '1px solid rgba(126,217,87,0.36)' : '1px solid transparent',
-                      bgcolor: desktopMenuIndex === i ? 'rgba(126,217,87,0.08)' : 'transparent',
+                      border: desktopMenuIndex === i ? theme.navigation.activeBorder : '1px solid transparent',
+                      bgcolor: desktopMenuIndex === i ? theme.navigation.activeBackground : 'transparent',
                     }}
                     endIcon={<KeyboardArrowDownIcon />}
                     onClick={(event) => handleDesktopMenuOpen(event, i)}
@@ -208,10 +207,10 @@ export default function Navbar() {
               minWidth: 330,
               maxWidth: 380,
               overflow: 'visible',
-              bgcolor: 'rgba(37,52,57,0.96)',
-              border: '1px solid rgba(155,162,164,0.22)',
+              bgcolor: theme.navigation.menuPanelBackground,
+              border: theme.navigation.panelBorder,
               borderRadius: 'var(--mui-shape-borderRadius)',
-              boxShadow: '0 18px 46px rgba(0,0,0,0.34)',
+              boxShadow: theme.navigation.dropdownShadow,
               backdropFilter: 'blur(12px)',
               backgroundImage: 'none',
               '&::before': {
@@ -221,9 +220,9 @@ export default function Navbar() {
                 left: 'calc(50% - 6px)',
                 width: 12,
                 height: 12,
-                bgcolor: 'rgba(37,52,57,0.96)',
-                borderTop: '1px solid rgba(155,162,164,0.22)',
-                borderLeft: '1px solid rgba(155,162,164,0.22)',
+                bgcolor: theme.navigation.menuPanelBackground,
+                borderTop: theme.navigation.panelBorder,
+                borderLeft: theme.navigation.panelBorder,
                 transform: 'rotate(45deg)',
               },
               '& .MuiList-root': {
@@ -280,9 +279,9 @@ export default function Navbar() {
           paper: {
             sx: {
               width: { xs: 'min(88vw, 360px)', sm: 380 },
-              bgcolor: 'rgba(37,52,57,0.98)',
-              borderLeft: '1px solid rgba(155,162,164,0.22)',
-              boxShadow: '-18px 0 46px rgba(0,0,0,0.36)',
+              bgcolor: theme.navigation.drawerPanelBackground,
+              borderLeft: theme.navigation.panelBorder,
+              boxShadow: theme.navigation.drawerShadow,
               backdropFilter: 'blur(12px)',
             },
           },
@@ -300,8 +299,9 @@ export default function Navbar() {
               onClick={() => setMobileOpen(false)}
               sx={{
                 color: 'primary.main',
-                border: '1px solid rgba(126,217,87,0.28)',
-                bgcolor: 'rgba(126,217,87,0.06)',
+                border: 1,
+                borderColor: 'translucent.primaryGreen',
+                bgcolor: 'translucent.primaryGreen',
                 flex: 'none',
               }}
             >
@@ -317,8 +317,8 @@ export default function Navbar() {
                       primary={item.label}
                       secondary="Coming soon"
                       slotProps={{
-                        primary: { sx: { color: 'rgba(242,240,239,0.42)', whiteSpace: 'nowrap', fontWeight: 800 } },
-                        secondary: { sx: { color: 'rgba(242,240,239,0.32)', mt: 0.25 } },
+                        primary: { sx: { color: 'base.300', whiteSpace: 'nowrap', fontWeight: 800 } },
+                        secondary: { sx: { color: 'base.300', mt: 0.25 } },
                       }}
                     />
                   </ListItemButton>
@@ -330,8 +330,8 @@ export default function Navbar() {
                   <Box
                     sx={{
                       borderRadius: 'var(--mui-shape-borderRadius)',
-                      border: openDropdown === idx ? '1px solid rgba(126,217,87,0.34)' : '1px solid rgba(155,162,164,0.18)',
-                      bgcolor: openDropdown === idx ? 'rgba(126,217,87,0.06)' : 'rgba(81,93,97,0.22)',
+                      border: openDropdown === idx ? theme.navigation.activeBorder : '1px solid rgba(155,162,164,0.18)',
+                      bgcolor: openDropdown === idx ? 'translucent.primaryGreen' : 'rgba(81,93,97,0.22)',
                       overflow: 'hidden',
                     }}
                   >

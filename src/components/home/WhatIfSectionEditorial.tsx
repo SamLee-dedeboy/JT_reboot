@@ -1,6 +1,7 @@
 // Editorial "what if" landing section that frames the project questions and
 // primary calls to action.
 import { Box, Button, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Icon from '../common/Icon';
 import Section from '../common/Section';
 import ScrollReveal from '../animation/ScrollReveal';
@@ -74,7 +75,7 @@ export default function WhatIfSectionEditorial() {
               variant="body2"
               sx={{
                 maxWidth: '960px',
-                color: 'rgba(242,240,239,0.78)',
+                color: 'base.100',
                 fontSize: { md: '1.02rem' },
               }}
             >
@@ -125,7 +126,7 @@ export default function WhatIfSectionEditorial() {
                   gridTemplateColumns: (theme) => theme.numbering.grid.inlineTemplate,
                   gap: (theme) => theme.numbering.grid.inlineGap,
                   alignItems: 'baseline',
-                  color: 'rgba(242,240,239,0.84)',
+                  color: 'base.100',
                   fontSize: { xs: '1.08rem', md: '1.12rem' },
                   lineHeight: 1.55,
                 }}
@@ -140,10 +141,10 @@ export default function WhatIfSectionEditorial() {
         </ScrollReveal>
         <ScrollReveal delay={0.18} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: (theme) => theme.jtSpacing.component.sm }}>
             <Button
+              component={Link}
+              to="/scenarios"
               variant="contained"
               color="primary"
-              disabled
-              title="Coming soon"
               endIcon={<Icon name="arrow-right" size={18} />}
             >
               View Adaptation Scenarios

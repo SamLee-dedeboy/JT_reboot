@@ -57,7 +57,7 @@ export default function WhatIfSection() {
   if (reduced) {
     return (
       <Box component="section" id="whatif" sx={{ bgcolor: 'base.700', py: { xs: '3.75rem', md: '6rem' } }}>
-        <Container maxWidth="lg" sx={{ px: { xs: '1.25rem', md: '2rem' } }}>
+        <Container maxWidth="lg" sx={{ px: { xs: '1.5rem', md: '2rem' } }}>
           <Box sx={eyebrowSx}>What if?</Box>
           <Box component="ol" sx={{ display: 'flex', flexDirection: 'column', gap: '1.4rem', maxWidth: '60ch', listStyle: 'none', p: 0, m: 0 }}>
             {WHATIF_QUESTIONS.map((q, n) => (
@@ -89,7 +89,7 @@ export default function WhatIfSection() {
         overflow: 'hidden',
       }}
     >
-      <Container maxWidth="lg" sx={{ px: { xs: '1.25rem', md: '2rem' }, width: '100%' }}>
+      <Container maxWidth="lg" sx={{ px: { xs: '1.5rem', md: '2rem' }, width: '100%' }}>
         <Box sx={eyebrowSx}>What if?</Box>
 
         <Box sx={{ position: 'relative', minHeight: 'clamp(300px, 46vh, 480px)' }} aria-live="polite">

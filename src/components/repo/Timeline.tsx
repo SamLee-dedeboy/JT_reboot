@@ -23,7 +23,7 @@ export default function Timeline() {
           top: '0.6rem',
           bottom: '2rem',
           width: '2px',
-          background: 'linear-gradient(var(--mui-palette-primary-main), rgba(126,217,87,0.12))',
+          background: 'linear-gradient(var(--mui-palette-primary-main), var(--mui-palette-translucent-primaryGreen))',
         },
       }}
     >
@@ -41,7 +41,7 @@ export default function Timeline() {
                 height: 16,
                 borderRadius: '50%',
                 bgcolor: 'primary.main',
-                boxShadow: '0 0 0 5px var(--mui-palette-brand-base), 0 0 0 7px rgba(126,217,87,0.3)',
+                boxShadow: '0 0 0 5px var(--mui-palette-brand-base), 0 0 0 7px var(--mui-palette-translucent-primaryGreen)',
               },
             }}
           >

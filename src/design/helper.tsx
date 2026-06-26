@@ -31,7 +31,8 @@ const TooltipTypography = forwardRef<HTMLSpanElement, TooltipTypographyProps>(fu
           sx: {
             bgcolor: 'base.800',
             color: 'common.white',
-            border: '1px solid rgba(126,217,87,0.3)',
+            border: '1px solid',
+            borderColor: 'translucent.primaryGreen',
             boxShadow: '0 10px 28px rgba(16,22,24,0.45)',
           },
         },

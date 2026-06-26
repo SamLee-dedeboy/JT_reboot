@@ -37,7 +37,7 @@ export default function Section({ id, bg, bleed, sx, containerSx, children }: Se
           maxWidth="lg"
           sx={[
             (theme) => ({
-              px: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.gap.xl },
+              px: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.gap.xl },
             }),
             ...(Array.isArray(containerSx) ? containerSx : [containerSx]),
           ]}

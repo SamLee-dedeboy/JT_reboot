@@ -15,7 +15,7 @@ interface RepoHeroProps {
 export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
   return (
     <Box component="header" id="top" sx={{ pt: { xs: '2.6rem', md: '3.4rem' } }}>
-      <Container maxWidth="lg" sx={{ px: { xs: '1.25rem', md: '2rem' } }}>
+      <Container maxWidth="lg" sx={{ px: { xs: '1.5rem', md: '2rem' } }}>
         <ScrollReveal>
           <Typography
             variant="h1"
@@ -35,7 +35,7 @@ export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
               maxWidth: '60ch',
               fontSize: '1.3rem',
               lineHeight: 1.7,
-              color: 'rgba(242,240,239,0.9)',
+              color: 'base.100',
               borderLeft: '3px solid',
               borderColor: 'primary.main',
               pl: '1.5rem',

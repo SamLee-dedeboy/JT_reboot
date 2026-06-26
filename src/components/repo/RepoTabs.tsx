@@ -31,7 +31,7 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
       <Container
         maxWidth="lg"
         sx={{
-          px: { xs: '1rem', md: '2rem' },
+          px: { xs: '1.5rem', md: '2rem' },
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: 'auto minmax(0, 1fr)' },
           alignItems: 'center',
@@ -85,8 +85,8 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
                   borderColor: active ? 'primary.main' : 'transparent',
                   transition: 'background-color 180ms ease, border-color 180ms ease, color 180ms ease',
                   '&:hover, &:focus-visible': {
-                    bgcolor: active ? 'primary.main' : 'rgba(126,217,87,0.08)',
-                    borderColor: active ? 'primary.main' : 'rgba(126,217,87,0.32)',
+                    bgcolor: active ? 'primary.main' : 'translucent.primaryGreen',
+                    borderColor: active ? 'primary.main' : 'translucent.primaryGreen',
                     outline: 'none',
                   },
                 }}

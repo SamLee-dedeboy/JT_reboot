@@ -1,7 +1,7 @@
 // Internal standalone view for inspecting the KelpFusion map diagram.
 import { Box } from '@mui/material';
 import PageLayout from './PageLayout';
-import KelpFusionMap from '../maps/KelpFusionMap.tsx';
+import KelpFusionMap from '../maps/instances/KelpFusionMap.tsx';
 
 export default function KelpDiagram() {
   return (

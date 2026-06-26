@@ -7,6 +7,7 @@ import { Box, IconButton, Slider, Switch, Tooltip, Typography } from '@mui/mater
 import { tensionToT } from '../../../lib/kelp/tension';
 import type { KelpSet, SetStat } from '../../../lib/kelp/types';
 import type { KelpRenderMode } from './KelpOverlay';
+import { palette } from '../../../theme/muiTheme';
 
 interface KelpControlsProps {
   tension: number;
@@ -28,7 +29,7 @@ interface KelpControlsProps {
 }
 
 // NOTE (unsolved): the panel text still reads darker than the literal color
-// values suggest. Bumping to `#ffffff` / `rgba(255,255,255,0.9)` / `#9be870`
+// values suggest. Bumping to theme-backed white, base.100, and primaryGreen
 // below is a real change from the previous `grey.100` / `grey.300` /
 // `brand.primaryGreen` tokens, but the perceived dimness in the screenshot
 // hasn't been fully explained — no parent `opacity` or `filter` was found
@@ -52,9 +53,9 @@ const panelSx = {
   // Near-opaque + darker than before so light text reads at full contrast.
   backgroundColor: 'rgba(13, 15, 17, 0.97)',
   backdropFilter: 'blur(6px)',
-  border: '1px solid rgba(126, 217, 87, 0.35)',
+  border: `1px solid ${palette.translucent.primaryGreen}`,
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
-  color: '#ffffff',
+  color: palette.common.white,
 } as const;
 
 const collapsedSx = {
@@ -71,9 +72,9 @@ const collapsedSx = {
   borderRadius: 2,
   backgroundColor: 'rgba(13, 15, 17, 0.97)',
   backdropFilter: 'blur(6px)',
-  border: '1px solid rgba(126, 217, 87, 0.35)',
+  border: `1px solid ${palette.translucent.primaryGreen}`,
   boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
-  color: '#ffffff',
+  color: palette.common.white,
   cursor: 'pointer',
   userSelect: 'none',
   '&:hover': {
@@ -82,13 +83,13 @@ const collapsedSx = {
 } as const;
 
 const collapseBtnSx = {
-  color: '#9be870',
+  color: palette.brand.primaryGreen,
   p: 0.25,
-  '&:hover': { backgroundColor: 'rgba(155, 232, 112, 0.12)' },
+  '&:hover': { backgroundColor: palette.translucent.primaryGreen },
 } as const;
 
 // Muted-but-legible color for secondary labels (slider end caps, counts, etc.).
-const mutedTextColor = 'rgba(255, 255, 255, 0.9)';
+const mutedTextColor = palette.base[100];
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
@@ -99,7 +100,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
         letterSpacing: '0.09em',
         fontSize: 10.5,
         fontWeight: 700,
-        color: '#9be870',
+        color: palette.brand.primaryGreen,
         mb: 0.75,
       }}
     >
@@ -108,7 +109,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
-const dividerSx = { my: 1.5, borderTop: '1px solid rgba(255, 255, 255, 0.09)' } as const;
+const dividerSx = { my: 1.5, borderTop: `1px solid ${palette.base[300]}` } as const;
 
 const warningChipSx = {
   display: 'inline-block',
@@ -161,7 +162,7 @@ export default function KelpControls({
             fontWeight: 700,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            color: '#9be870',
+            color: palette.brand.primaryGreen,
           }}
         >
           Kelp Controls
@@ -193,7 +194,7 @@ export default function KelpControls({
             fontWeight: 700,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            color: '#9be870',
+            color: palette.brand.primaryGreen,
           }}
         >
           Kelp Controls
@@ -214,7 +215,7 @@ export default function KelpControls({
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <SectionLabel>Tension</SectionLabel>
         <Typography
-          sx={{ fontSize: 12, fontWeight: 700, color: '#9be870', fontVariantNumeric: 'tabular-nums' }}
+          sx={{ fontSize: 12, fontWeight: 700, color: palette.brand.primaryGreen, fontVariantNumeric: 'tabular-nums' }}
         >
           t = {tensionToT(tension).toFixed(2)}
         </Typography>
@@ -239,7 +240,7 @@ export default function KelpControls({
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <SectionLabel>Max waterway distance</SectionLabel>
         <Typography
-          sx={{ fontSize: 12, fontWeight: 700, color: '#9be870', fontVariantNumeric: 'tabular-nums' }}
+          sx={{ fontSize: 12, fontWeight: 700, color: palette.brand.primaryGreen, fontVariantNumeric: 'tabular-nums' }}
         >
           {maxDistanceMiles.toFixed(1)} mi
         </Typography>
@@ -262,8 +263,8 @@ export default function KelpControls({
         <Box
           sx={{
             ...statusChipSx,
-            backgroundColor: 'rgba(255, 255, 255, 0.06)',
-            border: '1px solid rgba(255, 255, 255, 0.18)',
+            backgroundColor: palette.base[800],
+            border: `1px solid ${palette.base[300]}`,
             color: mutedTextColor,
           }}
         >
@@ -293,8 +294,8 @@ export default function KelpControls({
               sx={{
                 p: 1,
                 borderRadius: 1.5,
-                backgroundColor: 'rgba(255, 255, 255, 0.045)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
+                backgroundColor: palette.base[800],
+                border: `1px solid ${palette.base[300]}`,
                 opacity: set.visible ? 1 : 0.5,
                 transition: 'opacity 0.15s',
               }}

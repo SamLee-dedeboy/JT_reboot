@@ -34,6 +34,10 @@ export const palette = {
     800: "#141d1f",
     900: "#101618",
   },
+  translucent: {
+    primaryGreen: "rgba(126,217,87,0.18)",
+    textShadow: "rgba(16,22,24,0.6)",
+  },
   surface:  "rgba(81, 93, 97, 0.3)", // 400 with 30% opacity, can be used for cards and surfaces
   surfaceStrong: "#39474B", // 400 with 45% opacity,card hover fill 
   footerBg: "#343c40",
@@ -99,12 +103,32 @@ export const numbering = {
   },
   badge: {
     size: '1.9rem',
-    border: '1px solid rgba(126,217,87,0.4)',
+    border: `1px solid ${palette.translucent.primaryGreen}`,
     radius: '999px',
   },
   article: {
     width: { xs: 'auto', sm: '2.4rem' },
   },
+} as const;
+
+export const highlighter = {
+  defaultColor: palette.translucent.primaryGreen,
+  vibrancy: {
+    subtle: 0.18,
+    balanced: 0.32,
+    vibrant: 0.52,
+  },
+} as const;
+
+export const navigation = {
+  desktopButtonMinWidth: 140,
+  activeBorder: `1px solid ${palette.translucent.primaryGreen}`,
+  activeBackground: palette.translucent.primaryGreen,
+  menuPanelBackground: 'rgba(37,52,57,0.96)',
+  drawerPanelBackground: 'rgba(37,52,57,0.98)',
+  panelBorder: '1px solid rgba(155,162,164,0.22)',
+  dropdownShadow: '0 18px 46px rgba(0,0,0,0.34)',
+  drawerShadow: '-18px 0 46px rgba(0,0,0,0.36)',
 } as const;
 
 export const logoWordmark = {
@@ -175,6 +199,8 @@ const themeOptions = {
     },
     jtSpacing,
     numbering,
+    highlighter,
+    navigation,
     logoWordmark,
     typography: {
         fontFamily: fontBody,
@@ -213,11 +239,11 @@ const themeOptions = {
             fontWeight: 800,
         },
         body1: {
-            fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.25rem)',
+            fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)',
             lineHeight: 1.75,
         },
         body2: {
-            fontSize: 'clamp(0.98rem, 0.9rem + 0.28vw, 1.1rem)',
+            fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
             lineHeight: 1.6,
             color: palette.base[100],
         },
@@ -301,7 +327,7 @@ const themeOptions = {
           color: palette.common.white,
         },
         '*::selection': {
-          backgroundColor: 'rgba(126, 217, 87, 0.35)',
+          backgroundColor: palette.translucent.primaryGreen,
         },
       },
     },
@@ -329,8 +355,8 @@ const themeOptions = {
       styleOverrides: {
         root: ({ theme }) => ({
           [theme.breakpoints.down('md')]: {
-            paddingLeft: theme.spacing(2),
-            paddingRight: theme.spacing(2),
+            paddingLeft: theme.spacing(3),
+            paddingRight: theme.spacing(3),
           },
         }),
       },
@@ -429,7 +455,7 @@ const themeOptions = {
           color: 'white',
           fontSize: '0.95rem',
           '&:hover': {
-            backgroundColor: 'rgba(126,217,87,0.08)',
+            backgroundColor: palette.translucent.primaryGreen,
             color: theme.palette.secondary.main,
           },
         }),
@@ -439,6 +465,8 @@ const themeOptions = {
 } as Parameters<typeof createTheme>[0] & {
   jtSpacing: typeof jtSpacing;
   numbering: typeof numbering;
+  highlighter: typeof highlighter;
+  navigation: typeof navigation;
   logoWordmark: typeof logoWordmark;
 };
 
@@ -468,15 +496,33 @@ declare module '@mui/material/styles' {
     numberBadge?: CSSProperties;
   }
 
+  interface Palette {
+    translucent: {
+      primaryGreen: string;
+      textShadow: string;
+    };
+  }
+
+  interface PaletteOptions {
+    translucent?: {
+      primaryGreen?: string;
+      textShadow?: string;
+    };
+  }
+
   interface Theme {
     jtSpacing: typeof jtSpacing;
     numbering: typeof numbering;
+    highlighter: typeof highlighter;
+    navigation: typeof navigation;
     logoWordmark: typeof logoWordmark;
   }
 
   interface ThemeOptions {
     jtSpacing?: Theme['jtSpacing'];
     numbering?: Theme['numbering'];
+    highlighter?: Theme['highlighter'];
+    navigation?: Theme['navigation'];
     logoWordmark?: Theme['logoWordmark'];
   }
 }

@@ -1,13 +1,14 @@
 // Inline highlight primitive for emphasizing text with design-system variants.
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
+import { highlighter } from '../../theme/muiTheme';
 
-export type HighlightStyleVariant = 'underline' | 'wash' | 'pill';
+export type HighlightStyleVariant = 'underline' | 'raisedUnderline' | 'wash' | 'pill';
 
 /** Semantic inline highlight, with style variants for design-system exploration. */
 export default function Hl({
   children,
-  color = 'rgba(126,217,87,0.38)',
+  color = highlighter.defaultColor,
   styleVariant = 'underline',
 }: {
   children: ReactNode;
@@ -19,6 +20,15 @@ export default function Hl({
       background: `linear-gradient(transparent 62%, ${color} 62%)`,
       px: '0.1em',
       borderRadius: '2px',
+    },
+    raisedUnderline: {
+      background: `linear-gradient(transparent 24%, ${color} 24% 100%)`,
+      px: '0.14em',
+      py: '0.04em',
+      borderRadius: '4px',
+      lineHeight: 1.08,
+      boxDecorationBreak: 'clone',
+      WebkitBoxDecorationBreak: 'clone',
     },
     wash: {
       background: color,

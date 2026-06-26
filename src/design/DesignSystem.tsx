@@ -7,7 +7,7 @@ import DocCard from '../components/repo/DocCard';
 import ReferenceCard from '../components/repo/ReferenceCard';
 import { assetUrl } from '../utils/baseUrl';
 import DesignSection from './common/DesignSection';
-import { displayGroupHeaderSx, displayGroupSx, displayItemSx, displayMetaSx, themeSafeGap } from './common/displayStyles';
+import { displayItemSx, displayMetaSx, themeSafeGap } from './common/displayStyles';
 import ColorContent from './sections/ColorContent';
 import LogoContent from './sections/LogoContent';
 import NumberingContent from './sections/NumberingContent';
@@ -35,7 +35,8 @@ function TooltipTypography({ variant = 'body1', children, ...props }: Typography
           sx: {
             bgcolor: 'base.800',
             color: 'common.white',
-            border: '1px solid rgba(126,217,87,0.3)',
+            border: '1px solid',
+            borderColor: 'translucent.primaryGreen',
             boxShadow: '0 10px 28px rgba(16,22,24,0.45)',
           },
         },
@@ -80,6 +81,7 @@ const DESIGN_SECTIONS = [
   { id: 'buttons', label: 'Buttons' },
   { id: 'chips', label: 'Chips' },
   { id: 'cards', label: 'Cards' },
+  { id: 'scenario-data', label: 'Scenario/Data' },
   { id: 'numbering', label: 'Numbering' },
   { id: 'highlight', label: 'Highlight' },
 ];
@@ -172,7 +174,7 @@ function DesignSystemNavRail() {
                 height: 9,
                 borderRadius: '50%',
                 border: '1.5px solid',
-                borderColor: on ? 'primary.main' : 'rgba(242,240,239,0.4)',
+                borderColor: on ? 'primary.main' : 'base.300',
                 bgcolor: on ? 'primary.main' : 'transparent',
                 transform: on ? 'scale(1.2)' : 'none',
                 transition: 'all 200ms ease',
@@ -195,10 +197,22 @@ function UsageNote({ children }: { children: ReactNode }) {
 }
 
 function StyleLine({ children, token = false, custom = false }: { children: ReactNode; token?: boolean; custom?: boolean }) {
+  const dotColor = custom ? 'accent.pink' : token ? 'primary.main' : 'base.200';
+
   return (
-    <Box component="div" sx={{ color: custom ? '#ff677d' : token ? 'base.100' : 'base.200', mb: 0.45 }}>
-      {custom ? 'Non-token: ' : token ? 'Theme token: ' : ''}
-      {children}
+    <Box
+      component="div"
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: '0.55rem minmax(0, 1fr)',
+        gap: 0.8,
+        alignItems: 'baseline',
+        color: custom ? 'accent.pink' : token ? 'base.100' : 'base.200',
+        mb: 0.55,
+      }}
+    >
+      <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: dotColor }} />
+      <Box component="span">{children}</Box>
     </Box>
   );
 }
@@ -237,14 +251,9 @@ const highlightColors = [
 
 const highlightStyles: Array<{ label: string; value: HighlightStyleVariant }> = [
   { label: 'Underline', value: 'underline' },
+  { label: 'Raised Underline', value: 'raisedUnderline' },
   { label: 'Soft Fill', value: 'wash' },
   { label: 'Pill', value: 'pill' },
-];
-
-const highlightVibrancyOptions = [
-  { label: 'Subtle', alpha: 0.18 },
-  { label: 'Balanced', alpha: 0.32 },
-  { label: 'Vibrant', alpha: 0.52 },
 ];
 
 function hexToRgba(hex: string, alpha: number) {
@@ -261,21 +270,6 @@ const statCardSx = {
   border: '1px solid rgba(155,162,164,0.18)',
   borderRadius: 'var(--mui-shape-borderRadius)',
   p: '1.9rem',
-} as const;
-
-const pillSx = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '0.5rem',
-  whiteSpace: 'nowrap',
-  px: '1rem',
-  py: '0.5rem',
-  borderRadius: '999px',
-  border: '1px solid',
-  borderColor: 'base.300',
-  bgcolor: 'surface',
-  fontSize: '0.98rem',
-  lineHeight: 1,
 } as const;
 
 function ComponentMeta({ children }: { children: ReactNode }) {
@@ -330,7 +324,7 @@ function LandingCardSpec({ n, title, body, icon }: { n: string; title: string; b
 
 function PageLayoutCardSpec() {
   return (
-    <Box sx={{ backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 1, borderLeft: 4, borderColor: 'primary.main', p: 2 }}>
+    <Box sx={{ backgroundColor: 'surface', borderRadius: 1, borderLeft: 4, borderColor: 'primary.main', p: 2 }}>
       <TooltipTypography variant="h4" component="h3">PageLayout Card</TooltipTypography>
       <TooltipTypography variant="body1" component="p">Used by subpage `.card-grid` content such as repository pages.</TooltipTypography>
     </Box>
@@ -339,29 +333,142 @@ function PageLayoutCardSpec() {
 
 function ArticleAccordionSpec() {
   return (
-    <Box sx={{ bgcolor: 'surface', border: '1px solid rgba(126,217,87,0.4)', borderRadius: 'var(--mui-shape-borderRadius)', overflow: 'hidden' }}>
+    <Box sx={{ bgcolor: 'surface', border: 1, borderColor: 'translucent.primaryGreen', borderRadius: 'var(--mui-shape-borderRadius)', overflow: 'hidden' }}>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'auto 1fr', sm: 'auto 1fr auto' }, gap: { xs: '0.8rem', sm: '1.2rem' }, alignItems: 'center', p: { xs: '1.2rem', sm: '1.5rem 1.7rem' } }}>
         <TooltipTypography variant="numberArticle" component="span">01</TooltipTypography>
         <Box>
           <Box sx={{ fontSize: '1.3rem', fontWeight: 700, lineHeight: 1.3, color: 'common.white', mb: '0.4rem' }}>Article Accordion Card</Box>
           <Box sx={{ fontSize: '0.98rem', color: 'base.200' }}><Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>Source label</Box> Metadata line</Box>
         </Box>
-        <Box sx={{ display: { xs: 'none', sm: 'grid' }, placeItems: 'center', width: '2.4rem', height: '2.4rem', borderRadius: '50%', border: '1.5px solid rgba(126,217,87,0.4)', color: 'primary.main', bgcolor: 'rgba(126,217,87,0.12)' }}>
+        <Box sx={{ display: { xs: 'none', sm: 'grid' }, placeItems: 'center', width: '2.4rem', height: '2.4rem', borderRadius: '50%', border: 1.5, borderColor: 'translucent.primaryGreen', color: 'primary.main', bgcolor: 'translucent.primaryGreen' }}>
           <Icon name="plus" size={18} />
         </Box>
       </Box>
       <Box sx={{ p: { xs: '0 1.2rem 1.8rem', sm: '0 1.7rem 1.8rem calc(1.7rem + 2.4rem + 1.2rem)' }, borderTop: '1px solid rgba(155,162,164,0.12)' }}>
         <Box sx={{ fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.78rem', color: 'secondary.main', pt: '1.3rem', mb: '0.9rem' }}>Abstract</Box>
-        <TooltipTypography sx={{ fontSize: '1.08rem', lineHeight: 1.7, color: 'rgba(242,240,239,0.85)' }}>Expandable article text appears below the button row.</TooltipTypography>
+        <TooltipTypography sx={{ fontSize: '1.08rem', lineHeight: 1.7, color: 'base.100' }}>Expandable article text appears below the button row.</TooltipTypography>
       </Box>
     </Box>
   );
 }
 
-function PlaceholderSpec() {
+function ScenarioPathwayCardSpec() {
+  const accent = '#b280ff';
+  const scenarioChoiceSx = {
+    justifyContent: 'stretch',
+    borderColor: 'base.300',
+    color: 'common.white',
+    bgcolor: 'transparent',
+    py: 1.1,
+    px: 2.1,
+    width: '100%',
+    '& .condition-choice': {
+      display: 'grid',
+      gridTemplateColumns: '24px minmax(0, 1fr) 20px',
+      alignItems: 'center',
+      gap: 1.15,
+      width: '100%',
+      textAlign: 'left',
+    },
+    '& .condition-choice-icon': {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'primary.main',
+    },
+    '& .condition-choice-arrow': {
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: 'base.100',
+    },
+    '&:hover': {
+      borderColor: 'primary.main',
+      bgcolor: 'translucent.primaryGreen',
+    },
+  } as const;
+
   return (
-    <Box sx={{ position: 'relative', borderRadius: 'var(--mui-shape-borderRadius)', overflow: 'hidden', bgcolor: 'base.700', backgroundImage: 'repeating-linear-gradient(-45deg, rgba(255,255,255,0.035) 0px, rgba(255,255,255,0.035) 2px, transparent 2px, transparent 11px)', border: '1px solid rgba(155,162,164,0.18)', display: 'grid', placeItems: 'center', aspectRatio: '16 / 10' }}>
-      <Box component="span" sx={{ fontFamily: '"Nunito Sans", monospace', fontSize: '0.8rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'base.200', bgcolor: 'rgba(16, 22, 24, 0.55)', px: 1.4, py: 0.7, borderRadius: '999px', border: '1px solid rgba(155,162,164,0.2)' }}>Placeholder</Box>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateRows: '180px 1fr',
+        minHeight: 390,
+        border: '2px solid',
+        borderColor: `${accent}66`,
+        borderRadius: 2,
+        bgcolor: 'rgba(20,29,31,0.74)',
+        overflow: 'hidden',
+        backdropFilter: 'blur(14px)',
+      }}
+    >
+      <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+        <Box
+          component="img"
+          src={assetUrl('/images/scenarios/calling-on-reserves.jpg')}
+          alt=""
+          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(16,22,24,0.04), rgba(16,22,24,0.72))' }} />
+        <Box sx={{ position: 'absolute', left: 18, bottom: 16, width: 48, height: 4, bgcolor: accent, boxShadow: `0 0 18px ${accent}` }} />
+      </Box>
+      <Stack spacing={2} sx={{ p: themeSafeGap }}>
+        <TooltipTypography variant="h4" component="h3">Calling on Reserves</TooltipTypography>
+        <TooltipTypography variant="body2" sx={{ color: 'base.100' }}>
+          Scenario pathway cards pair a clear image, accent rail, short copy, and condition choices.
+        </TooltipTypography>
+        <Stack spacing={1.1} sx={{ mt: 'auto' }}>
+          {[
+            { label: 'Current weather', icon: 'sun' as const },
+            { label: 'Sea level rise', icon: 'waves' as const },
+          ].map((item) => (
+            <Button key={item.label} variant="outlined" sx={scenarioChoiceSx}>
+              <Box component="span" className="condition-choice">
+                <Box component="span" className="condition-choice-icon"><Icon name={item.icon} size={20} /></Box>
+                <Box component="span">{item.label}</Box>
+                <Box component="span" className="condition-choice-arrow"><Icon name="arrow-right" size={18} /></Box>
+              </Box>
+            </Button>
+          ))}
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}
+
+function OutflowVariationSpec() {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: 280,
+        p: { xs: 2.4, md: 3 },
+        border: '2px solid rgba(81,162,189,0.68)',
+        borderRadius: 0,
+        bgcolor: 'rgba(20,29,31,0.74)',
+        overflow: 'hidden',
+        backdropFilter: 'blur(14px)',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          inset: '0 auto 0 0',
+          width: 5,
+          bgcolor: 'secondary.main',
+          boxShadow: '0 0 24px rgba(81,162,189,0.8)',
+        },
+      }}
+    >
+      <Stack spacing={2} sx={{ height: '100%' }}>
+        <TooltipTypography variant="numberGhost" component="p">02</TooltipTypography>
+        <TooltipTypography variant="h4" component="h3">More Delta outflow</TooltipTypography>
+        <TooltipTypography variant="eyebrow" component="p" sx={{ color: 'secondary.main' }}>Variation I</TooltipTypography>
+        <TooltipTypography variant="body2" sx={{ color: 'base.100', flex: 1 }}>
+          Outflow cards use an intentionally square glass panel with a left status bar and scenario-specific accent.
+        </TooltipTypography>
+        <Button endIcon={<Icon name="arrow-up-right" size={15} />} sx={{ alignSelf: 'flex-start', color: 'common.white', border: 1, borderColor: 'base.300' }}>
+          Explore
+        </Button>
+      </Stack>
     </Box>
   );
 }
@@ -412,7 +519,12 @@ export default function DesignSystem() {
   const [showSpacingPixels, setShowSpacingPixels] = useState(true)
   const [highlightSwatch, setHighlightSwatch] = useState(highlightColors[0].swatch)
   const [highlightStyle, setHighlightStyle] = useState<HighlightStyleVariant>('underline')
-  const [highlightVibrancy, setHighlightVibrancy] = useState(highlightVibrancyOptions[1].alpha)
+  const highlightVibrancyOptions = [
+    { label: 'Subtle', alpha: theme.highlighter.vibrancy.subtle },
+    { label: 'Balanced', alpha: theme.highlighter.vibrancy.balanced },
+    { label: 'Vibrant', alpha: theme.highlighter.vibrancy.vibrant },
+  ];
+  const [highlightVibrancy, setHighlightVibrancy] = useState<number>(theme.highlighter.vibrancy.balanced)
 
   // Refs for measuring actual computed spacing
   const mainContainerRef = useRef<HTMLDivElement>(null);
@@ -554,7 +666,7 @@ export default function DesignSystem() {
         </UsageNote>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: 'repeat(2, minmax(0, 1fr))' }, gap: theme.jtSpacing.gap.lg }}>
           {[
-            { label: 'Component Padding', values: theme.jtSpacing.component, use: 'Inside cards, logo previews, buttons, form controls, and callout text blocks.' },
+            { label: 'Component Padding', values: theme.jtSpacing.component, use: 'Inside cards, logo previews, buttons, form controls, and accent text blocks.' },
             { label: 'Layout Gaps', values: theme.jtSpacing.gap, use: 'Between cards, button rows, split columns, and grouped controls.' },
             { label: 'Section Rhythm', values: theme.jtSpacing.section, use: 'Vertical padding between major page sections and design-system chapters.' },
             { label: 'Page Gutters', values: theme.jtSpacing.page.x, use: 'Outer design-system page padding and wide canvas breathing room.' },
@@ -573,7 +685,7 @@ export default function DesignSystem() {
               </Box>
               <ComponentMeta>
                 <StyleLine token>Values are consumed through `theme.jtSpacing` and `theme.spacing(...)`.</StyleLine>
-                <StyleLine custom>Some legacy components still use literal rem/px spacing and should be migrated later.</StyleLine>
+                <StyleLine custom>Some visualization and map internals still use literal rem/px values where canvas/SVG layout needs exact sizing.</StyleLine>
               </ComponentMeta>
             </Box>
           ))}
@@ -582,51 +694,23 @@ export default function DesignSystem() {
 
       <DesignSection id="sections" eyebrow="Foundations" title="Section Styling" guideSx={guideSx}>
         <UsageNote>
-          Current sections are styled as full-width bands with constrained content, section heads, optional dark/blue backgrounds, and callout rules.
+          Current sections are styled as full-width bands with constrained content, section heads, and optional dark/blue backgrounds.
         </UsageNote>
         <Stack spacing={theme.jtSpacing.gap.lg}>
           <CardRow
             caption={
               <SpecCaption>
-                <StyleLine token>Outer element is `component="section"` with vertical rhythm.</StyleLine>
-                <StyleLine token>{'Default `Section` uses `py: { xs: 3.75rem, md: 6rem }` and a `Container maxWidth="lg"`.'}</StyleLine>
-                <StyleLine custom>The rem values are currently literal in `Section.tsx`; they should become `jtSpacing.section` aliases.</StyleLine>
+                <StyleLine token>Outer element is `component="section"` with `jtSpacing.section` vertical rhythm.</StyleLine>
+                <StyleLine token>Constrained content uses a `Container maxWidth="lg"` and themed gutters.</StyleLine>
+                <StyleLine token>SectionHead uses the MUI `eyebrow` typography variant plus MUI h2.</StyleLine>
               </SpecCaption>
             }
           >
-            <Box component="section" sx={{ py: { xs: '3.75rem', md: '6rem' }, bgcolor: 'base.600', border: '1px solid rgba(155,162,164,0.16)' }}>
-              <Box sx={{ maxWidth: 720, mx: 'auto', px: { xs: '1.25rem', md: '2rem' } }}>
-                <Eyebrow sx={{ mb: '0.7rem' }}>Section Band</Eyebrow>
-                <TooltipTypography variant="h2" component="h3">Constrained Content</TooltipTypography>
+            <Box component="section" sx={{ py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.xl }, bgcolor: 'base.600', border: '1px solid rgba(155,162,164,0.16)' }}>
+              <Box sx={{ maxWidth: 720, mx: 'auto', px: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.gap.xl } }}>
+                <Eyebrow sx={{ mb: theme.jtSpacing.component.sm }}>Methodology</Eyebrow>
+                <TooltipTypography variant="h2" component="h3">Our Approach</TooltipTypography>
               </Box>
-            </Box>
-          </CardRow>
-          <CardRow
-            caption={
-              <SpecCaption>
-                <StyleLine token>SectionHead uses Eyebrow plus MUI h2.</StyleLine>
-                <StyleLine custom>Eyebrow letter spacing, 0.85rem size, and SectionHead margin are local component styles.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <Box sx={statCardSx}>
-              <Eyebrow sx={{ mb: '0.7rem' }}>Methodology</Eyebrow>
-              <TooltipTypography variant="h2" component="h3">Our Approach</TooltipTypography>
-            </Box>
-          </CardRow>
-          <CardRow
-            caption={
-              <SpecCaption>
-                <StyleLine token>Repository/PageLayout sections use brand.base, common.white, secondary.main, and primary.main.</StyleLine>
-                <StyleLine custom>Repository hero lede width, font size, and left-rule thickness are custom.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <Box sx={{ bgcolor: 'brand.base', border: '1px solid rgba(155,162,164,0.16)', p: theme.jtSpacing.component.md }}>
-              <TooltipTypography variant="h2" component="h3" sx={{ color: 'secondary.main' }}>Page Title Section</TooltipTypography>
-              <TooltipTypography component="p" sx={{ maxWidth: '60ch', fontSize: '1.3rem', lineHeight: 1.7, color: 'rgba(242,240,239,0.9)', borderLeft: '3px solid', borderColor: 'primary.main', pl: '1.5rem' }}>
-                Repository lede with left accent rule.
-              </TooltipTypography>
             </Box>
           </CardRow>
         </Stack>
@@ -676,19 +760,19 @@ export default function DesignSystem() {
               <SpecCaption>
                 <StyleLine token>Top-level nav buttons inherit MUI button typography.</StyleLine>
                 <StyleLine token>Dropdown and mobile drawer accents use primary.main; captions use the captionSmall typography variant and base.100.</StyleLine>
-                <StyleLine custom>Desktop dropdown and mobile drawer panels use local translucent surfaces, quiet borders, blur, and custom link markers.</StyleLine>
-                <StyleLine custom>Navbar buttons use custom `minWidth: 140`, white text overrides, and active green outline/fill states.</StyleLine>
+                <StyleLine token>Desktop button width, active state, panel backgrounds, borders, and shadows use `theme.navigation`.</StyleLine>
+                <StyleLine custom>Dropdown link markers and blur intensity remain local to the navigation component.</StyleLine>
               </SpecCaption>
             }
           >
             <Stack spacing={2}>
               <Stack direction="row" spacing={1.5} sx={{ flexWrap: 'wrap' }}>
-                <Button sx={{ minWidth: 140, color: 'common.white' }} endIcon={<Icon name="chevron-down" size={16} />}>Repository</Button>
-                <Button sx={{ minWidth: 140, color: 'common.white', border: '1px solid rgba(126,217,87,0.36)', bgcolor: 'rgba(126,217,87,0.08)' }} endIcon={<Icon name="chevron-down" size={16} />}>Related Projects</Button>
-                <Button disabled sx={{ minWidth: 140 }}>Scenarios</Button>
+                <Button sx={{ minWidth: theme.navigation.desktopButtonMinWidth, color: 'common.white' }} endIcon={<Icon name="chevron-down" size={16} />}>Repository</Button>
+                <Button sx={{ minWidth: theme.navigation.desktopButtonMinWidth, color: 'common.white', border: theme.navigation.activeBorder, bgcolor: theme.navigation.activeBackground }} endIcon={<Icon name="chevron-down" size={16} />}>Related Projects</Button>
+                <Button disabled sx={{ minWidth: theme.navigation.desktopButtonMinWidth }}>Scenarios</Button>
               </Stack>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'minmax(280px, 380px) minmax(260px, 340px)' }, gap: 2, alignItems: 'start' }}>
-                <Box sx={{ bgcolor: 'rgba(37,52,57,0.96)', border: '1px solid rgba(155,162,164,0.22)', borderRadius: 'var(--mui-shape-borderRadius)', boxShadow: '0 18px 46px rgba(0,0,0,0.34)', p: 1 }}>
+                <Box sx={{ bgcolor: theme.navigation.menuPanelBackground, border: theme.navigation.panelBorder, borderRadius: 'var(--mui-shape-borderRadius)', boxShadow: theme.navigation.dropdownShadow, p: 1 }}>
                   <Box sx={{ px: 1.5, pt: 1, pb: 1 }}>
                     <TooltipTypography variant="eyebrow" component="p" sx={{ mb: 0.75 }}>Explore</TooltipTypography>
                     <TooltipTypography variant="captionSmall" component="p" sx={{ color: 'base.100', lineHeight: 1.45, maxWidth: 280 }}>
@@ -697,18 +781,18 @@ export default function DesignSystem() {
                     <Box sx={{ mt: 1.25, height: 2, width: 56, bgcolor: 'primary.main', borderRadius: 999 }} />
                   </Box>
                   {['Project Documentation & Reports', 'Service Learning & Education', 'References & Resources'].map((item) => (
-                    <Box key={item} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, mx: 0.5, my: 0.5, px: 1.25, py: 1.1, borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid transparent', color: 'common.white', '&:hover': { bgcolor: 'rgba(126,217,87,0.08)', borderColor: 'rgba(126,217,87,0.38)' } }}>
+                    <Box key={item} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, mx: 0.5, my: 0.5, px: 1.25, py: 1.1, borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid transparent', color: 'common.white', '&:hover': { bgcolor: 'translucent.primaryGreen', borderColor: 'translucent.primaryGreen' } }}>
                       <Box sx={{ width: 3, height: 22, mt: 0.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.72, flex: 'none' }} />
                       <Box sx={{ fontWeight: 800, lineHeight: 1.25 }}>{item}</Box>
                     </Box>
                   ))}
                 </Box>
-                <Box sx={{ bgcolor: 'rgba(37,52,57,0.98)', border: '1px solid rgba(155,162,164,0.22)', borderRadius: 'var(--mui-shape-borderRadius)', boxShadow: '-18px 0 46px rgba(0,0,0,0.22)', p: 1.5 }}>
+                <Box sx={{ bgcolor: theme.navigation.drawerPanelBackground, border: theme.navigation.panelBorder, borderRadius: 'var(--mui-shape-borderRadius)', boxShadow: theme.navigation.drawerShadow, p: 1.5 }}>
                   <Box sx={{ mb: 1.5 }}>
                     <TooltipTypography variant="h4" component="h3" sx={{ color: 'common.white', lineHeight: 1.12 }}>Menu</TooltipTypography>
                   </Box>
                   <Stack spacing={1}>
-                    <Box sx={{ borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid rgba(126,217,87,0.34)', bgcolor: 'rgba(126,217,87,0.06)', overflow: 'hidden' }}>
+                    <Box sx={{ borderRadius: 'var(--mui-shape-borderRadius)', border: 1, borderColor: 'translucent.primaryGreen', bgcolor: 'translucent.primaryGreen', overflow: 'hidden' }}>
                       <Box sx={{ px: 1.5, py: 1.25, display: 'flex', justifyContent: 'space-between', gap: 1 }}>
                         <Box>
                           <Box sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1.25 }}>Repository</Box>
@@ -766,20 +850,9 @@ export default function DesignSystem() {
 
       <DesignSection id="chips" eyebrow="Components" title="Chips and Badges" guideSx={guideSx}>
         <UsageNote>
-          Chips are non-navigation labels used in approach modes, repository badges, placeholders, and map/status legends.
+          Chips are non-navigation labels used in repository badges, scenario labels, and map/status legends.
         </UsageNote>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' }, gap: theme.jtSpacing.gap.lg }}>
-          <ButtonSpec
-            title="Approach Mode Chip"
-            caption={
-              <SpecCaption>
-                <StyleLine token>Background uses surface; borderColor uses base.300; dot uses primary.main.</StyleLine>
-                <StyleLine custom>Typography is custom body font 0.98rem rather than a MUI typography variant.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <Box sx={pillSx}><Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: 'primary.main' }} />Scenario comparison</Box>
-          </ButtonSpec>
           <ButtonSpec
             title="Repository Badge"
             caption={
@@ -789,7 +862,20 @@ export default function DesignSystem() {
               </SpecCaption>
             }
           >
-            <Box sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'rgba(16,22,24,0.78)', border: '1px solid rgba(126,217,87,0.35)', color: 'primary.main', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', px: '0.7rem', py: '0.36rem', borderRadius: '999px' }}>Design Studio</Box>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'base.800', border: 1, borderColor: 'translucent.primaryGreen', color: 'primary.main', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', px: '0.7rem', py: '0.36rem', borderRadius: '999px' }}>Design Studio</Box>
+          </ButtonSpec>
+          <ButtonSpec
+            title="Scenario Label"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Text uses the eyebrow typography style and primary.main color.</StyleLine>
+                <StyleLine custom>The scenario card uses a local translucent green background and full-green border.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <Box sx={{ display: 'inline-flex', mb: 1.5, px: 1.1, py: 0.55, border: 1, borderColor: 'primary.main', bgcolor: 'translucent.primaryGreen', color: 'primary.main', typography: 'eyebrow', lineHeight: 1 }}>
+              Business as Usual
+            </Box>
           </ButtonSpec>
         </Box>
       </DesignSection>
@@ -802,24 +888,9 @@ export default function DesignSystem() {
           <CardRow
             caption={
               <SpecCaption>
-                <StyleLine token>Palette: primary.main, common.white, brand/base background depending on placement.</StyleLine>
-                <StyleLine custom>Callout has intentionally square corners: border radius is 0.</StyleLine>
-                <StyleLine custom>Some callouts use custom font sizing or line-height instead of a typography variant.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <Box sx={{ borderLeft: '4px solid', borderColor: 'primary.main', borderRadius: 0, pl: theme.jtSpacing.component.md, py: theme.jtSpacing.component.sm, bgcolor: 'transparent' }}>
-              <TooltipTypography variant="body1" component="p" sx={{ m: 0 }}>
-                Callout text uses a left accent rule and intentionally keeps square edges.
-              </TooltipTypography>
-            </Box>
-          </CardRow>
-          <CardRow
-            caption={
-              <SpecCaption>
                 <StyleLine token>Typography: title uses MUI h4; body uses MUI body1.</StyleLine>
                 <StyleLine token>Border color uses primary.main; radius uses MUI spacing number through PageLayout styles.</StyleLine>
-                <StyleLine custom>Background uses rgba(255,255,255,0.06), not a named palette token.</StyleLine>
+                <StyleLine token>Background uses the shared surface token.</StyleLine>
               </SpecCaption>
             }
           >
@@ -878,36 +949,50 @@ export default function DesignSystem() {
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1.2fr' }, gap: '1.3rem', alignItems: 'center', py: '1.3rem', borderTop: '1px solid rgba(155,162,164,0.16)', borderBottom: '1px solid rgba(155,162,164,0.16)' }}>
               <Box component="img" src={assetUrl('/images/repo/studio-isleton.png')} alt="Studio card specimen" sx={{ width: '100%', borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid rgba(155,162,164,0.2)', display: 'block' }} />
               <Box>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'rgba(16,22,24,0.78)', border: '1px solid rgba(126,217,87,0.35)', color: 'primary.main', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', px: '0.7rem', py: '0.36rem', borderRadius: '999px', mb: '1rem' }}>Design Studio</Box>
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'base.800', border: 1, borderColor: 'translucent.primaryGreen', color: 'primary.main', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', px: '0.7rem', py: '0.36rem', borderRadius: '999px', mb: '1rem' }}>Design Studio</Box>
                 <TooltipTypography variant="numberGhost" component="div" sx={{ mb: '0.6rem' }}>01</TooltipTypography>
                 <TooltipTypography variant="h3" component="h4" sx={{ color: 'primary.main', mb: '0.7rem' }}>Studio Feature Row</TooltipTypography>
                 <TooltipTypography variant="body2">Rows alternate image and text columns on desktop, then stack naturally on mobile.</TooltipTypography>
               </Box>
             </Box>
           </CardRow>
+        </Stack>
+      </DesignSection>
+
+      <DesignSection id="scenario-data" eyebrow="Components" title="Scenario and Data Views" guideSx={guideSx}>
+        <UsageNote>
+          Current scenario screens use glass panels, image-led scenario cards, and outflow variation panels. These specimens document the active landing-page patterns.
+        </UsageNote>
+        <Stack spacing={theme.jtSpacing.gap.lg}>
           <CardRow
             caption={
               <SpecCaption>
-                <StyleLine token>Palette: base.700 and base.200.</StyleLine>
-                <StyleLine custom>Striped background, alpha label background, monospace label, and alpha border are custom.</StyleLine>
+                <StyleLine token>Scenario card typography uses h4/body2/button variants and the active accent palette.</StyleLine>
+                <StyleLine token>Image paths use `assetUrl`; radius uses the shared MUI shape token.</StyleLine>
+                <StyleLine custom>Glass panel alpha backgrounds, image gradient overlay, and accent glow are local scenario styles.</StyleLine>
               </SpecCaption>
             }
           >
-            <PlaceholderSpec />
+            <ScenarioPathwayCardSpec />
+          </CardRow>
+          <CardRow
+            caption={
+              <SpecCaption>
+                <StyleLine token>Number uses `numberGhost`; label uses `eyebrow`; body uses body2/base.100.</StyleLine>
+                <StyleLine custom>Square glass panel border, left status bar, and glow values are scenario-local.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <OutflowVariationSpec />
           </CardRow>
         </Stack>
       </DesignSection>
 
       <DesignSection id="highlight" eyebrow="Components" title="Inline Highlighter" guideSx={guideSx}>
         <UsageNote>
-          The highlighter is a semantic mark with an underline gradient. The shared `Hl` primitive now accepts a `color` prop, so key phrases can use green by default or another approved accent color when a section needs distinction.
+          The highlighter is a semantic mark with style variants and theme-backed vibrancy levels. Use the accent hue control to test approved palette colors without changing the underlying emphasis pattern.
         </UsageNote>
-        <Box sx={displayGroupSx}>
-          <Box sx={displayGroupHeaderSx}>
-            <TooltipTypography variant="h4" component="h3" sx={{ m: 0 }}>Highlight Specimen</TooltipTypography>
-            <TooltipTypography variant="body2" sx={{ maxWidth: '64ch' }}>Interactive color controls and preview copy use the shared display-shell treatment.</TooltipTypography>
-          </Box>
-          <Box sx={displayItemSx}>
+        <Box sx={displayItemSx}>
             <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.sm }}>
               <TooltipTypography variant="captionSmall" component="div">Style</TooltipTypography>
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -998,7 +1083,7 @@ export default function DesignSystem() {
                 ['03', <>How can these scenarios support a <Hl color={activeHighlightColor} styleVariant={highlightStyle}>just transition</Hl>?</>],
                 ['04', <>Use highlights for exact phrases, then let plain body text do the rest.</>],
               ].map(([n, text]) => (
-                <TooltipTypography key={String(n)} component="p" sx={{ m: 0, display: 'grid', gridTemplateColumns: theme.numbering.grid.inlineTemplate, gap: theme.numbering.grid.inlineGap, alignItems: 'baseline', color: 'rgba(242,240,239,0.84)', fontSize: '1.1rem', lineHeight: 1.55 }}>
+                <TooltipTypography key={String(n)} component="p" sx={{ m: 0, display: 'grid', gridTemplateColumns: theme.numbering.grid.inlineTemplate, gap: theme.numbering.grid.inlineGap, alignItems: 'baseline', color: 'base.100', fontSize: '1.1rem', lineHeight: 1.55 }}>
                   <TooltipTypography variant="numberArticle" component="span" aria-hidden>{n}</TooltipTypography>
                   <Box component="span">{text}</Box>
                 </TooltipTypography>
@@ -1006,10 +1091,10 @@ export default function DesignSystem() {
             </Box>
             <ComponentMeta>
               <StyleLine token>Color choices come from brand primary green, brand primary blue, and every color in the accent palette.</StyleLine>
-              <StyleLine token>Vibrancy controls adjust the accent color alpha while keeping the palette hue fixed.</StyleLine>
+              <StyleLine token>Vibrancy controls use `theme.highlighter.vibrancy` alpha values while keeping the palette hue fixed.</StyleLine>
+              <StyleLine token>Raised underline keeps the underline behavior but shifts the color band upward for tighter text alignment.</StyleLine>
               <StyleLine custom>The color-choice controls are custom pills; they are not MUI Buttons or Chips yet.</StyleLine>
             </ComponentMeta>
-          </Box>
         </Box>
       </DesignSection>
     </Box>

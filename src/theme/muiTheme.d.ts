@@ -23,6 +23,20 @@ declare module '@mui/material/styles' {
     numberBadge?: CSSProperties;
   }
 
+  interface Palette {
+    translucent: {
+      primaryGreen: string;
+      textShadow: string;
+    };
+  }
+
+  interface PaletteOptions {
+    translucent?: {
+      primaryGreen?: string;
+      textShadow?: string;
+    };
+  }
+
   interface Theme {
     jtSpacing: {
       component: {
@@ -83,6 +97,24 @@ declare module '@mui/material/styles' {
         };
       };
     };
+    highlighter: {
+      defaultColor: string;
+      vibrancy: {
+        subtle: number;
+        balanced: number;
+        vibrant: number;
+      };
+    };
+    navigation: {
+      desktopButtonMinWidth: number;
+      activeBorder: string;
+      activeBackground: string;
+      menuPanelBackground: string;
+      drawerPanelBackground: string;
+      panelBorder: string;
+      dropdownShadow: string;
+      drawerShadow: string;
+    };
     logoWordmark: {
       desktopMinWidth: number;
       containerLineHeight: number;
@@ -101,6 +133,8 @@ declare module '@mui/material/styles' {
   interface ThemeOptions {
     jtSpacing?: Theme['jtSpacing'];
     numbering?: Theme['numbering'];
+    highlighter?: Theme['highlighter'];
+    navigation?: Theme['navigation'];
     logoWordmark?: Theme['logoWordmark'];
   }
 }

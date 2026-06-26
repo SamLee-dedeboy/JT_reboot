@@ -1,6 +1,7 @@
 // Landing-page process section that explains how the project moves from
 // community input through scenario planning and modeled outcomes.
 import { Box, Button, Typography } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
 import ScrollReveal from '../animation/ScrollReveal';
@@ -73,15 +74,14 @@ export default function HowItWorks() {
           </ScrollReveal>
           <ScrollReveal delay={0.18} sx={{ mt: '0.5rem' }}>
             <Button
+              component={Link}
+              to="/scenarios"
               variant="contained"
               color="primary"
-              disabled
-              title="Coming soon"
               endIcon={<Icon name="arrow-right" size={18} />}
             >
               View Adaptation Scenarios
             </Button>
-            <Typography variant="body2" sx={{ mt: 1, opacity: 0.6 }}>Adaptation Scenarios — coming soon.</Typography>
           </ScrollReveal>
         </Box>
       </Box>

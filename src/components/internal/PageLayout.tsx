@@ -63,7 +63,7 @@ function contentSx(theme: import('@mui/material').Theme) {
       my: theme.jtSpacing.component.md,
     },
     '& .card': {
-      backgroundColor: 'rgba(255,255,255,0.06)',
+      backgroundColor: 'surface',
       borderRadius: 1,
       borderLeft: 4,
       borderColor: 'primary.main',

@@ -6,25 +6,25 @@
 // top of the basemap.
 
 import { useEffect, useMemo, useState } from 'react';
-import MapGL from 'react-map-gl/mapbox';
 import type { Map as MapboxMap } from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
 import { Box } from '@mui/material';
-import DeltaStationPointsLayer from './layers/DeltaStationPointsLayer';
-import { WATER_QUALITY_STATION_INDICES } from './layers/deltaStationConstants';
-import KelpOverlay, { type KelpRenderMode } from './kelp/KelpOverlay';
-import KelpControls from './kelp/KelpControls';
-import { useStationCoords } from './kelp/useStationCoords';
+import MapLayerOrchestrator from '../MapLayerOrchestrator';
+import BaseMap from '../BaseMap';
+import { DELTA_INITIAL_VIEW_STATE } from '../mapCameraView';
+import { WATER_QUALITY_STATION_INDICES } from '../layers/deltaStationConstants';
+import KelpOverlay, { type KelpRenderMode } from '../kelp/KelpOverlay';
+import KelpControls from '../kelp/KelpControls';
+import { useStationCoords } from '../kelp/useStationCoords';
 import type {
   KelpSet,
   SetStat,
   WaterwayGraph,
   WaterwayRouting,
-} from '../../lib/kelp/types';
+} from '../../../lib/kelp/types';
 import {
   buildWaterwayGraphFromGeoJSON,
   computeWaterwayRouting,
-} from '../../lib/kelp/waterwayGraph';
+} from '../../../lib/kelp/waterwayGraph';
 
 interface RawRecord {
   station_index: string | number;
@@ -45,6 +45,7 @@ const VULNERABILITY_META: Record<VulnerabilityGroup, { label: string; color: str
 const VULNERABILITY_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MODERATE'];
 
 const containerStyle = { position: 'relative', width: '100%', height: '100%' } as const;
+const hiddenContainerStyle = { ...containerStyle, display: 'none' } as const;
 
 /** Slider default for the max waterway-distance threshold. */
 const DEFAULT_MAX_DISTANCE_MILES = 10;
@@ -58,7 +59,7 @@ interface KelpFusionMapProps {
    *
    * Note: opacity/visible are controlled by KelpControls after mount, so the
    * caller's values are only used as initial defaults. Identity of `sets` is
-   * what triggers a refresh — pass a stable reference for stable behavior.
+   * what triggers a refresh - pass a stable reference for stable behavior.
    */
   externalSets?: KelpSet[] | null;
   /** Hide the overlay entirely without unmounting the map. */
@@ -66,7 +67,6 @@ interface KelpFusionMapProps {
 }
 
 export default function KelpFusionMap({ externalSets = null, hidden = false }: KelpFusionMapProps = {}) {
-  const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null);
   const [tension, setTension] = useState(0.4);
   const [sets, setSets] = useState<KelpSet[]>([]);
@@ -79,7 +79,7 @@ export default function KelpFusionMap({ externalSets = null, hidden = false }: K
   const stationCoords = useStationCoords(mapObj);
 
   // Build one set per vulnerability group from the water-quality data.
-  // Skipped when the caller passes `externalSets` — that path drives the
+  // Skipped when the caller passes `externalSets` - that path drives the
   // overlay from live UI state instead.
   useEffect(() => {
     if (externalSets) return;
@@ -177,7 +177,7 @@ export default function KelpFusionMap({ externalSets = null, hidden = false }: K
   // Once both the graph and the station coordinates are loaded, compute one
   // global pairwise-routing table over every station the water-quality
   // dataset cares about. Per-set kelp overlays slice into this table by
-  // station index — running Dijkstra once per station (~50) instead of once
+  // station index - running Dijkstra once per station (~50) instead of once
   // per station per set keeps startup CPU sublinear in set count.
   const routing = useMemo<WaterwayRouting | null>(() => {
     if (!waterwayGraph || !stationCoords.ready) return null;
@@ -199,25 +199,14 @@ export default function KelpFusionMap({ externalSets = null, hidden = false }: K
     [mapObj, stationCoords.ready, sets.length],
   );
 
-  if (!mapboxToken) {
-    return (
-      <Box sx={{ ...containerStyle, display: 'grid', placeItems: 'center' }}>
-        Add VITE_MAPBOX_TOKEN to render the map.
-      </Box>
-    );
-  }
-
   return (
-    <div style={{ ...containerStyle, display: hidden ? 'none' : 'block' }}>
-      <MapGL
-        initialViewState={{ longitude: -121.95, latitude: 37.95, zoom: 9.5 }}
-        mapStyle="mapbox://styles/justtransition/cmo0kote1006j01st023g37ga"
-        mapboxAccessToken={mapboxToken}
-        style={{ width: '100%', height: '100%' }}
-        onLoad={(evt) => setMapObj(evt.target as MapboxMap)}
+    <Box sx={hidden ? hiddenContainerStyle : containerStyle}>
+      <BaseMap
+        initialViewState={DELTA_INITIAL_VIEW_STATE}
+        onMapReady={(map: MapboxMap) => setMapObj(map)}
       >
-        <DeltaStationPointsLayer />
-      </MapGL>
+        <MapLayerOrchestrator />
+      </BaseMap>
 
       {overlayReady && mapObj && (
         <KelpOverlay
@@ -250,6 +239,6 @@ export default function KelpFusionMap({ externalSets = null, hidden = false }: K
           stats={stats}
         />
       )}
-    </div>
+    </Box>
   );
 }

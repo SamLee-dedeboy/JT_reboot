@@ -85,8 +85,8 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
       items: typography.filter((t) => t.label.startsWith('Number')),
     },
     {
-      title: 'Button',
-      description: 'Action text style used by themed buttons and button-like controls, plus logo-specific navigation text.',
+      title: 'Miscellaneous',
+      description: 'Action, label, and logo-specific text styles.',
       items: typography.filter((t) => ['Button', 'Eyebrow', 'Logo', 'Logo Hero'].includes(t.label)),
     },
   ];

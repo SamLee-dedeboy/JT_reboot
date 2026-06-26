@@ -13,14 +13,14 @@ function AbstractBody({ a }: { a: Article }) {
         {a.kicker}
       </Box>
       {a.paras.map((p, i) => (
-        <Typography key={i} sx={{ fontSize: '1.08rem', lineHeight: 1.7, color: 'rgba(242,240,239,0.85)', mb: '0.9rem', '&:last-of-type': { mb: 0 } }}>
+        <Typography key={i} sx={{ fontSize: '1.08rem', lineHeight: 1.7, color: 'base.100', mb: '0.9rem', '&:last-of-type': { mb: 0 } }}>
           {p}
         </Typography>
       ))}
       {a.list && (
         <Box component="ol" sx={{ pl: '1.4rem', mt: '0.4rem', mb: '0.9rem' }}>
           {a.list.map((li, i) => (
-            <Box component="li" key={i} sx={{ fontSize: '1.08rem', lineHeight: 1.6, color: 'rgba(242,240,239,0.85)', mb: '0.4rem' }}>{li}</Box>
+            <Box component="li" key={i} sx={{ fontSize: '1.08rem', lineHeight: 1.6, color: 'base.100', mb: '0.4rem' }}>{li}</Box>
           ))}
         </Box>
       )}
@@ -34,7 +34,7 @@ function AccordionItem({ a, n, open, onToggle }: { a: Article; n: number; open: 
       sx={{
         bgcolor: 'surface',
         border: '1px solid',
-        borderColor: open ? 'rgba(126,217,87,0.4)' : 'rgba(155,162,164,0.16)',
+        borderColor: open ? 'translucent.primaryGreen' : 'rgba(155,162,164,0.16)',
         borderRadius: 'var(--mui-shape-borderRadius)',
         overflow: 'hidden',
         transition: 'border-color 200ms ease',
@@ -76,11 +76,12 @@ function AccordionItem({ a, n, open, onToggle }: { a: Article; n: number; open: 
             width: '2.4rem',
             height: '2.4rem',
             borderRadius: '50%',
-            border: '1.5px solid rgba(126,217,87,0.4)',
+            border: 1.5,
+            borderColor: 'translucent.primaryGreen',
             color: 'primary.main',
             transition: 'transform 240ms ease, background 200ms ease',
             transform: open ? 'rotate(45deg)' : 'none',
-            bgcolor: open ? 'rgba(126,217,87,0.12)' : 'transparent',
+            bgcolor: open ? 'translucent.primaryGreen' : 'transparent',
           }}
         >
           <Icon name="plus" size={18} />

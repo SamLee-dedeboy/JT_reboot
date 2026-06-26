@@ -3,12 +3,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
 import PageLayout from './PageLayout';
-import MapContainer from '../maps/MapContainer.tsx';
-import KelpFusionMap from '../maps/KelpFusionMap.tsx';
+import DrinkingWaterMap from '../maps/instances/DrinkingWaterMap.tsx';
+import KelpFusionMap from '../maps/instances/KelpFusionMap.tsx';
 import GanttChart from '../visualizations/GanttChart';
 import type { KelpSet } from '../../lib/kelp/types';
 
-type MapTab = 'default' | 'kelp';
+type MapTab = 'drinking-water' | 'kelp';
 
 // Colors mirror the gantt chart's category palette so the kelp boundaries
 // read as the same categories the user is steering with the sliders.
@@ -21,7 +21,7 @@ export default function Playground() {
   const [hoveredStationIndex, setHoveredStationIndex] = useState<number | null>(null);
   const [unacceptableOver75, setUnacceptableOver75] = useState<number[]>([]);
   const [goodOver75, setGoodOver75] = useState<number[]>([]);
-  const [activeTab, setActiveTab] = useState<MapTab>('default');
+  const [activeTab, setActiveTab] = useState<MapTab>('drinking-water');
   // Lazy-mount the kelp map: skip its tile/mesh fetch for users who never
   // click the tab, but keep it mounted once shown so re-activation is instant.
   const [kelpEverActivated, setKelpEverActivated] = useState(false);
@@ -141,32 +141,32 @@ export default function Playground() {
                 borderRadius: '999px !important',
                 px: 1.5,
                 py: 0.5,
-                color: 'rgba(242,240,239,0.78)',
+                color: 'base.100',
                 typography: 'button',
                 fontSize: '0.78rem',
                 '&:hover': {
                   color: 'common.white',
-                  bgcolor: 'rgba(126,217,87,0.08)',
+                  bgcolor: 'translucent.primaryGreen',
                 },
                 '&.Mui-selected': {
                   color: 'primary.light',
-                  bgcolor: 'rgba(126,217,87,0.22)',
+                  bgcolor: 'translucent.primaryGreen',
                   '&:hover': {
-                    bgcolor: 'rgba(126,217,87,0.28)',
+                    bgcolor: 'translucent.primaryGreen',
                   },
                 },
               },
             }}
           >
-            <ToggleButton value="default" aria-label="Default map">
-              Default
+            <ToggleButton value="drinking-water" aria-label="Drinking water map">
+              Drinking Water
             </ToggleButton>
             <ToggleButton value="kelp" aria-label="Kelp diagram">
               Kelp Diagram
             </ToggleButton>
           </ToggleButtonGroup>
           {/*
-            The default map stays mounted unconditionally so the existing
+            The drinking-water map stays mounted unconditionally so the existing
             playground UX is unchanged. The kelp map is lazy-mounted on the
             first activation and then kept alive — so its waterway-mesh fetch
             and station-coord harvest only run once, and the inactive map is
@@ -174,14 +174,14 @@ export default function Playground() {
           */}
           <Box sx={{ position: 'absolute', inset: 0 }}>
             <Box
-              aria-hidden={activeTab !== 'default'}
+              aria-hidden={activeTab !== 'drinking-water'}
               sx={{
                 position: 'absolute',
                 inset: 0,
-                display: activeTab === 'default' ? 'block' : 'none',
+                display: activeTab === 'drinking-water' ? 'block' : 'none',
               }}
             >
-              <MapContainer
+              <DrinkingWaterMap
                 currentViewingDate={hoveredDate}
                 highlightedStationIndex={hoveredStationIndex}
                 unacceptableOver75={unacceptableOver75}

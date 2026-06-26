@@ -10,6 +10,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined';
 import WavesRoundedIcon from '@mui/icons-material/WavesRounded';
+import WbSunnyRoundedIcon from '@mui/icons-material/WbSunnyRounded';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
@@ -22,6 +23,7 @@ export type IconName =
   | 'plus'
   | 'mail'
   | 'drop'
+  | 'sun'
   | 'waves'
   | 'compass'
   | 'users'
@@ -43,6 +45,7 @@ const icons: Record<IconName, SvgIconComponent> = {
   plus: AddRoundedIcon,
   mail: MailOutlineRoundedIcon,
   drop: WaterDropOutlinedIcon,
+  sun: WbSunnyRoundedIcon,
   waves: WavesRoundedIcon,
   compass: ExploreOutlinedIcon,
   users: GroupsOutlinedIcon,
