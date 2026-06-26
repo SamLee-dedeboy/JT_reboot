@@ -1,8 +1,9 @@
+// Repository page for project documents, reports, and outreach materials.
 import { Box } from '@mui/material';
-import RepoLayout from '../components/repo/RepoLayout';
-import Section from '../components/common/Section';
-import Timeline from '../components/repo/Timeline';
-import { DOC_COUNT } from '../data/docYears';
+import RepoLayout from './RepoLayout';
+import Section from '../common/Section';
+import Timeline from './Timeline';
+import { DOC_COUNT } from '../../data/docYears';
 
 export default function ProjectDocumentation() {
   return (

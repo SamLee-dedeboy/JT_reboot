@@ -1,3 +1,5 @@
+// Repository navigation tabs for switching between documentation/resource
+// sections.
 import { Link } from 'react-router-dom';
 import { Box, Container, Typography } from '@mui/material';
 

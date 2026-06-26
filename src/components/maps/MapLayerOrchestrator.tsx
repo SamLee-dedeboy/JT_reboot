@@ -1,3 +1,5 @@
+// Thin map-layer coordinator that wires playground state into rendered map
+// layers.
 import DeltaStationPointsLayer from './layers/DeltaStationPointsLayer';
 
 interface MapLayerOrchestratorProps {

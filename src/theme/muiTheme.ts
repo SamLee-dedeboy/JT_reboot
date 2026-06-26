@@ -107,6 +107,20 @@ export const numbering = {
   },
 } as const;
 
+export const logoWordmark = {
+  desktopMinWidth: 360,
+  containerLineHeight: 1.05,
+  fontSize: {
+    mobile: 'clamp(1.05rem, 4vw, 1.2rem)',
+    tablet: 'clamp(1.1rem, 2.4vw, 1.25rem)',
+    desktop: {
+      md: 'clamp(1.2rem, 1.6vw, 1.35rem)',
+      lg: 'clamp(1.35rem, 1.35vw, 1.5rem)',
+    },
+  },
+  footerFontSize: 'clamp(1.05rem, 1.4vw, 1.35rem)',
+} as const;
+
 
 /* 
  * 4. Theme
@@ -161,6 +175,7 @@ const themeOptions = {
     },
     jtSpacing,
     numbering,
+    logoWordmark,
     typography: {
         fontFamily: fontBody,
         h1: {
@@ -421,7 +436,11 @@ const themeOptions = {
       },
     },
   },
-} as Parameters<typeof createTheme>[0] & { jtSpacing: typeof jtSpacing; numbering: typeof numbering };
+} as Parameters<typeof createTheme>[0] & {
+  jtSpacing: typeof jtSpacing;
+  numbering: typeof numbering;
+  logoWordmark: typeof logoWordmark;
+};
 
 
 const theme = createTheme(themeOptions);
@@ -452,11 +471,13 @@ declare module '@mui/material/styles' {
   interface Theme {
     jtSpacing: typeof jtSpacing;
     numbering: typeof numbering;
+    logoWordmark: typeof logoWordmark;
   }
 
   interface ThemeOptions {
     jtSpacing?: Theme['jtSpacing'];
     numbering?: Theme['numbering'];
+    logoWordmark?: Theme['logoWordmark'];
   }
 }
 

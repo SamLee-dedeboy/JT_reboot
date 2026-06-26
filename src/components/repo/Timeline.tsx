@@ -1,5 +1,6 @@
+// Repository timeline section that groups documents by phase or milestone.
 import { Box, Typography } from '@mui/material';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import DocCard from './DocCard';
 import { DOC_YEARS } from '../../data/docYears';
 
@@ -28,7 +29,7 @@ export default function Timeline() {
     >
       {DOC_YEARS.map((y) => (
         <Box key={y.year} sx={{ position: 'relative', mt: '3.4rem', mb: '1.8rem', '&:first-of-type': { mt: 0 } }}>
-          <Reveal
+          <ScrollReveal
             sx={{
               position: 'relative',
               '&::before': {
@@ -47,7 +48,7 @@ export default function Timeline() {
             <Typography variant="numberTimeline" component="div">
               {y.year}
             </Typography>
-          </Reveal>
+          </ScrollReveal>
 
           {y.workshops.map((w) => (
             <Box
@@ -68,7 +69,7 @@ export default function Timeline() {
                 },
               }}
             >
-              <Reveal sx={{ mb: '1.2rem' }}>
+              <ScrollReveal sx={{ mb: '1.2rem' }}>
                 <Box component="span" sx={{ display: 'inline-block', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.78rem', color: 'secondary.main', mb: '0.35rem' }}>
                   {w.date}
                 </Box>
@@ -76,7 +77,7 @@ export default function Timeline() {
                   {w.title}
                 </Typography>
                 {w.tag && <Typography variant="body2" sx={{ mt: '0.4rem', opacity: 0.7 }}>{w.tag}</Typography>}
-              </Reveal>
+              </ScrollReveal>
               <Box
                 sx={{
                   display: 'grid',

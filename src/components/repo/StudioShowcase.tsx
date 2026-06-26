@@ -1,5 +1,7 @@
+// Repository showcase section for highlighting studio outputs and supporting
+// materials.
 import { Box, Typography } from '@mui/material';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Eyebrow from '../common/Eyebrow';
 import Icon from '../common/Icon';
 import { assetUrl } from '../../utils/baseUrl';
@@ -25,17 +27,17 @@ const badgeSx = {
 export default function StudioShowcase() {
   return (
     <Box>
-      <Reveal sx={{ display: 'flex', alignItems: 'baseline', gap: '1rem', mb: '2.4rem', flexWrap: 'wrap' }}>
+      <ScrollReveal sx={{ display: 'flex', alignItems: 'baseline', gap: '1rem', mb: '2.4rem', flexWrap: 'wrap' }}>
         <Typography variant="numberTimeline" component="span">
           2025
         </Typography>
         <Eyebrow sx={{ color: 'secondary.main' }}>Undergraduate Design Studios</Eyebrow>
-      </Reveal>
+      </ScrollReveal>
 
       {STUDIOS.map((s, i) => {
         const flip = i % 2 === 1;
         return (
-          <Reveal
+          <ScrollReveal
             key={s.title + s.place}
             delay={0.04}
             sx={{
@@ -95,7 +97,7 @@ export default function StudioShowcase() {
                 Download <Icon name="arrow-down" size={16} />
               </Box>
             </Box>
-          </Reveal>
+          </ScrollReveal>
         );
       })}
     </Box>

@@ -1,3 +1,5 @@
+// Internal watershed scenario dashboard for comparing restoration metrics and
+// modeled change ranges.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
@@ -14,12 +16,12 @@ import {
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import PageLayout from './PageLayout';
-import Section from '../components/common/Section';
-import SectionHead from '../components/common/SectionHead';
-import Reveal from '../components/common/Reveal';
-import Icon, { type IconName } from '../components/common/Icon';
-import Hl from '../components/common/Highlight';
-import { assetUrl } from '../utils/baseUrl';
+import Section from '../common/Section';
+import SectionHead from '../common/SectionHead';
+import ScrollReveal from '../animation/ScrollReveal';
+import Icon, { type IconName } from '../common/Icon';
+import Hl from '../common/Highlight';
+import { assetUrl } from '../../utils/baseUrl';
 
 interface WatershedMetricRecord {
   habitat_focus: string;
@@ -1419,7 +1421,7 @@ export default function Watershed() {
             alignItems: 'center',
           }}
         >
-          <Reveal delay={0.08} sx={{ maxWidth: { xs: 520, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
+          <ScrollReveal delay={0.08} sx={{ maxWidth: { xs: 520, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
             <Box
               component="img"
               src={assetUrl('/images/scenarios/new-green-watershed.jpg')}
@@ -1433,21 +1435,21 @@ export default function Watershed() {
                 display: 'block',
               }}
             />
-          </Reveal>
+          </ScrollReveal>
           <Box>
             <SectionHead
               eyebrow="Scenario Overview"
               title="Restoration as a Watershed-Scale Strategy"
               titleColor="secondary.main"
             />
-            <Reveal delay={0.06}>
+            <ScrollReveal delay={0.06}>
               <Typography variant="body1" sx={{ maxWidth: '72ch', mb: '1.1rem' }}>
                 {SCENARIO_LEDE}
               </Typography>
               <Typography variant="body2" sx={{ maxWidth: '72ch' }}>
                 {SCENARIO_DETAIL}
               </Typography>
-            </Reveal>
+            </ScrollReveal>
           </Box>
         </Box>
       </Section>
@@ -1462,7 +1464,7 @@ export default function Watershed() {
           }}
         >
           {watershedHighlights.map((item, index) => (
-            <Reveal key={item.title} delay={index * 0.08} sx={cardSx}>
+            <ScrollReveal key={item.title} delay={index * 0.08} sx={cardSx}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: '1.2rem' }}>
                 <Typography variant="numberGhost" component="span">
                   {item.n}
@@ -1473,7 +1475,7 @@ export default function Watershed() {
                 {item.title}
               </Typography>
               <Typography variant="body2">{item.body}</Typography>
-            </Reveal>
+            </ScrollReveal>
           ))}
         </Box>
       </Section>

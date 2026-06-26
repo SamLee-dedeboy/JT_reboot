@@ -1,7 +1,9 @@
+// Landing-page foundations section that introduces the research premise and
+// supporting context cards.
 import { Box, Typography } from '@mui/material';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
 import { FOUNDATIONS } from '../../data/homeContent';
 import { splitLead } from '../../utils/highlightText';
@@ -20,7 +22,7 @@ export default function Foundations() {
         {FOUNDATIONS.map((f, n) => {
           const [lead, rest] = splitLead(f.text);
           return (
-            <Reveal
+            <ScrollReveal
               key={f.n}
               delay={n * 0.08}
               sx={{
@@ -43,7 +45,7 @@ export default function Foundations() {
               </Typography>
               <Typography sx={{ fontSize: '1.3rem', lineHeight: 1.55, mb: '0.9rem' }}>{lead}</Typography>
               <Typography variant="body2">{rest}</Typography>
-            </Reveal>
+            </ScrollReveal>
           );
         })}
       </Box>

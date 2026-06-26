@@ -1,7 +1,9 @@
+// Landing-page process section that explains how the project moves from
+// community input through scenario planning and modeled outcomes.
 import { Box, Button, Typography } from '@mui/material';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
 import { assetUrl } from '../../utils/baseUrl';
 import { WORKS_LEDE, WORKS_STEPS, WORKS_OUTRO } from '../../data/homeContent';
@@ -10,7 +12,7 @@ export default function HowItWorks() {
   return (
     <Section id="works" bg="base.600">
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 7fr' }, gap: { xs: '1.6rem', md: '2.25rem' }, alignItems: 'center' }}>
-        <Reveal delay={0.08} sx={{ maxWidth: { xs: 460, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
+        <ScrollReveal delay={0.08} sx={{ maxWidth: { xs: 460, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
           <Box
             component="img"
             src={assetUrl('/images/workshop-session.jpg')}
@@ -24,13 +26,13 @@ export default function HowItWorks() {
               display: 'block',
             }}
           />
-        </Reveal>
+        </ScrollReveal>
         <Box>
           <SectionHead eyebrow="The Project" title="How Our Project Works" />
-          <Reveal delay={0.06}>
+          <ScrollReveal delay={0.06}>
             <Typography variant="body1" sx={{ mb: '1.6rem' }}>{WORKS_LEDE}</Typography>
-          </Reveal>
-          <Reveal delay={0.12} sx={{ mb: '2rem' }}>
+          </ScrollReveal>
+          <ScrollReveal delay={0.12} sx={{ mb: '2rem' }}>
             <Typography variant="body2" sx={{ mb: '0.9rem' }}>Through&hellip;</Typography>
             <Box
               component="ul"
@@ -68,8 +70,8 @@ export default function HowItWorks() {
               ))}
             </Box>
             <Typography variant="body2">{WORKS_OUTRO}</Typography>
-          </Reveal>
-          <Reveal delay={0.18} sx={{ mt: '0.5rem' }}>
+          </ScrollReveal>
+          <ScrollReveal delay={0.18} sx={{ mt: '0.5rem' }}>
             <Button
               variant="contained"
               color="primary"
@@ -80,7 +82,7 @@ export default function HowItWorks() {
               View Adaptation Scenarios
             </Button>
             <Typography variant="body2" sx={{ mt: 1, opacity: 0.6 }}>Adaptation Scenarios — coming soon.</Typography>
-          </Reveal>
+          </ScrollReveal>
         </Box>
       </Box>
     </Section>

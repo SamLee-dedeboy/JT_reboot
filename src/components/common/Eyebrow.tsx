@@ -1,3 +1,4 @@
+// Small uppercase section label backed by the MUI eyebrow typography variant.
 import { Typography } from '@mui/material';
 import type { TypographyProps } from '@mui/material';
 

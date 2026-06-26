@@ -1,9 +1,11 @@
+// Landing-page methodology section with approach copy, CTAs, and supporting
+// scenario-planning highlights.
 import { Link } from 'react-router-dom';
 import { Box, Button } from '@mui/material';
 import type { ReactNode } from 'react';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Hl from '../common/Highlight';
 import { assetUrl } from '../../utils/baseUrl';
 import { APPROACH_QUOTE, APPROACH_MODES } from '../../data/homeContent';
@@ -36,31 +38,25 @@ export default function OurApproachSection() {
       >
         <Box>
           <SectionHead eyebrow="Methodology" title="Our Approach" />
-          <Reveal
+          <ScrollReveal
             delay={0.06}
             component="blockquote"
             sx={{
               m: 0,
               mt: '0.5rem',
-              borderLeft: '4px solid',
-              borderColor: 'primary.main',
-              pl: '1.6rem',
               typography: 'body1',
               lineHeight: 1.8,
             }}
           >
             {highlightApproachModes(APPROACH_QUOTE)}
-          </Reveal>
-          <Reveal delay={0.12} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: '2.2rem' }}>
+          </ScrollReveal>
+          <ScrollReveal delay={0.12} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: '2.2rem' }}>
             <Button component={Link} to="/pages/project-documentation" variant="contained" color="primary">
               Project Documentation &amp; Reports
             </Button>
-            <Button component={Link} to="/pages/scenario-planning" variant="outlined" color="primary">
-              Participatory Scenario Planning
-            </Button>
-          </Reveal>
+          </ScrollReveal>
         </Box>
-        <Reveal delay={0.1} sx={{ maxWidth: { xs: 440, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
+        <ScrollReveal delay={0.1} sx={{ maxWidth: { xs: 440, md: 'none' }, mx: { xs: 'auto', md: 0 } }}>
           <Box
             component="img"
             src={assetUrl('/images/delta-aerial.jpg')}
@@ -74,7 +70,7 @@ export default function OurApproachSection() {
               display: 'block',
             }}
           />
-        </Reveal>
+        </ScrollReveal>
       </Box>
     </Section>
   );

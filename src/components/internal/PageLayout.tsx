@@ -1,6 +1,8 @@
+// Shared internal-tool page shell with global navigation, optional title
+// header, and consistent content width handling.
 import { Box, Container, Typography } from '@mui/material';
-import Navbar from '../components/common/Navbar';
-import Footer from '../components/common/Footer';
+import Navbar from '../common/Navbar';
+import Footer from '../common/Footer';
 
 interface PageLayoutProps {
   title: string;

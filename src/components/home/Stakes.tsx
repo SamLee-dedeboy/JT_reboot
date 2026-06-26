@@ -1,8 +1,10 @@
+// Landing-page context section that presents the major equity and water
+// management stakes as interactive cards.
 import { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
 import { emphasize, splitLead } from '../../utils/highlightText';
 import { STAKE, DROUGHT, type StakeBlock } from '../../data/homeContent';
@@ -84,13 +86,13 @@ export default function Stakes() {
       <SectionHead eyebrow="Context" title="What's at Stake" />
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: '1.6rem', md: '2.25rem' }, alignItems: 'start' }}>
         {[STAKE, DROUGHT].map((block, i) => (
-          <Reveal key={block.tag} delay={i * 0.08} sx={cardSx}>
+          <ScrollReveal key={block.tag} delay={i * 0.08} sx={cardSx}>
             <Box sx={tagSx}>
               <Icon name={block.icon} size={20} stroke="var(--mui-palette-secondary-main)" />
               {block.tag}
             </Box>
             <ExpandableProse block={block} />
-          </Reveal>
+          </ScrollReveal>
         ))}
       </Box>
     </Section>

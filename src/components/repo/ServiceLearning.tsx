@@ -1,7 +1,8 @@
+// Repository page for service-learning studios and education materials.
 import { Box } from '@mui/material';
-import RepoLayout from '../components/repo/RepoLayout';
-import Section from '../components/common/Section';
-import StudioShowcase from '../components/repo/StudioShowcase';
+import RepoLayout from './RepoLayout';
+import Section from '../common/Section';
+import StudioShowcase from './StudioShowcase';
 
 export default function ServiceLearning() {
   return (

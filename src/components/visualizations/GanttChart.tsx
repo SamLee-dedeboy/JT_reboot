@@ -1,3 +1,5 @@
+// Water-quality timeline visualization with D3-rendered status bars, brush
+// selection, and station sorting/grouping controls.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Box,

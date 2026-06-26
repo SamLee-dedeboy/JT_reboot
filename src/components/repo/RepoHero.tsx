@@ -1,6 +1,8 @@
+// Hero/header block for repository pages, including eyebrow, title, summary,
+// and optional metadata content.
 import { Box, Container, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 
 interface RepoHeroProps {
   title: ReactNode;
@@ -14,7 +16,7 @@ export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
   return (
     <Box component="header" id="top" sx={{ pt: { xs: '2.6rem', md: '3.4rem' } }}>
       <Container maxWidth="lg" sx={{ px: { xs: '1.25rem', md: '2rem' } }}>
-        <Reveal>
+        <ScrollReveal>
           <Typography
             variant="h1"
             component="h1"
@@ -25,8 +27,8 @@ export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
           >
             {title}
           </Typography>
-        </Reveal>
-        <Reveal delay={0.08}>
+        </ScrollReveal>
+        <ScrollReveal delay={0.08}>
           <Typography
             component="p"
             sx={{
@@ -41,11 +43,11 @@ export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
           >
             {lede}
           </Typography>
-        </Reveal>
+        </ScrollReveal>
         {meta && (
-          <Reveal delay={0.14} sx={{ display: 'flex', alignItems: 'baseline', gap: '1rem', mt: '2.2rem', color: 'base.200', fontSize: '1rem' }}>
+          <ScrollReveal delay={0.14} sx={{ display: 'flex', alignItems: 'baseline', gap: '1rem', mt: '2.2rem', color: 'base.200', fontSize: '1rem' }}>
             {meta}
-          </Reveal>
+          </ScrollReveal>
         )}
       </Container>
     </Box>

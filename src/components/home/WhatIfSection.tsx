@@ -1,3 +1,4 @@
+// Legacy animated "what if" prompt strip that cycles through project questions.
 import { useEffect, useState } from 'react';
 import { Box, Container } from '@mui/material';
 import { WHATIF_QUESTIONS } from '../../data/homeContent';

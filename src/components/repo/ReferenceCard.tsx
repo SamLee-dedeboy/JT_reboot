@@ -1,3 +1,4 @@
+// Compact reference card for research citations and supporting resources.
 import { Box } from '@mui/material';
 import Icon from '../common/Icon';
 import type { Reference } from '../../data/resources';

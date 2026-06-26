@@ -1,10 +1,12 @@
+// Internal exploratory playground that pairs the water-quality timeline with
+// interactive Delta map views.
 import { useCallback, useMemo, useState } from 'react';
 import { Box, ToggleButton, ToggleButtonGroup, useTheme } from '@mui/material';
 import PageLayout from './PageLayout';
-import MapContainer from '../components/maps/MapContainer.tsx';
-import KelpFusionMap from '../components/maps/KelpFusionMap.tsx';
-import GanttChart from '../components/visualizations/GanttChart';
-import type { KelpSet } from '../lib/kelp/types';
+import MapContainer from '../maps/MapContainer.tsx';
+import KelpFusionMap from '../maps/KelpFusionMap.tsx';
+import GanttChart from '../visualizations/GanttChart';
+import type { KelpSet } from '../../lib/kelp/types';
 
 type MapTab = 'default' | 'kelp';
 

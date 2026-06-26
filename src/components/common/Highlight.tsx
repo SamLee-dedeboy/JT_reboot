@@ -1,3 +1,4 @@
+// Inline highlight primitive for emphasizing text with design-system variants.
 import { Box } from '@mui/material';
 import type { ReactNode } from 'react';
 
@@ -6,7 +7,7 @@ export type HighlightStyleVariant = 'underline' | 'wash' | 'pill';
 /** Semantic inline highlight, with style variants for design-system exploration. */
 export default function Hl({
   children,
-  color = 'rgba(126,217,87,0.28)',
+  color = 'rgba(126,217,87,0.38)',
   styleVariant = 'underline',
 }: {
   children: ReactNode;

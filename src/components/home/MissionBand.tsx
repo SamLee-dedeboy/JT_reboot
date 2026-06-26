@@ -1,6 +1,7 @@
+// Full-width mission statement band that anchors the landing page narrative.
 import { Box, Typography } from '@mui/material';
 import Section from '../common/Section';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
 import { MISSION_QUOTE, MISSION_STATEMENT } from '../../data/homeContent';
 
@@ -8,7 +9,7 @@ export default function MissionBand() {
   return (
     <Section id="mission" bg="secondary.dark">
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: '1.6rem', md: '2.25rem' }, alignItems: 'center' }}>
-        <Reveal
+        <ScrollReveal
           component="blockquote"
           sx={{
             m: 0,
@@ -20,8 +21,8 @@ export default function MissionBand() {
           }}
         >
           {MISSION_QUOTE}
-        </Reveal>
-        <Reveal delay={0.1} sx={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+        </ScrollReveal>
+        <ScrollReveal delay={0.1} sx={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
           <Icon name="waves" size={40} stroke="var(--mui-palette-primary-main)" />
           <Typography
             variant="h3"
@@ -30,7 +31,7 @@ export default function MissionBand() {
           >
             {MISSION_STATEMENT}
           </Typography>
-        </Reveal>
+        </ScrollReveal>
       </Box>
     </Section>
   );

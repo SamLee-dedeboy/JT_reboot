@@ -332,7 +332,7 @@ function PageLayoutCardSpec() {
   return (
     <Box sx={{ backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 1, borderLeft: 4, borderColor: 'primary.main', p: 2 }}>
       <TooltipTypography variant="h4" component="h3">PageLayout Card</TooltipTypography>
-      <TooltipTypography variant="body1" component="p">Used by subpage `.card-grid` content such as Public Events.</TooltipTypography>
+      <TooltipTypography variant="body1" component="p">Used by subpage `.card-grid` content such as repository pages.</TooltipTypography>
     </Box>
   );
 }
@@ -641,7 +641,7 @@ export default function DesignSystem() {
             title="Primary + Outline CTA"
             caption={
               <SpecCaption>
-                <StyleLine token>Used by Contact Us, HeroMap, Our Approach, Resources, and old landing CTAs.</StyleLine>
+                <StyleLine token>Used by HeroMap, Our Approach, Resources, and landing CTAs.</StyleLine>
                 <StyleLine token>Typography uses `theme.typography.button`: Hammersmith One, 300, uppercase, 0.08em tracking, 1.15rem.</StyleLine>
                 <StyleLine token>Shape, padding, disabled state, and hover lift come from `MuiButton` theme overrides.</StyleLine>
               </SpecCaption>
@@ -684,7 +684,7 @@ export default function DesignSystem() {
             <Stack spacing={2}>
               <Stack direction="row" spacing={1.5} sx={{ flexWrap: 'wrap' }}>
                 <Button sx={{ minWidth: 140, color: 'common.white' }} endIcon={<Icon name="chevron-down" size={16} />}>Repository</Button>
-                <Button sx={{ minWidth: 140, color: 'common.white', border: '1px solid rgba(126,217,87,0.36)', bgcolor: 'rgba(126,217,87,0.08)' }} endIcon={<Icon name="chevron-down" size={16} />}>Get Involved</Button>
+                <Button sx={{ minWidth: 140, color: 'common.white', border: '1px solid rgba(126,217,87,0.36)', bgcolor: 'rgba(126,217,87,0.08)' }} endIcon={<Icon name="chevron-down" size={16} />}>Related Projects</Button>
                 <Button disabled sx={{ minWidth: 140 }}>Scenarios</Button>
               </Stack>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'minmax(280px, 380px) minmax(260px, 340px)' }, gap: 2, alignItems: 'start' }}>
@@ -711,16 +711,16 @@ export default function DesignSystem() {
                     <Box sx={{ borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid rgba(126,217,87,0.34)', bgcolor: 'rgba(126,217,87,0.06)', overflow: 'hidden' }}>
                       <Box sx={{ px: 1.5, py: 1.25, display: 'flex', justifyContent: 'space-between', gap: 1 }}>
                         <Box>
-                          <Box sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1.25 }}>Get Involved</Box>
+                          <Box sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1.25 }}>Repository</Box>
                           <TooltipTypography variant="captionSmall" component="p" sx={{ color: 'base.100', mt: 0.45, lineHeight: 1.45 }}>
-                            Join workshops, planning sessions, and project conversations.
+                            Browse reports, learning materials, and project resources.
                           </TooltipTypography>
                         </Box>
                         <Icon name="chevron-down" size={18} />
                       </Box>
                       <Box sx={{ mx: 1, mb: 1, pt: 0.75, borderTop: '1px solid rgba(155,162,164,0.16)' }}>
                         <TooltipTypography variant="eyebrow" component="p" sx={{ px: 1.25, pt: 0.7, pb: 0.25 }}>Explore</TooltipTypography>
-                        {['Public Events', 'Participatory Scenario Planning', 'Contact Us'].map((item) => (
+                        {['Project Documentation & Reports', 'Service Learning & Education', 'References & Resources'].map((item) => (
                           <Box key={item} sx={{ display: 'flex', alignItems: 'flex-start', px: 1.25, py: 1, borderRadius: 'var(--mui-shape-borderRadius)', color: 'common.white' }}>
                             <Box sx={{ width: 3, height: 22, mt: 0.25, mr: 1.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.72, flex: 'none' }} />
                             <Box sx={{ fontWeight: 800, lineHeight: 1.25 }}>{item}</Box>

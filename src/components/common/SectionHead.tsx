@@ -1,6 +1,8 @@
+// Reusable section heading block that pairs an eyebrow label with an H2 title
+// and the standard scroll-reveal treatment.
 import { Typography } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material';
-import Reveal from './Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Eyebrow from './Eyebrow';
 
 interface SectionHeadProps {
@@ -11,14 +13,13 @@ interface SectionHeadProps {
   sx?: SxProps<Theme>;
 }
 
-/** Eyebrow + H2 heading block, matching the design's `.sec-head`. */
 export default function SectionHead({ eyebrow, title, eyebrowColor, titleColor, sx }: SectionHeadProps) {
   return (
-    <Reveal sx={[{ mb: '2.6rem' }, ...(Array.isArray(sx) ? sx : [sx])]}>
-      <Eyebrow sx={{ mb: '0.7rem', color: eyebrowColor }}>{eyebrow}</Eyebrow>
+    <ScrollReveal sx={[(theme) => ({ mb: theme.jtSpacing.section.md }), ...(Array.isArray(sx) ? sx : [sx])]}>
+      <Eyebrow sx={(theme) => ({ mb: theme.jtSpacing.component.sm, color: eyebrowColor })}>{eyebrow}</Eyebrow>
       <Typography variant="h2" component="h2" sx={titleColor ? { '&&': { color: titleColor } } : undefined}>
         {title}
       </Typography>
-    </Reveal>
+    </ScrollReveal>
   );
 }

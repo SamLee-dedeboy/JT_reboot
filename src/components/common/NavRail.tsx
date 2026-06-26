@@ -1,7 +1,16 @@
+// Reusable fixed side navigation rail with scroll-spy behavior for any page
+// that exposes stable section IDs.
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
+import { alpha } from '@mui/material/styles';
+import type { SxProps, Theme } from '@mui/material';
 
-const SECTIONS = [
+export interface NavRailItem {
+  id: string;
+  label: string;
+}
+
+const HOME_SECTIONS: NavRailItem[] = [
   { id: 'top', label: 'Top' },
   { id: 'whatif', label: 'What If?' },
   { id: 'foundations', label: 'Foundations' },
@@ -11,12 +20,18 @@ const SECTIONS = [
   { id: 'works', label: 'How It Works' },
 ];
 
-/** Fixed right-edge dot nav with scroll-spy. Hidden below 1200px. */
-export default function NavRail() {
-  const [active, setActive] = useState('top');
+interface NavRailProps {
+  items?: NavRailItem[];
+  ariaLabel?: string;
+  sx?: SxProps<Theme>;
+}
+
+export default function NavRail({ items = HOME_SECTIONS, ariaLabel = 'Section navigation', sx }: NavRailProps) {
+  const [active, setActive] = useState('');
+  const activeId = items.some((item) => item.id === active) ? active : items[0]?.id ?? '';
 
   useEffect(() => {
-    const els = SECTIONS.map((s) => document.getElementById(s.id)).filter(
+    const els = items.map((s) => document.getElementById(s.id)).filter(
       (el): el is HTMLElement => !!el,
     );
     if (!els.length) return;
@@ -32,7 +47,7 @@ export default function NavRail() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [items]);
 
   const go = (id: string) => {
     const el = document.getElementById(id);
@@ -42,20 +57,23 @@ export default function NavRail() {
   return (
     <Box
       component="nav"
-      aria-label="Section navigation"
-      sx={{
-        position: 'fixed',
-        right: '1.6rem',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        zIndex: 70,
-        display: { xs: 'none', lg: 'flex' },
-        flexDirection: 'column',
-        gap: '0.4rem',
-      }}
+      aria-label={ariaLabel}
+      sx={[
+        (theme) => ({
+          position: 'fixed',
+          right: theme.spacing(theme.jtSpacing.component.lg),
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 70,
+          display: { xs: 'none', lg: 'flex' },
+          flexDirection: 'column',
+          gap: theme.jtSpacing.component.xs,
+        }),
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
-      {SECTIONS.map((s) => {
-        const on = active === s.id;
+      {items.map((s) => {
+        const on = activeId === s.id;
         return (
           <Box
             key={s.id}
@@ -67,26 +85,26 @@ export default function NavRail() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
-              gap: '0.7rem',
-              py: '0.35rem',
-              background: 'none',
+              gap: (theme) => theme.jtSpacing.gap.xs,
+              py: (theme) => theme.jtSpacing.component.xs / 2,
+              backgroundColor: 'transparent',
               border: 'none',
               cursor: 'pointer',
               '&:hover .rail-dot, &:hover .rail-label': { color: 'primary.main' },
               '&:hover .rail-dot': { borderColor: 'primary.main' },
               '&:hover .rail-label': { opacity: 0.9, transform: 'none' },
             }}
-          >
-            <Box
-              className="rail-label"
-              sx={{
-                typography: 'eyebrow',
-                letterSpacing: '0.08em',
-                fontSize: '0.72rem',
-                color: on ? 'primary.main' : 'common.white',
-                opacity: on ? 0.9 : 0,
-                transform: on ? 'none' : 'translateX(6px)',
-                transition: 'opacity 200ms ease, transform 200ms ease',
+            >
+              <Box
+                className="rail-label"
+                sx={{
+                  typography: 'eyebrow',
+                  fontSize: (theme) => theme.typography.captionSmall.fontSize,
+                  letterSpacing: (theme) => theme.typography.numberBadge.letterSpacing,
+                  color: on ? 'primary.main' : 'text.primary',
+                  opacity: on ? 0.9 : 0,
+                  transform: on ? 'none' : 'translateX(6px)',
+                  transition: 'opacity 200ms ease, transform 200ms ease',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -95,11 +113,11 @@ export default function NavRail() {
             <Box
               className="rail-dot"
               sx={{
-                width: 9,
-                height: 9,
+                width: (theme) => theme.spacing(1.125),
+                height: (theme) => theme.spacing(1.125),
                 borderRadius: '50%',
                 border: '1.5px solid',
-                borderColor: on ? 'primary.main' : 'rgba(242,240,239,0.4)',
+                borderColor: (theme) => (on ? theme.palette.primary.main : alpha(theme.palette.text.primary, 0.4)),
                 bgcolor: on ? 'primary.main' : 'transparent',
                 transform: on ? 'scale(1.2)' : 'none',
                 transition: 'all 200ms ease',

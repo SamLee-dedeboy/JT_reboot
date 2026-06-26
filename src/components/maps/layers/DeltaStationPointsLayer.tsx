@@ -1,3 +1,5 @@
+// Mapbox source/layer bundle for Delta monitoring stations and their status
+// styling.
 import { Layer, Source } from 'react-map-gl/mapbox';
 import type { LayerProps } from 'react-map-gl/mapbox';
 import {

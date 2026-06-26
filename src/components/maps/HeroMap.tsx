@@ -1,3 +1,4 @@
+// Decorative Mapbox hero map used behind landing-page hero content.
 import Map from 'react-map-gl/mapbox'
 import { useEffect, useState } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
@@ -175,7 +176,7 @@ export default function HeroMap() {
           position: 'absolute',
           left: 0,
           right: 0,
-          bottom: theme.spacing(theme.jtSpacing.section.lg),
+          bottom: theme.spacing(theme.jtSpacing.section.md),
           display: 'flex',
           justifyContent: 'center',
           zIndex: 23,
@@ -193,20 +194,25 @@ export default function HeroMap() {
       <Box
         sx={{
           position: 'absolute',
-          left: { xs: 0, sm: theme.spacing(4), md: theme.spacing(8), lg: theme.spacing(10) },
+          left: { xs: 0, sm: theme.spacing(1), md: theme.spacing(8), lg: theme.spacing(10) },
           right: { xs: 0, sm: 'auto' },
           bottom: { xs: theme.spacing(11), sm: theme.spacing(12), md: theme.spacing(14), lg: theme.spacing(15) },
           zIndex: 24,
           pointerEvents: 'auto',
           color: 'common.white',
-          width: { xs: '100%', sm: 'min(72vw, 660px)', md: 'min(68vw, 860px)', lg: 'min(72vw, 1120px)' },
+          width: {
+            xs: '100%',
+            sm: 'calc(100vw - 1rem)',
+            md: 'calc(100vw - 8rem)',
+            lg: 'min(calc(100vw - 12rem), 76rem)',
+          },
           px: { xs: theme.jtSpacing.component.md, sm: 0 },
           boxSizing: 'border-box',
         }}
       >
         <Box
           sx={{
-            maxWidth: { xs: '30rem', sm: '38rem', md: '52rem', lg: '68rem' },
+            maxWidth: { xs: '30rem', sm: '100%', md: '100%', lg: '76rem' },
             mx: { xs: 'auto', sm: 0 },
             pl: { xs: 0, md: theme.jtSpacing.component.md },
             borderLeft: { xs: 0, md: '3px solid' },
@@ -236,9 +242,8 @@ export default function HeroMap() {
             sx={{
               mt: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
               mb: 0,
-              maxWidth: { xs: 'min(100%, 35rem)', sm: '42rem', md: '54rem' },
-              color: 'rgba(242,240,239,0.92)',
-              fontSize: { xs: 'clamp(0.6rem, 2.5vw, 1.05rem)', sm: '1.16rem', md: '1.28rem' },
+              maxWidth: { xs: '100%', sm: '100%', md: '100%' },
+              fontSize: 'clamp(1.2rem, 1.4vw, 1.7rem)', //h4
               lineHeight: { xs: 1.35, md: 1.6 },
               textShadow: '0 1px 12px rgba(16,22,24,0.58)',
               hyphens: 'none',

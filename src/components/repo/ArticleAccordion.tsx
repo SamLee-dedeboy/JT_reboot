@@ -1,6 +1,8 @@
+// Expandable article list for repository/resource pages, with one open
+// publication summary at a time.
 import { useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
 import { ARTICLES, type Article } from '../../data/resources';
 
@@ -107,9 +109,9 @@ export default function ArticleAccordion() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {ARTICLES.map((a, i) => (
-        <Reveal key={a.title} delay={Math.min(i, 4) * 0.04}>
+        <ScrollReveal key={a.title} delay={Math.min(i, 4) * 0.04}>
           <AccordionItem a={a} n={i + 1} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
-        </Reveal>
+        </ScrollReveal>
       ))}
     </Box>
   );

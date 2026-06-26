@@ -1,5 +1,7 @@
+// Document/resource card that displays file metadata, summary text, and a
+// download or external-link affordance.
 import { Box, Typography } from '@mui/material';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
 import { assetUrl } from '../../utils/baseUrl';
 import type { DocAction, DocItem } from '../../data/docYears';
@@ -41,7 +43,7 @@ function ActionLink({ a }: { a: DocAction }) {
 
 export default function DocCard({ doc, delay = 0 }: { doc: DocItem; delay?: number }) {
   return (
-    <Reveal
+    <ScrollReveal
       delay={delay}
       sx={{
         display: 'flex',
@@ -112,6 +114,6 @@ export default function DocCard({ doc, delay = 0 }: { doc: DocItem; delay?: numb
           {doc.actions.map((a, i) => <ActionLink key={i} a={a} />)}
         </Box>
       </Box>
-    </Reveal>
+    </ScrollReveal>
   );
 }

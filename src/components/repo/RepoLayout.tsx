@@ -1,3 +1,5 @@
+// Shared repository-page shell that wraps content with the global navbar and
+// footer.
 import type { ReactNode } from 'react';
 import Navbar from '../common/Navbar';
 import Footer from '../common/Footer';

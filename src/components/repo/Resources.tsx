@@ -1,14 +1,15 @@
+// Repository page for references, research articles, and modeling resources.
 import { Box, Button, Typography } from '@mui/material';
-import RepoLayout from '../components/repo/RepoLayout';
-import Section from '../components/common/Section';
-import SectionHead from '../components/common/SectionHead';
-import Reveal from '../components/common/Reveal';
-import Eyebrow from '../components/common/Eyebrow';
-import Icon from '../components/common/Icon';
-import ReferenceCard from '../components/repo/ReferenceCard';
-import ArticleAccordion from '../components/repo/ArticleAccordion';
-import { assetUrl } from '../utils/baseUrl';
-import { REFERENCES } from '../data/resources';
+import RepoLayout from './RepoLayout';
+import Section from '../common/Section';
+import SectionHead from '../common/SectionHead';
+import ScrollReveal from '../animation/ScrollReveal';
+import Eyebrow from '../common/Eyebrow';
+import Icon from '../common/Icon';
+import ReferenceCard from './ReferenceCard';
+import ArticleAccordion from './ArticleAccordion';
+import { assetUrl } from '../../utils/baseUrl';
+import { REFERENCES } from '../../data/resources';
 
 export default function Resources() {
   return (
@@ -19,7 +20,7 @@ export default function Resources() {
     >
       {/* Building on existing research */}
       <Section id="building">
-        <Reveal
+        <ScrollReveal
           sx={{
             position: 'relative',
             borderRadius: 'var(--mui-shape-borderRadius)',
@@ -41,9 +42,9 @@ export default function Resources() {
             loading="lazy"
             sx={{ width: '100%', display: 'block', aspectRatio: '24 / 7', objectFit: 'cover' }}
           />
-        </Reveal>
+        </ScrollReveal>
         <SectionHead eyebrow="Foundations" title="Building on Existing Delta Research" />
-        <Reveal
+        <ScrollReveal
           delay={0.06}
           sx={{
             borderLeft: '4px solid',
@@ -59,12 +60,12 @@ export default function Resources() {
           informed the research of the Just Transition project. It includes literature from a wide
           range of disciplines, and across a range of concerns and public interests in the Delta. All
           content shared here is the intellectual property of the credited authors and agencies.
-        </Reveal>
+        </ScrollReveal>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(330px, 100%), 1fr))', gap: '1.3rem' }}>
           {REFERENCES.map((r) => (
-            <Reveal key={r.title}>
+            <ScrollReveal key={r.title}>
               <ReferenceCard r={r} />
-            </Reveal>
+            </ScrollReveal>
           ))}
         </Box>
       </Section>
@@ -78,7 +79,7 @@ export default function Resources() {
       {/* Modeling resources */}
       <Section id="modeling" bg="base.600">
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: '1.6rem', md: '2.6rem' }, alignItems: 'center' }}>
-          <Reveal sx={{ bgcolor: 'common.white', borderRadius: 'var(--mui-shape-borderRadius)', p: '2.2rem', display: 'grid', placeItems: 'center' }}>
+          <ScrollReveal sx={{ bgcolor: 'common.white', borderRadius: 'var(--mui-shape-borderRadius)', p: '2.2rem', display: 'grid', placeItems: 'center' }}>
             <Box
               component="img"
               src={assetUrl('/images/repo/cwemf.png')}
@@ -86,8 +87,8 @@ export default function Resources() {
               loading="lazy"
               sx={{ maxHeight: 120, width: 'auto' }}
             />
-          </Reveal>
-          <Reveal delay={0.08}>
+          </ScrollReveal>
+          <ScrollReveal delay={0.08}>
             <Eyebrow>Modeling Resources</Eyebrow>
             <Typography variant="h2" component="h3" sx={{ mt: '0.6rem', mb: '1rem' }}>
               California Water &amp; Environmental Modeling Forum
@@ -99,7 +100,7 @@ export default function Resources() {
             <Button href="#" variant="contained" color="primary" endIcon={<Icon name="arrow-right" size={18} />}>
               Model Inventory
             </Button>
-          </Reveal>
+          </ScrollReveal>
         </Box>
       </Section>
     </RepoLayout>

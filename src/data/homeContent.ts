@@ -4,7 +4,7 @@
 import type { IconName } from '../components/common/Icon';
 
 export const HERO = {
-  eyebrow: 'UC Davis · Participatory Scenario Planning',
+  eyebrow: 'University of California · Participatory Scenario Planning',
   titleLine1: 'Just Transitions',
   titleLine2: 'in the Delta',
   lede:

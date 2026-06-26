@@ -1,7 +1,9 @@
+// Editorial "what if" landing section that frames the project questions and
+// primary calls to action.
 import { Box, Button, Typography } from '@mui/material';
 import Icon from '../common/Icon';
 import Section from '../common/Section';
-import Reveal from '../common/Reveal';
+import ScrollReveal from '../animation/ScrollReveal';
 import { highlightKeywords } from '../../utils/highlightText';
 
 const framingQuestion = {
@@ -46,7 +48,7 @@ export default function WhatIfSectionEditorial() {
           maxWidth: '1120px',
         }}
       >
-        <Reveal>
+        <ScrollReveal>
           <Box>
             <Typography
               component="p"
@@ -79,17 +81,14 @@ export default function WhatIfSectionEditorial() {
               We begin by imagining more than one path forward for water, communities, and ecosystems in the Delta.
             </Typography>
           </Box>
-        </Reveal>
+        </ScrollReveal>
 
-        <Reveal delay={0.06}>
+        <ScrollReveal delay={0.06}>
           <Box
             component="blockquote"
             sx={{
               m: 0,
               maxWidth: '1080px',
-              pl: { xs: '1.2rem', md: '1.6rem' },
-              borderLeft: '4px solid',
-              borderColor: 'primary.main',
             }}
           >
             <Typography
@@ -105,9 +104,9 @@ export default function WhatIfSectionEditorial() {
               {highlightKeywords(framingQuestion.text, framingQuestion.keywords)}
             </Typography>
           </Box>
-        </Reveal>
+        </ScrollReveal>
 
-        <Reveal delay={0.12}>
+        <ScrollReveal delay={0.12}>
           <Box
             sx={{
               display: 'grid',
@@ -138,8 +137,8 @@ export default function WhatIfSectionEditorial() {
               </Typography>
             ))}
           </Box>
-        </Reveal>
-        <Reveal delay={0.18} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: (theme) => theme.jtSpacing.component.sm }}>
+        </ScrollReveal>
+        <ScrollReveal delay={0.18} sx={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', mt: (theme) => theme.jtSpacing.component.sm }}>
             <Button
               variant="contained"
               color="primary"
@@ -149,7 +148,7 @@ export default function WhatIfSectionEditorial() {
             >
               View Adaptation Scenarios
             </Button>
-        </Reveal>
+        </ScrollReveal>
       </Box>
     </Section>
   );

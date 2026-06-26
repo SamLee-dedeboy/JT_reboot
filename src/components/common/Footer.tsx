@@ -1,5 +1,7 @@
+// Shared site footer with funding copy, UC branding, contact link, and wordmark.
 import { Box, Container, Link, Typography, useTheme } from '@mui/material';
 import { assetUrl } from '../../utils/baseUrl';
+import { LogoWordmark } from './Logo';
 
 export default function Footer() {
   const theme = useTheme();
@@ -36,7 +38,6 @@ export default function Footer() {
               sx={{
                 mb: theme.jtSpacing.component.sm,
                 color: 'primary.main',
-                textShadow: '0 1px 12px rgba(16,22,24,0.55)',
               }}
             >
               Project Funding
@@ -52,8 +53,6 @@ export default function Footer() {
                 typography: 'body1',
                 fontSize: { xs: '0.95rem', sm: theme.typography.body1.fontSize },
                 lineHeight: { xs: 1.55, sm: theme.typography.body1.lineHeight },
-                color: 'rgba(242,240,239,0.9)',
-                textShadow: '0 1px 12px rgba(16,22,24,0.45)',
               }}
             >
               This project is supported by the University of California's Multicampus Research Programs
@@ -93,8 +92,8 @@ export default function Footer() {
             mt: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.section.sm },
             pt: theme.jtSpacing.component.md,
             borderTop: '1px solid',
-            borderColor: 'rgba(242,240,239,0.14)',
-            color: 'rgba(242,240,239,0.68)',
+            borderColor: 'surface',
+            color: 'base.200',
             textAlign: 'left',
           }}
         >
@@ -106,9 +105,15 @@ export default function Footer() {
               alignItems: 'center',
             }}
           >
-            <Typography variant="h4" component="p" sx={{ color: 'primary.main', fontSize: 'clamp(1.05rem, 1.4vw, 1.35rem)' }}>
-              Just Transitions in the Delta
-            </Typography>
+            <LogoWordmark
+              variant="mobile"
+              linkToHome={false}
+              component="p"
+              sx={{
+                fontSize: theme.logoWordmark.footerFontSize,
+                textAlign: 'left',
+              }}
+            />
             <Typography variant="body2" component="p" sx={{ color: 'inherit' }}>
               &copy; {year} All rights reserved.
             </Typography>

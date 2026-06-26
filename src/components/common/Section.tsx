@@ -1,3 +1,5 @@
+// Generic page section wrapper that applies themed vertical rhythm, optional
+// background color, and an inner content container.
 import { Box, Container } from '@mui/material';
 import type { ReactNode } from 'react';
 import type { SxProps, Theme } from '@mui/material';
@@ -15,24 +17,31 @@ interface SectionProps {
   children: ReactNode;
 }
 
-/**
- * Page section with the design's vertical rhythm (~6rem block padding)
- * and a 1200px content container (2rem inline gutter).
- */
 export default function Section({ id, bg, bleed, sx, containerSx, children }: SectionProps) {
   return (
     <Box
       component="section"
       id={id}
       sx={[
-        { py: { xs: '3.75rem', md: '6rem' }, bgcolor: bg },
+        (theme) => ({
+          py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.xl },
+          bgcolor: bg,
+        }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
       {bleed ? (
         children
       ) : (
-        <Container maxWidth="lg" sx={[{ px: { xs: '1.25rem', md: '2rem' } }, ...(Array.isArray(containerSx) ? containerSx : [containerSx])]}>
+        <Container
+          maxWidth="lg"
+          sx={[
+            (theme) => ({
+              px: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.gap.xl },
+            }),
+            ...(Array.isArray(containerSx) ? containerSx : [containerSx]),
+          ]}
+        >
           {children}
         </Container>
       )}

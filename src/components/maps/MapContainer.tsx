@@ -1,3 +1,5 @@
+// Interactive map container for the playground, including hover/date badges,
+// layer toggles, and station highlighting coordination.
 import { useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material/styles';

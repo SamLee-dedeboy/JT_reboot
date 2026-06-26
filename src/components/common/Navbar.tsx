@@ -1,3 +1,4 @@
+// Responsive top navigation with desktop dropdown menus and mobile drawer links.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AppBar, Toolbar, Box, Button, Drawer, IconButton, List, ListItemButton, ListItemText, Menu, MenuItem, Stack, Typography, Collapse, useMediaQuery, useTheme } from '@mui/material';
@@ -29,15 +30,6 @@ const navItems: NavItem[] = [
     // Adaptation Scenarios is a future phase — keep the slot but disable it.
     label: 'Scenarios',
     disabled: true,
-  },
-  {
-    label: 'Get Involved',
-    caption: 'Join workshops, planning sessions, and project conversations.',
-    dropdown: [
-      { label: 'Public Events', href: '/pages/public-events' },
-      { label: 'Participatory Scenario Planning', href: '/pages/scenario-planning' },
-      { label: 'Contact Us', href: '/pages/contact-us' },
-    ],
   },
   {
     label: 'Repository',
@@ -163,7 +155,7 @@ export default function Navbar() {
                     sx={{
                       minWidth: 140,
                       whiteSpace: 'nowrap',
-                      '&.Mui-disabled': { color: 'rgba(242,240,239,0.4)' },
+                      '&.Mui-disabled': { color: 'base.300' },
                     }}
                   >
                     {item.label}
@@ -356,7 +348,7 @@ export default function Navbar() {
                     </ListItemButton>
 
                     <Collapse in={openDropdown === idx} timeout="auto" unmountOnExit>
-                      <Box sx={{ mx: 1, mb: 1, pt: 0.75, borderTop: '1px solid rgba(155,162,164,0.16)' }}>
+                      <Box sx={{ mx: 1, mb: 1, pt: 0.75}}>
                         <Typography variant="eyebrow" component="p" sx={{ px: 1.25, pt: 0.7, pb: 0.25 }}>
                           Explore
                         </Typography>

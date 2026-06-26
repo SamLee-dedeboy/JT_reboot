@@ -83,11 +83,25 @@ declare module '@mui/material/styles' {
         };
       };
     };
+    logoWordmark: {
+      desktopMinWidth: number;
+      containerLineHeight: number;
+      fontSize: {
+        mobile: string;
+        tablet: string;
+        desktop: {
+          md: string;
+          lg: string;
+        };
+      };
+      footerFontSize: string;
+    };
   }
 
   interface ThemeOptions {
     jtSpacing?: Theme['jtSpacing'];
     numbering?: Theme['numbering'];
+    logoWordmark?: Theme['logoWordmark'];
   }
 }
 
