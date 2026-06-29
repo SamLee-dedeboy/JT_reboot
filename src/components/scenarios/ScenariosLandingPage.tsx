@@ -9,6 +9,7 @@ import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/materi
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import ScrollReveal from '../animation/ScrollReveal';
+import SideGlowCard from '../common/cards/SideGlowCard';
 import Footer from '../common/Footer';
 import Navbar from '../common/Navbar';
 import { assetUrl } from '../../utils/baseUrl';
@@ -214,16 +215,27 @@ export default function ScenariosLandingPage() {
                   <Typography variant="body1" sx={{ color: 'base.100' }}>
                     Read the background context first: this helps you understand the key factors shaping the Delta, and how the scenarios are designed to explore tradeoffs in water management, ecosystems, and communities.
                   </Typography>
-                  <Button
-                    component={Link}
-                    to="/scenarios/background-context"
-                    variant="contained"
-                    color="secondary"
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{ alignSelf: 'flex-start', color: 'base.900' }}
-                  >
-                    Read Background Context
-                  </Button>
+                  <Stack spacing={1.4} sx={{ alignItems: 'flex-start' }}>
+                    <Button
+                      component={Link}
+                      to="/scenarios/key-parameters"
+                      variant="contained"
+                      color="secondary"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' }, color: 'base.900' }}
+                    >
+                      Key Parameters
+                    </Button>
+                    <Button
+                      component={Link}
+                      to="/scenarios/background-context"
+                      variant="outlined"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{ color: 'common.white', borderColor: 'base.300' }}
+                    >
+                      Read Background Context
+                    </Button>
+                  </Stack>
                 </Stack>
               </ScrollReveal>
               <ScrollReveal delay={0.1}>
@@ -297,58 +309,14 @@ export default function ScenariosLandingPage() {
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2.2 }}>
               {outflowVariations.map((item, index) => (
                 <ScrollReveal key={item.label} delay={index * 0.06}>
-                  <Box
-                    sx={{
-                      ...glassPanelSx,
-                      minHeight: 300,
-                      p: { xs: 2.4, md: 3 },
-                      borderRadius: 0,
-                      borderColor: index === 0 ? 'translucent.primaryGreen' : 'rgba(81,162,189,0.68)',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        inset: '0 auto 0 0',
-                        width: 5,
-                        bgcolor: index === 0 ? 'primary.main' : 'secondary.main',
-                        boxShadow: index === 0 ? '0 0 24px var(--mui-palette-translucent-primaryGreen)' : '0 0 24px rgba(81,162,189,0.8)',
-                      },
-                    }}
-                  >
-                    <Stack spacing={2} sx={{ height: '100%' }}>
-                      <Typography variant="numberGhost" component="p">
-                        {String(index + 1).padStart(2, '0')}
-                      </Typography>
-                      <Typography variant="h4" component="h3">
-                        {item.label}
-                      </Typography>
-                      <Typography variant="eyebrow" component="p" sx={{ color: index === 0 ? 'primary.main' : 'secondary.main' }}>
-                        {item.percent}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'base.100', flex: 1 }}>
-                        {item.body}
-                      </Typography>
-                      <Button
-                        endIcon={<ArrowForwardIcon />}
-                        sx={{
-                          alignSelf: 'flex-start',
-                          px: 2,
-                          py: 0.9,
-                          color: 'common.white',
-                          border: 1,
-                          borderColor: 'base.300',
-                          bgcolor: 'transparent',
-                          '&:hover': {
-                            borderColor: index === 0 ? 'primary.main' : 'secondary.main',
-                            bgcolor: index === 0 ? 'translucent.primaryGreen' : 'rgba(81,162,189,0.1)',
-                          },
-                        }}
-                      >
-                        Explore
-                      </Button>
-                    </Stack>
-                  </Box>
+                  <SideGlowCard
+                    number={String(index + 1).padStart(2, '0')}
+                    title={item.label}
+                    label={item.percent}
+                    body={item.body}
+                    accent={index === 0 ? 'primary' : 'secondary'}
+                    actionIcon={<ArrowForwardIcon />}
+                  />
                 </ScrollReveal>
               ))}
             </Box>

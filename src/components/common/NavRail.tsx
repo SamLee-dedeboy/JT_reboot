@@ -2,7 +2,6 @@
 // that exposes stable section IDs.
 import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 import type { SxProps, Theme } from '@mui/material';
 
 export interface NavRailItem {
@@ -27,7 +26,7 @@ interface NavRailProps {
 }
 
 export default function NavRail({ items = HOME_SECTIONS, ariaLabel = 'Section navigation', sx }: NavRailProps) {
-  const [active, setActive] = useState('');
+  const [active, setActive] = useState(items[0]?.id ?? '');
   const activeId = items.some((item) => item.id === active) ? active : items[0]?.id ?? '';
 
   useEffect(() => {
@@ -61,13 +60,13 @@ export default function NavRail({ items = HOME_SECTIONS, ariaLabel = 'Section na
       sx={[
         (theme) => ({
           position: 'fixed',
-          right: theme.spacing(theme.jtSpacing.component.lg),
+          right: theme.spacing(theme.jtSpacing.component.md),
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 70,
           display: { xs: 'none', lg: 'flex' },
           flexDirection: 'column',
-          gap: theme.jtSpacing.component.xs,
+          gap: theme.jtSpacing.gap.xs,
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
@@ -85,14 +84,15 @@ export default function NavRail({ items = HOME_SECTIONS, ariaLabel = 'Section na
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'flex-end',
-              gap: (theme) => theme.jtSpacing.gap.xs,
+              gap: (theme) => theme.jtSpacing.gap.sm,
               py: (theme) => theme.jtSpacing.component.xs / 2,
               backgroundColor: 'transparent',
               border: 'none',
               cursor: 'pointer',
+              color: on ? 'primary.main' : 'base.200',
               '&:hover .rail-dot, &:hover .rail-label': { color: 'primary.main' },
               '&:hover .rail-dot': { borderColor: 'primary.main' },
-              '&:hover .rail-label': { opacity: 0.9, transform: 'none' },
+              '&:hover .rail-label': { color: 'primary.main' },
             }}
             >
               <Box
@@ -101,10 +101,8 @@ export default function NavRail({ items = HOME_SECTIONS, ariaLabel = 'Section na
                   typography: 'eyebrow',
                   fontSize: (theme) => theme.typography.captionSmall.fontSize,
                   letterSpacing: (theme) => theme.typography.numberBadge.letterSpacing,
-                  color: on ? 'primary.main' : 'text.primary',
-                  opacity: on ? 0.9 : 0,
-                  transform: on ? 'none' : 'translateX(6px)',
-                  transition: 'opacity 200ms ease, transform 200ms ease',
+                  color: on ? 'primary.main' : 'base.200',
+                  transition: 'color 200ms ease',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -117,10 +115,10 @@ export default function NavRail({ items = HOME_SECTIONS, ariaLabel = 'Section na
                 height: (theme) => theme.spacing(1.125),
                 borderRadius: '50%',
                 border: '1.5px solid',
-                borderColor: (theme) => (on ? theme.palette.primary.main : alpha(theme.palette.text.primary, 0.4)),
+                borderColor: on ? 'primary.main' : 'base.300',
                 bgcolor: on ? 'primary.main' : 'transparent',
                 transform: on ? 'scale(1.2)' : 'none',
-                transition: 'all 200ms ease',
+                transition: 'transform 200ms ease, border-color 200ms ease, background-color 200ms ease',
                 flex: 'none',
               }}
             />

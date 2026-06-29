@@ -14,6 +14,7 @@ import KelpDiagram from './components/internal/KelpDiagram.tsx'
 import DesignSystem from './design/DesignSystem.tsx'
 import ScenariosLandingPage from './components/scenarios/ScenariosLandingPage.tsx'
 import ScenariosBackgroundPage from './components/scenarios/ScenariosBackgroundPage.tsx'
+import ScenariosKeyParametersPage from './components/scenarios/ScenariosKeyParametersPage.tsx'
 import theme from './theme/muiTheme'
 
 createRoot(document.getElementById('root')!).render(
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<App />} />
           <Route path="/scenarios" element={<ScenariosLandingPage />} />
           <Route path="/scenarios/background-context" element={<ScenariosBackgroundPage />} />
+          <Route path="/scenarios/key-parameters" element={<ScenariosKeyParametersPage />} />
           <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
           <Route path="/pages/service-learning" element={<ServiceLearning />} />
           <Route path="/pages/resources" element={<Resources />} />

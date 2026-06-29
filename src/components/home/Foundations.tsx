@@ -1,10 +1,11 @@
 // Landing-page foundations section that introduces the research premise and
 // supporting context cards.
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import Section from '../common/Section';
 import SectionHead from '../common/SectionHead';
 import ScrollReveal from '../animation/ScrollReveal';
 import Icon from '../common/Icon';
+import SimpleCard from '../common/cards/SimpleCard';
 import { FOUNDATIONS } from '../../data/homeContent';
 import { splitLead } from '../../utils/highlightText';
 
@@ -25,26 +26,14 @@ export default function Foundations() {
             <ScrollReveal
               key={f.n}
               delay={n * 0.08}
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                bgcolor: 'surface',
-                border: '1px solid rgba(155,162,164,0.18)',
-                borderRadius: 'var(--mui-shape-borderRadius)',
-                p: '1.9rem',
-              }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: '1.2rem' }}>
-                <Typography variant="numberGhost" component="span">
-                  {f.n}
-                </Typography>
-                <Icon name={f.icon} size={28} stroke="var(--mui-palette-primary-main)" />
-              </Box>
-              <Typography variant="h3" component="h3" sx={{ mb: '1rem', color: 'primary.main' }}>
-                {f.title}
-              </Typography>
-              <Typography sx={{ fontSize: '1.3rem', lineHeight: 1.55, mb: '0.9rem' }}>{lead}</Typography>
-              <Typography variant="body2">{rest}</Typography>
+              <SimpleCard
+                number={f.n}
+                title={f.title}
+                icon={<Icon name={f.icon} size={28} stroke="var(--mui-palette-primary-main)" />}
+                lead={lead}
+                body={rest}
+              />
             </ScrollReveal>
           );
         })}

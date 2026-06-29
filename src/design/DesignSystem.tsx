@@ -3,7 +3,15 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Eyebrow from '../components/common/Eyebrow';
 import Hl, { type HighlightStyleVariant } from '../components/common/Highlight';
 import Icon from '../components/common/Icon';
-import DocCard from '../components/repo/DocCard';
+import NavRail from '../components/common/NavRail';
+import AccentPlateCard from '../components/common/cards/AccentPlateCard';
+import ArticleAccordionCard from '../components/common/cards/ArticleAccordionCard';
+import NotchTabCard from '../components/common/cards/NotchTabCard';
+import ResourceReportCard from '../components/common/cards/ResourceReportCard';
+import SideGlowCard from '../components/common/cards/SideGlowCard';
+import SimpleCard from '../components/common/cards/SimpleCard';
+import SplitRailCard from '../components/common/cards/SplitRailCard';
+import StudioFeatureCard from '../components/common/cards/StudioFeatureCard';
 import ReferenceCard from '../components/repo/ReferenceCard';
 import { assetUrl } from '../utils/baseUrl';
 import DesignSection from './common/DesignSection';
@@ -86,108 +94,6 @@ const DESIGN_SECTIONS = [
   { id: 'highlight', label: 'Highlight' },
 ];
 
-function DesignSystemNavRail() {
-  const [active, setActive] = useState(DESIGN_SECTIONS[0].id);
-
-  useEffect(() => {
-    const els = DESIGN_SECTIONS.map((s) => document.getElementById(s.id)).filter(
-      (el): el is HTMLElement => !!el,
-    );
-    if (!els.length) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]?.target.id) setActive(visible[0].target.id);
-      },
-      { rootMargin: '-35% 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, []);
-
-  const go = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  return (
-    <Box
-      component="nav"
-      aria-label="Design system section navigation"
-      sx={{
-        position: 'fixed',
-        right: '1.6rem',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        zIndex: 70,
-        display: { xs: 'none', lg: 'flex' },
-        flexDirection: 'column',
-        gap: '0.4rem',
-      }}
-    >
-      {DESIGN_SECTIONS.map((s) => {
-        const on = active === s.id;
-        return (
-          <Box
-            key={s.id}
-            component="button"
-            onClick={() => go(s.id)}
-            aria-label={s.label}
-            aria-current={on ? 'true' : undefined}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              gap: '0.7rem',
-              py: '0.35rem',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              '&:hover .rail-dot, &:hover .rail-label': { color: 'primary.main' },
-              '&:hover .rail-dot': { borderColor: 'primary.main' },
-              '&:hover .rail-label': { opacity: 0.9, transform: 'none' },
-            }}
-          >
-            <Box
-              className="rail-label"
-              sx={{
-                fontFamily: 'var(--font-heading)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                fontSize: '0.72rem',
-                color: on ? 'primary.main' : 'common.white',
-                opacity: on ? 0.9 : 0,
-                transform: on ? 'none' : 'translateX(6px)',
-                transition: 'opacity 200ms ease, transform 200ms ease',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {s.label}
-            </Box>
-            <Box
-              className="rail-dot"
-              sx={{
-                width: 9,
-                height: 9,
-                borderRadius: '50%',
-                border: '1.5px solid',
-                borderColor: on ? 'primary.main' : 'base.300',
-                bgcolor: on ? 'primary.main' : 'transparent',
-                transform: on ? 'scale(1.2)' : 'none',
-                transition: 'all 200ms ease',
-                flex: 'none',
-              }}
-            />
-          </Box>
-        );
-      })}
-    </Box>
-  );
-}
-
 function UsageNote({ children }: { children: ReactNode }) {
   return (
     <TooltipTypography variant="body2" sx={{ maxWidth: '72ch', mb: 2, color: 'base.200' }}>
@@ -265,13 +171,6 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${red},${green},${blue},${alpha})`;
 }
 
-const statCardSx = {
-  bgcolor: 'surface',
-  border: '1px solid rgba(155,162,164,0.18)',
-  borderRadius: 'var(--mui-shape-borderRadius)',
-  p: '1.9rem',
-} as const;
-
 function ComponentMeta({ children }: { children: ReactNode }) {
   return (
     <Box sx={{ ...displayMetaSx, color: 'base.200', fontSize: '0.92rem', lineHeight: 1.5 }}>
@@ -290,64 +189,326 @@ function ButtonSpec({ title, children, caption }: { title: string; children: Rea
   );
 }
 
-function CardRow({ children, caption }: { children: ReactNode; caption: ReactNode }) {
+type SpacingModeId = 'component' | 'gap' | 'section' | 'pageX' | 'pageY';
+
+function SpacingPlayground() {
+  const theme = useTheme();
+  const [modeId, setModeId] = useState<SpacingModeId>('component');
+  const [token, setToken] = useState('md');
+
+  const modes = {
+    component: {
+      label: 'Component Padding',
+      description: 'Inside cards, logo previews, buttons, form controls, and compact content blocks.',
+      values: theme.jtSpacing.component,
+      property: 'padding',
+      previewLabel: 'Two cards with adjustable internal padding',
+    },
+    gap: {
+      label: 'Layout Gap',
+      description: 'Between cards, button rows, split columns, grouped controls, and display specimens.',
+      values: theme.jtSpacing.gap,
+      property: 'gap',
+      previewLabel: 'A small responsive grid with adjustable item gap',
+    },
+    section: {
+      label: 'Section Rhythm',
+      description: 'Vertical padding between major page sections and design-system chapters.',
+      values: theme.jtSpacing.section,
+      property: 'paddingBlock',
+      previewLabel: 'Section text rhythm with adjustable vertical breathing room',
+    },
+    pageX: {
+      label: 'Page Gutters',
+      description: 'Horizontal page padding for wide canvases and top-level content shells.',
+      values: theme.jtSpacing.page.x,
+      property: 'paddingInline',
+      previewLabel: 'Page shell with adjustable horizontal gutter',
+    },
+    pageY: {
+      label: 'Page Y Rhythm',
+      description: 'Top-level vertical page breathing room used by the design-system canvas.',
+      values: theme.jtSpacing.page.y,
+      property: 'paddingBlock',
+      previewLabel: 'Page shell with adjustable vertical gutter',
+    },
+  } as const;
+
+  const activeMode = modes[modeId];
+  const tokenNames = Object.keys(activeMode.values);
+  const activeToken = tokenNames.includes(token) ? token : tokenNames[0];
+  const activeValue = activeMode.values[activeToken as keyof typeof activeMode.values];
+  const pixelValue = theme.spacing(activeValue);
+
+  const choiceSx = (selected: boolean) => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    px: 1.25,
+    py: 0.8,
+    borderRadius: '999px',
+    border: 1,
+    borderColor: selected ? 'primary.main' : 'divider',
+    bgcolor: selected ? 'translucent.primaryGreen' : 'transparent',
+    color: selected ? 'common.white' : 'base.100',
+    cursor: 'pointer',
+    typography: 'eyebrow',
+    lineHeight: 1,
+  } as const);
+
+  const metricSx = {
+    display: 'grid',
+    gap: 0.4,
+    p: theme.jtSpacing.component.sm,
+    borderRadius: 1,
+    bgcolor: 'base.700',
+    border: 1,
+    borderColor: 'divider',
+  } as const;
+
+  return (
+    <Box sx={displayItemSx}>
+      <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.sm }}>
+        <TooltipTypography variant="h4" component="h3">Interactive Spacing Playground</TooltipTypography>
+        <TooltipTypography variant="body2" sx={{ maxWidth: '70ch', color: 'base.100' }}>
+          Choose the spacing intent and token, then inspect how that value behaves in the kind of layout it is meant to control.
+        </TooltipTypography>
+      </Box>
+
+      <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.sm }}>
+        <TooltipTypography variant="captionSmall" component="div">Spacing intent</TooltipTypography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {(Object.keys(modes) as SpacingModeId[]).map((id) => (
+            <Box key={id} component="button" type="button" onClick={() => setModeId(id)} sx={choiceSx(modeId === id)}>
+              {modes[id].label}
+            </Box>
+          ))}
+        </Box>
+
+        <TooltipTypography variant="captionSmall" component="div">Token</TooltipTypography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+          {tokenNames.map((name) => (
+            <Box key={name} component="button" type="button" onClick={() => setToken(name)} sx={choiceSx(activeToken === name)}>
+              {name}
+            </Box>
+          ))}
+        </Box>
+      </Box>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '0.7fr 1.3fr' }, gap: themeSafeGap, alignItems: 'start' }}>
+        <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.sm }}>
+          <Box sx={metricSx}>
+            <TooltipTypography variant="captionSmall" component="div">Theme path</TooltipTypography>
+            <TooltipTypography variant="body2" sx={{ color: 'common.white' }}>
+              {modeId === 'pageX' ? `theme.jtSpacing.page.x.${activeToken}` : modeId === 'pageY' ? `theme.jtSpacing.page.y.${activeToken}` : `theme.jtSpacing.${modeId}.${activeToken}`}
+            </TooltipTypography>
+          </Box>
+          <Box sx={metricSx}>
+            <TooltipTypography variant="captionSmall" component="div">MUI spacing unit</TooltipTypography>
+            <TooltipTypography variant="body2" sx={{ color: 'common.white' }}>
+              {activeValue} {'->'} {pixelValue}
+            </TooltipTypography>
+          </Box>
+          <Box sx={metricSx}>
+            <TooltipTypography variant="captionSmall" component="div">Applied as</TooltipTypography>
+            <TooltipTypography variant="body2" sx={{ color: 'common.white' }}>
+              {activeMode.property}
+            </TooltipTypography>
+          </Box>
+          <ComponentMeta>
+            <StyleLine token>{activeMode.description}</StyleLine>
+            <StyleLine token>Every preview uses the selected value through MUI `sx`, so numbers resolve through `theme.spacing(...)`.</StyleLine>
+          </ComponentMeta>
+        </Box>
+
+        <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, bgcolor: 'base.800', overflow: 'hidden' }}>
+          <Box sx={{ px: theme.jtSpacing.component.sm, py: theme.jtSpacing.component.xs, borderBottom: 1, borderColor: 'divider', display: 'flex', justifyContent: 'space-between', gap: 1, flexWrap: 'wrap' }}>
+            <TooltipTypography variant="captionSmall" component="div">{activeMode.previewLabel}</TooltipTypography>
+            <TooltipTypography variant="captionSmall" component="div" sx={{ color: 'primary.main' }}>{pixelValue}</TooltipTypography>
+          </Box>
+          <SpacingPreview modeId={modeId} value={activeValue} />
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
+function SpacingPreview({ modeId, value }: { modeId: SpacingModeId; value: number }) {
+  const theme = useTheme();
+
+  if (modeId === 'component') {
+    return (
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' }, gap: theme.jtSpacing.gap.md, p: theme.jtSpacing.component.md }}>
+        {['Scenario Card', 'Repository Card'].map((title) => (
+          <Box key={title} sx={{ p: value, bgcolor: 'surface', border: 1, borderColor: 'divider', borderRadius: 1, minHeight: 170 }}>
+            <TooltipTypography variant="eyebrow" component="p" sx={{ mb: 1 }}>{title}</TooltipTypography>
+            <TooltipTypography variant="h4" component="h4" sx={{ mb: 1 }}>Content breathes from the edge.</TooltipTypography>
+            <TooltipTypography variant="body2" sx={{ color: 'base.100' }}>
+              This dummy card applies the selected value to padding.
+            </TooltipTypography>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
+  if (modeId === 'gap') {
+    return (
+      <Box sx={{ p: theme.jtSpacing.component.md }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' }, gap: value }}>
+          {['Map', 'Data', 'Scenario', 'Action'].map((label) => (
+            <Box key={label} sx={{ minHeight: 96, display: 'grid', placeItems: 'center', bgcolor: 'surface', border: 1, borderColor: 'divider', borderRadius: 1 }}>
+              <TooltipTypography variant="h4" component="div">{label}</TooltipTypography>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    );
+  }
+
+  if (modeId === 'section') {
+    return (
+      <Box component="section" sx={{ py: value, px: theme.jtSpacing.component.md, bgcolor: 'base.700' }}>
+        <Box sx={{ maxWidth: 680, mx: 'auto' }}>
+          <Eyebrow sx={{ mb: theme.jtSpacing.component.sm }}>Section Rhythm</Eyebrow>
+          <TooltipTypography variant="h2" component="h3" sx={{ mb: theme.jtSpacing.component.sm }}>
+            Major page sections need room to land.
+          </TooltipTypography>
+          <TooltipTypography variant="body1" sx={{ color: 'base.100' }}>
+            This preview applies the selected value to vertical section padding.
+          </TooltipTypography>
+        </Box>
+      </Box>
+    );
+  }
+
+  if (modeId === 'pageX') {
+    return (
+      <Box sx={{ px: value, py: theme.jtSpacing.component.md, bgcolor: 'base.700' }}>
+        <Box sx={{ p: theme.jtSpacing.component.md, bgcolor: 'surface', border: 1, borderColor: 'divider', borderRadius: 1 }}>
+          <TooltipTypography variant="h4" component="h3">Constrained Page Content</TooltipTypography>
+          <TooltipTypography variant="body2" sx={{ color: 'base.100' }}>
+            The outer shell applies the selected token to horizontal gutters.
+          </TooltipTypography>
+        </Box>
+      </Box>
+    );
+  }
+
+  return (
+    <Box sx={{ px: theme.jtSpacing.component.md, py: value, bgcolor: 'base.700' }}>
+      <Box sx={{ p: theme.jtSpacing.component.md, bgcolor: 'surface', border: 1, borderColor: 'divider', borderRadius: 1 }}>
+        <TooltipTypography variant="h4" component="h3">Design-System Canvas</TooltipTypography>
+        <TooltipTypography variant="body2" sx={{ color: 'base.100' }}>
+          The outer shell applies the selected token to vertical page rhythm.
+        </TooltipTypography>
+      </Box>
+    </Box>
+  );
+}
+
+function GanttControlsSpec() {
+  const theme = useTheme();
+  const categories = [
+    { label: 'Good', color: 'brand.primaryBlue' },
+    { label: 'Acceptable', color: 'rgba(81,162,189,0.5)' },
+    { label: 'Unacceptable', color: 'accent.orange' },
+  ];
+
+  return (
+    <Box sx={{ bgcolor: 'base.700', border: 1, borderColor: 'divider', borderRadius: 1, p: theme.jtSpacing.component.md }}>
+      <Stack spacing={theme.jtSpacing.gap.sm}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, flexWrap: 'wrap' }}>
+          <TooltipTypography variant="h4" component="h3" sx={{ color: 'brand.primaryGreen' }}>Water Quality Timeline</TooltipTypography>
+          <Button variant="outlined" size="small" sx={{ py: 0.25, px: 1 }}>Reset zoom</Button>
+        </Box>
+        <Box sx={{ display: 'grid', gap: 1, bgcolor: 'base.800', border: 1, borderColor: 'rgba(155,162,164,0.18)', borderRadius: 1, p: theme.jtSpacing.component.sm }}>
+          <TooltipTypography variant="captionSmall" component="p" sx={{ color: 'base.100', mb: 0 }}>Threshold controls</TooltipTypography>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: { xs: 'stretch', sm: 'center' } }}>
+            <TooltipTypography variant="captionSmall" sx={{ color: 'accent.orange', whiteSpace: 'nowrap' }}>Unacceptable</TooltipTypography>
+            <Box sx={{ height: 4, flex: 1, borderRadius: 999, bgcolor: 'accent.orange' }} />
+            <TooltipTypography variant="captionSmall" sx={{ color: 'secondary.main', whiteSpace: 'nowrap' }}>Good</TooltipTypography>
+            <Box sx={{ height: 4, flex: 1, borderRadius: 999, bgcolor: 'secondary.main' }} />
+          </Stack>
+        </Box>
+        <Stack direction="row" spacing={1.4} sx={{ flexWrap: 'wrap', color: 'base.100' }}>
+          {categories.map((item) => (
+            <Stack key={item.label} component="span" direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <Box component="i" aria-hidden sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: item.color }} />
+              <TooltipTypography variant="captionSmall" component="span" sx={{ color: 'inherit', whiteSpace: 'nowrap' }}>
+                {item.label}
+              </TooltipTypography>
+            </Stack>
+          ))}
+        </Stack>
+      </Stack>
+    </Box>
+  );
+}
+
+function MapControlSpec() {
+  const theme = useTheme();
+
+  return (
+    <Box sx={{ position: 'relative', minHeight: 280, bgcolor: 'base.700', border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'hidden', p: theme.jtSpacing.component.md }}>
+      <Box sx={{ position: 'absolute', inset: 0, opacity: 0.22, background: 'linear-gradient(135deg, transparent 0 46%, var(--mui-palette-secondary-main) 46% 47%, transparent 47% 100%), linear-gradient(45deg, transparent 0 54%, var(--mui-palette-primary-main) 54% 55%, transparent 55% 100%)' }} />
+      <Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: theme.jtSpacing.component.xs, bgcolor: 'rgba(37,52,57,0.82)', color: 'common.white', border: 1, borderColor: 'rgba(155,162,164,0.28)', borderRadius: 1, px: theme.jtSpacing.component.xs, py: theme.jtSpacing.component.xs }}>
+        <TooltipTypography variant="eyebrow" component="span" sx={{ color: 'primary.main', fontSize: '0.66rem', lineHeight: 1 }}>Legend</TooltipTypography>
+        <TooltipTypography variant="captionSmall" component="span" sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1 }}>Water systems</TooltipTypography>
+      </Box>
+      <Box sx={{ position: 'absolute', left: theme.spacing(theme.jtSpacing.component.md), bottom: theme.spacing(theme.jtSpacing.component.md), maxWidth: 260, bgcolor: 'rgba(37,52,57,0.94)', color: 'common.white', border: 1, borderColor: 'rgba(242,200,32,0.65)', borderRadius: 1, px: theme.jtSpacing.component.xs, py: theme.jtSpacing.component.xs / 2 }}>
+        <TooltipTypography variant="body2" component="div">Drinking water tooltip</TooltipTypography>
+        <TooltipTypography variant="captionSmall" component="div" sx={{ color: 'base.100' }}>Uses compact themed spacing over map layers.</TooltipTypography>
+      </Box>
+    </Box>
+  );
+}
+
+function KelpControlsSpec() {
+  return (
+    <Box sx={{ width: 'min(100%, 280px)', bgcolor: 'rgba(13, 15, 17, 0.97)', color: 'common.white', border: '1px solid', borderColor: 'translucent.primaryGreen', borderRadius: 2, p: 1.75, boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)' }}>
+      <Stack spacing={1.5}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <TooltipTypography variant="eyebrow" component="h3" sx={{ color: 'brand.primaryGreen' }}>Kelp Controls</TooltipTypography>
+          <Box sx={{ color: 'brand.primaryGreen', lineHeight: 1 }}>›</Box>
+        </Box>
+        {[
+          ['Tension', 't = 0.45'],
+          ['Max waterway distance', '12.0 mi'],
+        ].map(([label, value]) => (
+          <Box key={label}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
+              <TooltipTypography variant="captionSmall" sx={{ color: 'brand.primaryGreen' }}>{label}</TooltipTypography>
+              <TooltipTypography variant="captionSmall" sx={{ color: 'brand.primaryGreen', fontWeight: 700 }}>{value}</TooltipTypography>
+            </Box>
+            <Box sx={{ height: 4, mt: 0.75, borderRadius: 999, bgcolor: 'base.300', overflow: 'hidden' }}>
+              <Box sx={{ width: label === 'Tension' ? '45%' : '62%', height: '100%', bgcolor: 'brand.primaryGreen' }} />
+            </Box>
+          </Box>
+        ))}
+        <Box sx={{ borderTop: 1, borderColor: 'base.300', pt: 1.5 }}>
+          <TooltipTypography variant="captionSmall" sx={{ color: 'brand.primaryGreen' }}>Vulnerability Sets</TooltipTypography>
+          <Box sx={{ mt: 0.75, p: 1, borderRadius: 1.5, bgcolor: 'base.800', border: 1, borderColor: 'base.300' }}>
+            <TooltipTypography variant="body2" sx={{ color: 'common.white' }}>Good threshold</TooltipTypography>
+            <TooltipTypography variant="captionSmall" sx={{ color: 'base.100' }}>24 pts · 3 grp</TooltipTypography>
+          </Box>
+        </Box>
+      </Stack>
+    </Box>
+  );
+}
+
+function CardRow({ title, children, caption }: { title?: string; children: ReactNode; caption: ReactNode }) {
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 1fr) minmax(280px, 0.85fr)' }, gap: themeSafeGap, alignItems: 'start' }}>
-      <Box sx={{ minWidth: 0 }}>{children}</Box>
+      <Box sx={{ minWidth: 0 }}>
+        {title && (
+          <TooltipTypography variant="eyebrow" component="p" sx={{ color: 'primary.main', mb: 1.4 }}>
+            {title}
+          </TooltipTypography>
+        )}
+        {children}
+      </Box>
       <ComponentMeta>{caption}</ComponentMeta>
-    </Box>
-  );
-}
-
-function LandingCardSpec({ n, title, body, icon }: { n: string; title: string; body: string; icon: 'compass' | 'users' | 'layers' }) {
-  return (
-    <Box sx={{ ...statCardSx, height: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: '1.2rem' }}>
-        <TooltipTypography variant="numberGhost" component="span">
-          {n}
-        </TooltipTypography>
-        <Icon name={icon} size={28} stroke="var(--mui-palette-primary-main)" />
-      </Box>
-      <TooltipTypography variant="h3" component="h3" sx={{ mb: '1rem', color: 'primary.main' }}>
-        {title}
-      </TooltipTypography>
-      <TooltipTypography variant="body2">{body}</TooltipTypography>
-      <ComponentMeta>
-        <StyleLine token>Number uses MUI `numberGhost` typography and `theme.numbering.color.ghost`.</StyleLine>
-        <StyleLine token>Title uses MUI h3; body uses MUI body2; green icon uses primary.main.</StyleLine>
-        <StyleLine token>Surface uses palette surface with shared shape radius.</StyleLine>
-        <StyleLine custom>Border uses rgba(155,162,164,0.18), not a named palette token.</StyleLine>
-      </ComponentMeta>
-    </Box>
-  );
-}
-
-function PageLayoutCardSpec() {
-  return (
-    <Box sx={{ backgroundColor: 'surface', borderRadius: 1, borderLeft: 4, borderColor: 'primary.main', p: 2 }}>
-      <TooltipTypography variant="h4" component="h3">PageLayout Card</TooltipTypography>
-      <TooltipTypography variant="body1" component="p">Used by subpage `.card-grid` content such as repository pages.</TooltipTypography>
-    </Box>
-  );
-}
-
-function ArticleAccordionSpec() {
-  return (
-    <Box sx={{ bgcolor: 'surface', border: 1, borderColor: 'translucent.primaryGreen', borderRadius: 'var(--mui-shape-borderRadius)', overflow: 'hidden' }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'auto 1fr', sm: 'auto 1fr auto' }, gap: { xs: '0.8rem', sm: '1.2rem' }, alignItems: 'center', p: { xs: '1.2rem', sm: '1.5rem 1.7rem' } }}>
-        <TooltipTypography variant="numberArticle" component="span">01</TooltipTypography>
-        <Box>
-          <Box sx={{ fontSize: '1.3rem', fontWeight: 700, lineHeight: 1.3, color: 'common.white', mb: '0.4rem' }}>Article Accordion Card</Box>
-          <Box sx={{ fontSize: '0.98rem', color: 'base.200' }}><Box component="span" sx={{ color: 'primary.main', fontWeight: 600 }}>Source label</Box> Metadata line</Box>
-        </Box>
-        <Box sx={{ display: { xs: 'none', sm: 'grid' }, placeItems: 'center', width: '2.4rem', height: '2.4rem', borderRadius: '50%', border: 1.5, borderColor: 'translucent.primaryGreen', color: 'primary.main', bgcolor: 'translucent.primaryGreen' }}>
-          <Icon name="plus" size={18} />
-        </Box>
-      </Box>
-      <Box sx={{ p: { xs: '0 1.2rem 1.8rem', sm: '0 1.7rem 1.8rem calc(1.7rem + 2.4rem + 1.2rem)' }, borderTop: '1px solid rgba(155,162,164,0.12)' }}>
-        <Box sx={{ fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.78rem', color: 'secondary.main', pt: '1.3rem', mb: '0.9rem' }}>Abstract</Box>
-        <TooltipTypography sx={{ fontSize: '1.08rem', lineHeight: 1.7, color: 'base.100' }}>Expandable article text appears below the button row.</TooltipTypography>
-      </Box>
     </Box>
   );
 }
@@ -431,43 +592,6 @@ function ScenarioPathwayCardSpec() {
             </Button>
           ))}
         </Stack>
-      </Stack>
-    </Box>
-  );
-}
-
-function OutflowVariationSpec() {
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        minHeight: 280,
-        p: { xs: 2.4, md: 3 },
-        border: '2px solid rgba(81,162,189,0.68)',
-        borderRadius: 0,
-        bgcolor: 'rgba(20,29,31,0.74)',
-        overflow: 'hidden',
-        backdropFilter: 'blur(14px)',
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          inset: '0 auto 0 0',
-          width: 5,
-          bgcolor: 'secondary.main',
-          boxShadow: '0 0 24px rgba(81,162,189,0.8)',
-        },
-      }}
-    >
-      <Stack spacing={2} sx={{ height: '100%' }}>
-        <TooltipTypography variant="numberGhost" component="p">02</TooltipTypography>
-        <TooltipTypography variant="h4" component="h3">More Delta outflow</TooltipTypography>
-        <TooltipTypography variant="eyebrow" component="p" sx={{ color: 'secondary.main' }}>Variation I</TooltipTypography>
-        <TooltipTypography variant="body2" sx={{ color: 'base.100', flex: 1 }}>
-          Outflow cards use an intentionally square glass panel with a left status bar and scenario-specific accent.
-        </TooltipTypography>
-        <Button endIcon={<Icon name="arrow-up-right" size={15} />} sx={{ alignSelf: 'flex-start', color: 'common.white', border: 1, borderColor: 'base.300' }}>
-          Explore
-        </Button>
       </Stack>
     </Box>
   );
@@ -662,34 +786,9 @@ export default function DesignSystem() {
 
       <DesignSection id="spacing" eyebrow="Foundations" title="Spacing System" guideSx={guideSx}>
         <UsageNote>
-          Spacing is split by intent: component padding for inside controls/cards, gap for layout relationships, section padding for vertical page rhythm, and page gutters for the design-system canvas.
+          Spacing is split by intent: component padding for inside controls/cards, gap for layout relationships, section padding for vertical page rhythm, and page gutters for full-page shells.
         </UsageNote>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: 'repeat(2, minmax(0, 1fr))' }, gap: theme.jtSpacing.gap.lg }}>
-          {[
-            { label: 'Component Padding', values: theme.jtSpacing.component, use: 'Inside cards, logo previews, buttons, form controls, and accent text blocks.' },
-            { label: 'Layout Gaps', values: theme.jtSpacing.gap, use: 'Between cards, button rows, split columns, and grouped controls.' },
-            { label: 'Section Rhythm', values: theme.jtSpacing.section, use: 'Vertical padding between major page sections and design-system chapters.' },
-            { label: 'Page Gutters', values: theme.jtSpacing.page.x, use: 'Outer design-system page padding and wide canvas breathing room.' },
-          ].map((group) => (
-            <Box key={group.label} sx={statCardSx}>
-              <TooltipTypography variant="h4" component="h3">{group.label}</TooltipTypography>
-              <TooltipTypography variant="body2" sx={{ mb: 1.5 }}>{group.use}</TooltipTypography>
-              <Box sx={{ display: 'grid', gap: 1 }}>
-                {Object.entries(group.values).map(([key, value]) => (
-                  <Box key={key} sx={{ display: 'grid', gridTemplateColumns: '72px 80px minmax(0, 1fr)', gap: 1, alignItems: 'center' }}>
-                    <Box sx={{ fontFamily: 'var(--font-heading)', color: 'primary.main', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.8rem' }}>{key}</Box>
-                    <Box sx={{ color: 'base.100' }}>{String(value)}</Box>
-                    <Box sx={{ height: 10, width: `min(100%, ${Number(value) * 18}px)`, bgcolor: 'primary.main', borderRadius: 999 }} />
-                  </Box>
-                ))}
-              </Box>
-              <ComponentMeta>
-                <StyleLine token>Values are consumed through `theme.jtSpacing` and `theme.spacing(...)`.</StyleLine>
-                <StyleLine custom>Some visualization and map internals still use literal rem/px values where canvas/SVG layout needs exact sizing.</StyleLine>
-              </ComponentMeta>
-            </Box>
-          ))}
-        </Box>
+        <SpacingPlayground />
       </DesignSection>
 
       <DesignSection id="sections" eyebrow="Foundations" title="Section Styling" guideSx={guideSx}>
@@ -836,7 +935,7 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Main action color uses primary.main; ghost text uses secondary.light.</StyleLine>
-                <StyleLine custom>Typography, border width, padding, radius, and hover transitions are custom in `DocCard`.</StyleLine>
+                <StyleLine custom>Typography, border width, padding, radius, and hover transitions are custom in `ResourceReportCard`.</StyleLine>
               </SpecCaption>
             }
           >
@@ -886,17 +985,7 @@ export default function DesignSystem() {
         </UsageNote>
         <Stack spacing={theme.jtSpacing.gap.lg}>
           <CardRow
-            caption={
-              <SpecCaption>
-                <StyleLine token>Typography: title uses MUI h4; body uses MUI body1.</StyleLine>
-                <StyleLine token>Border color uses primary.main; radius uses MUI spacing number through PageLayout styles.</StyleLine>
-                <StyleLine token>Background uses the shared surface token.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <PageLayoutCardSpec />
-          </CardRow>
-          <CardRow
+            title="Simple Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Typography: title uses MUI h3; body uses MUI body2; color uses primary.main.</StyleLine>
@@ -905,9 +994,71 @@ export default function DesignSystem() {
               </SpecCaption>
             }
           >
-            <LandingCardSpec n="01" icon="compass" title="Landing Foundation Card" body="Used by Foundations and mirrored by Stakes cards with translucent surface, quiet border, and compact padding." />
+            <SimpleCard
+              number="01"
+              icon={<Icon name="compass" size={28} stroke="var(--mui-palette-primary-main)" />}
+              title="Landing Foundation Card"
+              body="Used by Foundations and mirrored by Stakes cards with translucent surface, quiet border, and compact padding."
+            />
           </CardRow>
           <CardRow
+            title="Accent Plate Card"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Direction 2 from the brainstorm: solid header uses primary.main; body uses base.700.</StyleLine>
+                <StyleLine token>Spacing uses theme.jtSpacing component and gap values; radius derives from theme.shape.</StyleLine>
+                <StyleLine custom>Header title weight, number alpha, and elevation shadow preserve the brainstorm structure.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <AccentPlateCard
+              eyebrow="Foundations"
+              number="01"
+              title="What Are Scenarios?"
+              lead="Scenarios are models and depictions of possible futures and the pathways through which they could manifest."
+              body='Participatory scenario planning is a "bottom up" approach that involves working directly with public contributors to create and evaluate future scenarios for a particular place.'
+            />
+          </CardRow>
+          <CardRow
+            title="Notch Tab Card"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Direction 4 from the brainstorm: tab and top border use primary.main; card body uses base.700.</StyleLine>
+                <StyleLine token>Typography uses eyebrow, h3, body1, and body2 variants from the theme.</StyleLine>
+                <StyleLine custom>The protruding file-folder tab, mixed corner radii, and shadow are component-local.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <NotchTabCard
+              eyebrow="Foundations"
+              number="01"
+              title="What Are Scenarios?"
+              icon={<Icon name="compass" size={30} />}
+              lead="Scenarios are models and depictions of possible futures and the pathways through which they could manifest."
+              body='Participatory scenario planning is a "bottom up" approach that involves working directly with public contributors to create and evaluate future scenarios for a particular place.'
+            />
+          </CardRow>
+          <CardRow
+            title="Split Rail Card"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Direction 5 from the brainstorm: rail uses base.900, content panel uses base.500, accent uses primary.main.</StyleLine>
+                <StyleLine token>Spacing, radius, and responsive rail dimensions are driven by the MUI theme.</StyleLine>
+                <StyleLine custom>Vertical label orientation and strong internal division are component-local behavior.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <SplitRailCard
+              eyebrow="Foundations"
+              number="01"
+              title="What Are Scenarios?"
+              icon={<Icon name="compass" size={40} />}
+              lead="Scenarios are models and depictions of possible futures and the pathways through which they could manifest."
+              body='Participatory scenario planning is a "bottom up" approach that involves working directly with public contributors to create and evaluate future scenarios for a particular place.'
+            />
+          </CardRow>
+          <CardRow
+            title="Resource Report Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: surface, base.700, primary.main, base.700 contrast, secondary.light.</StyleLine>
@@ -915,9 +1066,16 @@ export default function DesignSystem() {
               </SpecCaption>
             }
           >
-            <DocCard doc={sampleDoc} />
+            <ResourceReportCard
+              badge={sampleDoc.badge}
+              title={sampleDoc.title}
+              image={sampleDoc.img}
+              description={sampleDoc.desc}
+              actions={sampleDoc.actions.map((action) => ({ label: action.label, kind: action.kind === 'dl' ? 'download' : 'view' }))}
+            />
           </CardRow>
           <CardRow
+            title="Reference Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: surface, surfaceStrong, secondary.main, primary.main, common.white, base.200.</StyleLine>
@@ -928,6 +1086,7 @@ export default function DesignSystem() {
             <ReferenceCard r={sampleReference} />
           </CardRow>
           <CardRow
+            title="Article Accordion Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: surface, primary.main, secondary.main, common.white, base.200.</StyleLine>
@@ -935,9 +1094,12 @@ export default function DesignSystem() {
               </SpecCaption>
             }
           >
-            <ArticleAccordionSpec />
+            <ArticleAccordionCard number="01" title="Article Accordion Card" source="Source label" meta="Metadata line">
+              Expandable article text appears below the button row.
+            </ArticleAccordionCard>
           </CardRow>
           <CardRow
+            title="Studio Feature Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: primary.main, secondary.light, base.700; radius uses MUI shape radius on image.</StyleLine>
@@ -946,25 +1108,25 @@ export default function DesignSystem() {
               </SpecCaption>
             }
           >
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1.2fr' }, gap: '1.3rem', alignItems: 'center', py: '1.3rem', borderTop: '1px solid rgba(155,162,164,0.16)', borderBottom: '1px solid rgba(155,162,164,0.16)' }}>
-              <Box component="img" src={assetUrl('/images/repo/studio-isleton.png')} alt="Studio card specimen" sx={{ width: '100%', borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid rgba(155,162,164,0.2)', display: 'block' }} />
-              <Box>
-                <Box sx={{ display: 'inline-flex', alignItems: 'center', bgcolor: 'base.800', border: 1, borderColor: 'translucent.primaryGreen', color: 'primary.main', fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.68rem', px: '0.7rem', py: '0.36rem', borderRadius: '999px', mb: '1rem' }}>Design Studio</Box>
-                <TooltipTypography variant="numberGhost" component="div" sx={{ mb: '0.6rem' }}>01</TooltipTypography>
-                <TooltipTypography variant="h3" component="h4" sx={{ color: 'primary.main', mb: '0.7rem' }}>Studio Feature Row</TooltipTypography>
-                <TooltipTypography variant="body2">Rows alternate image and text columns on desktop, then stack naturally on mobile.</TooltipTypography>
-              </Box>
-            </Box>
+            <StudioFeatureCard
+              badge="Design Studio"
+              number="01"
+              title="Studio Feature Row"
+              image="/images/repo/studio-isleton.png"
+              imageAlt="Studio card specimen"
+              body="Rows alternate image and text columns on desktop, then stack naturally on mobile."
+            />
           </CardRow>
         </Stack>
       </DesignSection>
 
       <DesignSection id="scenario-data" eyebrow="Components" title="Scenario and Data Views" guideSx={guideSx}>
         <UsageNote>
-          Current scenario screens use glass panels, image-led scenario cards, and outflow variation panels. These specimens document the active landing-page patterns.
+          Current scenario and data screens use glass panels, image-led scenario cards, outflow variation panels, timeline controls, map overlays, and Kelp inspection controls. These specimens document the active implementation patterns.
         </UsageNote>
         <Stack spacing={theme.jtSpacing.gap.lg}>
           <CardRow
+            title="Scenario Pathway Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Scenario card typography uses h4/body2/button variants and the active accent palette.</StyleLine>
@@ -976,6 +1138,7 @@ export default function DesignSystem() {
             <ScenarioPathwayCardSpec />
           </CardRow>
           <CardRow
+            title="Side Glow Card"
             caption={
               <SpecCaption>
                 <StyleLine token>Number uses `numberGhost`; label uses `eyebrow`; body uses body2/base.100.</StyleLine>
@@ -983,7 +1146,48 @@ export default function DesignSystem() {
               </SpecCaption>
             }
           >
-            <OutflowVariationSpec />
+            <SideGlowCard
+              number="02"
+              title="More Delta outflow"
+              label="Variation I"
+              body="Outflow cards use an intentionally square glass panel with a left status bar and scenario-specific accent."
+            />
+          </CardRow>
+          <CardRow
+            title="Gantt Timeline Controls"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Category colors come from brand primary blue, accent orange, base scale, and primary green focus tokens.</StyleLine>
+                <StyleLine token>Control spacing uses `theme.jtSpacing.component` and typography uses h4/captionSmall/body2.</StyleLine>
+                <StyleLine custom>The SVG chart itself still uses D3 layout values and alpha washes for threshold/focus rendering.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <GanttControlsSpec />
+          </CardRow>
+          <CardRow
+            title="Map Legend and Tooltip"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Overlay spacing uses `theme.jtSpacing.component`; legend text uses eyebrow and captionSmall.</StyleLine>
+                <StyleLine token>Dark map panels use brand/base colors with compact borders and high-contrast common.white text.</StyleLine>
+                <StyleLine custom>Map layer geometry and warning/yellow tooltip border colors remain data-visualization-specific.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <MapControlSpec />
+          </CardRow>
+          <CardRow
+            title="Kelp Controls Panel"
+            caption={
+              <SpecCaption>
+                <StyleLine token>Green borders and hover states use `palette.translucent.primaryGreen`; muted text uses base.100.</StyleLine>
+                <StyleLine token>Panel dividers and item shells use base.300/base.800 tokens.</StyleLine>
+                <StyleLine custom>The near-black panel background and warning orange chip remain map-tool-specific values.</StyleLine>
+              </SpecCaption>
+            }
+          >
+            <KelpControlsSpec />
           </CardRow>
         </Stack>
       </DesignSection>
@@ -1098,7 +1302,7 @@ export default function DesignSystem() {
         </Box>
       </DesignSection>
     </Box>
-    <DesignSystemNavRail />
+    <NavRail items={DESIGN_SECTIONS} ariaLabel="Design system section navigation" />
     </>
   );
 }

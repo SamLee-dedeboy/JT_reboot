@@ -1,7 +1,7 @@
 // Repository timeline section that groups documents by phase or milestone.
 import { Box, Typography } from '@mui/material';
 import ScrollReveal from '../animation/ScrollReveal';
-import DocCard from './DocCard';
+import ResourceReportCard from '../common/cards/ResourceReportCard';
 import { DOC_YEARS } from '../../data/docYears';
 
 /**
@@ -85,7 +85,17 @@ export default function Timeline() {
                   gap: '1.4rem',
                 }}
               >
-                {w.docs.map((d, i) => <DocCard key={d.title + i} doc={d} delay={i * 0.05} />)}
+                {w.docs.map((d, i) => (
+                  <ScrollReveal key={d.title + i} delay={i * 0.05}>
+                    <ResourceReportCard
+                      badge={d.badge}
+                      title={d.title}
+                      image={d.img}
+                      description={d.desc}
+                      actions={d.actions.map((action) => ({ label: action.label, href: action.href, kind: action.kind === 'dl' ? 'download' : 'view' }))}
+                    />
+                  </ScrollReveal>
+                ))}
               </Box>
             </Box>
           ))}

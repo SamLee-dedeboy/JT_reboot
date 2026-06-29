@@ -94,6 +94,17 @@ const accentPalette: PaletteColor[] = [
 
 const basePalette: PaletteColor[] = baseKeys.map((key) => ({ label: key, hex: palette.base[key] }));
 
+const surfacePalette: PaletteColor[] = [
+  { label: 'Surface', hex: palette.surface },
+  { label: 'Surface Strong', hex: palette.surfaceStrong },
+  { label: 'Footer Background', hex: palette.footerBg },
+];
+
+const translucentPalette: PaletteColor[] = [
+  { label: 'Primary Green Wash', hex: palette.translucent.primaryGreen },
+  { label: 'Text Shadow', hex: palette.translucent.textShadow },
+];
+
 const deactivatedPalette: PaletteColor[] = [
   { label: 'Spray', hex: '#7eeaee' },
   { label: 'Orange Roughy', hex: '#cb531b' },
@@ -111,6 +122,8 @@ export default function ColorContent({ guideSx }: { guideSx?: SxProps<Theme> }) 
         <ColorPaletteGroup title="Text" colors={commonColors} />
         <ColorPaletteGroup title="Accents" colors={accentPalette} />
         <ColorPaletteGroup title="Base" colors={basePalette} />
+        <ColorPaletteGroup title="Surfaces" colors={surfacePalette} />
+        <ColorPaletteGroup title="Translucent Tokens" colors={translucentPalette} />
       </Box>
 
       <Box sx={{ mt: jtSpacing.section.sm, ...(guideSx ?? {}) }}>
