@@ -80,7 +80,7 @@ interface ChartTooltipState {
 
 type AttentionCompareMode = 'acres' | 'percent';
 type AttentionScaleMode = 'linear' | 'log';
-type AttentionDesignMode = 'bars' | 'icons' | 'area';
+type AttentionDesignMode = 'bars' | 'icons' | 'area' | 'overlay';
 
 const RESTORATION_LEVEL_ORDER = ['min', 'med', 'max'];
 const RESTORATION_LEVEL_LABELS: Record<string, string> = {
@@ -260,6 +260,10 @@ function formatPercent(value: number) {
 
 function formatCompactPercent(value: number) {
   return value >= 100 ? `${d3.format(',.0f')(value)}%` : formatPercent(value);
+}
+
+function formatWholePercent(value: number) {
+  return `${d3.format(',.0f')(value)}%`;
 }
 
 const HABITAT_ATTENTION_ICONS = {
@@ -552,7 +556,6 @@ function AreaSquareGlyph({
           textAlign: 'right',
           bottom: originY + baseSize - 9,
           color: 'text.secondary',
-          fontSize: '0.82rem',
           lineHeight: 1,
         }}
       >
@@ -611,6 +614,287 @@ function HabitatAttentionAreaCell({
           </Box>
         </Typography>
       </Box>
+    </Box>
+  );
+}
+
+function getAttentionSegment(scenario: AttentionScenario, habitatFocus: string) {
+  return scenario.segments.find((segment) => segment.habitatFocus === habitatFocus) ?? {
+    habitatFocus,
+    acres: 0,
+    percent: 0,
+  };
+}
+
+function HabitatAttentionOverlayGlyph({
+  scenario,
+}: {
+  scenario: AttentionScenario;
+}) {
+  const forest = getAttentionSegment(scenario, 'forests');
+  const meadow = getAttentionSegment(scenario, 'meadows');
+  const floodplain = getAttentionSegment(scenario, 'floodplains');
+  const baseSize = 96;
+  const frameSize = 260;
+  const originX = 78;
+  const originY = 24;
+  const labelColumnWidth = 70;
+  const ruleStart = 74;
+  const floodplainOuterPercent = 100 + floodplain.percent;
+  const meadowSize = Math.sqrt(Math.max(meadow.percent, 0) / 100) * baseSize;
+  const forestSize = Math.sqrt(Math.max(forest.percent, 0) / 100) * baseSize;
+  const floodplainSize = Math.sqrt(Math.max(floodplainOuterPercent, 0) / 100) * baseSize;
+  const labelGap = 16;
+  const labelBounds = { min: originY + 8, max: frameSize - 16 };
+  const targetCallouts = [
+    floodplain.percent > 0
+      ? {
+          key: 'floodplains',
+          label: formatWholePercent(floodplainOuterPercent),
+          targetBottom: originY + floodplainSize - 8,
+          lineBottom: 0,
+          lineWidth: 0,
+          showRule: false,
+          color: HABITAT_META.floodplains.baseColor,
+          lineColor: HABITAT_META.floodplains.baseColor,
+          acres: floodplain.acres,
+        }
+      : null,
+    {
+      key: 'baseline',
+      label: '100%',
+      targetBottom: originY + baseSize - 9,
+      lineBottom: originY + baseSize - 2,
+      lineWidth: originX + baseSize - ruleStart,
+      showRule: true,
+      color: 'rgba(242,240,239,0.86)',
+      lineColor: 'rgba(242,240,239,0.7)',
+      acres: 0,
+    },
+    forest.percent > 0
+      ? {
+          key: 'forests',
+          label: formatWholePercent(forest.percent),
+          targetBottom: originY + forestSize - 8,
+          lineBottom: 0,
+          lineWidth: 0,
+          showRule: false,
+          color: HABITAT_META.forests.baseColor,
+          lineColor: HABITAT_META.forests.baseColor,
+          acres: forest.acres,
+        }
+      : null,
+    meadow.percent > 0
+      ? {
+          key: 'meadows',
+          label: formatWholePercent(meadow.percent),
+          targetBottom: originY + meadowSize - 8,
+          lineBottom: 0,
+          lineWidth: 0,
+          showRule: false,
+          color: HABITAT_META.meadows.baseColor,
+          lineColor: HABITAT_META.meadows.baseColor,
+          acres: meadow.acres,
+        }
+      : null,
+  ].filter((callout): callout is NonNullable<typeof callout> => Boolean(callout));
+  const overlayCallouts = [...targetCallouts]
+    .sort((a, b) => b.targetBottom - a.targetBottom || b.acres - a.acres)
+    .reduce<Array<(typeof targetCallouts)[number] & { labelBottom: number }>>((placed, callout) => {
+      const previous = placed.at(-1);
+      const maxBottom = previous ? previous.labelBottom - labelGap : labelBounds.max;
+      const labelBottom = Math.max(labelBounds.min, Math.min(callout.targetBottom, maxBottom));
+
+      return [...placed, { ...callout, labelBottom }];
+    }, []);
+  const layers = [
+    {
+      key: 'floodplains',
+      size: floodplain.percent > 0 ? floodplainSize : 0,
+      color: HABITAT_META.floodplains.baseColor,
+      opacity: 0.92,
+    },
+    {
+      key: 'forests',
+      size: forestSize,
+      color: HABITAT_META.forests.baseColor,
+      opacity: 1,
+    },
+    {
+      key: 'meadows',
+      size: meadowSize,
+      color: HABITAT_META.meadows.baseColor,
+      opacity: 0.86,
+    },
+  ]
+    .filter((layer) => layer.size > 0)
+    .sort((a, b) => b.size - a.size);
+
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: 330,
+        height: frameSize,
+        overflow: 'visible',
+      }}
+      aria-hidden
+    >
+      {layers.map((layer) => (
+        <Box
+          key={layer.key}
+          sx={{
+            position: 'absolute',
+            left: originX,
+            bottom: originY,
+            width: layer.size,
+            height: layer.size,
+            bgcolor: layer.color,
+            opacity: layer.opacity,
+          }}
+        />
+      ))}
+      <Box
+        sx={{
+          position: 'absolute',
+          left: originX,
+          bottom: originY,
+          width: baseSize,
+          height: baseSize,
+          border: '2px solid rgba(242,240,239,0.86)',
+          bgcolor: 'transparent',
+          zIndex: 2,
+        }}
+      />
+      {overlayCallouts.map((callout) => (
+        <Box key={callout.key}>
+          <Typography
+            variant="captionSmall"
+            component="span"
+            sx={{
+              position: 'absolute',
+              left: 0,
+              width: labelColumnWidth,
+              textAlign: 'right',
+              bottom: callout.labelBottom,
+              color: callout.color,
+              fontWeight: 800,
+              lineHeight: 1,
+            }}
+          >
+            {callout.label}
+          </Typography>
+          {callout.showRule && (
+            <Box
+              sx={{
+                position: 'absolute',
+                left: ruleStart,
+                bottom: callout.lineBottom,
+                width: callout.lineWidth,
+                borderTop: `2px solid ${callout.lineColor ?? callout.color}`,
+              }}
+            />
+          )}
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
+function HabitatAttentionOverlayCell({
+  scenario,
+  compact = false,
+}: {
+  scenario: AttentionScenario;
+  compact?: boolean;
+}) {
+  const theme = useTheme();
+  const segments = HABITAT_FOCUS_ORDER.map((habitatFocus) => getAttentionSegment(scenario, habitatFocus));
+
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: compact ? 'minmax(0, 1fr)' : { xs: 'minmax(0, 1fr)', sm: 'minmax(0, 330px) minmax(0, 1fr)' },
+        gap: compact ? theme.jtSpacing.gap.xs : { xs: theme.jtSpacing.gap.xs, sm: theme.jtSpacing.gap.md },
+        alignItems: compact ? 'start' : 'end',
+        minWidth: 0,
+      }}
+    >
+      <HabitatAttentionOverlayGlyph scenario={scenario} />
+      <Stack
+        direction="column"
+        spacing={compact ? theme.jtSpacing.gap.md : theme.jtSpacing.gap.lg}
+        sx={{ minWidth: 0 }}
+      >
+        {segments.map((segment) => {
+          const meta = HABITAT_META[segment.habitatFocus];
+          const modeLabel =
+            segment.habitatFocus === 'forests'
+              ? 'Recovered Area'
+              : segment.habitatFocus === 'floodplains'
+                ? 'Expanded Area'
+                : 'Recovered + Expanded Area';
+
+          return (
+            <Stack
+              key={segment.habitatFocus}
+              direction="column"
+              spacing={compact ? theme.jtSpacing.component.xs : theme.jtSpacing.gap.xs}
+              sx={{ minWidth: 0 }}
+            >
+              <Typography
+                variant="captionSmall"
+                component="p"
+                sx={{
+                  color: 'text.secondary',
+                  lineHeight: 1,
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  m: 0,
+                }}
+              >
+                {modeLabel}
+              </Typography>
+              <Typography
+                variant="h5"
+                component="p"
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  color: meta.baseColor,
+                  lineHeight: 1,
+                  m: 0,
+                  minWidth: 0,
+                }}
+              >
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '1em',
+                    height: '1em',
+                    flex: '0 0 auto',
+                    lineHeight: 1,
+                  }}
+                >
+                  <FilledHabitatIcon habitatFocus={segment.habitatFocus} percent={100} size={20} fillOpacity={1} />
+                </Box>
+                <Box component="span" sx={{ fontWeight: 800 }}>
+                  {meta.label}
+                </Box>
+                <Box component="span" sx={{ fontWeight: 300 }}>
+                  {'\u00a0\u2022\u00a0'}{formatNumber(segment.acres)} acres
+                </Box>
+              </Typography>
+            </Stack>
+          );
+        })}
+      </Stack>
     </Box>
   );
 }
@@ -1216,6 +1500,9 @@ function AttentionStackedChart({
             <ToggleButton value="area" aria-label="Show area square design">
               Area
             </ToggleButton>
+            <ToggleButton value="overlay" aria-label="Show overlay area design">
+              Overlay
+            </ToggleButton>
           </ToggleButtonGroup>
           {designMode === 'bars' && (
             <>
@@ -1324,7 +1611,49 @@ function AttentionStackedChart({
             </Box>
 
             <Stack spacing={1.4} sx={{ p: { xs: 1.4, md: 1.8 } }}>
-              {groupedScenarios.map((scenario) => {
+              {designMode === 'overlay' ? (
+                <Box
+                  sx={(theme) => ({
+                    display: 'grid',
+                    gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' },
+                    gap: { xs: theme.jtSpacing.gap.md, md: theme.jtSpacing.gap.sm },
+                    alignItems: 'start',
+                    minWidth: 0,
+                  })}
+                >
+                  {groupedScenarios.map((scenario) => {
+                    const priorityMeta = HABITAT_META[`${scenario.scenarioHabitat}s`];
+
+                    return (
+                      <Box
+                        key={scenario.id}
+                        sx={(theme) => ({
+                          minWidth: 0,
+                          borderTop: { xs: '1px solid rgba(155,162,164,0.14)', md: 0 },
+                          borderLeft: { xs: 0, md: '1px solid rgba(155,162,164,0.14)' },
+                          pt: { xs: theme.jtSpacing.gap.sm, md: 0 },
+                          pl: { xs: 0, md: theme.jtSpacing.gap.sm },
+                          '&:first-of-type': { borderTop: 0, borderLeft: 0, pt: 0, pl: 0 },
+                        })}
+                      >
+                        <Typography
+                          variant="eyebrow"
+                          component="p"
+                          sx={{
+                            mb: 0.8,
+                            color: priorityMeta?.baseColor ?? 'secondary.main',
+                            letterSpacing: '0.16em',
+                          }}
+                        >
+                          {formatScenarioHabitat(scenario.scenarioHabitat)}
+                        </Typography>
+                        <HabitatAttentionOverlayCell scenario={scenario} compact />
+                      </Box>
+                    );
+                  })}
+                </Box>
+              ) : (
+              groupedScenarios.map((scenario) => {
                 const scenarioTotal = d3.sum(scenario.segments, (segment) =>
                   compareMode === 'acres' ? segment.acres : segment.percent,
                 );
@@ -1462,7 +1791,8 @@ function AttentionStackedChart({
                     )}
                   </Box>
                 );
-              })}
+              })
+              )}
             </Stack>
           </Box>
         ))}

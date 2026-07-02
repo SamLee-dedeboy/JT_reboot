@@ -86,6 +86,7 @@ const brandPalette: PaletteColor[] = [
 
 const accentPalette: PaletteColor[] = [
   { label: 'Blue', hex: palette.accent.blue },
+  { label: 'Red', hex: palette.accent.red },
   { label: 'Orange', hex: palette.accent.orange },
   { label: 'Yellow', hex: palette.accent.yellow },
   { label: 'Purple', hex: palette.accent.purple },

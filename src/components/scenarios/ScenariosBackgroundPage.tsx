@@ -1,17 +1,19 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import MapIcon from '@mui/icons-material/Map';
 import RouteIcon from '@mui/icons-material/Route';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import WavesIcon from '@mui/icons-material/Waves';
-import { Box, Button, Container, Divider, Stack, Typography, useTheme } from '@mui/material';
-import type { ReactNode } from 'react';
+import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/material';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import scrollama from 'scrollama';
 import ScrollReveal from '../animation/ScrollReveal';
 import Footer from '../common/Footer';
 import NavRail from '../common/NavRail';
 import Navbar from '../common/Navbar';
+import ScenariosBackgroundMap from '../maps/instances/ScenariosBackgroundMap';
+import type { ScenariosBackgroundMapStep } from '../maps/layers/ScenariosBackgroundLayers';
 
 interface ContextChapter {
   id: string;
@@ -20,6 +22,7 @@ interface ContextChapter {
   body: string;
   icon: ReactNode;
   accent: string;
+  mapStep: ScenariosBackgroundMapStep;
 }
 
 const contextChapters: ContextChapter[] = [
@@ -30,6 +33,7 @@ const contextChapters: ContextChapter[] = [
     body: 'The Sacramento River flows south from Northern California, while the San Joaquin River flows north through the Central Valley. They meet in the Sacramento-San Joaquin Delta, where freshwater moves toward Suisun Bay, San Francisco Bay, and the Pacific Ocean.',
     icon: <RouteIcon />,
     accent: '#7ed957',
+    mapStep: 'rivers',
   },
   {
     id: '02',
@@ -38,6 +42,7 @@ const contextChapters: ContextChapter[] = [
     body: 'Delta management is shaped by a tug of war: river outflow helps repel salty ocean water, while tides and sea level pressure can move saltwater inland. At the same time, major state and federal water projects export drinking and agricultural water from the southern Delta to communities and farms farther south.',
     icon: <CompareArrowsIcon />,
     accent: '#79e1e4',
+    mapStep: 'flow',
   },
   {
     id: '03',
@@ -46,10 +51,9 @@ const contextChapters: ContextChapter[] = [
     body: 'The X2 salinity index tracks how far the low-salinity zone extends inland from the Golden Gate. In the StoryMap baseline, this distance is shown along the Sacramento and San Joaquin rivers in five-kilometer increments, making X2 a useful shorthand for understanding where freshwater outflow and ocean inflow are meeting.',
     icon: <WaterDropIcon />,
     accent: '#f2c820',
+    mapStep: 'x2',
   },
 ];
-
-const mapLayers = ['Sacramento River', 'San Joaquin River', 'X2 intervals', 'Export pumps'];
 
 const keyTerms = [
   ['Outflow', 'Freshwater moving from the rivers through the Delta toward the Bay.'],
@@ -75,133 +79,53 @@ const eyebrowSx = {
   gap: 1,
 } as const;
 
-function MapPlaceholder() {
-  return (
-    <Box
-      aria-label="Interactive map placeholder"
-      sx={{
-        position: 'relative',
-        minHeight: { xs: 390, md: 'calc(100vh - 156px)' },
-        border: '1px solid rgba(155,162,164,0.28)',
-        bgcolor: '#162226',
-        overflow: 'hidden',
-        isolation: 'isolate',
-      }}
-    >
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          opacity: 0.42,
-          backgroundImage: `
-            linear-gradient(rgba(121,225,228,0.14) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(121,225,228,0.14) 1px, transparent 1px)
-          `,
-          backgroundSize: '44px 44px',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          left: '10%',
-          right: '16%',
-          top: '20%',
-          height: 12,
-          borderRadius: 999,
-          bgcolor: 'rgba(126,217,87,0.78)',
-          transform: 'rotate(13deg)',
-          boxShadow: '0 0 28px rgba(126,217,87,0.45)',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          left: '23%',
-          right: '8%',
-          top: '49%',
-          height: 10,
-          borderRadius: 999,
-          bgcolor: 'rgba(121,225,228,0.72)',
-          transform: 'rotate(-18deg)',
-          boxShadow: '0 0 28px rgba(121,225,228,0.36)',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          width: 190,
-          height: 190,
-          right: '-42px',
-          bottom: '-28px',
-          border: '34px solid rgba(81,162,189,0.18)',
-          borderRadius: '50%',
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          width: 120,
-          height: 120,
-          left: '12%',
-          bottom: '15%',
-          border: '2px dashed rgba(242,200,32,0.72)',
-          borderRadius: '50%',
-        }}
-      />
-      <Stack
-        spacing={1.1}
-        sx={{
-          position: 'absolute',
-          top: 18,
-          left: 18,
-          right: 18,
-          p: 2,
-          bgcolor: 'rgba(16,22,24,0.82)',
-          border: '1px solid rgba(155,162,164,0.24)',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        <Box sx={eyebrowSx}>
-          <MapIcon fontSize="small" />
-          Story Map Component
-        </Box>
-        <Typography variant="h5" component="p" sx={{ color: 'common.white' }}>
-          Placeholder for Delta salinity map
-        </Typography>
-        <Typography variant="captionSmall" component="p" sx={{ color: 'base.100', lineHeight: 1.45 }}>
-          This area can be replaced with the interactive map or StoryMap sidecar module.
-        </Typography>
-      </Stack>
-      <Stack
-        direction="row"
-        useFlexGap
-        sx={{ position: 'absolute', left: 18, right: 18, bottom: 18, flexWrap: 'wrap', gap: 1 }}
-      >
-        {mapLayers.map((layer, index) => (
-          <Box
-            key={layer}
-            component="span"
-            sx={{
-              px: 1.2,
-              py: 0.7,
-              border: '1px solid rgba(155,162,164,0.24)',
-              bgcolor: index === 2 ? 'rgba(242,200,32,0.18)' : 'rgba(16,22,24,0.76)',
-              color: index === 2 ? '#f2c820' : 'base.50',
-              fontSize: '0.82rem',
-              lineHeight: 1,
-              fontWeight: 800,
-            }}
-          >
-            {layer}
-          </Box>
-        ))}
-      </Stack>
-    </Box>
-  );
-}
-
 export default function ScenariosBackgroundPage() {
   const theme = useTheme();
+  const stepsRef = useRef<HTMLDivElement | null>(null);
+  const [activeStep, setActiveStep] = useState<ScenariosBackgroundMapStep>('overview');
+  const scrollSteps = useMemo(
+    () => [
+      {
+        id: 'overview',
+        label: 'Overview',
+        mapStep: 'overview' as const,
+      },
+      ...contextChapters.map((chapter) => ({
+        id: `section-${chapter.id}`,
+        label: chapter.kicker,
+        mapStep: chapter.mapStep,
+      })),
+    ],
+    [],
+  );
+
+  useEffect(() => {
+    const stepRoot = stepsRef.current;
+    if (!stepRoot) return undefined;
+
+    const stepElements = stepRoot.querySelectorAll<HTMLElement>('.scenario-scroll-step');
+    if (stepElements.length === 0) return undefined;
+
+    const scroller = scrollama();
+    scroller
+      .setup({
+        step: stepElements,
+        offset: 0.6,
+        threshold: 4,
+      })
+      .onStepEnter(({ index }) => {
+        const nextStep = scrollSteps[index]?.mapStep ?? 'overview';
+        setActiveStep(nextStep);
+      });
+
+    const handleResize = () => scroller.resize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      scroller.destroy();
+    };
+  }, [scrollSteps]);
 
   return (
     <>
@@ -209,24 +133,6 @@ export default function ScenariosBackgroundPage() {
       <NavRail
         items={navRailItems}
         ariaLabel="Background context sections"
-        sx={(theme) => ({
-          left: theme.spacing(theme.jtSpacing.component.lg),
-          right: 'auto',
-          alignItems: 'flex-start',
-          '& button': {
-            justifyContent: 'flex-start',
-          },
-          '& .rail-label': {
-            order: 2,
-            transform: 'translateX(-6px)',
-          },
-          '& .rail-dot': {
-            order: 1,
-          },
-          '& button:hover .rail-label': {
-            transform: 'none',
-          },
-        })}
       />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <Box
@@ -269,51 +175,129 @@ export default function ScenariosBackgroundPage() {
           </Container>
         </Box>
 
-        <Container maxWidth="xl" sx={{ py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg } }}>
+        <Container maxWidth={false} disableGutters sx={{ position: 'relative' }}>
           <Box
+            component="section"
             sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 0.86fr) minmax(420px, 0.74fr)' },
-              gap: { xs: 4, lg: 5 },
-              alignItems: 'start',
+              position: 'relative',
+              minHeight: { xs: 'auto', lg: '340vh' },
+              bgcolor: '#162226',
             }}
           >
-            <Box component="article" sx={{ maxWidth: 860, mx: { xs: 0, lg: 'auto' }, width: '100%' }}>
-              <ScrollReveal>
+            <Box
+              sx={{
+                position: { xs: 'relative', lg: 'sticky' },
+                top: { lg: 0 },
+                height: { xs: 430, lg: '100vh' },
+                zIndex: 0,
+              }}
+            >
+              <ScenariosBackgroundMap
+                activeStep={activeStep}
+                showInfoOverlay={false}
+                sx={{
+                  height: '100%',
+                  minHeight: { xs: 430, lg: '100vh' },
+                  border: 0,
+                }}
+              />
+              <Box
+                aria-hidden="true"
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  pointerEvents: 'none',
+                  background: {
+                    xs: 'linear-gradient(180deg, rgba(16,22,24,0.05) 0%, rgba(16,22,24,0.74) 100%)',
+                    lg: 'linear-gradient(90deg, rgba(16,22,24,0.88) 0%, rgba(16,22,24,0.58) 34%, rgba(16,22,24,0.12) 68%, rgba(16,22,24,0.2) 100%)',
+                  },
+                  zIndex: 1,
+                }}
+              />
+            </Box>
+
+            <Box
+              component="article"
+              ref={stepsRef}
+              sx={{
+                position: { xs: 'relative', lg: 'absolute' },
+                inset: { lg: 0 },
+                zIndex: 2,
+                width: '100%',
+                px: { xs: 2, sm: 3, md: 5, lg: 8 },
+                pt: { xs: 3, lg: 0 },
+                pb: { xs: theme.jtSpacing.section.md, lg: 0 },
+                pointerEvents: 'none',
+              }}
+            >
+              <Box sx={{ maxWidth: 620, pointerEvents: 'auto' }}>
+              <Box
+                className="scenario-scroll-step"
+                data-step="overview"
+                sx={{
+                  minHeight: { xs: 'auto', lg: '82vh' },
+                  display: 'flex',
+                  alignItems: { xs: 'stretch', lg: 'center' },
+                  pb: { xs: 3, lg: 8 },
+                }}
+              >
                 <Box
                   id="overview"
                   sx={{
                     scrollMarginTop: 104,
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '130px minmax(0, 1fr)' },
-                    gap: { xs: 1.4, sm: 3 },
-                    pb: 3,
-                    mb: 2,
-                    borderBottom: '1px solid rgba(155,162,164,0.2)',
+                    width: '100%',
+                    p: { xs: 2.5, md: 3 },
+                    bgcolor: activeStep === 'overview' ? 'rgba(16,22,24,0.88)' : 'rgba(16,22,24,0.62)',
+                    border: '1px solid',
+                    borderColor: activeStep === 'overview' ? 'rgba(126,217,87,0.48)' : 'rgba(155,162,164,0.2)',
+                    boxShadow: activeStep === 'overview' ? '0 22px 60px rgba(0,0,0,0.34)' : '0 16px 44px rgba(0,0,0,0.2)',
+                    backdropFilter: 'blur(14px)',
+                    transition: 'border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease',
                   }}
                 >
-                  <Typography variant="eyebrow" component="p" sx={{ color: 'secondary.light' }}>
-                    Overview
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: 'base.100' }}>
-                    The Delta is both an estuary and a water supply hub. That means each scenario starts with the same basic question: how much freshwater is available to hold back salinity while also serving ecosystems, Delta communities, farms, and cities?
-                  </Typography>
+                  <Stack spacing={1.4}>
+                    <Typography variant="eyebrow" component="p" sx={{ color: 'secondary.light' }}>
+                      Overview
+                    </Typography>
+                    <Typography variant="h3" component="h2" sx={{ color: 'common.white', textTransform: 'none', letterSpacing: 0, lineHeight: 1.18 }}>
+                      Start with the Delta as both estuary and water supply hub
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: 'base.100' }}>
+                      The Delta is both an estuary and a water supply hub. That means each scenario starts with the same basic question: how much freshwater is available to hold back salinity while also serving ecosystems, Delta communities, farms, and cities?
+                    </Typography>
+                  </Stack>
                 </Box>
-              </ScrollReveal>
+              </Box>
 
               <Stack spacing={0}>
-                {contextChapters.map((chapter, index) => (
-                  <ScrollReveal key={chapter.id} delay={index * 0.06}>
+                {contextChapters.map((chapter) => (
+                  <Box
+                    key={chapter.id}
+                    className="scenario-scroll-step"
+                    data-step={chapter.mapStep}
+                    sx={{
+                      minHeight: { xs: 'auto', lg: '72vh' },
+                      display: 'flex',
+                      alignItems: { xs: 'stretch', lg: 'center' },
+                      py: { xs: 2, lg: 7 },
+                    }}
+                  >
                     <Box
                       component="section"
                       id={`section-${chapter.id}`}
                       sx={{
                         scrollMarginTop: 104,
+                        width: '100%',
                         display: 'grid',
-                        gridTemplateColumns: { xs: '1fr', sm: '130px minmax(0, 1fr)' },
+                        gridTemplateColumns: { xs: '1fr', sm: '112px minmax(0, 1fr)' },
                         gap: { xs: 1.6, sm: 3 },
-                        py: { xs: 4, md: 5 },
-                        borderBottom: '1px solid rgba(155,162,164,0.18)',
+                        p: { xs: 2.5, md: 3 },
+                        bgcolor: activeStep === chapter.mapStep ? 'rgba(16,22,24,0.88)' : 'rgba(16,22,24,0.62)',
+                        border: '1px solid',
+                        borderColor: activeStep === chapter.mapStep ? `${chapter.accent}88` : 'rgba(155,162,164,0.2)',
+                        boxShadow: activeStep === chapter.mapStep ? '0 22px 60px rgba(0,0,0,0.34)' : '0 16px 44px rgba(0,0,0,0.2)',
+                        backdropFilter: 'blur(14px)',
+                        transition: 'border-color 220ms ease, background-color 220ms ease, box-shadow 220ms ease',
                       }}
                     >
                       <Stack spacing={1.2} sx={{ color: 'base.100' }}>
@@ -347,10 +331,14 @@ export default function ScenariosBackgroundPage() {
                         </Typography>
                       </Stack>
                     </Box>
-                  </ScrollReveal>
+                  </Box>
                 ))}
               </Stack>
+              </Box>
+            </Box>
+          </Box>
 
+          <Container maxWidth="lg" sx={{ py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg } }}>
               <ScrollReveal>
                 <Box component="section" id="key-terms" sx={{ scrollMarginTop: 104, py: { xs: 4, md: 5 } }}>
                   <Typography variant="eyebrow" component="p" sx={{ color: 'secondary.light', mb: 2 }}>
@@ -394,23 +382,10 @@ export default function ScenariosBackgroundPage() {
                   </Button>
                 </Stack>
               </ScrollReveal>
-            </Box>
-
-            <Box
-              component="aside"
-              sx={{
-                position: { xs: 'static', lg: 'sticky' },
-                top: { lg: 96 },
-                alignSelf: 'start',
-              }}
-            >
-              <MapPlaceholder />
-              <Divider sx={{ my: 2, borderColor: 'rgba(155,162,164,0.18)' }} />
-              <Typography variant="captionSmall" component="p" sx={{ color: 'base.100', lineHeight: 1.55 }}>
+              <Typography variant="captionSmall" component="p" sx={{ color: 'base.100', lineHeight: 1.55, mt: 1 }}>
                 Source framing follows the Adaptation Scenarios StoryMap baseline: current operations, salinity intrusion, monitoring and compliance stations, and the X2 salinity index.
               </Typography>
-            </Box>
-          </Box>
+          </Container>
         </Container>
       </Box>
       <Footer />

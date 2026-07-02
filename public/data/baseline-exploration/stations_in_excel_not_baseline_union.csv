@@ -1,0 +1,37 @@
+﻿station #,region,long name,short name,origin,archive index,lat,long
+1,South Bay,Coyote Creek at confluence with Alviso slough,coy,DWR,233,37.4639094,-122.0267136
+4,South Bay,Mowry Slough,REmow,DWR Revised,236,37.4867975,-122.0329404
+5,South Bay,Dumbarton Bridge near surface,dmb,DWR,234,37.5039999,-122.119
+6,South Bay,Redwood City,rtyc1,DWR,78,37.5075421,-122.2119847
+21,Central Bay,Alameda,REaamc1,DWR Revised,77,37.7710247,-122.2995055
+28,Central Bay,Tiburon Pier,REtibc1,DWR Revised,72,37.8907125,-122.444164
+29,Central Bay,Middle River above Barrier,mab,DWR,182,37.8851807,-121.4727615
+49,Suisun Bay,Sacramento River at Martinez,mrz,DWR,52,38.0276166,-122.1405192
+51,Suisun Bay,Martinez-Amorco Pier,mrz2,DWR,242,38.0346952,-122.1251399
+91,Suisun Bay,Sacramento River at Collinsville,cse,DWR,48,38.0739449,-121.8500912
+105,Confluence,Decker Island,sdi,DWR,187,38.0913423,-121.7370411
+152,North Delta,Yolo Bypass at Liberty Island (Canal),lir,DWR,191,38.3261272,-121.6934834
+157,North Delta,Sacramento River at Fremont Weir (West End),fre,DWR,177,38.7595411,-121.6674055
+158,North Delta,Liberty Cut at Holland Tract,lct,DWR,271,38.3288537,-121.6675347
+159,North Delta,Liberty Cut at Liberty Island,lcut,DWR,231,38.32885,-121.6675302
+168,North Delta,Liberty Island at Upper Stair Step,sstw,DWR,264,38.3358992,-121.6500488
+169,North Delta,Toe Drain at Liberty Island near Courtland,lbtoe,DWR,123,38.3494404,-121.6449019
+177,North Delta,Miner Slough at HW 84 Bridge,hwb,DWR,125,38.2916663,-121.6308332
+182,North Delta,Sacramento River at Verona,von,DWR,208,38.7741498,-121.5980701
+187,North Delta,Yolo Bypass at Lisbon,RElis,DWR Revised,59,38.4749771,-121.5886627
+329,Central Delta,Middle River near Tracy Blvd,mrx,DWR,272,37.88141,-121.4673901
+361,South Delta,Old River near Clifton Court Intake,ori,DWR,61,37.8279713,-121.5526014
+370,South Delta,Wicklund Cut near Mouth,wcnm,DWR,294,37.7897278,-121.5162391
+371,South Delta,Old River at Bethany Rd Drain,obrd,DWR,293,37.7852997,-121.504597
+372,South Delta,Old River Anchored at ADCP Downstream,REoaad,DWR Revised,298,37.782353,-121.4981027
+376,South Delta,Old River at Tracy Wildlife Association,twa,DWR,166,37.8028327,-121.4574441
+379,South Delta,Old River at Tracy Blvd,old,DWR,70,37.8047259,-121.4495286
+382,South Delta,Grant Line Canal East,gle,DWR,181,37.8202584,-121.4348568
+386,South Delta,Old River at Paradise Cut Confluence Downstream,pccd,DWR,291,37.8042329,-121.420229
+387,South Delta,Sugar Cut,sur,DWR,180,37.7883553,-121.4195144
+388,South Delta,Tom Paine Slough above the mouth,tps,DWR,41,37.7905403,-121.4187433
+391,South Delta,Paradise Cut,pdc,DWR,249,37.8020619,-121.4122563
+403,South Delta,Union Island,uni,DWR,44,37.8220938,-121.3750095
+404,South Delta,Paradise Cut Upstream,pdup,DWR,42,37.8010226,-121.3730816
+405,South Delta,Paradise Cut Upstream at South Bridge,pcsb,DWR,300,37.79993,-121.369014
+415,South Delta,San Joaquin River near Lathrop,sjl,DWR,65,37.8109713,-121.323482

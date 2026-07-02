@@ -54,6 +54,7 @@ const navItems: NavItem[] = [
     dropdown: [
       { label: 'Design System', href: '/design-system' },
       { label: 'EJ Playground', href: '/pages/playground' },
+      { label: 'Baseline Exploration', href: '/pages/baseline-exploration' },
       { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
       { label: 'Watershed', href: '/pages/watershed' },
 
@@ -253,7 +254,7 @@ export default function Navbar() {
                     {sub.label}
                   </Typography>
                   <Typography component="span" variant="captionSmall" sx={{ display: 'block', mt: 0.45, color: 'base.100' }}>
-                    Opens a related project
+                    This leads to an external project.
                   </Typography>
                 </Box>
               </Box>

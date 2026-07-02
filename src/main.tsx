@@ -11,6 +11,7 @@ import Resources from './components/repo/Resources.tsx'
 import Playground from './components/internal/Playground.tsx'
 import Watershed from './components/internal/Watershed.tsx'
 import KelpDiagram from './components/internal/KelpDiagram.tsx'
+import BaselineExploration from './components/internal/BaselineExploration.tsx'
 import DesignSystem from './design/DesignSystem.tsx'
 import ScenariosLandingPage from './components/scenarios/ScenariosLandingPage.tsx'
 import ScenariosBackgroundPage from './components/scenarios/ScenariosBackgroundPage.tsx'
@@ -32,6 +33,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/pages/service-learning" element={<ServiceLearning />} />
           <Route path="/pages/resources" element={<Resources />} />
           <Route path="/pages/playground" element={<Playground />} />
+          <Route path="/pages/baseline-exploration" element={<BaselineExploration />} />
           <Route path="/pages/watershed" element={<Watershed />} />
           <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
           <Route path="/design-system" element={<DesignSystem />} />

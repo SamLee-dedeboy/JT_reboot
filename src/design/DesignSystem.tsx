@@ -103,7 +103,7 @@ function UsageNote({ children }: { children: ReactNode }) {
 }
 
 function StyleLine({ children, token = false, custom = false }: { children: ReactNode; token?: boolean; custom?: boolean }) {
-  const dotColor = custom ? 'accent.pink' : token ? 'primary.main' : 'base.200';
+  const dotColor = custom ? 'accent.red' : token ? 'primary.main' : 'base.200';
 
   return (
     <Box
@@ -113,7 +113,7 @@ function StyleLine({ children, token = false, custom = false }: { children: Reac
         gridTemplateColumns: '0.55rem minmax(0, 1fr)',
         gap: 0.8,
         alignItems: 'baseline',
-        color: custom ? 'accent.pink' : token ? 'base.100' : 'base.200',
+        color: custom ? 'accent.red' : token ? 'base.100' : 'base.200',
         mb: 0.55,
       }}
     >
@@ -770,7 +770,7 @@ export default function DesignSystem() {
             <TooltipTypography variant="body1">{"Heading \u2014 Hammersmith One"}</TooltipTypography>
             <TooltipTypography variant="body1">{"Body \u2014 Nunito Sans (currently), Proxima Nova"}</TooltipTypography>
             <TooltipTypography variant="body1">Specs format: font-size / font-weight / line-height / font-family</TooltipTypography>
-            <TooltipTypography variant="body2" sx={{ color: '#ff677d', mt: 1 }}>Red notes in this design system identify styles that are not currently expressed as MUI theme tokens.</TooltipTypography>
+            <TooltipTypography variant="body2" sx={{ color: 'accent.red', mt: 1 }}>Red notes in this design system identify styles that are not currently expressed as MUI theme tokens.</TooltipTypography>
           </>
         }
       >

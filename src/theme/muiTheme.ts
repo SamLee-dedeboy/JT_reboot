@@ -17,6 +17,7 @@ export const palette = {
   },
   accent: {
     blue: "#79e1e4",
+    red: "#e03214",
     orange: "#f77c3b",
     yellow: "#f2c820",
     purple: "#b280ff",
