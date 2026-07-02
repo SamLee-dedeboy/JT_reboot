@@ -4,10 +4,22 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import Navbar from '../common/Navbar';
 import { assetUrl } from '../../utils/baseUrl';
 
-const DATA_URL = assetUrl('/data/baseline-exploration/region_ec_avg_avg_timeseries.json');
+const DATASETS = {
+  dailyMean: {
+    label: 'Daily Average',
+    description: 'Daily regional averages from averaged EC baseline data',
+    url: assetUrl('/data/baseline-exploration/region_ec_avg_avg_daily_mean_timeseries.json'),
+  },
+  dailyMax: {
+    label: 'Daily Maximum',
+    description: 'Daily regional maxima from averaged EC baseline data',
+    url: assetUrl('/data/baseline-exploration/region_ec_avg_avg_daily_max_timeseries.json'),
+  },
+} as const;
 const SALINITY_COLORS = ['#7ed2e1', '#70c1d5', '#5eaac5', '#4991b1', '#32759a', '#235c86', '#174670'];
 
 type ScaleMode = 'log' | 'linear';
+type AggregationMode = keyof typeof DATASETS;
 
 interface RegionTimeseries {
   name: string;
@@ -39,6 +51,16 @@ function formatNumber(value: number | null | undefined, digits = 0) {
   return Number(value).toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
+function formatLegendNumber(value: number) {
+  const absoluteValue = Math.abs(value);
+
+  if (absoluteValue >= 1000) {
+    return `${(value / 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })}k`;
+  }
+
+  return formatNumber(value);
+}
+
 function formatDate(value: string | undefined) {
   if (!value) {
     return 'n/a';
@@ -51,12 +73,20 @@ function formatDate(value: string | undefined) {
   });
 }
 
-function midpoint(min: number, max: number, scaleMode: ScaleMode) {
-  if (scaleMode === 'log') {
-    return Math.sqrt(Math.max(min, 1) * Math.max(max, 1));
-  }
+function legendThresholds(min: number, max: number, scaleMode: ScaleMode) {
+  const colorCount = SALINITY_COLORS.length;
 
-  return (min + max) / 2;
+  return Array.from({ length: colorCount - 1 }, (_, index) => {
+    const t = (index + 0.5) / (colorCount - 1);
+
+    if (scaleMode === 'log') {
+      const logMin = Math.log10(Math.max(min, 1));
+      const logMax = Math.log10(Math.max(max, min + 1));
+      return 10 ** (logMin + t * (logMax - logMin));
+    }
+
+    return min + t * (max - min);
+  });
 }
 
 function colorForValue(value: number | null, min: number, max: number, scaleMode: ScaleMode) {
@@ -262,13 +292,18 @@ function RegionRow({
 
 export default function BaselineExploration() {
   const [data, setData] = useState<RegionTimeseriesPayload | null>(null);
+  const [aggregationMode, setAggregationMode] = useState<AggregationMode>('dailyMean');
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [scaleMode, setScaleMode] = useState<ScaleMode>('log');
+  const activeDataset = DATASETS[aggregationMode];
 
   useEffect(() => {
     let isMounted = true;
 
-    fetch(DATA_URL)
+    setData(null);
+    setHoverIndex(null);
+
+    fetch(activeDataset.url)
       .then((response) => response.json() as Promise<RegionTimeseriesPayload>)
       .then((payload) => {
         if (isMounted) {
@@ -284,7 +319,7 @@ export default function BaselineExploration() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [activeDataset.url]);
 
   const activeIndex = hoverIndex ?? Math.max(0, (data?.dates.length ?? 1) - 1);
   const rankedRegions = useMemo(
@@ -298,23 +333,27 @@ export default function BaselineExploration() {
         .filter((value): value is number => value !== null && value !== undefined)
     : [];
   const activeAverage = activeValues.length ? activeValues.reduce((sum, value) => sum + value, 0) / activeValues.length : null;
+  const thresholds = legendThresholds(data?.min ?? 0, data?.max ?? 1, scaleMode);
 
   if (!data) {
     return (
-      <Box
-        component="main"
-        sx={{
-          display: 'grid',
-          minHeight: '100vh',
-          placeItems: 'center',
-          bgcolor: 'base.900',
-          color: 'base.100',
-          typography: 'eyebrow',
-          textTransform: 'uppercase',
-        }}
-      >
-        Loading Delta region time lapse...
-      </Box>
+      <>
+        <Navbar />
+        <Box
+          component="main"
+          sx={{
+            display: 'grid',
+            minHeight: { xs: 'calc(100vh - 72px)', md: 'calc(100vh - 76px)' },
+            placeItems: 'center',
+            bgcolor: 'base.900',
+            color: 'base.100',
+            typography: 'eyebrow',
+            textTransform: 'uppercase',
+          }}
+        >
+          Loading Delta region time lapse...
+        </Box>
+      </>
     );
   }
 
@@ -371,6 +410,17 @@ export default function BaselineExploration() {
             </Box>{' '}
             EC-Avg Time Lapse
           </Typography>
+          <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', mb: 1.75 }}>
+            {(['dailyMean', 'dailyMax'] as AggregationMode[]).map((mode) => (
+              <ScaleButton
+                key={mode}
+                active={aggregationMode === mode}
+                onClick={() => setAggregationMode(mode)}
+              >
+                {DATASETS[mode].label}
+              </ScaleButton>
+            ))}
+          </Stack>
           <Typography
             variant="eyebrow"
             component="span"
@@ -425,7 +475,7 @@ export default function BaselineExploration() {
               m: 0,
             }}
           >
-            Daily means from <HighlightMark>{data.stationCount} unique baseline stations</HighlightMark> in all teams
+            {activeDataset.description} from <HighlightMark>{data.stationCount} unique baseline stations</HighlightMark> in all teams
             across <HighlightMark>{data.dates.length} days</HighlightMark>, grouped by the finalized workbook region.
             Toggle the color scale to compare broad bay-to-Delta gradients or local interior variation.
           </Typography>
@@ -449,24 +499,84 @@ export default function BaselineExploration() {
             </Typography>
           </Stack>
           <Box
+            aria-hidden
             sx={{
+              position: 'relative',
               height: 11,
-              borderRadius: 999,
-            background: `linear-gradient(90deg, ${SALINITY_COLORS.join(', ')})`,
-            boxShadow: '0 0 28px rgba(121,225,228,0.34), 0 0 10px rgba(126,217,87,0.12)',
+              overflow: 'visible',
             }}
-          />
-          <Stack direction="row" sx={{ justifyContent: 'space-between', mt: '8px', pb: '2px' }}>
-            <Typography variant="captionSmall" component="span" sx={legendLabelSx}>
-              {formatNumber(data.min)}
+          >
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: `0.5fr repeat(${SALINITY_COLORS.length - 2}, 1fr) 0.5fr`,
+                gap: 0,
+                height: '100%',
+                borderRadius: 999,
+                overflow: 'visible',
+                bgcolor: 'base.900',
+              }}
+            >
+              {SALINITY_COLORS.map((color, index) => (
+                <Box
+                  key={color}
+                  component="span"
+                  sx={{
+                    position: 'relative',
+                    bgcolor: color,
+                    borderTopLeftRadius: index === 0 ? 999 : 0,
+                    borderBottomLeftRadius: index === 0 ? 999 : 0,
+                    borderTopRightRadius: index === SALINITY_COLORS.length - 1 ? 999 : 0,
+                    borderBottomRightRadius: index === SALINITY_COLORS.length - 1 ? 999 : 0,
+                    color,
+                    boxShadow: 'inset 0 0 0 1px rgba(242, 240, 239, 0.1), 0 0 8px currentColor',
+                  }}
+                />
+              ))}
+            </Box>
+            {thresholds.map((threshold, index) => (
+              <Box
+                key={`threshold-${threshold}`}
+                sx={{
+                  position: 'absolute',
+                  left: `${((index + 0.5) / (SALINITY_COLORS.length - 1)) * 100}%`,
+                  top: -3,
+                  bottom: -3,
+                  width: 2,
+                  bgcolor: 'common.white',
+                  boxShadow: '0 0 6px rgba(242,240,239,0.42)',
+                  opacity: 0.68,
+                  transform: 'translateX(-1px)',
+                }}
+              />
+            ))}
+          </Box>
+          <Box sx={{ position: 'relative', height: 36, mt: 1, pb: 0.25 }}>
+            <Typography variant="captionSmall" component="span" sx={{ ...legendLabelSx, position: 'absolute', left: 0 }}>
+              {formatLegendNumber(data.min)}
             </Typography>
-            <Typography variant="captionSmall" component="span" sx={legendLabelSx}>
-              {formatNumber(midpoint(data.min, data.max, scaleMode))}
+            {thresholds.map((threshold, index) => {
+              const isLastThreshold = index === thresholds.length - 1;
+
+              return (
+              <Typography
+                key={`threshold-label-${threshold}`}
+                variant="captionSmall"
+                component="span"
+                sx={{
+                  ...legendThresholdLabelSx,
+                  left: `${((index + 0.5) / (SALINITY_COLORS.length - 1)) * 100}%`,
+                  transform: isLastThreshold ? 'translateX(-128%)' : 'translateX(-50%)',
+                }}
+              >
+                {formatLegendNumber(threshold)}
+              </Typography>
+              );
+            })}
+            <Typography variant="captionSmall" component="span" sx={{ ...legendLabelSx, position: 'absolute', right: 0, textAlign: 'right' }}>
+              {formatLegendNumber(data.max)}
             </Typography>
-            <Typography variant="captionSmall" component="span" sx={legendLabelSx}>
-              {formatNumber(data.max)}
-            </Typography>
-          </Stack>
+          </Box>
         </Box>
       </Box>
 
@@ -507,6 +617,15 @@ const legendLabelSx = {
   color: 'base.300',
   fontWeight: 800,
   textTransform: 'uppercase',
+  whiteSpace: 'nowrap',
+} as const;
+
+const legendThresholdLabelSx = {
+  color: 'base.200',
+  fontWeight: 800,
+  position: 'absolute',
+  textTransform: 'uppercase',
+  whiteSpace: 'nowrap',
 } as const;
 
 const legendEndpointSx = {

@@ -254,6 +254,10 @@ function formatNumber(value: number) {
   return d3.format(',.0f')(value);
 }
 
+function formatCompactNumber(value: number) {
+  return d3.format('.3~s')(value).replace('G', 'B');
+}
+
 function formatPercent(value: number) {
   return `${d3.format(',.1f')(value)}%`;
 }
@@ -826,10 +830,11 @@ function HabitatAttentionOverlayCell({
       <Stack
         direction="column"
         spacing={compact ? theme.jtSpacing.gap.md : theme.jtSpacing.gap.lg}
-        sx={{ minWidth: 0 }}
+        sx={{ minWidth: 0, pt: compact ? theme.jtSpacing.component.xs : 0 }}
       >
         {segments.map((segment) => {
           const meta = HABITAT_META[segment.habitatFocus];
+          const acresLabel = compact ? formatCompactNumber(segment.acres) : formatNumber(segment.acres);
           const modeLabel =
             segment.habitatFocus === 'forests'
               ? 'Recovered Area'
@@ -850,16 +855,17 @@ function HabitatAttentionOverlayCell({
                 sx={{
                   color: 'text.secondary',
                   lineHeight: 1,
-                  letterSpacing: '0.1em',
+                  letterSpacing: compact ? '0.08em' : '0.1em',
                   textTransform: 'uppercase',
                   m: 0,
+                  opacity: compact ? 0.9 : 1,
                 }}
               >
                 {modeLabel}
               </Typography>
               <Typography
                 variant="h5"
-                component="p"
+                component="div"
                 sx={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -868,6 +874,9 @@ function HabitatAttentionOverlayCell({
                   lineHeight: 1,
                   m: 0,
                   minWidth: 0,
+                  flexWrap: 'wrap',
+                  rowGap: 0.35,
+                  fontSize: compact ? theme.typography.captionSmall.fontSize : undefined,
                 }}
               >
                 <Box
@@ -882,13 +891,20 @@ function HabitatAttentionOverlayCell({
                     lineHeight: 1,
                   }}
                 >
-                  <FilledHabitatIcon habitatFocus={segment.habitatFocus} percent={100} size={20} fillOpacity={1} />
+                  <FilledHabitatIcon habitatFocus={segment.habitatFocus} percent={100} size={compact ? 18 : 20} fillOpacity={1} />
                 </Box>
                 <Box component="span" sx={{ fontWeight: 800 }}>
                   {meta.label}
                 </Box>
-                <Box component="span" sx={{ fontWeight: 300 }}>
-                  {'\u00a0\u2022\u00a0'}{formatNumber(segment.acres)} acres
+                <Box
+                  component="span"
+                  sx={{
+                    fontWeight: 300,
+                    opacity: compact ? 0.9 : 1,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {'\u00a0\u2022\u00a0'}{acresLabel} acres
                 </Box>
               </Typography>
             </Stack>
