@@ -91,7 +91,7 @@ export const jtSpacing = {
  * 3. Fonts and typography
  */
 const fontHeading= '"Hammersmith One", sans-serif';
-const fontBody = '"Nunito Sans", "Proxima Nova", "Helvetica Neue", Arial, sans-serif';
+const fontBody = '"proxima-nova", "Nunito Sans", "Helvetica Neue", Arial, sans-serif';
 
 export const numbering = {
   color: {

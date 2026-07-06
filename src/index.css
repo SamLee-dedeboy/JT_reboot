@@ -4,7 +4,7 @@
   /* Font families referenced by the remaining plain CSS files.
      All other design tokens (colors, spacing, type) live in the MUI theme. */
   --font-heading: 'Hammersmith One', sans-serif;
-  --font-body: 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'proxima-nova', 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 *,
