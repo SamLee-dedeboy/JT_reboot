@@ -131,6 +131,12 @@ export default function Navbar() {
     },
   } as const;
 
+  const titleLabelSx = {
+    fontWeight: 800,
+    letterSpacing: '0.015em',
+    lineHeight: 1.25,
+  } as const;
+
   return (
     <AppBar position="sticky" component="nav" color="transparent" elevation={4} sx={{ height: 'auto', overflow: 'hidden' }}>
       <Box
@@ -250,7 +256,7 @@ export default function Navbar() {
               <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
                 <Box className="dropdown-link-marker" component="span" sx={{ width: 3, height: 24, mt: 0.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.5, transform: 'scaleY(0.72)', transformOrigin: 'top', transition: 'opacity 180ms ease, transform 180ms ease', flex: 'none' }} />
                 <Box component="span" sx={{ display: 'block' }}>
-                  <Typography component="span" sx={{ display: 'block', fontWeight: 800, lineHeight: 1.25 }}>
+                  <Typography component="span" sx={{ display: 'block', ...titleLabelSx }}>
                     {sub.label}
                   </Typography>
                   <Typography component="span" variant="captionSmall" sx={{ display: 'block', mt: 0.45, color: 'base.100' }}>
@@ -263,7 +269,7 @@ export default function Navbar() {
             <MenuItem key={sub.label} component={Link} to={sub.href} onClick={handleDesktopMenuClose} sx={menuItemSx}>
               <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
                 <Box className="dropdown-link-marker" component="span" sx={{ width: 3, height: 22, mt: 0.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.5, transform: 'scaleY(0.72)', transformOrigin: 'top', transition: 'opacity 180ms ease, transform 180ms ease', flex: 'none' }} />
-                <Typography component="span" sx={{ fontWeight: 800, lineHeight: 1.25 }}>
+                <Typography component="span" sx={titleLabelSx}>
                   {sub.label}
                 </Typography>
               </Box>
@@ -318,14 +324,14 @@ export default function Navbar() {
                       primary={item.label}
                       secondary="Coming soon"
                       slotProps={{
-                        primary: { sx: { color: 'base.300', whiteSpace: 'nowrap', fontWeight: 800 } },
+                        primary: { sx: { color: 'base.300', whiteSpace: 'nowrap', ...titleLabelSx } },
                         secondary: { sx: { color: 'base.300', mt: 0.25 } },
                       }}
                     />
                   </ListItemButton>
                 ) : item.href ? (
                   <ListItemButton component={Link} to={item.href} onClick={() => setMobileOpen(false)} sx={mobileNavButtonSx}>
-                    <ListItemText primary={item.label} slotProps={{ primary: { sx: { color: 'common.white', whiteSpace: 'nowrap', fontWeight: 800 } } }} />
+                    <ListItemText primary={item.label} slotProps={{ primary: { sx: { color: 'common.white', whiteSpace: 'nowrap', ...titleLabelSx } } }} />
                   </ListItemButton>
                 ) : (
                   <Box
@@ -341,7 +347,7 @@ export default function Navbar() {
                         primary={item.label}
                         secondary={openDropdown === idx ? item.caption : undefined}
                         slotProps={{
-                          primary: { sx: { color: 'common.white', whiteSpace: 'nowrap', fontWeight: 800 } },
+                          primary: { sx: { color: 'common.white', whiteSpace: 'nowrap', ...titleLabelSx } },
                           secondary: { sx: { color: 'base.100', mt: 0.45, lineHeight: 1.45 } },
                         }}
                       />
@@ -361,7 +367,7 @@ export default function Navbar() {
                                 primary={sub.label}
                                 secondary="Opens a related project"
                                 slotProps={{
-                                  primary: { sx: { color: 'common.white', fontWeight: 800, lineHeight: 1.25 } },
+                                  primary: { sx: { color: 'common.white', ...titleLabelSx } },
                                   secondary: { sx: { color: 'base.100', mt: 0.35 } },
                                 }}
                               />
@@ -369,7 +375,7 @@ export default function Navbar() {
                           ) : (
                             <ListItemButton key={sub.label} component={Link} to={sub.href} onClick={() => setMobileOpen(false)} sx={mobileSubItemSx}>
                               <Box component="span" sx={{ width: 3, height: 22, mt: 0.25, mr: 1.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.72, flex: 'none' }} />
-                              <ListItemText primary={sub.label} slotProps={{ primary: { sx: { color: 'common.white', fontWeight: 800, lineHeight: 1.25 } } }} />
+                              <ListItemText primary={sub.label} slotProps={{ primary: { sx: { color: 'common.white', ...titleLabelSx } } }} />
                             </ListItemButton>
                           )
                         ))}

@@ -1,5 +1,6 @@
-import { Box, Button, FormControlLabel, Stack, Switch, Tooltip, Typography as MuiTypography, useTheme, type TypographyProps } from '@mui/material';
+import { Box, Button, FormControlLabel, Slider, Stack, Switch, TextField, Tooltip, Typography as MuiTypography, useTheme, type TypographyProps } from '@mui/material';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import AnimatedNumber from '../components/animation/AnimatedNumber';
 import Eyebrow from '../components/common/Eyebrow';
 import Hl, { type HighlightStyleVariant } from '../components/common/Highlight';
 import Icon from '../components/common/Icon';
@@ -91,6 +92,7 @@ const DESIGN_SECTIONS = [
   { id: 'cards', label: 'Cards' },
   { id: 'scenario-data', label: 'Scenario/Data' },
   { id: 'numbering', label: 'Numbering' },
+  { id: 'animation', label: 'Animation' },
   { id: 'highlight', label: 'Highlight' },
 ];
 
@@ -120,6 +122,18 @@ function StyleLine({ children, token = false, custom = false }: { children: Reac
       <Box component="span" sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: dotColor }} />
       <Box component="span">{children}</Box>
     </Box>
+  );
+}
+
+function TypeSpec({ variant, label = variant }: { variant: TypographyProps['variant']; label?: ReactNode }) {
+  return (
+    <TooltipTypography
+      variant={variant}
+      component="span"
+      sx={{ color: 'primary.main', fontWeight: 800 }}
+    >
+      {label}
+    </TooltipTypography>
   );
 }
 
@@ -175,6 +189,128 @@ function ComponentMeta({ children }: { children: ReactNode }) {
   return (
     <Box sx={{ ...displayMetaSx, color: 'base.200', fontSize: '0.92rem', lineHeight: 1.5 }}>
       {children}
+    </Box>
+  );
+}
+
+const animatedNumberUsageSnippet = `import AnimatedNumber from '../components/animation/AnimatedNumber';
+
+function ImpactMetric() {
+  return <AnimatedNumber value={125000} duration={2.4} />;
+}`;
+
+function CodeSnippet({ label, code }: { label: string; code: string }) {
+  const theme = useTheme();
+
+  return (
+    <Box sx={{ border: 1, borderColor: 'divider', borderRadius: 1, bgcolor: 'base.800', overflow: 'hidden' }}>
+      <Box sx={{ px: theme.jtSpacing.component.sm, py: theme.jtSpacing.component.xs, borderBottom: 1, borderColor: 'divider' }}>
+        <TooltipTypography variant="captionSmall" component="div" sx={{ color: 'primary.main' }}>
+          {label}
+        </TooltipTypography>
+      </Box>
+      <Box
+        component="pre"
+        sx={{
+          m: 0,
+          p: theme.jtSpacing.component.sm,
+          overflowX: 'auto',
+          color: 'base.100',
+          fontFamily: 'ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace',
+          fontSize: '0.82rem',
+          lineHeight: 1.55,
+        }}
+      >
+        <code>{code}</code>
+      </Box>
+    </Box>
+  );
+}
+
+function AnimationPlayground() {
+  const theme = useTheme();
+  const [targetValue, setTargetValue] = useState(125000);
+  const [duration, setDuration] = useState(2.4);
+
+  const controlSx = {
+    '& .MuiInputBase-root': {
+      bgcolor: 'base.800',
+      color: 'common.white',
+      borderRadius: 1,
+    },
+    '& .MuiInputLabel-root': {
+      color: 'base.100',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'divider',
+    },
+    '&:hover .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'primary.main',
+    },
+  } as const;
+
+  return (
+    <Box sx={displayItemSx}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1.15fr 0.85fr' }, gap: themeSafeGap, alignItems: 'stretch' }}>
+        <Box
+          sx={{
+            position: 'relative',
+            minHeight: 360,
+            display: 'grid',
+            alignContent: 'center',
+            gap: theme.jtSpacing.gap.md,
+            p: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.component.lg },
+            bgcolor: 'base.900',
+            border: 1,
+            borderColor: 'translucent.primaryGreen',
+            borderRadius: 1,
+            overflow: 'hidden',
+          }}
+        >
+          <Box sx={{ position: 'relative' }}>
+            <Eyebrow sx={{ mb: 1 }}>Impact metrics</Eyebrow>
+            <AnimatedNumber value={targetValue} duration={duration} />
+            <TooltipTypography variant="body2" sx={{ mt: 1.5, maxWidth: '48ch', color: 'base.100' }}>
+              Use for impact metrics, scenario totals, or time-based counts where the number needs to feel alive without losing legibility.
+            </TooltipTypography>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.md, alignContent: 'start', p: theme.jtSpacing.component.md, bgcolor: 'base.700', border: 1, borderColor: 'divider', borderRadius: 1 }}>
+          <TooltipTypography variant="h4" component="h3">Controls</TooltipTypography>
+          <TextField
+            label="Target number"
+            type="number"
+            value={targetValue}
+            onChange={(event) => setTargetValue(Number(event.target.value) || 0)}
+            slotProps={{ htmlInput: { min: 0, step: 1000 } }}
+            sx={controlSx}
+          />
+          <Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, mb: 1 }}>
+              <TooltipTypography variant="captionSmall" component="span">Animation speed</TooltipTypography>
+              <TooltipTypography variant="captionSmall" component="span" sx={{ color: 'primary.main' }}>{duration.toFixed(1)}s</TooltipTypography>
+            </Box>
+            <Slider
+              value={duration}
+              min={0.4}
+              max={6}
+              step={0.1}
+              onChange={(_, value) => setDuration(Array.isArray(value) ? value[0] : value)}
+              aria-label="Animation duration"
+            />
+          </Box>
+          <ComponentMeta>
+            <StyleLine token>Number typography uses Hammersmith One through `var(--font-heading)`.</StyleLine>
+            <StyleLine token>Motion respects reduced-motion preferences by setting the final value immediately.</StyleLine>
+            <StyleLine custom>The oversized display scale and local control styling are animation-specific specimens.</StyleLine>
+          </ComponentMeta>
+        </Box>
+      </Box>
+
+      <Box sx={{ display: 'grid', gap: theme.jtSpacing.gap.md }}>
+        <CodeSnippet label="Usage" code={animatedNumberUsageSnippet} />
+      </Box>
     </Box>
   );
 }
@@ -402,97 +538,6 @@ function SpacingPreview({ modeId, value }: { modeId: SpacingModeId; value: numbe
           The outer shell applies the selected token to vertical page rhythm.
         </TooltipTypography>
       </Box>
-    </Box>
-  );
-}
-
-function GanttControlsSpec() {
-  const theme = useTheme();
-  const categories = [
-    { label: 'Good', color: 'brand.primaryBlue' },
-    { label: 'Acceptable', color: 'rgba(81,162,189,0.5)' },
-    { label: 'Unacceptable', color: 'accent.orange' },
-  ];
-
-  return (
-    <Box sx={{ bgcolor: 'base.700', border: 1, borderColor: 'divider', borderRadius: 1, p: theme.jtSpacing.component.md }}>
-      <Stack spacing={theme.jtSpacing.gap.sm}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1, flexWrap: 'wrap' }}>
-          <TooltipTypography variant="h4" component="h3" sx={{ color: 'brand.primaryGreen' }}>Water Quality Timeline</TooltipTypography>
-          <Button variant="outlined" size="small" sx={{ py: 0.25, px: 1 }}>Reset zoom</Button>
-        </Box>
-        <Box sx={{ display: 'grid', gap: 1, bgcolor: 'base.800', border: 1, borderColor: 'rgba(155,162,164,0.18)', borderRadius: 1, p: theme.jtSpacing.component.sm }}>
-          <TooltipTypography variant="captionSmall" component="p" sx={{ color: 'base.100', mb: 0 }}>Threshold controls</TooltipTypography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: { xs: 'stretch', sm: 'center' } }}>
-            <TooltipTypography variant="captionSmall" sx={{ color: 'accent.orange', whiteSpace: 'nowrap' }}>Unacceptable</TooltipTypography>
-            <Box sx={{ height: 4, flex: 1, borderRadius: 999, bgcolor: 'accent.orange' }} />
-            <TooltipTypography variant="captionSmall" sx={{ color: 'secondary.main', whiteSpace: 'nowrap' }}>Good</TooltipTypography>
-            <Box sx={{ height: 4, flex: 1, borderRadius: 999, bgcolor: 'secondary.main' }} />
-          </Stack>
-        </Box>
-        <Stack direction="row" spacing={1.4} sx={{ flexWrap: 'wrap', color: 'base.100' }}>
-          {categories.map((item) => (
-            <Stack key={item.label} component="span" direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <Box component="i" aria-hidden sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: item.color }} />
-              <TooltipTypography variant="captionSmall" component="span" sx={{ color: 'inherit', whiteSpace: 'nowrap' }}>
-                {item.label}
-              </TooltipTypography>
-            </Stack>
-          ))}
-        </Stack>
-      </Stack>
-    </Box>
-  );
-}
-
-function MapControlSpec() {
-  const theme = useTheme();
-
-  return (
-    <Box sx={{ position: 'relative', minHeight: 280, bgcolor: 'base.700', border: 1, borderColor: 'divider', borderRadius: 1, overflow: 'hidden', p: theme.jtSpacing.component.md }}>
-      <Box sx={{ position: 'absolute', inset: 0, opacity: 0.22, background: 'linear-gradient(135deg, transparent 0 46%, var(--mui-palette-secondary-main) 46% 47%, transparent 47% 100%), linear-gradient(45deg, transparent 0 54%, var(--mui-palette-primary-main) 54% 55%, transparent 55% 100%)' }} />
-      <Box sx={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: theme.jtSpacing.component.xs, bgcolor: 'rgba(37,52,57,0.82)', color: 'common.white', border: 1, borderColor: 'rgba(155,162,164,0.28)', borderRadius: 1, px: theme.jtSpacing.component.xs, py: theme.jtSpacing.component.xs }}>
-        <TooltipTypography variant="eyebrow" component="span" sx={{ color: 'primary.main', fontSize: '0.66rem', lineHeight: 1 }}>Legend</TooltipTypography>
-        <TooltipTypography variant="captionSmall" component="span" sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1 }}>Water systems</TooltipTypography>
-      </Box>
-      <Box sx={{ position: 'absolute', left: theme.spacing(theme.jtSpacing.component.md), bottom: theme.spacing(theme.jtSpacing.component.md), maxWidth: 260, bgcolor: 'rgba(37,52,57,0.94)', color: 'common.white', border: 1, borderColor: 'rgba(242,200,32,0.65)', borderRadius: 1, px: theme.jtSpacing.component.xs, py: theme.jtSpacing.component.xs / 2 }}>
-        <TooltipTypography variant="body2" component="div">Drinking water tooltip</TooltipTypography>
-        <TooltipTypography variant="captionSmall" component="div" sx={{ color: 'base.100' }}>Uses compact themed spacing over map layers.</TooltipTypography>
-      </Box>
-    </Box>
-  );
-}
-
-function KelpControlsSpec() {
-  return (
-    <Box sx={{ width: 'min(100%, 280px)', bgcolor: 'rgba(13, 15, 17, 0.97)', color: 'common.white', border: '1px solid', borderColor: 'translucent.primaryGreen', borderRadius: 2, p: 1.75, boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)' }}>
-      <Stack spacing={1.5}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <TooltipTypography variant="eyebrow" component="h3" sx={{ color: 'brand.primaryGreen' }}>Kelp Controls</TooltipTypography>
-          <Box sx={{ color: 'brand.primaryGreen', lineHeight: 1 }}>›</Box>
-        </Box>
-        {[
-          ['Tension', 't = 0.45'],
-          ['Max waterway distance', '12.0 mi'],
-        ].map(([label, value]) => (
-          <Box key={label}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
-              <TooltipTypography variant="captionSmall" sx={{ color: 'brand.primaryGreen' }}>{label}</TooltipTypography>
-              <TooltipTypography variant="captionSmall" sx={{ color: 'brand.primaryGreen', fontWeight: 700 }}>{value}</TooltipTypography>
-            </Box>
-            <Box sx={{ height: 4, mt: 0.75, borderRadius: 999, bgcolor: 'base.300', overflow: 'hidden' }}>
-              <Box sx={{ width: label === 'Tension' ? '45%' : '62%', height: '100%', bgcolor: 'brand.primaryGreen' }} />
-            </Box>
-          </Box>
-        ))}
-        <Box sx={{ borderTop: 1, borderColor: 'base.300', pt: 1.5 }}>
-          <TooltipTypography variant="captionSmall" sx={{ color: 'brand.primaryGreen' }}>Vulnerability Sets</TooltipTypography>
-          <Box sx={{ mt: 0.75, p: 1, borderRadius: 1.5, bgcolor: 'base.800', border: 1, borderColor: 'base.300' }}>
-            <TooltipTypography variant="body2" sx={{ color: 'common.white' }}>Good threshold</TooltipTypography>
-            <TooltipTypography variant="captionSmall" sx={{ color: 'base.100' }}>24 pts · 3 grp</TooltipTypography>
-          </Box>
-        </Box>
-      </Stack>
     </Box>
   );
 }
@@ -768,7 +813,7 @@ export default function DesignSystem() {
         explanation={
           <>
             <TooltipTypography variant="body1">{"Heading \u2014 Hammersmith One"}</TooltipTypography>
-            <TooltipTypography variant="body1">{"Body \u2014 Nunito Sans (currently), Proxima Nova"}</TooltipTypography>
+            <TooltipTypography variant="body1">{"Body \u2014 Proxima Nova"}</TooltipTypography>
             <TooltipTypography variant="body1">Specs format: font-size / font-weight / line-height / font-family</TooltipTypography>
             <TooltipTypography variant="body2" sx={{ color: 'accent.red', mt: 1 }}>Red notes in this design system identify styles that are not currently expressed as MUI theme tokens.</TooltipTypography>
           </>
@@ -782,6 +827,13 @@ export default function DesignSystem() {
           Current numbering appears in several visual roles across the website. These standalone specimens are backed by MUI typography variants plus `theme.numbering` layout tokens, and keep the green left accent because they are not inside a group container.
         </UsageNote>
         <NumberingContent />
+      </DesignSection>
+
+      <DesignSection id="animation" eyebrow="Components" title="Animation" guideSx={guideSx}>
+        <UsageNote>
+          Motion specimens document reusable animation behavior for values that should update with a clear sense of change. This counter uses Framer Motion values for the numeric interpolation and Hammersmith One for the display typography.
+        </UsageNote>
+        <AnimationPlayground />
       </DesignSection>
 
       <DesignSection id="spacing" eyebrow="Foundations" title="Spacing System" guideSx={guideSx}>
@@ -882,7 +934,7 @@ export default function DesignSystem() {
                   {['Project Documentation & Reports', 'Service Learning & Education', 'References & Resources'].map((item) => (
                     <Box key={item} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, mx: 0.5, my: 0.5, px: 1.25, py: 1.1, borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid transparent', color: 'common.white', '&:hover': { bgcolor: 'translucent.primaryGreen', borderColor: 'translucent.primaryGreen' } }}>
                       <Box sx={{ width: 3, height: 22, mt: 0.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.72, flex: 'none' }} />
-                      <Box sx={{ fontWeight: 800, lineHeight: 1.25 }}>{item}</Box>
+                      <Box sx={{ fontWeight: 800, letterSpacing: '0.015em', lineHeight: 1.25 }}>{item}</Box>
                     </Box>
                   ))}
                 </Box>
@@ -894,7 +946,7 @@ export default function DesignSystem() {
                     <Box sx={{ borderRadius: 'var(--mui-shape-borderRadius)', border: 1, borderColor: 'translucent.primaryGreen', bgcolor: 'translucent.primaryGreen', overflow: 'hidden' }}>
                       <Box sx={{ px: 1.5, py: 1.25, display: 'flex', justifyContent: 'space-between', gap: 1 }}>
                         <Box>
-                          <Box sx={{ color: 'common.white', fontWeight: 800, lineHeight: 1.25 }}>Repository</Box>
+                          <Box sx={{ color: 'common.white', fontWeight: 800, letterSpacing: '0.015em', lineHeight: 1.25 }}>Repository</Box>
                           <TooltipTypography variant="captionSmall" component="p" sx={{ color: 'base.100', mt: 0.45, lineHeight: 1.45 }}>
                             Browse reports, learning materials, and project resources.
                           </TooltipTypography>
@@ -906,12 +958,12 @@ export default function DesignSystem() {
                         {['Project Documentation & Reports', 'Service Learning & Education', 'References & Resources'].map((item) => (
                           <Box key={item} sx={{ display: 'flex', alignItems: 'flex-start', px: 1.25, py: 1, borderRadius: 'var(--mui-shape-borderRadius)', color: 'common.white' }}>
                             <Box sx={{ width: 3, height: 22, mt: 0.25, mr: 1.1, borderRadius: 999, bgcolor: 'primary.main', opacity: 0.72, flex: 'none' }} />
-                            <Box sx={{ fontWeight: 800, lineHeight: 1.25 }}>{item}</Box>
+                            <Box sx={{ fontWeight: 800, letterSpacing: '0.015em', lineHeight: 1.25 }}>{item}</Box>
                           </Box>
                         ))}
                       </Box>
                     </Box>
-                    <Box sx={{ borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid rgba(155,162,164,0.18)', bgcolor: 'rgba(81,93,97,0.22)', px: 1.5, py: 1.25, color: 'common.white', fontWeight: 800 }}>Repository</Box>
+                    <Box sx={{ borderRadius: 'var(--mui-shape-borderRadius)', border: '1px solid rgba(155,162,164,0.18)', bgcolor: 'rgba(81,93,97,0.22)', px: 1.5, py: 1.25, color: 'common.white', fontWeight: 800, letterSpacing: '0.015em' }}>Repository</Box>
                   </Stack>
                 </Box>
               </Box>
@@ -988,7 +1040,7 @@ export default function DesignSystem() {
             title="Simple Card"
             caption={
               <SpecCaption>
-                <StyleLine token>Typography: title uses MUI h3; body uses MUI body2; color uses primary.main.</StyleLine>
+                <StyleLine token>Typography: number <TypeSpec variant="numberGhost" />, title <TypeSpec variant="h3" />, body <TypeSpec variant="body2" />.</StyleLine>
                 <StyleLine token>Surface uses palette surface; radius uses MUI shape radius.</StyleLine>
                 <StyleLine custom>Number styling and border rgba are custom.</StyleLine>
               </SpecCaption>
@@ -1006,8 +1058,9 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Direction 2 from the brainstorm: solid header uses primary.main; body uses base.700.</StyleLine>
+                <StyleLine token>Typography: eyebrow <TypeSpec variant="eyebrow" />, lead <TypeSpec variant="body1" />, body <TypeSpec variant="body2" />.</StyleLine>
                 <StyleLine token>Spacing uses theme.jtSpacing component and gap values; radius derives from theme.shape.</StyleLine>
-                <StyleLine custom>Header title weight, number alpha, and elevation shadow preserve the brainstorm structure.</StyleLine>
+                <StyleLine custom>Header title, corner number, and elevation shadow preserve the brainstorm structure.</StyleLine>
               </SpecCaption>
             }
           >
@@ -1024,7 +1077,7 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Direction 4 from the brainstorm: tab and top border use primary.main; card body uses base.700.</StyleLine>
-                <StyleLine token>Typography uses eyebrow, h3, body1, and body2 variants from the theme.</StyleLine>
+                <StyleLine token>Typography: eyebrow <TypeSpec variant="eyebrow" />, title <TypeSpec variant="h3" />, lead <TypeSpec variant="body1" />, body <TypeSpec variant="body2" />.</StyleLine>
                 <StyleLine custom>The protruding file-folder tab, mixed corner radii, and shadow are component-local.</StyleLine>
               </SpecCaption>
             }
@@ -1043,8 +1096,9 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Direction 5 from the brainstorm: rail uses base.900, content panel uses base.500, accent uses primary.main.</StyleLine>
+                <StyleLine token>Typography: title <TypeSpec variant="h3" />, lead <TypeSpec variant="body1" />, body <TypeSpec variant="body2" />.</StyleLine>
                 <StyleLine token>Spacing, radius, and responsive rail dimensions are driven by the MUI theme.</StyleLine>
-                <StyleLine custom>Vertical label orientation and strong internal division are component-local behavior.</StyleLine>
+                <StyleLine custom>Rail number, vertical label orientation, and strong internal division are component-local behavior.</StyleLine>
               </SpecCaption>
             }
           >
@@ -1062,7 +1116,8 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: surface, base.700, primary.main, base.700 contrast, secondary.light.</StyleLine>
-                <StyleLine custom>Badge typography, badge alpha background/border, title restyle, description size, action pill styles, and hover shadow are custom.</StyleLine>
+                <StyleLine token>Typography intent: badge <TypeSpec variant="eyebrow" />, title <TypeSpec variant="h4" />, description <TypeSpec variant="body2" />.</StyleLine>
+                <StyleLine custom>Badge alpha background/border, title restyle, action pill styles, and hover shadow are custom.</StyleLine>
               </SpecCaption>
             }
           >
@@ -1079,6 +1134,7 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: surface, surfaceStrong, secondary.main, primary.main, common.white, base.200.</StyleLine>
+                <StyleLine token>Typography intent: title <TypeSpec variant="h4" />, source <TypeSpec variant="h5" />, metadata <TypeSpec variant="captionSmall" />.</StyleLine>
                 <StyleLine custom>Title/source/meta font sizes and 10px radius are custom.</StyleLine>
               </SpecCaption>
             }
@@ -1090,7 +1146,8 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: surface, primary.main, secondary.main, common.white, base.200.</StyleLine>
-                <StyleLine custom>Index, title, metadata, kicker, body text sizing, alpha borders, and expand icon sizing are custom.</StyleLine>
+                <StyleLine token>Typography intent: index <TypeSpec variant="numberArticle" />, title <TypeSpec variant="h4" />, metadata <TypeSpec variant="captionSmall" />, kicker <TypeSpec variant="eyebrow" />, abstract <TypeSpec variant="body2" />.</StyleLine>
+                <StyleLine custom>Text sizing, alpha borders, and expand icon sizing are custom.</StyleLine>
               </SpecCaption>
             }
           >
@@ -1103,8 +1160,8 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Palette: primary.main, secondary.light, base.700; radius uses MUI shape radius on image.</StyleLine>
-                <StyleLine token>Large number uses MUI `numberGhost` typography.</StyleLine>
-                <StyleLine custom>Row borders, badge, title sizing, place label, and description sizing are custom.</StyleLine>
+                <StyleLine token>Typography: number <TypeSpec variant="numberGhost" />, title <TypeSpec variant="h3" />, body <TypeSpec variant="body1" />.</StyleLine>
+                <StyleLine custom>Row borders, badge, place label, and description sizing are custom.</StyleLine>
               </SpecCaption>
             }
           >
@@ -1142,6 +1199,7 @@ export default function DesignSystem() {
             caption={
               <SpecCaption>
                 <StyleLine token>Number uses `numberGhost`; label uses `eyebrow`; body uses body2/base.100.</StyleLine>
+                <StyleLine token>Typography: number <TypeSpec variant="numberGhost" />, title <TypeSpec variant="h4" />, label <TypeSpec variant="eyebrow" />, body <TypeSpec variant="body2" />.</StyleLine>
                 <StyleLine custom>Square glass panel border, left status bar, and glow values are scenario-local.</StyleLine>
               </SpecCaption>
             }
@@ -1152,42 +1210,6 @@ export default function DesignSystem() {
               label="Variation I"
               body="Outflow cards use an intentionally square glass panel with a left status bar and scenario-specific accent."
             />
-          </CardRow>
-          <CardRow
-            title="Gantt Timeline Controls"
-            caption={
-              <SpecCaption>
-                <StyleLine token>Category colors come from brand primary blue, accent orange, base scale, and primary green focus tokens.</StyleLine>
-                <StyleLine token>Control spacing uses `theme.jtSpacing.component` and typography uses h4/captionSmall/body2.</StyleLine>
-                <StyleLine custom>The SVG chart itself still uses D3 layout values and alpha washes for threshold/focus rendering.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <GanttControlsSpec />
-          </CardRow>
-          <CardRow
-            title="Map Legend and Tooltip"
-            caption={
-              <SpecCaption>
-                <StyleLine token>Overlay spacing uses `theme.jtSpacing.component`; legend text uses eyebrow and captionSmall.</StyleLine>
-                <StyleLine token>Dark map panels use brand/base colors with compact borders and high-contrast common.white text.</StyleLine>
-                <StyleLine custom>Map layer geometry and warning/yellow tooltip border colors remain data-visualization-specific.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <MapControlSpec />
-          </CardRow>
-          <CardRow
-            title="Kelp Controls Panel"
-            caption={
-              <SpecCaption>
-                <StyleLine token>Green borders and hover states use `palette.translucent.primaryGreen`; muted text uses base.100.</StyleLine>
-                <StyleLine token>Panel dividers and item shells use base.300/base.800 tokens.</StyleLine>
-                <StyleLine custom>The near-black panel background and warning orange chip remain map-tool-specific values.</StyleLine>
-              </SpecCaption>
-            }
-          >
-            <KelpControlsSpec />
           </CardRow>
         </Stack>
       </DesignSection>

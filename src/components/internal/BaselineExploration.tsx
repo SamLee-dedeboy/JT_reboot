@@ -300,9 +300,6 @@ export default function BaselineExploration() {
   useEffect(() => {
     let isMounted = true;
 
-    setData(null);
-    setHoverIndex(null);
-
     fetch(activeDataset.url)
       .then((response) => response.json() as Promise<RegionTimeseriesPayload>)
       .then((payload) => {
@@ -320,6 +317,14 @@ export default function BaselineExploration() {
       isMounted = false;
     };
   }, [activeDataset.url]);
+
+  function handleAggregationChange(mode: AggregationMode) {
+    if (mode === aggregationMode) return;
+
+    setData(null);
+    setHoverIndex(null);
+    setAggregationMode(mode);
+  }
 
   const activeIndex = hoverIndex ?? Math.max(0, (data?.dates.length ?? 1) - 1);
   const rankedRegions = useMemo(
@@ -415,7 +420,7 @@ export default function BaselineExploration() {
               <ScaleButton
                 key={mode}
                 active={aggregationMode === mode}
-                onClick={() => setAggregationMode(mode)}
+                onClick={() => handleAggregationChange(mode)}
               >
                 {DATASETS[mode].label}
               </ScaleButton>

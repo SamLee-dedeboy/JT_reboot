@@ -224,7 +224,7 @@ const themeOptions = {
             fontFamily: fontBody,
             fontSize: 'clamp(1.5rem, 2vw, 2rem)',
             lineHeight: 1.12,
-            letterSpacing: '0.02em',
+            letterSpacing: '0.035em',
             textTransform: 'uppercase',
         },
         h4: {
@@ -237,11 +237,13 @@ const themeOptions = {
             fontFamily: fontBody,
             fontSize: 'clamp(1rem, 0.7rem + 0.5vw, 1.05rem)',
             lineHeight: 1.2,
-            fontWeight: 800,
+            fontWeight: 600,
+            letterSpacing: '0.03em',
+            textTransform: 'uppercase',
         },
         body1: {
             fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)',
-            lineHeight: 1.75,
+            lineHeight: 1.55,
         },
         body2: {
             fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
@@ -296,6 +298,8 @@ const themeOptions = {
             fontSize: 'clamp(1.8rem, 1.4rem + 1vw, 2.2rem)',
             lineHeight: 1,
             letterSpacing: '0.04em',
+            fontWeight: 400,
+            textTransform: 'uppercase',
             color: numbering.color.ghost,
         },
         numberArticle: {
@@ -303,6 +307,8 @@ const themeOptions = {
             fontSize: 'clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem)',
             lineHeight: 1,
             letterSpacing: '0.06em',
+            fontWeight: 400,
+            textTransform: 'uppercase',
             color: numbering.color.primary,
         },
         numberTimeline: {
@@ -310,6 +316,8 @@ const themeOptions = {
             fontSize: 'clamp(2.2rem, 4vw, 3rem)',
             lineHeight: 1,
             letterSpacing: '0.04em',
+            fontWeight: 400,
+            textTransform: 'uppercase',
             color: numbering.color.primary,
         },
         numberBadge: {
@@ -317,6 +325,8 @@ const themeOptions = {
             fontSize: 'clamp(0.8rem, 0.72rem + 0.2vw, 0.9rem)',
             lineHeight: 1,
             letterSpacing: '0.08em',
+            fontWeight: 400,
+            textTransform: 'uppercase',
             color: numbering.color.primary,
         },
     },

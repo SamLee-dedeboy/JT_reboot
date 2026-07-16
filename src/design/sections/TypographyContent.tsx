@@ -62,10 +62,10 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
     { label: 'Eyebrow', variantName: 'eyebrow', variant: theme.typography.eyebrow as TypographyToken, content: 'Small uppercase section label.' },
     { label: 'Logo', variantName: 'logo', variant: theme.typography.logo as TypographyToken, content: 'Logo wordmark text.' },
     { label: 'Logo Hero', variantName: 'logoHero', variant: theme.typography.logoHero as TypographyToken, content: 'Hero logo text.' },
-    { label: 'Number Ghost', variantName: 'numberGhost', variant: theme.typography.numberGhost as TypographyToken, content: 'Card corner and studio feature ghost number' },
-    { label: 'Number Article', variantName: 'numberArticle', variant: theme.typography.numberArticle as TypographyToken, content: 'Article accordion index' },
-    { label: 'Number Timeline', variantName: 'numberTimeline', variant: theme.typography.numberTimeline as TypographyToken, content: 'Timeline year marker' },
-    { label: 'Number Badge', variantName: 'numberBadge', variant: theme.typography.numberBadge as TypographyToken, content: 'How It Works process bullet' },
+    { label: 'Number Ghost', variantName: 'numberGhost', variant: theme.typography.numberGhost as TypographyToken, content: 'Card corner and studio feature ghost number: Hammersmith One.' },
+    { label: 'Number Article', variantName: 'numberArticle', variant: theme.typography.numberArticle as TypographyToken, content: 'Article accordion index: Hammersmith One.' },
+    { label: 'Number Timeline', variantName: 'numberTimeline', variant: theme.typography.numberTimeline as TypographyToken, content: 'Timeline year marker: Hammersmith One.' },
+    { label: 'Number Badge', variantName: 'numberBadge', variant: theme.typography.numberBadge as TypographyToken, content: 'How It Works process bullet: Hammersmith One.' },
   ];
 
   const typographySections = [
@@ -81,7 +81,7 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
     },
     {
       title: 'Numbering',
-      description: 'Numeric display styles used by cards, accordions, timelines, and badges.',
+      description: 'Hammersmith One numeric display styles used by cards, accordions, timelines, and badges.',
       items: typography.filter((t) => t.label.startsWith('Number')),
     },
     {

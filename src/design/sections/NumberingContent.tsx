@@ -37,7 +37,7 @@ export default function NumberingContent() {
         </Box>
         <Typography variant="body2">Card corner number.</Typography>
         <ComponentMeta>
-          <StyleLine token>Typography uses MUI `numberGhost` variant for card and studio ghost numbers.</StyleLine>
+          <StyleLine token>Typography uses MUI `numberGhost` variant with Hammersmith One for card and studio ghost numbers.</StyleLine>
           <StyleLine token>Color uses `theme.numbering.color.ghost`, mapped to base.100 for AAA contrast on brand base.</StyleLine>
           <StyleLine token>Spacing between merged examples uses `theme.jtSpacing.gap.sm`.</StyleLine>
         </ComponentMeta>
@@ -49,7 +49,7 @@ export default function NumberingContent() {
         </Box>
         <Typography variant="body2">Article accordion index.</Typography>
         <ComponentMeta>
-          <StyleLine token>Typography uses MUI `numberArticle` variant.</StyleLine>
+          <StyleLine token>Typography uses MUI `numberArticle` variant with Hammersmith One.</StyleLine>
           <StyleLine token>Color uses `theme.numbering.color.primary`, matching primary.main.</StyleLine>
           <StyleLine token>Grid column, gap, and reserved index width use `theme.numbering` tokens.</StyleLine>
         </ComponentMeta>
@@ -61,7 +61,7 @@ export default function NumberingContent() {
         </Box>
         <Typography variant="body2" >Timeline year marker.</Typography>
         <ComponentMeta>
-          <StyleLine token>Typography uses MUI `numberTimeline` variant.</StyleLine>
+          <StyleLine token>Typography uses MUI `numberTimeline` variant with Hammersmith One.</StyleLine>
           <StyleLine token>Color uses `theme.numbering.color.primary`, matching primary.main.</StyleLine>
         </ComponentMeta>
       </Box>
@@ -85,7 +85,7 @@ export default function NumberingContent() {
         </Box>
         <Typography variant="body2">How It Works process bullet.</Typography>
         <ComponentMeta>
-          <StyleLine token>Typography uses MUI `numberBadge` variant.</StyleLine>
+          <StyleLine token>Typography uses MUI `numberBadge` variant with Hammersmith One.</StyleLine>
           <StyleLine token>Badge dimensions, border, and radius use `theme.numbering.badge` tokens.</StyleLine>
         </ComponentMeta>
       </Box>

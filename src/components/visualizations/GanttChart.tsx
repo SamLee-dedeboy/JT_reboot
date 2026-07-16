@@ -584,7 +584,7 @@ export default function GanttChart({
 
     const containerWidth = canvasSize.width;
     const containerHeight = canvasSize.height;
-    const svgFontFamily = theme.typography.fontFamily ?? 'Nunito Sans, Arial, sans-serif';
+    const svgFontFamily = theme.typography.fontFamily ?? 'proxima-nova, Nunito Sans, Helvetica Neue, Arial, sans-serif';
     const chartWidth = Math.max(containerWidth, 620);
     const brushHeight = 8;
     const margin = { top: 30, right: 14, bottom: 10, left: 38 };
