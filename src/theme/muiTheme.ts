@@ -248,11 +248,11 @@ const themeOptions = {
         },
         body1: {
             fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)',
-            lineHeight: 1.55,
+            lineHeight: 1.3,
         },
         body2: {
             fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
-            lineHeight: 1.6,
+            lineHeight: 1.25,
             color: palette.base[100],
         },
         caption: {
