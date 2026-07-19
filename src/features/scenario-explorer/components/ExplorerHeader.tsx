@@ -12,12 +12,14 @@ interface ExplorerHeaderProps {
   description: string;
   mode: DashboardMode;
   onModeChange: (mode: DashboardMode) => void;
+  onTutorialOpen: () => void;
 }
 
-export default function ExplorerHeader({ description, mode, onModeChange }: ExplorerHeaderProps) {
+export default function ExplorerHeader({ description, mode, onModeChange, onTutorialOpen }: ExplorerHeaderProps) {
   return (
     <Box
       component="header"
+      data-tour="explorer-purpose"
       sx={(theme) => ({
         display: 'grid',
         flex: '0 0 auto',
@@ -40,6 +42,7 @@ export default function ExplorerHeader({ description, mode, onModeChange }: Expl
           Salinity <Box component="span" color="primary.main">difference</Box> explorer
         </Typography>
         <Tabs
+          data-tour="comparison-tabs"
           aria-label="Dashboard comparison mode"
           onChange={(_, value: DashboardMode) => onModeChange(value)}
           scrollButtons={false}
@@ -90,7 +93,7 @@ export default function ExplorerHeader({ description, mode, onModeChange }: Expl
             />
           ))}
         </Tabs>
-        <Button variant="outlined" sx={(theme) => ({ alignSelf: 'center', height: theme.spacing(5), justifySelf: { xs: 'start', lg: 'end' } })}>
+        <Button onClick={onTutorialOpen} variant="outlined" sx={(theme) => ({ alignSelf: 'center', height: theme.spacing(5), justifySelf: { xs: 'start', lg: 'end' } })}>
           Tutorial
         </Button>
       </Box>

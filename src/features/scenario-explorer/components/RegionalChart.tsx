@@ -109,14 +109,13 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
       color: scenario.key === selectedScenarioKey ? theme.palette.brand.primaryGreen : theme.palette.common.white,
     };
   }), [data, data.scenarios, stationIndices, activeKeys, rangeMode, region, selectedScenarioKey, theme.palette.brand.primaryGreen, theme.palette.common.white]);
-  const scenarioSignature = activeKeys.join("|");
-  const previousScenario = useRef(scenarioSignature);
+  const previousSelectedScenario = useRef(selectedScenarioKey);
   const previousRegion = useRef(region);
   const [phase, setPhase] = useState("baseline");
   const [sequence, setSequence] = useState(0);
 
   useLayoutEffect(() => {
-    const scenarioChanged = previousScenario.current !== scenarioSignature;
+    const scenarioChanged = previousSelectedScenario.current !== selectedScenarioKey;
     const regionChanged = previousRegion.current !== region;
     if (scenarioChanged) {
       // Animation phase changes are intentionally synchronized to the selected series.
@@ -126,9 +125,9 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
     } else if (regionChanged) {
       setPhase("regionLine");
     }
-    previousScenario.current = scenarioSignature;
+    previousSelectedScenario.current = selectedScenarioKey;
     previousRegion.current = region;
-  }, [scenarioSignature, region]);
+  }, [selectedScenarioKey, region]);
   const allValues = series.flatMap((item) => [...item.values, ...item.rangeLow, ...item.rangeHigh]).filter((value): value is number => value != null && Number.isFinite(value));
   const extent = Math.max(1, ...allValues.map(Math.abs));
   const x = (index: number) => PAD.left + index / Math.max(1, data.dates.length - 1) * (width - PAD.left - PAD.right);
@@ -181,8 +180,8 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
   return (
     <Box sx={{ display: "flex", flex: 1, flexDirection: "column", minHeight: 0 }}>
     <Box sx={(theme) => ({ alignItems: 'start', display: 'grid', gap: theme.jtSpacing.gap.xs, gridTemplateColumns: `${PAD.left}px minmax(0, 1fr)`, mx: theme.jtSpacing.component.sm, py: theme.jtSpacing.component.xs })}>
-      <Typography variant="captionSmall" color="text.secondary" sx={{ alignSelf: 'end', lineHeight: 1.15, textAlign: 'right' }}>
-        {units === "%" ? <><Box component="span" sx={{ display: 'block' }}>Change from</Box><Box component="span" sx={{ display: 'block' }}>base (%)</Box></> : <><Box component="span" sx={{ display: 'block' }}>Δ EC-AVG-AVG</Box><Box component="span" sx={{ display: 'block' }}>(µS/cm)</Box></>}
+      <Typography variant="captionSmall" color="text.secondary" sx={(theme) => ({ alignSelf: 'end', lineHeight: 1.15, pr: theme.jtSpacing.gap.xs, textAlign: 'right' })}>
+        {units === "%" ? <><Box component="span" sx={{ display: 'block' }}>Change</Box><Box component="span" sx={{ display: 'block' }}>from</Box><Box component="span" sx={{ display: 'block' }}>base (%)</Box></> : <><Box component="span" sx={{ display: 'block' }}>Δ EC-AVG-AVG</Box><Box component="span" sx={{ display: 'block' }}>(µS/cm)</Box></>}
       </Typography>
       <Box sx={{ display: 'grid', gap: 'inherit', mr: `${PAD.right}px` }}>
         <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
@@ -272,12 +271,14 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
   const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null);
+  const [deviationInfoAnchor, setDeviationInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [hoveredScenarioKey, setHoveredScenarioKey] = useState<string | null>(null);
   const coverage = rangeMode === "iqr" ? { first: 5, last: 14, label: "Middle 50% of stations" } : rangeMode === "p90" ? { first: 1, last: 18, label: "Middle 90% of stations" } : { first: 0, last: 19, label: "All stations" };
   return (
     <Paper
       variant="outlined"
       component="article"
+      data-tour="line-chart"
       sx={{
         bgcolor: 'base.700',
         borderRadius: 1,
@@ -310,7 +311,7 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
           </Box>
           <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflow: 'hidden' })}>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
-              <Typography variant="caption" color="text.secondary">Visible scenarios</Typography>
+              <Typography variant="caption" color="text.secondary">Scenario overlay</Typography>
               <IconButton aria-label="Explain scenario visibility" onClick={(event) => setVisibilityInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
             </Box>
             <Box sx={(theme) => ({ display: 'flex', flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } })}>
@@ -341,7 +342,10 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
             </Box>
           </Box>
           <Box sx={(theme) => ({ display: "grid", gap: theme.jtSpacing.gap.xs, justifyItems: "end" })}>
-            <Typography variant="caption" color="text.secondary">Current average deviation</Typography>
+            <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
+              <Typography variant="caption" color="text.secondary">Current average deviation</Typography>
+              <IconButton aria-label="Explain current average deviation" onClick={(event) => setDeviationInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
+            </Box>
             <Box sx={(theme) => ({ alignItems: 'baseline', display: 'flex', gap: theme.jtSpacing.gap.sm, whiteSpace: 'nowrap' })}>
               <Typography variant="h4" sx={{ color: Number(rawRegionValue) > 0 ? "salinity.pink" : Number(rawRegionValue) < 0 ? "salinity.teal" : "common.white" }}>{Number(rawRegionValue) > 0 ? "+" : ""}{formatNumber(rawRegionValue)} <Box component="span" sx={{ color: "text.secondary", typography: 'captionSmall', textTransform: "none" }}>µS/cm</Box></Typography>
               <Typography variant="h4" sx={{ color: Number(percentRegionValue) > 0 ? "salinity.pink" : Number(percentRegionValue) < 0 ? "salinity.teal" : "common.white" }}>{Number(percentRegionValue) > 0 ? "+" : ""}{formatNumber(percentRegionValue)}<Box component="span" sx={{ color: "text.secondary", typography: 'captionSmall', textTransform: "none" }}>%</Box></Typography>
@@ -373,7 +377,7 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
           <Typography variant="captionSmall" component="p" color="text.secondary" sx={(theme) => ({ mt: theme.jtSpacing.component.xs })}>The stations inside the range can change from day to day; this is not a fixed station-ID selection.</Typography>
       </ExplorerInfoPopover>
       <ExplorerInfoPopover anchor={visibilityInfoAnchor} onClose={() => setVisibilityInfoAnchor(null)}>
-        <Typography variant="caption" color="brand.primaryGreen">About visible scenarios</Typography>
+        <Typography variant="caption" color="brand.primaryGreen">About scenario overlay</Typography>
         <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryGreen' } }}>Compare scenarios on the timeline</Typography>
         <Typography variant="captionSmall" component="p" color="text.secondary">
           Use the eye controls to add or remove scenario lines from the regional timeline. This makes it easier to compare alternative strategies without changing the selected scenario, map, or station distribution.
@@ -381,6 +385,21 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
         <Typography variant="captionSmall" component="p" color="text.secondary">
           The selected scenario is always visible as the <Box component="span" sx={{ color: 'brand.primaryGreen' }}>green line</Box>. Other visible scenarios appear as supporting comparison lines. The <Box component="span" sx={{ color: 'brand.primaryBlue' }}>base scenario</Box> is represented by the chart reference line and is intentionally omitted from these controls.
         </Typography>
+      </ExplorerInfoPopover>
+      <ExplorerInfoPopover anchor={deviationInfoAnchor} onClose={() => setDeviationInfoAnchor(null)}>
+        <Typography variant="caption" color="brand.primaryGreen">About current average deviation</Typography>
+        <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryGreen' } }}>How are these values computed?</Typography>
+        <Typography variant="captionSmall" component="p" color="text.secondary">
+          The <Box component="span" sx={{ color: 'brand.primaryBlue' }}>µS/cm value</Box> is the average EC difference between the <Box component="span" sx={{ color: 'brand.primaryGreen' }}>selected scenario</Box> and the <Box component="span" sx={{ color: 'brand.primaryBlue' }}>selected base scenario</Box> across stations in the selected region on the displayed date. It is the same value shown here when Values is switched to µS/cm.
+        </Typography>
+        <Divider />
+        <Typography variant="captionSmall" component="p" color="text.secondary">
+          The <Box component="span" sx={{ color: 'brand.primaryGreen' }}>percent change</Box> expresses the selected scenario relative to the selected base scenario. It divides the regional average EC difference by the region’s average selected base-scenario period-mean EC:
+        </Typography>
+        <Box sx={(theme) => ({ bgcolor: 'surface', border: 1, borderColor: 'divider', borderRadius: 1, p: theme.jtSpacing.component.sm, textAlign: 'center' })}>
+          <Typography variant="captionSmall">Percent change = 100 × regional average EC difference ÷ regional average selected base-scenario period-mean EC</Typography>
+        </Box>
+        <Typography variant="captionSmall" component="p" color="text.secondary">Because both values use the same regional EC difference, they always have the same direction. Positive values indicate saltier conditions than the selected base scenario; negative values indicate fresher conditions.</Typography>
       </ExplorerInfoPopover>
       <ChartSvg data={data} dashboardMode={dashboardMode} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} onDateCommit={onDateCommit} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} selectedScenarioLabel={selectedScenario.label} hoveredScenarioKey={hoveredScenarioKey} baseScenarioLabel={baseScenarioLabel} units={units} />
     </Paper>

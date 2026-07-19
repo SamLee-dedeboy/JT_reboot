@@ -80,7 +80,7 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
     const fraction = Math.max(0, Math.min(1, (height - PAD.bottom - pointerY) / (height - PAD.top - PAD.bottom)));
     return minimum + fraction * (maximum - minimum);
   };
-  return <Box sx={(theme) => ({ bgcolor: "base.700", border: 1, borderColor: "divider", borderRadius: 1, display: "flex", flexDirection: "column", height: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden', px: theme.jtSpacing.component.xs, pt: theme.jtSpacing.component.sm })}>
+  return <Box data-tour="beeswarm" sx={(theme) => ({ bgcolor: "base.700", border: 1, borderColor: "divider", borderRadius: 1, display: "flex", flexDirection: "column", height: '100%', minHeight: 0, minWidth: 0, overflow: 'hidden', px: theme.jtSpacing.component.xs, pt: theme.jtSpacing.component.sm })}>
     <Stack sx={(theme) => ({ alignItems: 'center', gap: theme.jtSpacing.gap.xs, [theme.breakpoints.between('lg', 'xl')]: { gap: 0 } })}>
       <Typography variant="caption" sx={(theme) => ({ color: "text.secondary", [theme.breakpoints.between('lg', 'xl')]: { ...theme.typography.captionSmall } })}>Station distribution</Typography>
       <Typography variant="h5" sx={(theme) => ({ '&&': { color: 'brand.primaryBlue' }, textTransform: 'uppercase', [theme.breakpoints.between('lg', 'xl')]: { ...theme.typography.button } })}>{brush ? `${selectedCount} selected` : formatDate(data.dates[dateIndex])}</Typography>

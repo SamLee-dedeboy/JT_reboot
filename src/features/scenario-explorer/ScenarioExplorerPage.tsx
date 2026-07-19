@@ -10,6 +10,7 @@ import StationHistogram from "./components/StationHistogram";
 import ExplorerHeader from './components/ExplorerHeader';
 import SalinityScale from './components/SalinityScale';
 import ExplorerInfoPopover from './components/ExplorerInfoPopover';
+import ExplorerTutorial from './components/ExplorerTutorial';
 import type { DashboardMode, HistogramBrush, ModelKey, Scenario, ScenarioDataset, ScenarioDatasets, ValueMode, ValueSeries } from './types';
 
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
@@ -26,6 +27,7 @@ interface LabeledSelectProps {
   onInfoClick?: (button: HTMLButtonElement) => void;
   infoLabel?: string;
   value: string;
+  tourId?: string;
 }
 
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual');
@@ -35,9 +37,9 @@ const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') => ({
   '&&:hover': { color: 'text.primary' },
 } as const);
 
-function LabeledSelect({ children, disabled = false, infoLabel, label, onChange, onInfoClick, value }: LabeledSelectProps) {
+function LabeledSelect({ children, disabled = false, infoLabel, label, onChange, onInfoClick, tourId, value }: LabeledSelectProps) {
   return (
-    <FormControl size="small" sx={{ minWidth: 0, width: '100%' }}>
+    <FormControl data-tour={tourId} size="small" sx={{ minWidth: 0, width: '100%' }}>
       <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs, mb: theme.jtSpacing.component.xs })}>
         <Typography component="label" variant="caption" sx={{ color: "text.secondary" }}>{label}</Typography>
         {onInfoClick && <IconButton aria-label={infoLabel ?? `About ${label}`} onClick={(event) => onInfoClick(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>}
@@ -90,6 +92,7 @@ export default function ScenarioExplorerPage() {
   const [isModeTransitioning, setIsModeTransitioning] = useState(false);
   const [regionInfoAnchor, setRegionInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [valuesInfoAnchor, setValuesInfoAnchor] = useState<HTMLButtonElement | null>(null);
+  const [tutorialOpen, setTutorialOpen] = useState(false);
   const [, startTransition] = useTransition();
   const modeTransitionTimerRef = useRef<number | null>(null);
   const dateFrameRef = useRef<number | null>(null);
@@ -104,7 +107,7 @@ export default function ScenarioExplorerPage() {
     const initialConfig = DATASET_CONFIG['rma-scenarios'];
     fetch(assetUrl(initialConfig.url)).then((response) => response.json() as Promise<ScenarioDataset>).then((rmaScenarios) => {
       setDatasets({ rmaScenarios });
-      const initialDateIndex = rmaScenarios.dates.length - 1;
+      const initialDateIndex = 0;
       setDateIndex(initialDateIndex);
       setHistogramDateIndex(initialDateIndex);
     });
@@ -142,7 +145,7 @@ export default function ScenarioExplorerPage() {
       setActiveKeys(["bolster"]);
     }
     setRegion("All regions");
-    const nextDateIndex = nextData.dates.length - 1;
+    const nextDateIndex = 0;
     setDateIndex(nextDateIndex);
     setHistogramDateIndex(nextDateIndex);
     setHistogramBrush(null);
@@ -295,7 +298,6 @@ export default function ScenarioExplorerPage() {
   };
   const selectedScenario = useMemo<Scenario | undefined>(() => comparisonData?.scenarios.find((item) => item.key === scenario), [comparisonData, scenario]);
   const rawSelectedScenario = useMemo(() => rawComparisonData?.scenarios.find((item) => item.key === scenario), [rawComparisonData, scenario]);
-  const percentSelectedScenario = useMemo(() => percentComparisonData?.scenarios.find((item) => item.key === scenario), [percentComparisonData, scenario]);
   const mapExtent = useMemo(() => {
     if (!comparisonData || !selectedScenario) return 1;
     const stationIndices = comparisonData.stations
@@ -317,7 +319,29 @@ export default function ScenarioExplorerPage() {
       : item.regionValues[region][dateIndex];
   };
   const rawRegionValue = currentRegionValue(rawSelectedScenario);
-  const percentRegionValue = currentRegionValue(percentSelectedScenario);
+  const regionalBaseMean = useMemo(() => {
+    if (!rawComparisonData || !rawSelectedScenario) return null;
+    const canonicalReference = rawComparisonData.referenceStationValues;
+    const itemReference = rawSelectedScenario.referenceStationValues ?? canonicalReference;
+    const baseDeltas = dashboardMode !== "rma-schism"
+      ? scenarioOptions.find((item) => item.key === baseScenario)?.stationValues
+      : null;
+    const stationIndices = rawComparisonData.stations
+      .map((station, index) => region === "All regions" || station.region === region ? index : -1)
+      .filter((index) => index >= 0);
+    const stationMeans = stationIndices.map((stationIndex) => {
+      const references = itemReference?.[stationIndex]?.map((canonical, referenceDateIndex) => {
+        if (canonical == null) return null;
+        if (dashboardMode !== "rma-schism") return canonical + (baseDeltas?.[stationIndex]?.[referenceDateIndex] ?? 0);
+        return baseScenario === "schism" ? canonical - (rawSelectedScenario.stationValues[stationIndex][referenceDateIndex] ?? 0) : canonical;
+      }).filter((value): value is number => value != null && Number.isFinite(value)) ?? [];
+      return references.length ? references.reduce((sum, value) => sum + value, 0) / references.length : null;
+    }).filter((value): value is number => value != null && Number.isFinite(value));
+    return stationMeans.length ? stationMeans.reduce((sum, value) => sum + value, 0) / stationMeans.length : null;
+  }, [baseScenario, dashboardMode, rawComparisonData, rawSelectedScenario, region, scenarioOptions]);
+  const percentRegionValue = rawRegionValue == null || regionalBaseMean == null || regionalBaseMean === 0
+    ? null
+    : 100 * rawRegionValue / regionalBaseMean;
   if (!datasets || !data || !comparisonData || !selectedScenario) {
     return <Box sx={{ display: "grid", minHeight: "100dvh", placeItems: "center" }}><Stack sx={(theme) => ({ alignItems: 'center', gap: theme.jtSpacing.gap.sm })}><CircularProgress color="primary" /><Typography variant="caption" color="text.secondary">Loading scenario explorer…</Typography></Stack></Box>;
   }
@@ -351,53 +375,55 @@ export default function ScenarioExplorerPage() {
         description={headerDescription}
         mode={dashboardMode}
         onModeChange={selectDashboardMode}
+        onTutorialOpen={() => setTutorialOpen(true)}
       />
+      <ExplorerTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
       <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', flex: 1, gap: theme.jtSpacing.gap.sm, gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 2.4fr) minmax(18rem, .7fr)', xl: 'minmax(0, 2fr) minmax(20rem, .85fr)' }, minHeight: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
         <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateRows: 'auto minmax(0, 1fr)', minHeight: 0, minWidth: 0 })}>
         <PaperControls mode={dashboardMode}>
         {dashboardMode === "rma-schism" ? (
           <>
-            <LabeledSelect label="Base Model" value={baseScenario} onChange={(event) => { const next = event.target.value as ModelKey; setBaseScenario(next); setSelectedModel(next === "rma" ? "schism" : "rma"); setHistogramBrush(null); }}>
+            <LabeledSelect tourId="scenario-controls" label="Base Model" value={baseScenario} onChange={(event) => { const next = event.target.value as ModelKey; setBaseScenario(next); setSelectedModel(next === "rma" ? "schism" : "rma"); setHistogramBrush(null); }}>
               <MenuItem value="rma" sx={menuItemSx('brand.primaryBlue')}>RMA</MenuItem>
               <MenuItem value="schism" sx={menuItemSx('brand.primaryBlue')}>SCHISM</MenuItem>
             </LabeledSelect>
             <SwapButton label="Swap base and selected models" onClick={() => { const previousBase = baseScenario as ModelKey; setBaseScenario(selectedModel); setSelectedModel(previousBase); setHistogramBrush(null); }} />
-            <LabeledSelect label="Selected Model" value={selectedModel} onChange={(event) => { const next = event.target.value as ModelKey; setSelectedModel(next); setBaseScenario(next === "rma" ? "schism" : "rma"); setHistogramBrush(null); }}>
+            <LabeledSelect tourId="scenario-controls" label="Selected Model" value={selectedModel} onChange={(event) => { const next = event.target.value as ModelKey; setSelectedModel(next); setBaseScenario(next === "rma" ? "schism" : "rma"); setHistogramBrush(null); }}>
               <MenuItem value="rma" sx={menuItemSx('brand.primaryGreen')}>RMA</MenuItem>
               <MenuItem value="schism" sx={menuItemSx('brand.primaryGreen')}>SCHISM</MenuItem>
             </LabeledSelect>
-            <LabeledSelect label="Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
+            <LabeledSelect tourId="scenario-controls" label="Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
               {data.scenarios.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>{item.label}</MenuItem>)}
             </LabeledSelect>
           </>
         ) : dashboardMode === "tiered-outflows" ? (
           <>
-            <LabeledSelect label="Base Scenario" value={baseScenario} onChange={(event) => selectBaseScenario(event.target.value)}>
+            <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} onChange={(event) => selectBaseScenario(event.target.value)}>
               {scenarioOptions.map((item) => <MenuItem disabled={item.key === scenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}>{item.label}</MenuItem>)}
             </LabeledSelect>
             <SwapButton onClick={swapScenarios} />
-            <LabeledSelect label="Selected Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
+            <LabeledSelect tourId="scenario-controls" label="Selected Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
               {scenarioOptions.map((item) => <MenuItem disabled={item.key === baseScenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>{item.label}</MenuItem>)}
             </LabeledSelect>
           </>
         ) : (
           <>
-            <LabeledSelect label="Base Scenario" value={baseScenario} onChange={(event) => selectBaseScenario(event.target.value)}>
+            <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} onChange={(event) => selectBaseScenario(event.target.value)}>
               {scenarioOptions.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}>{item.label}</MenuItem>)}
             </LabeledSelect>
             <SwapButton onClick={swapScenarios} />
-            <LabeledSelect label="Selected Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
+            <LabeledSelect tourId="scenario-controls" label="Selected Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
               {scenarioOptions.map((item) => <MenuItem disabled={item.key === baseScenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>{item.label}</MenuItem>)}
             </LabeledSelect>
           </>
         )}
-        <LabeledSelect label="Selected Region" value={region} infoLabel="About the region definitions" onInfoClick={setRegionInfoAnchor}
+        <LabeledSelect tourId="region-values" label="Selected Region" value={region} infoLabel="About the region definitions" onInfoClick={setRegionInfoAnchor}
           onChange={(event) => selectRegion(event.target.value)}>
           <MenuItem value="All regions" sx={menuItemSx('brand.primaryGreen')}>All regions</MenuItem>
           {data.regions.map((item) => <MenuItem key={item} value={item} sx={menuItemSx('brand.primaryGreen')}>{item}</MenuItem>)}
         </LabeledSelect>
-        <Box>
+        <Box data-tour="region-values">
           <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs, mb: theme.jtSpacing.component.xs })}>
             <Typography variant="caption" sx={{ color: "text.secondary" }}>Values</Typography>
             <IconButton aria-label="About value calculations" onClick={(event) => setValuesInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
@@ -407,7 +433,7 @@ export default function ScenarioExplorerPage() {
             <ToggleButton value="percent">Percent change</ToggleButton>
           </ToggleButtonGroup>
         </Box>
-        <SalinityScale extent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />
+        <Box data-tour="color-scale"><SalinityScale extent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} /></Box>
       </PaperControls>
       <ExplorerInfoPopover anchor={regionInfoAnchor} onClose={() => setRegionInfoAnchor(null)}>
         <Typography variant="caption" color="brand.primaryGreen">About selected regions</Typography>
@@ -423,15 +449,18 @@ export default function ScenarioExplorerPage() {
         <Typography variant="caption" color="brand.primaryGreen">About displayed values</Typography>
         <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryGreen' } }}>How is percent change calculated?</Typography>
         <Typography variant="captionSmall" component="p" color="text.secondary">
-          Percent change expresses the <Box component="span" sx={{ color: 'brand.primaryGreen' }}>selected scenario</Box> relative to the <Box component="span" sx={{ color: 'brand.primaryBlue' }}>selected base scenario</Box>. The explorer first calculates their EC difference, then divides by the base scenario’s period-mean EC at that station.
+          Percent change expresses the <Box component="span" sx={{ color: 'brand.primaryGreen' }}>selected scenario</Box> relative to the <Box component="span" sx={{ color: 'brand.primaryBlue' }}>selected base scenario</Box>. For each station, the explorer calculates the EC difference, then divides it by that station’s selected base-scenario period-mean EC.
         </Typography>
         <Box sx={(theme) => ({ bgcolor: 'surface', border: 1, borderColor: 'divider', borderRadius: 1, p: theme.jtSpacing.component.sm, textAlign: 'center' })}>
           <Typography variant="captionSmall" component="p" color="common.white">
-            Percent change = 100 × (selected EC − base EC) ÷ base period-mean EC
+            Percent change = 100 × (selected EC − base EC) ÷ selected base-scenario period-mean EC
           </Typography>
         </Box>
         <Typography variant="captionSmall" component="p" color="text.secondary">
-          This is equivalent to <strong>100 × (selected EC ÷ base EC − 1)</strong> when comparing like-for-like means. Positive values indicate saltier conditions than the base; negative values indicate fresher conditions. If the base reference is zero or missing, no percentage is shown.
+          On the map and in the station distribution, this calculation is applied to each station. The current regional average uses the same relationship after averaging the station EC differences and selected base-scenario references across the selected region.
+        </Typography>
+        <Typography variant="captionSmall" component="p" color="text.secondary">
+          Positive values indicate saltier conditions than the selected base scenario; negative values indicate fresher conditions. If the selected base-scenario reference is zero or missing, no percentage is shown.
         </Typography>
         <Typography variant="captionSmall" component="p" color="text.secondary">
           Choose <strong>µS/cm</strong> to view the absolute EC difference instead.
