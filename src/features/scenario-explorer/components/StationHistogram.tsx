@@ -24,6 +24,7 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
   const theme = useTheme();
   const [brush, setBrush] = useState<HistogramBrush>(null);
   const [dragStart, setDragStart] = useState<number | null>(null);
+  const brushPositionRef = useRef<[number, number] | null>(null);
   const plotRef = useRef<HTMLDivElement | null>(null);
   const [height, setHeight] = useState(310);
   const [isMeasured, setIsMeasured] = useState(false);
@@ -37,10 +38,6 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
-  useEffect(() => {
-    setBrush(null);
-    setDragStart(null);
-  }, [scenario.key, region, dateIndex]);
   const entries = useMemo<StationEntry[]>(() => data.stations
     .map((station, index) => ({ station, value: scenario.stationValues[index][dateIndex] }))
     .filter((entry): entry is StationEntry => (region === "All regions" || entry.station.region === region) && entry.value != null && Number.isFinite(entry.value)),
@@ -73,6 +70,26 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
   const epsilon = Math.max(0.000001, (maximum - minimum) * 0.000001);
   const includes = (value: number) => Boolean(brush && value >= brush[0] - epsilon && value <= brush[1] + epsilon);
   const publish = (range: HistogramBrush) => onBrushChange(range ? [range[0] - epsilon, range[1] + epsilon] : null);
+  const rememberBrushPosition = (range: [number, number]) => {
+    const span = Math.max(Number.EPSILON, maximum - minimum);
+    brushPositionRef.current = [(range[0] - minimum) / span, (range[1] - minimum) / span];
+  };
+  useEffect(() => {
+    brushPositionRef.current = null;
+    setBrush(null);
+    setDragStart(null);
+    onBrushChange(null);
+  }, [scenario.key, region, onBrushChange]);
+  useEffect(() => {
+    const position = brushPositionRef.current;
+    if (!position) return;
+    const span = maximum - minimum;
+    const next: [number, number] = [minimum + position[0] * span, minimum + position[1] * span];
+    setBrush(next);
+    publish(next);
+  // Reapply the same vertical brush band when the committed date changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dateIndex, minimum, maximum]);
   const selectedCount = brush ? values.filter(includes).length : 0;
   const valueFromPointer = (event: ReactPointerEvent<SVGSVGElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -89,9 +106,9 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
     <Box ref={plotRef} sx={{ flex: 1, minHeight: { xs: 310, lg: 0 }, overflow: "hidden", position: "relative" }}>
     <Box component="svg" viewBox={`0 0 ${WIDTH} ${height}`} role="img" aria-label={`Distribution of ${values.length} station deltas. Drag vertically to highlight stations on the map.`} sx={{ bottom: 0, cursor: "crosshair", display: "block", height: "100%", left: 0, pointerEvents: isMeasured ? 'auto' : 'none', position: "absolute", right: 0, top: 0, touchAction: "none", userSelect: "none", visibility: isMeasured ? 'visible' : 'hidden', width: "100%" }}
       onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); const value = valueFromPointer(event); setDragStart(value); setBrush([value, value]); }}
-      onPointerMove={(event) => { if (dragStart == null) return; const value = valueFromPointer(event); const next: [number, number] = [Math.min(dragStart, value), Math.max(dragStart, value)]; setBrush(next); publish(next); }}
-      onPointerUp={(event) => { event.currentTarget.releasePointerCapture(event.pointerId); const end = valueFromPointer(event); const final: HistogramBrush = dragStart == null ? null : [Math.min(dragStart, end), Math.max(dragStart, end)]; if (!final || Math.abs(final[1] - final[0]) < Math.max(1, (maximum - minimum) * .01)) { setBrush(null); publish(null); } else { setBrush(final); publish(final); } setDragStart(null); }}
-      onDoubleClick={() => { setBrush(null); publish(null); }}>
+      onPointerMove={(event) => { if (dragStart == null) return; const value = valueFromPointer(event); const next: [number, number] = [Math.min(dragStart, value), Math.max(dragStart, value)]; rememberBrushPosition(next); setBrush(next); publish(next); }}
+      onPointerUp={(event) => { event.currentTarget.releasePointerCapture(event.pointerId); const end = valueFromPointer(event); const final: HistogramBrush = dragStart == null ? null : [Math.min(dragStart, end), Math.max(dragStart, end)]; if (!final || Math.abs(final[1] - final[0]) < Math.max(1, (maximum - minimum) * .01)) { brushPositionRef.current = null; setBrush(null); publish(null); } else { rememberBrushPosition(final); setBrush(final); publish(final); } setDragStart(null); }}
+      onDoubleClick={() => { brushPositionRef.current = null; setBrush(null); publish(null); }}>
       <line x1={PAD.left} x2={PAD.left} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[500]} />
       {brush && <rect x={PAD.left} y={y(brush[1])} width={WIDTH - PAD.left - PAD.right} height={Math.max(1, y(brush[0]) - y(brush[1]))} fill={theme.palette.brand.primaryGreen} opacity=".12" stroke={theme.palette.brand.primaryGreen} strokeWidth="1.5" />}
       {swarm.map((point, index) => <motion.circle key={`${scenario.key}-${dateIndex}-${point.station.station_id}`} cx={point.x} cy={point.y} r="3.5" fill={valueColor(point.value, mapExtent)} opacity={brush && !includes(point.value) ? .22 : .88} initial={{ cx: point.x, cy: point.y, opacity: 0, r: 3.5, scale: 0 }} animate={{ cx: point.x, cy: point.y, opacity: brush && !includes(point.value) ? .22 : .88, r: 3.5, scale: 1 }} transition={{ duration: .35, delay: Math.min(index * .002, .35) }}><title>Station {point.station.station_id} · {point.station.long_name} · {formatNumber(point.value)} {units}</title></motion.circle>)}

@@ -267,7 +267,6 @@ export default function ScenarioExplorerPage() {
     if (dateFrameRef.current !== null) return;
     dateFrameRef.current = window.requestAnimationFrame(() => {
       setDateIndex(pendingDateIndexRef.current);
-      setHistogramBrush(null);
       dateFrameRef.current = null;
     });
   };
@@ -279,7 +278,6 @@ export default function ScenarioExplorerPage() {
     }
     setDateIndex(nextDateIndex);
     setHistogramDateIndex(nextDateIndex);
-    setHistogramBrush(null);
   };
   const selectRegion = (nextRegion: string) => {
     startTransition(() => {

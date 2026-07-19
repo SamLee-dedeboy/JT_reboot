@@ -54,8 +54,8 @@ const STEPS: TutorialStep[] = [
   {
     title: 'Inspect the station distribution',
     target: '[data-tour="beeswarm"]',
-    paragraphs: ['Each dot is one station on the active date. Its vertical position shows that station’s difference from the selected base scenario.'],
-    interactions: ['Drag vertically across the plot to brush a value range and highlight matching stations on the map.', 'Double-click the plot to clear the brush.', 'Hover a dot to read its station details.'],
+    paragraphs: ['Each dot is one station on the active date. Its vertical position shows that station’s difference from the selected base scenario.', 'A brushed band keeps the same vertical position as the date changes. For example, brushing the top continues to follow the saltiest portion of stations on each day.'],
+    interactions: ['Drag vertically across the plot to brush a value range and highlight matching stations on the map.', 'Move through dates to follow the same relative portion of the distribution over time.', 'Double-click the plot to clear the brush.', 'Hover a dot to read its station details.'],
   },
   {
     title: 'Explore stations on the map',
