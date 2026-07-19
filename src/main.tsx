@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { lazy, StrictMode, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CssBaseline, ThemeProvider } from '@mui/material'
@@ -12,12 +12,13 @@ import Playground from './components/internal/Playground.tsx'
 import Watershed from './components/internal/Watershed.tsx'
 import KelpDiagram from './components/internal/KelpDiagram.tsx'
 import BaselineExploration from './components/internal/BaselineExploration.tsx'
-import { ScenarioExplorerPage } from './features/scenario-explorer'
 import DesignSystem from './design/DesignSystem.tsx'
 import ScenariosLandingPage from './components/scenarios/ScenariosLandingPage.tsx'
 import ScenariosBackgroundPage from './components/scenarios/ScenariosBackgroundPage.tsx'
 import ScenariosKeyParametersPage from './components/scenarios/ScenariosKeyParametersPage.tsx'
 import theme from './theme/muiTheme'
+
+const ScenarioExplorerPage = lazy(() => import('./features/scenario-explorer/ScenarioExplorerPage'))
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -35,7 +36,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/pages/resources" element={<Resources />} />
           <Route path="/pages/playground" element={<Playground />} />
           <Route path="/pages/baseline-exploration" element={<BaselineExploration />} />
-          <Route path="/pages/scenario-explorer" element={<ScenarioExplorerPage />} />
+          <Route path="/pages/scenario-explorer" element={<Suspense fallback={null}><ScenarioExplorerPage /></Suspense>} />
           <Route path="/pages/watershed" element={<Watershed />} />
           <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
           <Route path="/design-system" element={<DesignSystem />} />

@@ -1,15 +1,20 @@
 import { useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Box, FormControlLabel, IconButton, Paper, Popover, Stack, Switch, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, Divider, IconButton, Paper, Slider, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme } from "@mui/material";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { AnimatePresence, motion } from 'framer-motion';
 import { area, line } from "d3-shape";
-import { chartTransition, formatDate, formatNumber, quantile } from '../format';
-import { explorerPalette as palette, scenarioNameSx } from '../theme';
-import type { HistogramBrush, RangeMode, Scenario, ScenarioDataset } from '../types';
+import { chartTransition, formatDate, formatNumber } from '../format';
+import type { RangeMode, Scenario, ScenarioDataset } from '../types';
+import ExplorerInfoPopover from './ExplorerInfoPopover';
 
 const DEFAULT_WIDTH = 900;
 const DEFAULT_HEIGHT = 390;
-const PAD = { left: 86, right: 18, top: 18, bottom: 34 };
+const PAD = { left: 86, right: 18, top: 18, bottom: 68 };
+const DATE_LABEL_Y_OFFSET = 44;
+const YEAR_BAND_Y_OFFSET = 32;
+const YEAR_BAND_HEIGHT = 26;
 
 interface ChartSvgProps {
   data: ScenarioDataset;
@@ -17,16 +22,39 @@ interface ChartSvgProps {
   activeKeys: string[];
   dateIndex: number;
   onDateChange: (index: number) => void;
+  onDateCommit: (index: number) => void;
   rangeMode: RangeMode;
   selectedScenarioKey: string;
+  selectedScenarioLabel: string;
+  hoveredScenarioKey: string | null;
   baseScenarioLabel: string;
   units: string;
 }
 
 interface RangeDatum { q1: number | null; q3: number | null }
 
-function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, rangeMode, selectedScenarioKey, baseScenarioLabel, units }: ChartSvgProps) {
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+const sortedQuantile = (sorted: number[], fraction: number): number | null => {
+  if (!sorted.length) return null;
+  const position = (sorted.length - 1) * fraction;
+  const lower = Math.floor(position);
+  const upper = Math.ceil(position);
+  const weight = position - lower;
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+};
+
+const SCENARIO_ABBREVIATIONS: Record<string, string> = {
+  'Business as Usual': 'BAU',
+  'Bolster & Fortify': 'B&F',
+  'Calling on Reserve': 'COR',
+  'A Tunnel': 'TUN',
+  'Eco Machine': 'ECO',
+  'New Green Watershed': 'NGW',
+};
+
+const abbreviateScenario = (label: string) => SCENARIO_ABBREVIATIONS[label] ?? label;
+
+function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCommit, rangeMode, selectedScenarioKey, selectedScenarioLabel, hoveredScenarioKey, baseScenarioLabel, units }: ChartSvgProps) {
+  const theme = useTheme();
   const [scrubbing, setScrubbing] = useState(false);
   const plotRef = useRef<HTMLDivElement | null>(null);
   const [{ height, width }, setPlotSize] = useState({ height: DEFAULT_HEIGHT, width: DEFAULT_WIDTH });
@@ -43,14 +71,23 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, rangeMode
   const stationIndices = useMemo(() => data.stations.map((station, index) => ({ station, index })).filter(({ station }) => region === "All regions" || station.region === region).map(({ index }) => index), [data.stations, region]);
   const series = useMemo(() => data.scenarios.filter((scenario) => activeKeys.includes(scenario.key)).map((scenario) => {
     const dailyStations = data.dates.map((_, date) => stationIndices.map((index) => scenario.stationValues[index][date]).filter((value) => value != null));
+    const dailySummaries = dailyStations.map((values) => {
+      if (!values.length) return { average: null, low: null, high: null };
+      const sorted = [...values].sort((a, b) => a - b);
+      return {
+        average: values.reduce((sum, value) => sum + value, 0) / values.length,
+        low: rangeMode === "iqr" ? sortedQuantile(sorted, 0.25) : rangeMode === "p90" ? sortedQuantile(sorted, 0.05) : sorted[0],
+        high: rangeMode === "iqr" ? sortedQuantile(sorted, 0.75) : rangeMode === "p90" ? sortedQuantile(sorted, 0.95) : sorted[sorted.length - 1],
+      };
+    });
     return {
       ...scenario,
-      values: dailyStations.map((values) => values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null),
-      rangeLow: dailyStations.map((values) => rangeMode === "iqr" ? quantile(values, 0.25) : rangeMode === "p90" ? quantile(values, 0.05) : values.length ? Math.min(...values) : null),
-      rangeHigh: dailyStations.map((values) => rangeMode === "iqr" ? quantile(values, 0.75) : rangeMode === "p90" ? quantile(values, 0.95) : values.length ? Math.max(...values) : null),
-      color: scenario.key === selectedScenarioKey ? palette.green : palette.white,
+      values: dailySummaries.map(({ average }) => average),
+      rangeLow: dailySummaries.map(({ low }) => low),
+      rangeHigh: dailySummaries.map(({ high }) => high),
+      color: scenario.key === selectedScenarioKey ? theme.palette.brand.primaryGreen : theme.palette.common.white,
     };
-  }), [data.dates, data.scenarios, stationIndices, activeKeys, rangeMode, selectedScenarioKey]);
+  }), [data.dates, data.scenarios, stationIndices, activeKeys, rangeMode, selectedScenarioKey, theme.palette.brand.primaryGreen, theme.palette.common.white]);
   const scenarioSignature = activeKeys.join("|");
   const previousScenario = useRef(scenarioSignature);
   const previousRegion = useRef(region);
@@ -80,79 +117,92 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, rangeMode
   const collapsedAreaPath = area<RangeDatum>().defined((value) => value.q1 != null && value.q3 != null).x((_, index) => x(index)).y0(y(0)).y1(y(0));
   const ticks = [-extent, -extent / 2, 0, extent / 2, extent];
   const wetDryIndex = data.dates.indexOf("2019-10-01");
-  const dateTicks = [0, Math.floor((data.dates.length - 1) / 2), data.dates.length - 1]
-    .filter((index) => wetDryIndex < 0 || index === 0 || index === data.dates.length - 1 || Math.abs(x(index) - x(wetDryIndex)) > 110);
+  const dryYearEndIndex = data.dates.findIndex((date) => date >= "2020-10-01");
+  const dateTicks = [0, data.dates.length - 1];
   const indexFromPointer = (event: ReactPointerEvent<SVGSVGElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     const pointerX = (event.clientX - bounds.left) / bounds.width * width;
     return Math.max(0, Math.min(data.dates.length - 1, Math.round((pointerX - PAD.left) / (width - PAD.left - PAD.right) * (data.dates.length - 1))));
   };
-  const textStyle = { fill: palette.base300, fontFamily: 'var(--font-body)', fontSize: "clamp(.625rem,.55rem + .18vw,.75rem)" };
-  const tickColor = (tick: number) => tick > 0 ? palette.pink : tick < 0 ? palette.teal : palette.white;
-  const formatTick = (tick: number) => `${formatNumber(tick)}${units === "%" && Math.round(tick) !== 0 ? "%" : ""}`;
+  const textStyle = { fill: theme.palette.base[300], fontFamily: theme.typography.captionSmall.fontFamily, fontSize: theme.typography.captionSmall.fontSize };
+  const tickColor = (tick: number) => tick > 0 ? theme.palette.salinity.pink : tick < 0 ? theme.palette.salinity.teal : theme.palette.common.white;
+  const formatTick = (tick: number) => `${formatNumber(tick)}${units === "%" && tick !== 0 ? "%" : ""}`;
 
   return (
     <Box sx={{ display: "flex", flex: 1, flexDirection: "column", minHeight: 0 }}>
-    <Box ref={plotRef} sx={{ flex: 1, minHeight: { xs: DEFAULT_HEIGHT, lg: 0 }, mx: 1.5, overflow: "hidden", position: "relative" }}>
+    <Box sx={(theme) => ({ alignItems: 'start', display: 'grid', gap: theme.jtSpacing.gap.xs, gridTemplateColumns: `${PAD.left}px minmax(0, 1fr)`, mx: theme.jtSpacing.component.sm, py: theme.jtSpacing.component.xs })}>
+      <Typography variant="captionSmall" color="text.secondary" sx={{ alignSelf: 'end', lineHeight: 1.15, textAlign: 'right' }}>
+        {units === "%" ? <><Box component="span" sx={{ display: 'block' }}>Change from</Box><Box component="span" sx={{ display: 'block' }}>base (%)</Box></> : <><Box component="span" sx={{ display: 'block' }}>Δ EC-AVG-AVG</Box><Box component="span" sx={{ display: 'block' }}>(µS/cm)</Box></>}
+      </Typography>
+      <Box sx={{ display: 'grid', gap: 'inherit', mr: `${PAD.right}px` }}>
+        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="caption" color="text.secondary">Date</Typography>
+          <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryBlue' } }}>{formatDate(data.dates[dateIndex])}</Typography>
+        </Box>
+        <Slider
+          aria-label="Dashboard date"
+          min={0}
+          max={data.dates.length - 1}
+          value={dateIndex}
+          onChange={(_, value) => onDateChange(value as number)}
+          onChangeCommitted={(_, value) => onDateCommit(value as number)}
+          sx={{ color: 'common.white', '& .MuiSlider-rail': { opacity: 0.38 } }}
+        />
+      </Box>
+    </Box>
+    <Box ref={plotRef} sx={(theme) => ({ flex: 1, minHeight: { xs: DEFAULT_HEIGHT, lg: 0 }, mx: theme.jtSpacing.component.sm, overflow: "hidden", position: "relative" })}>
       <Box component="svg" viewBox={`0 0 ${width} ${height}`} sx={{ bottom: 0, cursor: scrubbing ? "ew-resize" : "pointer", display: "block", height: "100%", left: 0, overflow: "visible", position: "absolute", right: 0, top: 0, touchAction: "none", width: "100%" }}
-        onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setScrubbing(true); const index = indexFromPointer(event); onDateChange(index); setHoverIndex(index); }}
-        onPointerUp={(event) => { event.currentTarget.releasePointerCapture(event.pointerId); setScrubbing(false); }}
-        onPointerCancel={() => setScrubbing(false)} onPointerLeave={() => { if (!scrubbing) setHoverIndex(null); }}
-        onPointerMove={(event) => { const index = indexFromPointer(event); setHoverIndex(index); if (scrubbing) onDateChange(index); }}
+        onPointerDown={(event) => { event.currentTarget.setPointerCapture(event.pointerId); setScrubbing(true); onDateChange(indexFromPointer(event)); }}
+        onPointerUp={(event) => { const index = indexFromPointer(event); event.currentTarget.releasePointerCapture(event.pointerId); setScrubbing(false); onDateChange(index); onDateCommit(index); }}
+        onPointerCancel={() => setScrubbing(false)}
+        onPointerMove={(event) => { if (scrubbing) onDateChange(indexFromPointer(event)); }}
       >
-        <text transform={`translate(12 ${height / 2}) rotate(-90)`} textAnchor="middle" style={{ ...textStyle, fontSize: ".75rem" }}>{units === "%" ? "Change from base (%)" : "Δ EC-AVG-AVG (µS/cm)"}</text>
-        <AnimatePresence>
-          <motion.g key={`axis-${extent.toFixed(2)}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.5, ease: "easeOut" }}>
-            {ticks.map((tick, index) => <g key={index}><line x1={PAD.left} x2={width - PAD.right} y1={y(tick)} y2={y(tick)} stroke={palette.base500} strokeWidth="1" /><text x={PAD.left - 10} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text></g>)}
-          </motion.g>
-        </AnimatePresence>
-        {dateTicks.map((index) => <text key={index} x={x(index)} y={height - 8} textAnchor={index === 0 ? "start" : index === data.dates.length - 1 ? "end" : "middle"} style={textStyle}>{formatDate(data.dates[index])}</text>)}
+        <g aria-label="Value axis">
+          {ticks.map((tick, index) => <g key={index}><line x1={PAD.left} x2={width - PAD.right} y1={y(tick)} y2={y(tick)} stroke={tickColor(tick)} strokeOpacity="0.24" strokeWidth="1" /><text x={PAD.left - 10} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text></g>)}
+        </g>
+        {dateTicks.map((index) => <text key={index} x={x(index)} y={height - DATE_LABEL_Y_OFFSET} textAnchor={index === 0 ? "start" : "end"} style={textStyle}>{formatDate(data.dates[index])}</text>)}
         <motion.line key={`baseline-${sequence}`} 
-          x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} stroke={palette.base400} strokeWidth="3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (phase === "baseline") setPhase("line"); }} />
-        <motion.text key={`baseline-label-${sequence}`} x={PAD.left + 8} y={y(0) - 8} fill={palette.base100} style={{ ...textStyle, fontWeight: 700 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 0.3 }}>{baseScenarioLabel}</motion.text>
-        <AnimatePresence>{(phase === "band" || phase === "ready") && series.map((item, index) => {
+          x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[400]} strokeWidth="3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (phase === "baseline") setPhase("line"); }} />
+        <motion.text key={`baseline-label-${sequence}`} x={PAD.left + 8} y={y(0) - 8} fill={theme.palette.base[100]} style={{ ...textStyle, fontWeight: 700 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 0.3 }}>{baseScenarioLabel}</motion.text>
+        <text x={width - PAD.right} y={PAD.top + 16} textAnchor="end" style={{ ...textStyle, fill: theme.palette.brand.primaryGreen, fontWeight: 700 }}>Selected: {selectedScenarioLabel}</text>
+        <AnimatePresence>{(phase === "regionLine" || phase === "band" || phase === "ready") && series.map((item, index) => {
           const range = item.rangeLow.map((q1, date) => ({ q1, q3: item.rangeHigh[date] }));
-          return <motion.path key={`range-${item.key}-${sequence}`} initial={{ d: collapsedAreaPath(range) || "", opacity: 0 }} animate={{ d: areaPath(range) || "", opacity: 0.24 }} exit={{ opacity: 0 }} transition={{ duration: 1.15, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (index === series.length - 1) setPhase("ready"); }} fill={item.color} />;
+          const highlighted = item.key === hoveredScenarioKey;
+          const deEmphasized = hoveredScenarioKey != null && item.key !== selectedScenarioKey && !highlighted;
+          return <motion.path key={`range-${item.key}-${sequence}`} initial={{ d: collapsedAreaPath(range) || "", opacity: 0 }} animate={{ d: areaPath(range) || "", opacity: highlighted ? 0.64 : deEmphasized ? 0.05 : 0.24, fill: highlighted ? theme.palette.brand.primaryBlue : item.color }} exit={{ opacity: 0 }} transition={{ d: { duration: phase === "regionLine" ? 0 : 1.15, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: phase === "regionLine" ? 0 : 1.15 } }} onAnimationComplete={() => { if (index === series.length - 1 && phase === "band") setPhase("ready"); }} />;
         })}</AnimatePresence>
         <AnimatePresence>{phase !== "baseline" && series.map((item, index) => {
           const clipId = `timeline-reveal-${item.key}-${sequence}`;
           return <g key={`${item.key}-${sequence}`}>
-            <defs><clipPath id={clipId}><motion.rect x={PAD.left} y={PAD.top} height={height - PAD.top - PAD.bottom} initial={{ width: phase === "regionLine" ? width - PAD.left - PAD.right : 0 }} animate={{ width: width - PAD.left - PAD.right }} transition={{ duration: phase === "line" ? 2.4 : 1.4, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (index === series.length - 1 && (phase === "line" || phase === "regionLine")) setPhase("band"); }} /></clipPath></defs>
-            <motion.path initial={{ d: linePath(item.values) || "", opacity: phase === "regionLine" ? 1 : 0 }} animate={{ d: linePath(item.values) || "", opacity: 1 }} exit={{ opacity: 0 }} transition={{ d: { duration: 1.4, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.2 } }} clipPath={`url(#${clipId})`} fill="none" stroke={item.color} strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+            <defs><clipPath id={clipId}><motion.rect x={PAD.left} y={PAD.top} height={height - PAD.top - PAD.bottom} initial={{ width: phase === "regionLine" ? width - PAD.left - PAD.right : 0 }} animate={{ width: width - PAD.left - PAD.right }} transition={{ duration: phase === "line" ? 1.6 : 1.4, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (index === series.length - 1 && (phase === "line" || phase === "regionLine")) setPhase("band"); }} /></clipPath></defs>
+            <motion.path initial={{ d: linePath(item.values) || "", opacity: phase === "regionLine" ? 1 : 0 }} animate={{ d: linePath(item.values) || "", opacity: hoveredScenarioKey != null && item.key !== selectedScenarioKey && item.key !== hoveredScenarioKey ? 0.2 : 1, stroke: item.key === hoveredScenarioKey ? theme.palette.brand.primaryBlue : item.color, strokeWidth: item.key === hoveredScenarioKey ? 5 : 2 }} exit={{ opacity: 0 }} transition={{ d: { duration: 1.4, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.2 }, stroke: { duration: 0.18 }, strokeWidth: { duration: 0.18 } }} clipPath={`url(#${clipId})`} fill="none" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
           </g>;
         })}</AnimatePresence>
-        {wetDryIndex >= 0 && <g aria-label="September 1, 2019 separates the wet year from the dry year">
-          <line x1={x(wetDryIndex)} x2={x(wetDryIndex)} y1={PAD.top} y2={height - PAD.bottom} stroke={palette.base300} strokeDasharray="5 5" strokeWidth="1.5" />
-          <text x={x(wetDryIndex) - 8} y={PAD.top + 14} textAnchor="end" style={{ ...textStyle, fill: palette.base100, fontWeight: 700 }}>Wet year</text>
-          <text x={x(wetDryIndex) + 8} y={PAD.top + 14} textAnchor="start" style={{ ...textStyle, fill: palette.base100, fontWeight: 700 }}>Dry year</text>
-          <text x={x(wetDryIndex)} y={height - PAD.bottom + 18} textAnchor="middle" style={textStyle}>Oct 1, 2019</text>
+        {wetDryIndex >= 0 && <g aria-label="October 1, 2019 separates the wet year from the dry year">
+          <line x1={x(wetDryIndex)} x2={x(wetDryIndex)} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[300]} strokeDasharray="5 5" strokeWidth="1.5" />
         </g>}
-        <motion.line animate={{ x1: x(dateIndex), x2: x(dateIndex) }} transition={{ duration: 0.16, ease: "easeOut" }} y1={PAD.top} y2={height - PAD.bottom} stroke={palette.white} strokeWidth="1.5" opacity=".85" />
-        <AnimatePresence>{(phase === "band" || phase === "ready") && series.map((item) => item.values[dateIndex] != null && <motion.circle key={`selected-${item.key}`} initial={{ opacity: 0 }} animate={{ cx: x(dateIndex), cy: y(item.values[dateIndex]), opacity: 1 }} exit={{ opacity: 0 }} transition={chartTransition} r="5" fill={item.color} stroke={palette.base900} strokeWidth="2" />)}</AnimatePresence>
-        {hoverIndex != null && <><line x1={x(hoverIndex)} x2={x(hoverIndex)} y1={PAD.top} y2={height - PAD.bottom} stroke={palette.white} strokeDasharray="3 3" opacity=".5" />{series.map((item) => item.values[hoverIndex] != null && <circle key={item.key} cx={x(hoverIndex)} cy={y(item.values[hoverIndex])} r="4" fill={item.color} />)}</>}
+        {dryYearEndIndex >= 0 && <g aria-label="October 1, 2020 separates the dry year from the critical period">
+          <line x1={x(dryYearEndIndex)} x2={x(dryYearEndIndex)} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[300]} strokeDasharray="5 5" strokeWidth="1.5" />
+        </g>}
+        {wetDryIndex >= 0 && dryYearEndIndex >= 0 && <g aria-label="Water year periods">
+          <rect x={x(0)} y={height - YEAR_BAND_Y_OFFSET} width={x(wetDryIndex) - x(0)} height={YEAR_BAND_HEIGHT} rx="4" fill={theme.palette.base[400]} />
+          <text x={(x(0) + x(wetDryIndex)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: theme.palette.common.white, fontWeight: 700 }}>Wet year</text>
+          <rect x={x(wetDryIndex)} y={height - YEAR_BAND_Y_OFFSET} width={x(dryYearEndIndex) - x(wetDryIndex)} height={YEAR_BAND_HEIGHT} rx="4" fill="none" stroke={theme.palette.base[300]} strokeWidth="1.5" />
+          <text x={(x(wetDryIndex) + x(dryYearEndIndex)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Dry year</text>
+          <rect x={x(dryYearEndIndex)} y={height - YEAR_BAND_Y_OFFSET} width={x(data.dates.length - 1) - x(dryYearEndIndex)} height={YEAR_BAND_HEIGHT} rx="4" fill="none" stroke={theme.palette.base[300]} strokeWidth="1.5" />
+          <text x={(x(dryYearEndIndex) + x(data.dates.length - 1)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Critical</text>
+        </g>}
+        <motion.line x1={x(dateIndex)} x2={x(dateIndex)} animate={{ x1: x(dateIndex), x2: x(dateIndex) }} transition={{ duration: 0.16, ease: "easeOut" }} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.common.white} strokeWidth="1.5" opacity=".85" />
+        <AnimatePresence>{(phase === "band" || phase === "ready") && series.map((item) => {
+          const selectedValue = item.values[dateIndex];
+          if (selectedValue == null) return null;
+          const pointX = x(dateIndex);
+          const pointY = y(selectedValue);
+          const pointRadius = item.key === hoveredScenarioKey ? 7 : 5;
+          const pointFill = item.key === hoveredScenarioKey ? theme.palette.brand.primaryBlue : item.color;
+          return <motion.circle key={`selected-${item.key}`} cx={pointX} cy={pointY} r={pointRadius} fill={pointFill} initial={{ opacity: 0 }} animate={{ cx: pointX, cy: pointY, opacity: 1, fill: pointFill, r: pointRadius }} exit={{ opacity: 0 }} transition={chartTransition} stroke={theme.palette.base[900]} strokeWidth="2" />;
+        })}</AnimatePresence>
       </Box>
-      </Box>
-      <Box sx={{ alignItems: "center", display: "flex", justifyContent: "flex-end", minHeight: "4.5rem", px: 2, pb: 1 }}>
-      {hoverIndex != null && (
-        <Paper sx={{ alignItems: "center", bgcolor: "rgba(16,22,24,.94)", display: "flex", flexWrap: "wrap", gap: 1.5, maxWidth: "100%", p: 1.5 }}>
-          <Typography variant="h5" sx={{ alignItems: "center", borderRight: 1, borderColor: "divider", display: "flex", pr: 1.5, whiteSpace: "nowrap" }}>{formatDate(data.dates[hoverIndex])}</Typography>
-          {series.map((item) => {
-            const lowLabel = rangeMode === "iqr" ? "25th percentile" : rangeMode === "p90" ? "5th percentile" : "Lowest station";
-            const highLabel = rangeMode === "iqr" ? "75th percentile" : rangeMode === "p90" ? "95th percentile" : "Highest station";
-            return <Box key={item.key} sx={{ alignItems: "center", display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-              <Box sx={{ alignItems: "center", columnGap: 1, display: "grid", gridTemplateColumns: "0.5rem auto" }}>
-                <Box sx={{ bgcolor: item.color, borderRadius: "50%", height: "0.5rem", width: "0.5rem" }} />
-                <Box component="span" sx={{ ...scenarioNameSx, lineHeight: 1.2, whiteSpace: "nowrap" }}>{item.label}</Box>
-              </Box>
-              <Box sx={{ alignItems: "center", display: "flex", flexWrap: "wrap", gap: 1.5 }}>
-                <Box sx={{ display: "flex", gap: 0.6, whiteSpace: "nowrap" }}><Typography variant="body2" color="text.secondary">Daily station average</Typography><Typography variant="body2">{formatNumber(item.values[hoverIndex], 1)}</Typography></Box>
-                <Box sx={{ display: "flex", gap: 0.6, whiteSpace: "nowrap" }}><Typography color="text.secondary">{lowLabel}</Typography><Typography>{formatNumber(item.rangeLow[hoverIndex], 1)}</Typography></Box>
-                <Box sx={{ display: "flex", gap: 0.6, whiteSpace: "nowrap" }}><Typography color="text.secondary">{highLabel}</Typography><Typography>{formatNumber(item.rangeHigh[hoverIndex], 1)}</Typography></Box>
-              </Box>
-            </Box>;
-          })}
-        </Paper>
-      )}
       </Box>
     </Box>
   );
@@ -164,19 +214,21 @@ interface RegionalChartProps {
   selectedScenario: Scenario;
   baseScenarioKey: string;
   baseScenarioLabel: string;
-  regionValue: number | null;
+  rawRegionValue: number | null;
+  percentRegionValue: number | null;
   activeKeys: string[];
   onActiveKeysChange: (keys: string[]) => void;
   dateIndex: number;
   onDateChange: (index: number) => void;
-  onHistogramBrush: (brush: HistogramBrush) => void;
-  mapExtent: number;
+  onDateCommit: (index: number) => void;
   units: string;
 }
 
-export default function RegionalChart({ data, region, selectedScenario, baseScenarioKey, baseScenarioLabel, regionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, units }: RegionalChartProps) {
+export default function RegionalChart({ data, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units }: RegionalChartProps) {
   const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null);
+  const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null);
+  const [hoveredScenarioKey, setHoveredScenarioKey] = useState<string | null>(null);
   const coverage = rangeMode === "iqr" ? { first: 5, last: 14, label: "Middle 50% of stations" } : rangeMode === "p90" ? { first: 1, last: 18, label: "Middle 90% of stations" } : { first: 0, last: 19, label: "All stations" };
   return (
     <Paper
@@ -184,6 +236,7 @@ export default function RegionalChart({ data, region, selectedScenario, baseScen
       component="article"
       sx={{
         bgcolor: 'base.700',
+        borderRadius: 1,
         display: "flex",
         flexDirection: "column",
         height: '100%',
@@ -197,57 +250,95 @@ export default function RegionalChart({ data, region, selectedScenario, baseScen
         },
       }}
     >
-      <Box sx={{ borderBottom: 1, borderColor: "divider", display: "grid", gap: 2, p: 2.25 }}>
-        <Box sx={{ alignItems: "flex-start", display: "flex", gap: 3, justifyContent: "space-between" }}>
-          <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>Station range</Typography>
+      <Box sx={(theme) => ({ alignItems: 'start', borderBottom: 1, borderColor: "divider", display: "grid", gap: theme.jtSpacing.gap.lg, gridTemplateColumns: 'auto minmax(0, 1fr) auto', p: theme.jtSpacing.component.sm })}>
+          <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs })}>
+            <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
+              <Typography variant="caption" color="text.secondary">Station range</Typography>
+              <IconButton aria-label="Explain the shaded station range" onClick={(event) => setBandInfoAnchor(event.currentTarget)} size="small" sx={{ color: "text.secondary", p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
+            </Box>
+            <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
             <ToggleButtonGroup exclusive size="small" value={rangeMode} onChange={(_, value) => { if (value) setRangeMode(value); }} aria-label="Shaded station range">
               <ToggleButton value="minmax">All stations</ToggleButton>
               <ToggleButton value="p90">Middle 90%</ToggleButton>
               <ToggleButton value="iqr">Middle 50%</ToggleButton>
             </ToggleButtonGroup>
-            <IconButton aria-label="Explain the shaded station range" onClick={(event) => setBandInfoAnchor(event.currentTarget)} size="small" sx={{ color: "text.secondary" }}><InfoOutlinedIcon sx={{ fontSize: '1.1rem' }} /></IconButton>
-          </Stack>
-          <Box sx={{ display: "grid", justifyItems: "end", ml: "auto" }}>
-            <Typography variant="caption" sx={{ color: "text.secondary" }}>Current Deviation</Typography>
-            <Typography variant="h4" sx={{ color: Number(regionValue) > 0 ? palette.pink : Number(regionValue) < 0 ? palette.teal : palette.white, whiteSpace: "nowrap" }}>{Number(regionValue) > 0 ? "+" : ""}{formatNumber(regionValue, 1)} <Box component="span" sx={{ color: "text.secondary", typography: 'captionSmall', textTransform: "none" }}>{units}</Box></Typography>
+            </Box>
           </Box>
-        </Box>
-          <Box sx={{ alignItems: 'center', display: 'grid', gap: 1.5, gridTemplateColumns: 'auto minmax(0, 1fr)', minWidth: 0, width: '100%' }}>
-            <Typography variant="caption" sx={{ color: "text.secondary", whiteSpace: 'nowrap' }}>Visible scenarios</Typography>
-            <Box sx={{ display: 'grid', gap: 0.75, gridTemplateColumns: `repeat(${data.scenarios.length}, minmax(0, 1fr))`, minWidth: 0 }}>
-            {data.scenarios.map((scenario) => {
+          <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflow: 'hidden' })}>
+            <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
+              <Typography variant="caption" color="text.secondary">Visible scenarios</Typography>
+              <IconButton aria-label="Explain scenario visibility" onClick={(event) => setVisibilityInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
+            </Box>
+            <Box sx={(theme) => ({ display: 'flex', flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } })}>
+            {data.scenarios.filter((scenario) => scenario.key !== baseScenarioKey).map((scenario) => {
               const active = activeKeys.includes(scenario.key);
               const primary = scenario.key === selectedScenario.key;
-              const comparisonBase = scenario.key === baseScenarioKey;
-              const color = primary ? palette.green : palette.white;
-              return <FormControlLabel key={scenario.key} control={<Switch size="small" checked={!comparisonBase && (primary || active)} disabled={primary || comparisonBase} onChange={() => onActiveKeysChange(active ? activeKeys.filter((key) => key !== scenario.key) : [...activeKeys, scenario.key])} sx={{ flex: '0 0 auto', "& .MuiSwitch-switchBase.Mui-checked": { color }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: color }, "& .MuiSwitch-switchBase.Mui-checked.Mui-disabled": { color: `${palette.green} !important`, opacity: 1 }, "& .MuiSwitch-switchBase.Mui-checked.Mui-disabled + .MuiSwitch-track": { backgroundColor: `${palette.green} !important`, opacity: 0.5 } }} />} label={scenario.label} sx={{ bgcolor: primary || active ? "rgba(81,93,97,.22)" : "transparent", borderRadius: 3, display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr)', justifyContent: "start", m: 0, minHeight: '3rem', minWidth: 0, px: 0.75, "& .MuiFormControlLabel-label": { display: '-webkit-box', fontFamily: 'var(--font-heading)', fontSize: '0.72rem', fontWeight: 400, letterSpacing: '0.04em', lineHeight: 1.15, overflow: 'hidden', textAlign: 'left', textOverflow: 'ellipsis', textTransform: 'uppercase', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2 }, "& .MuiFormControlLabel-label.Mui-disabled": { color: comparisonBase ? palette.base300 : "text.primary", WebkitTextFillColor: 'currentColor' } }} />;
+              const visible = primary || active;
+              return (
+                <Tooltip key={scenario.key} title={scenario.label}>
+                  <span>
+                    <ToggleButton
+                      aria-label={`${visible ? 'Hide' : 'Show'} ${scenario.label}`}
+                      selected={visible}
+                      size="small"
+                      value={scenario.key}
+                      onChange={() => { if (!primary) onActiveKeysChange(active ? activeKeys.filter((key) => key !== scenario.key) : [...activeKeys, scenario.key]); }}
+                      onMouseEnter={() => { if (active && !primary) setHoveredScenarioKey(scenario.key); }}
+                      onMouseLeave={() => setHoveredScenarioKey(null)}
+                      sx={(theme) => ({ border: 0, gap: theme.jtSpacing.gap.xs, height: theme.spacing(5), minWidth: theme.spacing(7), px: theme.jtSpacing.component.xs, typography: 'button', '&.Mui-selected': { bgcolor: 'surface', color: primary ? 'brand.primaryGreen' : 'common.white' } })}
+                    >
+                      {visible ? <VisibilityOutlinedIcon fontSize="small" /> : <VisibilityOffOutlinedIcon fontSize="small" />}
+                      {abbreviateScenario(scenario.label)}
+                    </ToggleButton>
+                  </span>
+                </Tooltip>
+              );
             })}
             </Box>
           </Box>
+          <Box sx={(theme) => ({ display: "grid", gap: theme.jtSpacing.gap.xs, justifyItems: "end" })}>
+            <Typography variant="caption" color="text.secondary">Current average deviation</Typography>
+            <Box sx={(theme) => ({ alignItems: 'baseline', display: 'flex', gap: theme.jtSpacing.gap.sm, whiteSpace: 'nowrap' })}>
+              <Typography variant="h4" sx={{ color: Number(rawRegionValue) > 0 ? "salinity.pink" : Number(rawRegionValue) < 0 ? "salinity.teal" : "common.white" }}>{Number(rawRegionValue) > 0 ? "+" : ""}{formatNumber(rawRegionValue)} <Box component="span" sx={{ color: "text.secondary", typography: 'captionSmall', textTransform: "none" }}>µS/cm</Box></Typography>
+              <Typography variant="h4" sx={{ color: Number(percentRegionValue) > 0 ? "salinity.pink" : Number(percentRegionValue) < 0 ? "salinity.teal" : "common.white" }}>{Number(percentRegionValue) > 0 ? "+" : ""}{formatNumber(percentRegionValue)}<Box component="span" sx={{ color: "text.secondary", typography: 'captionSmall', textTransform: "none" }}>%</Box></Typography>
+            </Box>
+          </Box>
       </Box>
-      <Popover open={Boolean(bandInfoAnchor)} anchorEl={bandInfoAnchor} onClose={() => setBandInfoAnchor(null)} anchorOrigin={{ vertical: "bottom", horizontal: "left" }}>
-        <Box sx={{ bgcolor: "background.paper", boxSizing: "border-box", maxWidth: "calc(100vw - 2rem)", p: 2.5, width: "28rem" }}>
-          <Typography variant="h3">What does the shaded range show?</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1 }}>The line shows the daily station average. The shaded range shows how station values are distributed around it.</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1.5 }}>For each date, stations are ordered from lowest to highest. The selected range includes:</Typography>
-          <Typography variant="h5" sx={{ color: "brand.primaryGreen", mt: 2 }}>{coverage.label}</Typography>
-          <Box aria-label={`${coverage.label}, shown across stations ordered by value`} sx={{ alignItems: "center", display: "flex", justifyContent: "space-between", mt: 1.5, width: "100%" }}>
+      <ExplorerInfoPopover anchor={bandInfoAnchor} onClose={() => setBandInfoAnchor(null)}>
+          <Typography variant="caption" color="brand.primaryGreen">About the station range</Typography>
+          <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryGreen' } }}>What does the shaded range show?</Typography>
+          <Typography variant="captionSmall" component="p" color="text.secondary">
+            The <Box component="span" sx={{ color: 'brand.primaryGreen' }}>line</Box> shows the <strong>daily station average</strong>. The <Box component="span" sx={{ color: 'brand.primaryGreen' }}>shaded range</Box> shows how station values are <strong>distributed</strong> around it.
+          </Typography>
+          <Typography variant="captionSmall" component="p" color="text.secondary">For each date, stations are ordered from lowest to highest. The selected range includes:</Typography>
+          <Divider />
+          <Typography variant="caption" color="brand.primaryGreen">{coverage.label}</Typography>
+          <Box aria-label={`${coverage.label}, shown across stations ordered by value`} sx={{ alignItems: "center", display: "flex", justifyContent: "space-between", width: "100%" }}>
             {Array.from({ length: 20 }, (_, index) => {
               const selected = index >= coverage.first && index <= coverage.last;
-              return <Box key={index} sx={{ bgcolor: selected ? palette.green : palette.base700, border: `2px solid ${selected ? palette.green : palette.base300}`, borderRadius: "50%", boxSizing: "border-box", height: 12, opacity: selected ? 1 : 0.85, width: 12 }} />;
+              return <Box key={index} sx={{ bgcolor: selected ? "brand.primaryGreen" : "base.700", border: 2, borderColor: selected ? "brand.primaryGreen" : "base.300", borderRadius: "50%", boxSizing: "border-box", height: 12, opacity: selected ? 1 : 0.85, width: 12 }} />;
             })}
           </Box>
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", mt: 0.75, width: "100%" }}><Typography variant="caption" color="text.secondary" sx={{ justifySelf: "start" }}>Lowest</Typography><Typography variant="caption" color="text.secondary" sx={{ justifySelf: "end", textAlign: "right" }}>Highest</Typography></Box>
-          <Box sx={{ alignItems: "center", display: "flex", gap: 2.5, mt: 1.5 }}>
-            <Box sx={{ alignItems: "center", display: "inline-flex", gap: 0.75 }}><Box sx={{ bgcolor: palette.green, borderRadius: "50%", flex: "0 0 10px", height: 10, width: 10 }} /><Typography variant="caption" sx={{ lineHeight: 1 }}>Included in range</Typography></Box>
-            <Box sx={{ alignItems: "center", display: "inline-flex", gap: 0.75 }}><Box sx={{ bgcolor: palette.base700, border: `2px solid ${palette.base300}`, borderRadius: "50%", boxSizing: "border-box", flex: "0 0 10px", height: 10, width: 10 }} /><Typography variant="caption" sx={{ lineHeight: 1 }}>Excluded</Typography></Box>
+          <Box sx={(theme) => ({ display: "grid", gridTemplateColumns: "1fr 1fr", mt: theme.jtSpacing.component.xs, width: "100%" })}><Typography variant="captionSmall" color="text.secondary" sx={{ justifySelf: "start" }}>Lowest</Typography><Typography variant="captionSmall" color="text.secondary" sx={{ justifySelf: "end", textAlign: "right" }}>Highest</Typography></Box>
+          <Box sx={(theme) => ({ alignItems: "center", display: "flex", gap: theme.jtSpacing.gap.sm, mt: theme.jtSpacing.component.xs })}>
+            <Box sx={(theme) => ({ alignItems: "center", display: "inline-flex", gap: theme.jtSpacing.gap.xs })}><Box sx={{ bgcolor: "brand.primaryGreen", borderRadius: "50%", flex: "0 0 10px", height: 10, width: 10 }} /><Typography variant="captionSmall">Included in range</Typography></Box>
+            <Box sx={(theme) => ({ alignItems: "center", display: "inline-flex", gap: theme.jtSpacing.gap.xs })}><Box sx={{ bgcolor: "base.700", border: 2, borderColor: "base.300", borderRadius: "50%", boxSizing: "border-box", flex: "0 0 10px", height: 10, width: 10 }} /><Typography variant="captionSmall">Excluded</Typography></Box>
           </Box>
-          <Typography color="text.secondary" sx={{ mt: 2 }}><strong>All stations</strong> spans the lowest to highest station value. <strong>Middle 90%</strong> excludes the lowest and highest 5%. <strong>Middle 50%</strong> excludes the lowest and highest 25%.</Typography>
-          <Typography color="text.secondary" sx={{ mt: 1.5 }}>The stations inside the range can change from day to day; this is not a fixed station-ID selection.</Typography>
-        </Box>
-      </Popover>
-      <ChartSvg data={data} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} baseScenarioLabel={baseScenarioLabel} units={units} />
+          <Divider />
+          <Typography variant="captionSmall" component="p" color="text.secondary" sx={(theme) => ({ mt: theme.jtSpacing.component.sm })}><strong>All stations</strong> spans the lowest to highest station value. <strong>Middle 90%</strong> excludes the lowest and highest 5%. <strong>Middle 50%</strong> excludes the lowest and highest 25%.</Typography>
+          <Typography variant="captionSmall" component="p" color="text.secondary" sx={(theme) => ({ mt: theme.jtSpacing.component.xs })}>The stations inside the range can change from day to day; this is not a fixed station-ID selection.</Typography>
+      </ExplorerInfoPopover>
+      <ExplorerInfoPopover anchor={visibilityInfoAnchor} onClose={() => setVisibilityInfoAnchor(null)}>
+        <Typography variant="caption" color="brand.primaryGreen">About visible scenarios</Typography>
+        <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryGreen' } }}>Compare scenarios on the timeline</Typography>
+        <Typography variant="captionSmall" component="p" color="text.secondary">
+          Use the eye controls to add or remove scenario lines from the regional timeline. This makes it easier to compare alternative strategies without changing the selected scenario, map, or station distribution.
+        </Typography>
+        <Typography variant="captionSmall" component="p" color="text.secondary">
+          The selected scenario is always visible as the <Box component="span" sx={{ color: 'brand.primaryGreen' }}>green line</Box>. Other visible scenarios appear as supporting comparison lines. The <Box component="span" sx={{ color: 'brand.primaryBlue' }}>base scenario</Box> is represented by the chart reference line and is intentionally omitted from these controls.
+        </Typography>
+      </ExplorerInfoPopover>
+      <ChartSvg data={data} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} onDateCommit={onDateCommit} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} selectedScenarioLabel={selectedScenario.label} hoveredScenarioKey={hoveredScenarioKey} baseScenarioLabel={baseScenarioLabel} units={units} />
     </Paper>
   );
 }

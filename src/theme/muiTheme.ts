@@ -23,6 +23,10 @@ export const palette = {
     purple: "#b280ff",
     pink: "#ff677d",
   },
+  salinity: {
+    pink: "#fb0169",
+    teal: "#77d6d7",
+  },
   base: {
     50: "#e9ebeb",
     100: "#bbc0c2",
@@ -194,6 +198,7 @@ const themeOptions = {
         main: palette.brand.primaryGreen,
       },
       divider: palette.base[400],
+      salinity: palette.salinity,
     },
     shape: {
         borderRadius: 8,
@@ -252,7 +257,7 @@ const themeOptions = {
         },
         caption: {
             fontSize: 'clamp(0.98rem, 0.85rem + 0.35vw, 1.15rem)',
-            lineHeight: 1,
+            lineHeight: 1.2,
             color: palette.base[100],
         },
         captionSmall: {
@@ -508,6 +513,13 @@ declare module '@mui/material/styles' {
   }
 
   interface Palette {
+    accent: typeof palette.accent;
+    base: typeof palette.base;
+    brand: typeof palette.brand;
+    salinity: {
+      pink: string;
+      teal: string;
+    };
     translucent: {
       primaryGreen: string;
       textShadow: string;
@@ -515,6 +527,13 @@ declare module '@mui/material/styles' {
   }
 
   interface PaletteOptions {
+    accent?: typeof palette.accent;
+    base?: typeof palette.base;
+    brand?: typeof palette.brand;
+    salinity?: {
+      pink?: string;
+      teal?: string;
+    };
     translucent?: {
       primaryGreen?: string;
       textShadow?: string;
