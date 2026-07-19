@@ -6,7 +6,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { AnimatePresence, motion } from 'framer-motion';
 import { area, line } from "d3-shape";
 import { chartTransition, formatDate, formatNumber } from '../format';
-import type { RangeMode, Scenario, ScenarioDataset } from '../types';
+import type { DashboardMode, RangeMode, Scenario, ScenarioDataset } from '../types';
 import ExplorerInfoPopover from './ExplorerInfoPopover';
 
 const DEFAULT_WIDTH = 900;
@@ -18,6 +18,7 @@ const YEAR_BAND_HEIGHT = 26;
 
 interface ChartSvgProps {
   data: ScenarioDataset;
+  dashboardMode: DashboardMode;
   region: string;
   activeKeys: string[];
   dateIndex: number;
@@ -32,6 +33,13 @@ interface ChartSvgProps {
 }
 
 interface RangeDatum { q1: number | null; q3: number | null }
+interface SeriesSummary {
+  values: Array<number | null>;
+  rangeLow: Array<number | null>;
+  rangeHigh: Array<number | null>;
+}
+
+const regionalSummaryCache = new WeakMap<ScenarioDataset, Map<string, SeriesSummary>>();
 
 const sortedQuantile = (sorted: number[], fraction: number): number | null => {
   if (!sorted.length) return null;
@@ -53,7 +61,7 @@ const SCENARIO_ABBREVIATIONS: Record<string, string> = {
 
 const abbreviateScenario = (label: string) => SCENARIO_ABBREVIATIONS[label] ?? label;
 
-function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCommit, rangeMode, selectedScenarioKey, selectedScenarioLabel, hoveredScenarioKey, baseScenarioLabel, units }: ChartSvgProps) {
+function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateChange, onDateCommit, rangeMode, selectedScenarioKey, selectedScenarioLabel, hoveredScenarioKey, baseScenarioLabel, units }: ChartSvgProps) {
   const theme = useTheme();
   const [scrubbing, setScrubbing] = useState(false);
   const plotRef = useRef<HTMLDivElement | null>(null);
@@ -70,24 +78,37 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCom
   }, []);
   const stationIndices = useMemo(() => data.stations.map((station, index) => ({ station, index })).filter(({ station }) => region === "All regions" || station.region === region).map(({ index }) => index), [data.stations, region]);
   const series = useMemo(() => data.scenarios.filter((scenario) => activeKeys.includes(scenario.key)).map((scenario) => {
-    const dailyStations = data.dates.map((_, date) => stationIndices.map((index) => scenario.stationValues[index][date]).filter((value) => value != null));
-    const dailySummaries = dailyStations.map((values) => {
-      if (!values.length) return { average: null, low: null, high: null };
-      const sorted = [...values].sort((a, b) => a - b);
-      return {
-        average: values.reduce((sum, value) => sum + value, 0) / values.length,
-        low: rangeMode === "iqr" ? sortedQuantile(sorted, 0.25) : rangeMode === "p90" ? sortedQuantile(sorted, 0.05) : sorted[0],
-        high: rangeMode === "iqr" ? sortedQuantile(sorted, 0.75) : rangeMode === "p90" ? sortedQuantile(sorted, 0.95) : sorted[sorted.length - 1],
+    let datasetCache = regionalSummaryCache.get(data);
+    if (!datasetCache) {
+      datasetCache = new Map();
+      regionalSummaryCache.set(data, datasetCache);
+    }
+    const cacheKey = `${scenario.key}|${region}|${rangeMode}`;
+    let summary = datasetCache.get(cacheKey);
+    if (!summary) {
+      const dailySummaries = data.dates.map((_, date) => {
+        const values = stationIndices.map((index) => scenario.stationValues[index][date]).filter((value): value is number => value != null && Number.isFinite(value));
+        if (!values.length) return { average: null, low: null, high: null };
+        const sorted = [...values].sort((a, b) => a - b);
+        return {
+          average: values.reduce((sum, value) => sum + value, 0) / values.length,
+          low: rangeMode === "iqr" ? sortedQuantile(sorted, 0.25) : rangeMode === "p90" ? sortedQuantile(sorted, 0.05) : sorted[0],
+          high: rangeMode === "iqr" ? sortedQuantile(sorted, 0.75) : rangeMode === "p90" ? sortedQuantile(sorted, 0.95) : sorted[sorted.length - 1],
+        };
+      });
+      summary = {
+        values: dailySummaries.map(({ average }) => average),
+        rangeLow: dailySummaries.map(({ low }) => low),
+        rangeHigh: dailySummaries.map(({ high }) => high),
       };
-    });
+      datasetCache.set(cacheKey, summary);
+    }
     return {
       ...scenario,
-      values: dailySummaries.map(({ average }) => average),
-      rangeLow: dailySummaries.map(({ low }) => low),
-      rangeHigh: dailySummaries.map(({ high }) => high),
+      ...summary,
       color: scenario.key === selectedScenarioKey ? theme.palette.brand.primaryGreen : theme.palette.common.white,
     };
-  }), [data.dates, data.scenarios, stationIndices, activeKeys, rangeMode, selectedScenarioKey, theme.palette.brand.primaryGreen, theme.palette.common.white]);
+  }), [data, data.scenarios, stationIndices, activeKeys, rangeMode, region, selectedScenarioKey, theme.palette.brand.primaryGreen, theme.palette.common.white]);
   const scenarioSignature = activeKeys.join("|");
   const previousScenario = useRef(scenarioSignature);
   const previousRegion = useRef(region);
@@ -116,8 +137,37 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCom
   const areaPath = area<RangeDatum>().defined((value) => value.q1 != null && value.q3 != null).x((_, index) => x(index)).y0((value) => y(value.q1!)).y1((value) => y(value.q3!));
   const collapsedAreaPath = area<RangeDatum>().defined((value) => value.q1 != null && value.q3 != null).x((_, index) => x(index)).y0(y(0)).y1(y(0));
   const ticks = [-extent, -extent / 2, 0, extent / 2, extent];
-  const wetDryIndex = data.dates.indexOf("2019-10-01");
-  const dryYearEndIndex = data.dates.findIndex((date) => date >= "2020-10-01");
+  const boundaryIndex = (date: string) => data.dates.findIndex((item) => item >= date);
+  const finalDateIndex = data.dates.length - 1;
+  const periods = (() => {
+    if (dashboardMode === 'rma-schism') {
+      const criticalStart = boundaryIndex('2020-10-01');
+      return criticalStart >= 0
+        ? [{ start: 0, end: criticalStart, label: 'Dry year' }, { start: criticalStart, end: finalDateIndex, label: 'Critical' }]
+        : [];
+    }
+    if (dashboardMode === 'tiered-outflows') {
+      const criticalStart = boundaryIndex('2020-10-01');
+      const secondCriticalStart = boundaryIndex('2021-10-01');
+      return criticalStart >= 0 && secondCriticalStart >= 0
+        ? [
+            { start: 0, end: criticalStart, label: 'Dry year' },
+            { start: criticalStart, end: secondCriticalStart, label: 'Critical' },
+            { start: secondCriticalStart, end: finalDateIndex, label: 'Critical' },
+          ]
+        : [];
+    }
+    const dryStart = boundaryIndex('2019-10-01');
+    const criticalStart = boundaryIndex('2020-10-01');
+    return dryStart >= 0 && criticalStart >= 0
+      ? [
+          { start: 0, end: dryStart, label: 'Wet year' },
+          { start: dryStart, end: criticalStart, label: 'Dry year' },
+          { start: criticalStart, end: finalDateIndex, label: 'Critical' },
+        ]
+      : [];
+  })();
+  const periodBoundaries = periods.slice(1).map(({ start }) => start);
   const dateTicks = [0, data.dates.length - 1];
   const indexFromPointer = (event: ReactPointerEvent<SVGSVGElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -161,8 +211,8 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCom
           {ticks.map((tick, index) => <g key={index}><line x1={PAD.left} x2={width - PAD.right} y1={y(tick)} y2={y(tick)} stroke={tickColor(tick)} strokeOpacity="0.24" strokeWidth="1" /><text x={PAD.left - 10} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text></g>)}
         </g>
         {dateTicks.map((index) => <text key={index} x={x(index)} y={height - DATE_LABEL_Y_OFFSET} textAnchor={index === 0 ? "start" : "end"} style={textStyle}>{formatDate(data.dates[index])}</text>)}
-        <motion.line key={`baseline-${sequence}`} 
-          x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[400]} strokeWidth="3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (phase === "baseline") setPhase("line"); }} />
+        <motion.line key={`baseline-${sequence}`}
+          x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[400]} strokeWidth="3" initial={{ pathLength: 0, x1: PAD.left, x2: width - PAD.right, y1: y(0), y2: y(0) }} animate={{ pathLength: 1, x1: PAD.left, x2: width - PAD.right, y1: y(0), y2: y(0) }} transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (phase === "baseline") setPhase("line"); }} />
         <motion.text key={`baseline-label-${sequence}`} x={PAD.left + 8} y={y(0) - 8} fill={theme.palette.base[100]} style={{ ...textStyle, fontWeight: 700 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 0.3 }}>{baseScenarioLabel}</motion.text>
         <text x={width - PAD.right} y={PAD.top + 16} textAnchor="end" style={{ ...textStyle, fill: theme.palette.brand.primaryGreen, fontWeight: 700 }}>Selected: {selectedScenarioLabel}</text>
         <AnimatePresence>{(phase === "regionLine" || phase === "band" || phase === "ready") && series.map((item, index) => {
@@ -178,21 +228,14 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCom
             <motion.path initial={{ d: linePath(item.values) || "", opacity: phase === "regionLine" ? 1 : 0 }} animate={{ d: linePath(item.values) || "", opacity: hoveredScenarioKey != null && item.key !== selectedScenarioKey && item.key !== hoveredScenarioKey ? 0.2 : 1, stroke: item.key === hoveredScenarioKey ? theme.palette.brand.primaryBlue : item.color, strokeWidth: item.key === hoveredScenarioKey ? 5 : 2 }} exit={{ opacity: 0 }} transition={{ d: { duration: 1.4, ease: [0.22, 1, 0.36, 1] }, opacity: { duration: 0.2 }, stroke: { duration: 0.18 }, strokeWidth: { duration: 0.18 } }} clipPath={`url(#${clipId})`} fill="none" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
           </g>;
         })}</AnimatePresence>
-        {wetDryIndex >= 0 && <g aria-label="October 1, 2019 separates the wet year from the dry year">
-          <line x1={x(wetDryIndex)} x2={x(wetDryIndex)} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[300]} strokeDasharray="5 5" strokeWidth="1.5" />
+        {periodBoundaries.map((index) => <line key={`period-boundary-${index}`} x1={x(index)} x2={x(index)} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[300]} strokeDasharray="5 5" strokeWidth="1.5" />)}
+        {periods.length > 0 && <g aria-label="Water year periods">
+          {periods.map((period, index) => <g key={`${period.label}-${period.start}`}>
+            <rect x={x(period.start)} y={height - YEAR_BAND_Y_OFFSET} width={Math.max(0, x(period.end) - x(period.start))} height={YEAR_BAND_HEIGHT} rx="4" fill={index === 0 ? theme.palette.base[400] : 'none'} stroke={index === 0 ? 'none' : theme.palette.base[300]} strokeWidth="1.5" />
+            <text x={(x(period.start) + x(period.end)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: index === 0 ? theme.palette.common.white : theme.palette.base[100], fontWeight: 700 }}>{period.label}</text>
+          </g>)}
         </g>}
-        {dryYearEndIndex >= 0 && <g aria-label="October 1, 2020 separates the dry year from the critical period">
-          <line x1={x(dryYearEndIndex)} x2={x(dryYearEndIndex)} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[300]} strokeDasharray="5 5" strokeWidth="1.5" />
-        </g>}
-        {wetDryIndex >= 0 && dryYearEndIndex >= 0 && <g aria-label="Water year periods">
-          <rect x={x(0)} y={height - YEAR_BAND_Y_OFFSET} width={x(wetDryIndex) - x(0)} height={YEAR_BAND_HEIGHT} rx="4" fill={theme.palette.base[400]} />
-          <text x={(x(0) + x(wetDryIndex)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: theme.palette.common.white, fontWeight: 700 }}>Wet year</text>
-          <rect x={x(wetDryIndex)} y={height - YEAR_BAND_Y_OFFSET} width={x(dryYearEndIndex) - x(wetDryIndex)} height={YEAR_BAND_HEIGHT} rx="4" fill="none" stroke={theme.palette.base[300]} strokeWidth="1.5" />
-          <text x={(x(wetDryIndex) + x(dryYearEndIndex)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Dry year</text>
-          <rect x={x(dryYearEndIndex)} y={height - YEAR_BAND_Y_OFFSET} width={x(data.dates.length - 1) - x(dryYearEndIndex)} height={YEAR_BAND_HEIGHT} rx="4" fill="none" stroke={theme.palette.base[300]} strokeWidth="1.5" />
-          <text x={(x(dryYearEndIndex) + x(data.dates.length - 1)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Critical</text>
-        </g>}
-        <motion.line x1={x(dateIndex)} x2={x(dateIndex)} animate={{ x1: x(dateIndex), x2: x(dateIndex) }} transition={{ duration: 0.16, ease: "easeOut" }} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.common.white} strokeWidth="1.5" opacity=".85" />
+        <motion.line x1={x(dateIndex)} x2={x(dateIndex)} y1={PAD.top} y2={height - PAD.bottom} initial={{ x1: x(dateIndex), x2: x(dateIndex), y1: PAD.top, y2: height - PAD.bottom }} animate={{ x1: x(dateIndex), x2: x(dateIndex), y1: PAD.top, y2: height - PAD.bottom }} transition={{ duration: 0.16, ease: "easeOut" }} stroke={theme.palette.common.white} strokeWidth="1.5" opacity=".85" />
         <AnimatePresence>{(phase === "band" || phase === "ready") && series.map((item) => {
           const selectedValue = item.values[dateIndex];
           if (selectedValue == null) return null;
@@ -200,7 +243,7 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCom
           const pointY = y(selectedValue);
           const pointRadius = item.key === hoveredScenarioKey ? 7 : 5;
           const pointFill = item.key === hoveredScenarioKey ? theme.palette.brand.primaryBlue : item.color;
-          return <motion.circle key={`selected-${item.key}`} cx={pointX} cy={pointY} r={pointRadius} fill={pointFill} initial={{ opacity: 0 }} animate={{ cx: pointX, cy: pointY, opacity: 1, fill: pointFill, r: pointRadius }} exit={{ opacity: 0 }} transition={chartTransition} stroke={theme.palette.base[900]} strokeWidth="2" />;
+          return <motion.circle key={`selected-${item.key}`} cx={pointX} cy={pointY} r={pointRadius} fill={pointFill} initial={{ cx: pointX, cy: pointY, opacity: 0, r: pointRadius }} animate={{ cx: pointX, cy: pointY, opacity: 1, fill: pointFill, r: pointRadius }} exit={{ cx: pointX, cy: pointY, opacity: 0, r: pointRadius }} transition={chartTransition} stroke={theme.palette.base[900]} strokeWidth="2" />;
         })}</AnimatePresence>
       </Box>
       </Box>
@@ -210,6 +253,7 @@ function ChartSvg({ data, region, activeKeys, dateIndex, onDateChange, onDateCom
 
 interface RegionalChartProps {
   data: ScenarioDataset;
+  dashboardMode: DashboardMode;
   region: string;
   selectedScenario: Scenario;
   baseScenarioKey: string;
@@ -224,7 +268,7 @@ interface RegionalChartProps {
   units: string;
 }
 
-export default function RegionalChart({ data, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units }: RegionalChartProps) {
+export default function RegionalChart({ data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units }: RegionalChartProps) {
   const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null);
@@ -338,7 +382,7 @@ export default function RegionalChart({ data, region, selectedScenario, baseScen
           The selected scenario is always visible as the <Box component="span" sx={{ color: 'brand.primaryGreen' }}>green line</Box>. Other visible scenarios appear as supporting comparison lines. The <Box component="span" sx={{ color: 'brand.primaryBlue' }}>base scenario</Box> is represented by the chart reference line and is intentionally omitted from these controls.
         </Typography>
       </ExplorerInfoPopover>
-      <ChartSvg data={data} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} onDateCommit={onDateCommit} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} selectedScenarioLabel={selectedScenario.label} hoveredScenarioKey={hoveredScenarioKey} baseScenarioLabel={baseScenarioLabel} units={units} />
+      <ChartSvg data={data} dashboardMode={dashboardMode} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} onDateCommit={onDateCommit} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} selectedScenarioLabel={selectedScenario.label} hoveredScenarioKey={hoveredScenarioKey} baseScenarioLabel={baseScenarioLabel} units={units} />
     </Paper>
   );
 }

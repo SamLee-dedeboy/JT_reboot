@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } from 'react';
 import { Box, CircularProgress, FormControl, IconButton, Link, MenuItem, Select, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import type { SelectChangeEvent } from '@mui/material/Select';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
@@ -90,10 +90,14 @@ export default function ScenarioExplorerPage() {
   const [isModeTransitioning, setIsModeTransitioning] = useState(false);
   const [regionInfoAnchor, setRegionInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [valuesInfoAnchor, setValuesInfoAnchor] = useState<HTMLButtonElement | null>(null);
+  const [, startTransition] = useTransition();
   const modeTransitionTimerRef = useRef<number | null>(null);
+  const dateFrameRef = useRef<number | null>(null);
+  const pendingDateIndexRef = useRef(0);
 
   useEffect(() => () => {
     if (modeTransitionTimerRef.current !== null) window.clearTimeout(modeTransitionTimerRef.current);
+    if (dateFrameRef.current !== null) window.cancelAnimationFrame(dateFrameRef.current);
   }, []);
 
   useEffect(() => {
@@ -240,36 +244,54 @@ export default function ScenarioExplorerPage() {
   const comparisonData = valueMode === "raw" ? rawComparisonData : percentComparisonData;
   const selectBaseScenario = (nextBaseScenario: string) => {
     const nextMapScenario = nextBaseScenario === scenario ? baseScenario : scenario;
-    setBaseScenario(nextBaseScenario);
-    setScenario(nextMapScenario);
-    setActiveKeys([nextMapScenario]);
-    setHistogramBrush(null);
+    startTransition(() => {
+      setBaseScenario(nextBaseScenario);
+      setScenario(nextMapScenario);
+      setActiveKeys([nextMapScenario]);
+      setHistogramBrush(null);
+    });
   };
   const selectMapScenario = (nextMapScenario: string) => {
     if (nextMapScenario === baseScenario) return;
-    setScenario(nextMapScenario);
-    setActiveKeys([nextMapScenario]);
-    setHistogramBrush(null);
+    startTransition(() => {
+      setScenario(nextMapScenario);
+      setActiveKeys([nextMapScenario]);
+      setHistogramBrush(null);
+    });
   };
   const selectDateIndex = (nextDateIndex: number) => {
-    setDateIndex(nextDateIndex);
-    setHistogramBrush(null);
+    pendingDateIndexRef.current = nextDateIndex;
+    if (dateFrameRef.current !== null) return;
+    dateFrameRef.current = window.requestAnimationFrame(() => {
+      setDateIndex(pendingDateIndexRef.current);
+      setHistogramBrush(null);
+      dateFrameRef.current = null;
+    });
   };
 
   const commitDateIndex = (nextDateIndex: number) => {
+    if (dateFrameRef.current !== null) {
+      window.cancelAnimationFrame(dateFrameRef.current);
+      dateFrameRef.current = null;
+    }
+    setDateIndex(nextDateIndex);
     setHistogramDateIndex(nextDateIndex);
     setHistogramBrush(null);
   };
   const selectRegion = (nextRegion: string) => {
-    setRegion(nextRegion);
-    setHistogramBrush(null);
+    startTransition(() => {
+      setRegion(nextRegion);
+      setHistogramBrush(null);
+    });
   };
   const swapScenarios = () => {
     const previousBase = baseScenario;
-    setBaseScenario(scenario);
-    setScenario(previousBase);
-    setActiveKeys([previousBase]);
-    setHistogramBrush(null);
+    startTransition(() => {
+      setBaseScenario(scenario);
+      setScenario(previousBase);
+      setActiveKeys([previousBase]);
+      setHistogramBrush(null);
+    });
   };
   const selectedScenario = useMemo<Scenario | undefined>(() => comparisonData?.scenarios.find((item) => item.key === scenario), [comparisonData, scenario]);
   const rawSelectedScenario = useMemo(() => rawComparisonData?.scenarios.find((item) => item.key === scenario), [rawComparisonData, scenario]);
@@ -417,8 +439,8 @@ export default function ScenarioExplorerPage() {
       </ExplorerInfoPopover>
 
         <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
-        <RegionalChart key={`${dashboardMode}-chart`} data={comparisonData} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} />
-        <StationHistogram key={`${scenario}-${region}-${histogramDateIndex}`} data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />
+        <RegionalChart data={comparisonData} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} />
+        <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />
         </Box>
         </Box>
         <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />

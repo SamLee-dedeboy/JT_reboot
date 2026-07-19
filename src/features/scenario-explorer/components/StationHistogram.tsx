@@ -1,4 +1,4 @@
-import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { motion } from 'framer-motion';
 import { formatDate, formatNumber, valueColor } from '../format';
@@ -37,6 +37,10 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    setBrush(null);
+    setDragStart(null);
+  }, [scenario.key, region, dateIndex]);
   const entries = useMemo<StationEntry[]>(() => data.stations
     .map((station, index) => ({ station, value: scenario.stationValues[index][dateIndex] }))
     .filter((entry): entry is StationEntry => (region === "All regions" || entry.station.region === region) && entry.value != null && Number.isFinite(entry.value)),
@@ -90,7 +94,7 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
       onDoubleClick={() => { setBrush(null); publish(null); }}>
       <line x1={PAD.left} x2={PAD.left} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[500]} />
       {brush && <rect x={PAD.left} y={y(brush[1])} width={WIDTH - PAD.left - PAD.right} height={Math.max(1, y(brush[0]) - y(brush[1]))} fill={theme.palette.brand.primaryGreen} opacity=".12" stroke={theme.palette.brand.primaryGreen} strokeWidth="1.5" />}
-      {swarm.map((point, index) => <motion.circle key={`${scenario.key}-${dateIndex}-${point.station.station_id}`} cx={point.x} cy={point.y} r="3.5" fill={valueColor(point.value, mapExtent)} opacity={brush && !includes(point.value) ? .22 : .88} initial={{ opacity: 0, scale: 0 }} animate={{ opacity: brush && !includes(point.value) ? .22 : .88, scale: 1 }} transition={{ duration: .35, delay: Math.min(index * .002, .35) }}><title>Station {point.station.station_id} · {point.station.long_name} · {formatNumber(point.value)} {units}</title></motion.circle>)}
+      {swarm.map((point, index) => <motion.circle key={`${scenario.key}-${dateIndex}-${point.station.station_id}`} cx={point.x} cy={point.y} r="3.5" fill={valueColor(point.value, mapExtent)} opacity={brush && !includes(point.value) ? .22 : .88} initial={{ cx: point.x, cy: point.y, opacity: 0, r: 3.5, scale: 0 }} animate={{ cx: point.x, cy: point.y, opacity: brush && !includes(point.value) ? .22 : .88, r: 3.5, scale: 1 }} transition={{ duration: .35, delay: Math.min(index * .002, .35) }}><title>Station {point.station.station_id} · {point.station.long_name} · {formatNumber(point.value)} {units}</title></motion.circle>)}
       {minimum <= 0 && maximum >= 0 && <><line x1={PAD.left} x2={WIDTH - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[100]} strokeWidth="2" /><text x={WIDTH - PAD.right} y={y(0) - 6} textAnchor="end" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Business as Usual</text></>}
       {ticks.map((tick, index) => <text key={index} x={PAD.left - 7} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text>)}
     </Box>
