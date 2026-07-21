@@ -1,22 +1,21 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import BoltIcon from '@mui/icons-material/Bolt';
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import ExploreIcon from '@mui/icons-material/Explore';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
-import WbSunnyIcon from '@mui/icons-material/WbSunny';
-import WavesIcon from '@mui/icons-material/Waves';
 import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/material';
-import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import ExpandableScenarioPanels from '../animation/ExpandableScenarioPanels';
-import HorizontalExpandableScenarioPanels from '../animation/HorizontalExpandableScenarioPanels';
 import ScrollReveal from '../animation/ScrollReveal';
-import SideGlowCard from '../common/cards/SideGlowCard';
 import Footer from '../common/Footer';
 import Navbar from '../common/Navbar';
 import { assetUrl } from '../../utils/baseUrl';
 
 const outflowVariations = [
+  {
+    label: 'Less Delta outflow',
+    percent: 'Variation II',
+    body: 'Explore a more constrained outflow condition (10% decrease) in the Delta.',
+  },
   {
     label: 'Business as Usual',
     percent: 'Current operations',
@@ -26,11 +25,6 @@ const outflowVariations = [
     label: 'More Delta outflow',
     percent: 'Variation I',
     body: 'Explore how a stronger outflow (30% increase) can shift water quality, habitats, and tradeoffs.',
-  },
-  {
-    label: 'Less Delta outflow',
-    percent: 'Variation II',
-    body: 'Explore a more constrained outflow condition (10% decrease) in the Delta.',
   },
 ];
 
@@ -105,53 +99,6 @@ const glassPanelSx = {
   boxShadow: 'none',
   backdropFilter: 'blur(14px)',
 } as const;
-
-function ScenarioChoiceButton({ icon, label }: { icon: ReactNode; label: string }) {
-  return (
-    <Button
-      variant="outlined"
-      sx={{
-        justifyContent: 'stretch',
-        borderColor: 'base.300',
-        color: 'common.white',
-        bgcolor: 'transparent',
-        py: 1.1,
-        px: 2.1,
-        width: '100%',
-        '& .condition-choice': {
-          display: 'grid',
-          gridTemplateColumns: '24px minmax(0, 1fr) 20px',
-          alignItems: 'center',
-          gap: 1.15,
-          width: '100%',
-          textAlign: 'left',
-        },
-        '& .condition-choice-icon': {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'primary.main',
-        },
-        '& .condition-choice-arrow': {
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'base.100',
-        },
-        '&:hover': {
-          borderColor: 'primary.main',
-          bgcolor: 'translucent.primaryGreen',
-        },
-      }}
-    >
-      <Box component="span" className="condition-choice">
-        <Box component="span" className="condition-choice-icon">{icon}</Box>
-        <Box component="span">{label}</Box>
-        <Box component="span" className="condition-choice-arrow"><ArrowForwardIcon fontSize="small" /></Box>
-      </Box>
-    </Button>
-  );
-}
 
 export default function ScenariosLandingPage() {
   const theme = useTheme();
@@ -317,41 +264,11 @@ export default function ScenariosLandingPage() {
           </Container>
         </Box>
 
-        <Box component="section" sx={{ py: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl }, bgcolor: 'base.900' }}>
-          <Container maxWidth="lg">
-            <ScrollReveal>
-              <Stack spacing={2} sx={{ maxWidth: 760, mb: 4 }}>
-                <Box sx={sectionLabelSx}>
-                  <WaterDropIcon fontSize="small" />
-                  Outflow Variations
-                </Box>
-                <Typography variant="h2">A shared future under two Delta outflow choices</Typography>
-                <Typography variant="body1" sx={{ color: 'base.100' }}>
-                  Keep the scenario frame steady, then compare how two outflow percentages change the questions people need to weigh.
-                </Typography>
-              </Stack>
-            </ScrollReveal>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2.2 }}>
-              {outflowVariations.map((item, index) => (
-                <ScrollReveal key={item.label} delay={index * 0.06}>
-                  <SideGlowCard
-                    number={String(index + 1).padStart(2, '0')}
-                    title={item.label}
-                    label={item.percent}
-                    body={item.body}
-                    accent={index === 0 ? 'primary' : 'secondary'}
-                    actionIcon={<ArrowForwardIcon />}
-                  />
-                </ScrollReveal>
-              ))}
-            </Box>
-          </Container>
-        </Box>
-
         <Box component="section" aria-labelledby="outflow-panels-title">
-          <HorizontalExpandableScenarioPanels
+          <ExpandableScenarioPanels
             items={outflowVariationPanels}
             actionLabel="Explore"
+            sharedImage
             header={
               <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 760 } }}>
                 <Box sx={sectionLabelSx}>
@@ -362,86 +279,17 @@ export default function ScenariosLandingPage() {
                   Three views of one water future
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'base.100', maxWidth: '58ch' }}>
-                  A horizontal panel study using one shared image to compare current operations, more Delta outflow, and less Delta outflow.
+                  Three vertical panels use one shared image to compare less Delta outflow, current operations, and more Delta outflow.
                 </Typography>
               </Stack>
             }
           />
         </Box>
 
-        <Box
-          component="section"
-          id="adaptations"
-          sx={{
-            py: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
-            bgcolor: 'base.700',
-          }}
-        >
-          <Container maxWidth="lg">
-            <ScrollReveal>
-              <Stack spacing={2} sx={{ maxWidth: 820, mb: 4 }}>
-                <Box sx={sectionLabelSx}>
-                  <CompareArrowsIcon fontSize="small" />
-                  Adaptation Pathways
-                </Box>
-                <Typography variant="h2">Compare six scenarios in two conditions</Typography>
-                <Typography variant="body1" sx={{ color: 'base.100' }}>
-                  Select a scenario, then choose whether to view it under current weather or sea level rise conditions. Each card is designed as an entry point for deeper maps, data, and story content.
-                </Typography>
-              </Stack>
-            </ScrollReveal>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2.4 }}>
-              {adaptationScenarios.map((scenario, index) => (
-                <ScrollReveal key={scenario.title} delay={index * 0.04}>
-                  <Box
-                    sx={{
-                      ...glassPanelSx,
-                      display: 'grid',
-                      gridTemplateRows: '210px 1fr',
-                      minHeight: 470,
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      borderColor: `${scenario.accent}66`,
-                      transition: 'transform 180ms ease, border-color 180ms ease, background-color 180ms ease',
-                      '&:hover': {
-                        transform: 'translateY(-4px)',
-                        borderColor: scenario.accent,
-                        bgcolor: 'rgba(20,29,31,0.86)',
-                      },
-                    }}
-                  >
-                    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                      <Box
-                        component="img"
-                        src={assetUrl(scenario.image)}
-                        alt=""
-                        sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(16,22,24,0.04), rgba(16,22,24,0.72))' }} />
-                      <Box sx={{ position: 'absolute', left: 18, bottom: 16, width: 48, height: 4, bgcolor: scenario.accent, boxShadow: `0 0 18px ${scenario.accent}` }} />
-                    </Box>
-                    <Stack spacing={2} sx={{ p: { xs: 2.2, md: 2.6 } }}>
-                      <Typography variant="h4" component="h3">
-                        {scenario.title}
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: 'base.100' }}>
-                        Open this pathway under either comparison condition.
-                      </Typography>
-                      <Stack spacing={1.1} sx={{ mt: 'auto' }}>
-                        <ScenarioChoiceButton icon={<WbSunnyIcon />} label="Current weather" />
-                        <ScenarioChoiceButton icon={<WavesIcon />} label="Sea level rise" />
-                      </Stack>
-                    </Stack>
-                  </Box>
-                </ScrollReveal>
-              ))}
-            </Box>
-          </Container>
-        </Box>
-
-        <Box component="section" aria-labelledby="scenario-panels-title">
+        <Box component="section" id="adaptations" aria-labelledby="scenario-panels-title">
           <ExpandableScenarioPanels
             items={expandableScenarioItems}
+            collapseOnScroll
             header={
               <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 'none' } }}>
                 <Box sx={sectionLabelSx}>

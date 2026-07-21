@@ -1,6 +1,8 @@
 import { useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Box, Divider, IconButton, Paper, Slider, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme } from "@mui/material";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -265,9 +267,11 @@ interface RegionalChartProps {
   onDateChange: (index: number) => void;
   onDateCommit: (index: number) => void;
   units: string;
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
 }
 
-export default function RegionalChart({ data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units }: RegionalChartProps) {
+export default function RegionalChart({ data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units, expanded, onExpandedChange }: RegionalChartProps) {
   const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null);
@@ -313,6 +317,19 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
               <Typography variant="caption" color="text.secondary">Scenario overlay</Typography>
               <IconButton aria-label="Explain scenario visibility" onClick={(event) => setVisibilityInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
+              <Tooltip title={activeKeys.length > 1 ? (expanded ? 'Restore dashboard layout' : 'Expand line chart') : 'Select another scenario to expand the line chart'}>
+                <Box component="span" data-tour="scenario-overlay-expand" sx={{ alignItems: 'center', display: 'inline-flex', lineHeight: 0 }}>
+                  <IconButton
+                    aria-label={expanded ? 'Restore map and station distribution' : 'Expand line chart and hide map and station distribution'}
+                    disabled={activeKeys.length <= 1}
+                    onClick={() => onExpandedChange(!expanded)}
+                    size="small"
+                    sx={{ color: expanded ? 'brand.primaryGreen' : 'text.secondary', p: 0 }}
+                  >
+                    {expanded ? <CloseFullscreenIcon fontSize="small" /> : <OpenInFullIcon fontSize="small" />}
+                  </IconButton>
+                </Box>
+              </Tooltip>
             </Box>
             <Box sx={(theme) => ({ display: 'flex', flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } })}>
             {data.scenarios.filter((scenario) => scenario.key !== baseScenarioKey).map((scenario) => {

@@ -1,6 +1,7 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { Box, Button, Typography } from '@mui/material';
-import type { ReactNode } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 export interface ExpandableScenarioPanelItem {
@@ -15,50 +16,91 @@ interface ExpandableScenarioPanelsProps {
   items: ExpandableScenarioPanelItem[];
   actionLabel?: string;
   header?: ReactNode;
+  sharedImage?: boolean;
+  collapseOnScroll?: boolean;
 }
 
 export default function ExpandableScenarioPanels({
   items,
   actionLabel = 'Enter',
   header,
+  sharedImage = false,
+  collapseOnScroll = false,
 }: ExpandableScenarioPanelsProps) {
-  const panelHeight = { xs: 'calc(100svh - 72px)', md: 'calc(100svh - 76px)' };
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
+  const collapsedHeight = useTransform(
+    scrollYProgress,
+    [0, 1],
+    ['100dvh', '15dvh'],
+  );
+  const contentOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.35],
+    [1, 0],
+  );
+  const panelHeight = collapseOnScroll
+    ? '100dvh'
+    : { xs: 'calc(100svh - 72px)', md: 'calc(100svh - 76px)' };
 
   return (
     <Box
+      ref={sectionRef}
       sx={{
         position: 'relative',
-        minHeight: panelHeight,
-        bgcolor: 'base.900',
-        overflow: 'hidden',
+        height: collapseOnScroll ? '200dvh' : 'auto',
+        minHeight: collapseOnScroll ? 0 : panelHeight,
+        bgcolor: collapseOnScroll ? 'base.800' : 'base.900',
       }}
     >
-      {header && (
-        <Box
-          sx={{
-            position: 'absolute',
-            zIndex: 3,
-            top: { xs: 24, md: 32 },
-            left: { xs: 20, md: 36 },
-            right: { xs: 20, md: 36 },
-            pointerEvents: 'none',
-          }}
-        >
-          {header}
-        </Box>
-      )}
-
       <Box
-        component="ul"
         sx={{
-          m: 0,
-          p: 0,
-          minHeight: panelHeight,
-          display: 'flex',
-          flexDirection: { xs: 'column', md: 'row' },
-          listStyle: 'none',
+          position: collapseOnScroll ? 'sticky' : 'relative',
+          top: 0,
+          height: panelHeight,
+          bgcolor: 'base.800',
+          overflow: 'hidden',
         }}
       >
+        {header && (
+          <motion.div
+            style={collapseOnScroll ? { opacity: contentOpacity } : undefined}
+          >
+            <Box
+              sx={{
+                position: 'absolute',
+                zIndex: 3,
+                top: { xs: 24, md: 32 },
+                left: { xs: 20, md: 36 },
+                right: { xs: 20, md: 36 },
+                pointerEvents: 'none',
+              }}
+            >
+              {header}
+            </Box>
+          </motion.div>
+        )}
+
+        <motion.div
+          style={{
+            height: collapseOnScroll ? collapsedHeight : '100%',
+            overflow: 'hidden',
+          }}
+        >
+          <Box
+            component="ul"
+          sx={{
+              m: 0,
+              p: 0,
+              height: '100%',
+              display: 'flex',
+              flexDirection: collapseOnScroll ? 'row' : { xs: 'column', md: 'row' },
+              listStyle: 'none',
+          }}
+        >
         {items.map((item, index) => (
           <Box
             component="li"
@@ -68,7 +110,8 @@ export default function ExpandableScenarioPanels({
               position: 'relative',
               flex: { xs: '1 1 15rem', md: '1 1 0' },
               minWidth: 0,
-              minHeight: { xs: '15rem', md: 'calc(100svh - 76px)' },
+              height: collapseOnScroll ? '100%' : 'auto',
+              minHeight: collapseOnScroll ? 0 : { xs: '15rem', md: 'calc(100svh - 76px)' },
               isolation: 'isolate',
               overflow: 'hidden',
               borderRight: { xs: 0, md: '1px solid rgba(126,217,87,0.3)' },
@@ -111,24 +154,49 @@ export default function ExpandableScenarioPanels({
               },
             }}
           >
-            <Box
-              component="img"
-              className="expandable-panel-image"
-              src={item.image}
-              alt=""
-              sx={{
-                position: 'absolute',
-                inset: 0,
-                zIndex: -3,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                opacity: 0.76,
-                transform: 'scale(1)',
-                transition: 'transform 700ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease',
-              }}
-            />
-            <Box
+            {sharedImage ? (
+              <Box
+                className="expandable-panel-image"
+                role="img"
+                aria-label=""
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: -3,
+                  opacity: 0.76,
+                  transform: 'scale(1)',
+                  transformOrigin: 'center',
+                  backgroundImage: `url(${item.image})`,
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: { xs: 'cover', md: `${items.length * 100}% 100%` },
+                  backgroundPosition: {
+                    xs: 'center',
+                    md: `${items.length === 1 ? 50 : (index / (items.length - 1)) * 100}% center`,
+                  },
+                  transition: 'transform 700ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease',
+                }}
+              />
+            ) : (
+              <Box
+                component="img"
+                className="expandable-panel-image"
+                src={item.image}
+                alt=""
+                sx={{
+                  position: 'absolute',
+                  inset: 0,
+                  zIndex: -3,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: 0.76,
+                  transform: 'scale(1)',
+                  transition: 'transform 700ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease',
+                }}
+              />
+            )}
+            <motion.div style={collapseOnScroll ? { opacity: contentOpacity } : undefined}>
+              <Box
               sx={{
                 position: 'absolute',
                 inset: 0,
@@ -216,8 +284,11 @@ export default function ExpandableScenarioPanels({
                 </Button>
               )}
             </Box>
+            </motion.div>
           </Box>
         ))}
+          </Box>
+        </motion.div>
       </Box>
     </Box>
   );

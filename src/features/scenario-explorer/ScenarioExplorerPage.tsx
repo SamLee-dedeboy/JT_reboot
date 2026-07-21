@@ -93,6 +93,11 @@ export default function ScenarioExplorerPage() {
   const [regionInfoAnchor, setRegionInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [valuesInfoAnchor, setValuesInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [tutorialOpen, setTutorialOpen] = useState(false);
+  const [isChartExpanded, setIsChartExpanded] = useState(false);
+
+  useEffect(() => {
+    if (activeKeys.length <= 1 && isChartExpanded) setIsChartExpanded(false);
+  }, [activeKeys.length, isChartExpanded]);
   const [, startTransition] = useTransition();
   const modeTransitionTimerRef = useRef<number | null>(null);
   const dateFrameRef = useRef<number | null>(null);
@@ -343,7 +348,7 @@ export default function ScenarioExplorerPage() {
   if (!datasets || !data || !comparisonData || !selectedScenario) {
     return <Box sx={{ display: "grid", minHeight: "100dvh", placeItems: "center" }}><Stack sx={(theme) => ({ alignItems: 'center', gap: theme.jtSpacing.gap.sm })}><CircularProgress color="primary" /><Typography variant="caption" color="text.secondary">Loading scenario explorer…</Typography></Stack></Box>;
   }
-  const headerDescription = 'Explore how salinity changes across scenarios, models, regions, stations, and time using the linked map, timeline, and station distribution. See Tutorial for a refresher on all interactions supported by this interface.';
+  const headerDescription = 'Explore how salinity changes across scenarios, regions, stations, and time using the linked map, timeline, and station distribution. See Tutorial for a refresher on all interactions supported by this interface.';
 
   return (
     <>
@@ -377,7 +382,7 @@ export default function ScenarioExplorerPage() {
       />
       <ExplorerTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
-      <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', flex: 1, gap: theme.jtSpacing.gap.sm, gridTemplateColumns: { xs: '1fr', lg: 'minmax(0, 2.4fr) minmax(18rem, .7fr)', xl: 'minmax(0, 2fr) minmax(20rem, .85fr)' }, minHeight: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
+      <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', flex: 1, gap: theme.jtSpacing.gap.sm, gridTemplateColumns: isChartExpanded ? 'minmax(0, 1fr)' : { xs: '1fr', lg: 'minmax(0, 2.4fr) minmax(18rem, .7fr)', xl: 'minmax(0, 2fr) minmax(20rem, .85fr)' }, minHeight: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
         <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateRows: 'auto minmax(0, 1fr)', minHeight: 0, minWidth: 0 })}>
         <PaperControls mode={dashboardMode}>
         {dashboardMode === "rma-schism" ? (
@@ -465,12 +470,12 @@ export default function ScenarioExplorerPage() {
         </Typography>
       </ExplorerInfoPopover>
 
-        <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
-        <RegionalChart data={comparisonData} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} />
-        <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />
+        <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: isChartExpanded ? 'minmax(0, 1fr)' : { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
+        <RegionalChart data={comparisonData} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} />
+        {!isChartExpanded && <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />}
         </Box>
         </Box>
-        <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />
+        {!isChartExpanded && <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />}
       </Box>
     </Box></>
   );

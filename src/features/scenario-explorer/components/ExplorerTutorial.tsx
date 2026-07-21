@@ -52,6 +52,12 @@ const STEPS: TutorialStep[] = [
     interactions: ['Drag the date slider or drag horizontally inside the chart.', 'Use the eye controls to show or hide comparison scenarios.', 'Hover a visible comparison scenario control to highlight its line in blue.'],
   },
   {
+    title: 'Expand scenario comparisons',
+    target: '[data-tour="scenario-overlay-expand"]',
+    paragraphs: ['When two or more scenarios are visible, expand the timeline to use the full dashboard width. Expanded mode temporarily hides the station distribution and map so the scenario lines have more room.'],
+    interactions: ['Show at least one additional scenario to enable the expand button.', 'Select the expand button to focus on the timeline.', 'Select the restore button before continuing to the station distribution and map.'],
+  },
+  {
     title: 'Inspect the station distribution',
     target: '[data-tour="beeswarm"]',
     paragraphs: ['Each dot is one station on the active date. Its vertical position shows that station’s difference from the selected base scenario.', 'A brushed band keeps the same vertical position as the date changes. For example, brushing the top continues to follow the saltiest portion of stations on each day.'],
