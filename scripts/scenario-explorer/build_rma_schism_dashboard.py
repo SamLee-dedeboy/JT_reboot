@@ -4,18 +4,20 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 
-EDA_DIR = Path(__file__).resolve().parents[1]
-RMA_DIR = EDA_DIR.parent
-DATA_DIR = RMA_DIR / "data"
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = Path(os.environ.get("RMA_DATA_DIR", PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"))
+UPDATE_DIR = Path(os.environ["RMA_UPDATE_DIR"]) if os.environ.get("RMA_UPDATE_DIR") else None
 SCHISM_DIR = DATA_DIR / "baseline_schism" / "ec_full_extent_all_stations"
 CROSSWALK = DATA_DIR / "baseline_schism" / "shared_station_crosswalk.csv"
-OUT = EDA_DIR / "public" / "data" / "rma_schism_dashboard.json"
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
+OUT = OUTPUT_DIR / "rma_schism_dashboard.json"
 
 SCENARIOS = [
     {
@@ -27,7 +29,7 @@ SCENARIOS = [
     },
     {
         "key": "reserve",
-        "label": "Calling on Reserve",
+        "label": "Calling on Reserves",
         "run": "30",
         "rma_dir": "reserve",
         "rma_glob": "COR_*_JT_COR_EC_EC.csv",
@@ -106,7 +108,10 @@ def read_rma(config: dict, stations_by_name: dict[str, dict], allowed_dates: set
     totals = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
     seen_stations = set()
     dates = set()
-    paths = sorted((DATA_DIR / config["rma_dir"]).glob(config["rma_glob"]))
+    paths_by_name = {path.name: path for path in (DATA_DIR / config["rma_dir"]).glob(config["rma_glob"])}
+    if UPDATE_DIR:
+        paths_by_name.update({path.name: path for path in UPDATE_DIR.glob(config["rma_glob"])})
+    paths = sorted(paths_by_name.values(), key=lambda item: item.name)
     for path in paths:
         print(f"  Reading {path.name}", flush=True)
         with path.open("r", newline="", encoding="utf-8-sig") as handle:

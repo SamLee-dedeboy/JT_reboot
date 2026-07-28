@@ -1,5 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Box, Divider, IconButton, Paper, Slider, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme } from "@mui/material";
+import { Box, Button, Divider, IconButton, Menu, MenuItem, Paper, Select, Slider, ToggleButton, ToggleButtonGroup, Tooltip, Typography, useTheme } from "@mui/material";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen';
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
@@ -8,15 +8,16 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { AnimatePresence, motion } from 'framer-motion';
 import { area, line } from "d3-shape";
 import { chartTransition, formatDate, formatNumber } from '../format';
-import type { DashboardMode, RangeMode, Scenario, ScenarioDataset } from '../types';
+import type { D1641Dataset, DashboardMode, RangeMode, Scenario, ScenarioDataset } from '../types';
 import ExplorerInfoPopover from './ExplorerInfoPopover';
 
 const DEFAULT_WIDTH = 900;
 const DEFAULT_HEIGHT = 390;
-const PAD = { left: 86, right: 18, top: 18, bottom: 68 };
-const DATE_LABEL_Y_OFFSET = 44;
-const YEAR_BAND_Y_OFFSET = 32;
-const YEAR_BAND_HEIGHT = 26;
+const PAD = { left: 86, right: 18, top: 18, bottom: 116 };
+const DATE_LABEL_Y_OFFSET = 92;
+const YEAR_BAND_Y_OFFSET = 80;
+const YEAR_BAND_HEIGHT = 22;
+const COMPLIANCE_ROW_HEIGHT = 14;
 
 interface ChartSvgProps {
   data: ScenarioDataset;
@@ -31,7 +32,12 @@ interface ChartSvgProps {
   selectedScenarioLabel: string;
   hoveredScenarioKey: string | null;
   baseScenarioLabel: string;
+  baseScenarioKey: string;
   units: string;
+  d1641Data: D1641Dataset | null;
+  timeframeFocus: TimeframeFocus;
+  onTimeframeFocusChange: (value: TimeframeFocus) => void;
+  enableDateHighlights: boolean;
 }
 
 interface RangeDatum { q1: number | null; q3: number | null }
@@ -40,6 +46,14 @@ interface SeriesSummary {
   rangeLow: Array<number | null>;
   rangeHigh: Array<number | null>;
 }
+
+type TimeframeFocus = 'all' | 'recreation' | 'ej-communities';
+
+const TIMEFRAME_OPTIONS: Array<{ key: TimeframeFocus; label: string }> = [
+  { key: 'all', label: 'All dates' },
+  { key: 'recreation', label: 'Recreation · Apr 1–Sep 30' },
+  { key: 'ej-communities', label: 'EJ & Communities · Sep–Oct' },
+];
 
 const regionalSummaryCache = new WeakMap<ScenarioDataset, Map<string, SeriesSummary>>();
 
@@ -55,7 +69,7 @@ const sortedQuantile = (sorted: number[], fraction: number): number | null => {
 const SCENARIO_ABBREVIATIONS: Record<string, string> = {
   'Business as Usual': 'BAU',
   'Bolster & Fortify': 'B&F',
-  'Calling on Reserve': 'COR',
+  'Calling on Reserves': 'COR',
   'A Tunnel': 'TUN',
   'Eco Machine': 'ECO',
   'New Green Watershed': 'NGW',
@@ -63,7 +77,7 @@ const SCENARIO_ABBREVIATIONS: Record<string, string> = {
 
 const abbreviateScenario = (label: string) => SCENARIO_ABBREVIATIONS[label] ?? label;
 
-function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateChange, onDateCommit, rangeMode, selectedScenarioKey, selectedScenarioLabel, hoveredScenarioKey, baseScenarioLabel, units }: ChartSvgProps) {
+function ChartSvg({ data, d1641Data, dashboardMode, region, activeKeys, dateIndex, onDateChange, onDateCommit, rangeMode, selectedScenarioKey, selectedScenarioLabel, hoveredScenarioKey, baseScenarioKey, baseScenarioLabel, timeframeFocus, onTimeframeFocusChange, enableDateHighlights, units }: ChartSvgProps) {
   const theme = useTheme();
   const [scrubbing, setScrubbing] = useState(false);
   const plotRef = useRef<HTMLDivElement | null>(null);
@@ -110,7 +124,7 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
       ...summary,
       color: scenario.key === selectedScenarioKey ? theme.palette.brand.primaryGreen : theme.palette.common.white,
     };
-  }), [data, data.scenarios, stationIndices, activeKeys, rangeMode, region, selectedScenarioKey, theme.palette.brand.primaryGreen, theme.palette.common.white]);
+  }), [data, stationIndices, activeKeys, rangeMode, region, selectedScenarioKey, theme.palette.brand.primaryGreen, theme.palette.common.white]);
   const previousSelectedScenario = useRef(selectedScenarioKey);
   const previousRegion = useRef(region);
   const [phase, setPhase] = useState("baseline");
@@ -169,6 +183,55 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
       : [];
   })();
   const periodBoundaries = periods.slice(1).map(({ start }) => start);
+  const timeframeSegments = useMemo(() => {
+    if (timeframeFocus === 'all') return [];
+    const matches = (date: string) => {
+      const month = Number(date.slice(5, 7));
+      return timeframeFocus === 'recreation'
+        ? month >= 4 && month <= 9
+        : month >= 9 && month <= 10;
+    };
+    const segments: Array<{ start: number; end: number }> = [];
+    data.dates.forEach((date, index) => {
+      if (!matches(date)) return;
+      const current = segments[segments.length - 1];
+      if (current && index === current.end + 1) current.end = index;
+      else segments.push({ start: index, end: index });
+    });
+    return segments;
+  }, [data.dates, timeframeFocus]);
+  const complianceRows = useMemo(() => {
+    if (!d1641Data) return [];
+    const visibleStationIds = new Set(data.stations
+      .filter((station) => region === 'All regions' || station.region === region)
+      .map((station) => String(station.station_id)));
+    const toSegments = (scenarioKey: string) => {
+      const scenarioCompliance = d1641Data.scenarios[scenarioKey];
+      if (!scenarioCompliance) return [];
+      const activeDates = new Set<number>();
+      Object.entries(scenarioCompliance.stations).forEach(([stationId, station]) => {
+        if (!visibleStationIds.has(stationId)) return;
+        station.objectives.forEach((objective) => {
+        if (objective.status !== 'calculated_exceedance' || !objective.start || !objective.end) return;
+        const start = data.dates.findIndex((date) => date >= objective.start!);
+        const end = data.dates.findLastIndex((date) => date <= objective.end!);
+        if (start < 0 || end < start) return;
+        for (let index = start; index <= end; index += 1) activeDates.add(index);
+        });
+      });
+      const segments: Array<{ start: number; end: number }> = [];
+      [...activeDates].sort((a, b) => a - b).forEach((index) => {
+        const current = segments[segments.length - 1];
+        if (current && index === current.end + 1) current.end = index;
+        else segments.push({ start: index, end: index });
+      });
+      return segments;
+    };
+    return [
+      { key: 'base', label: 'Base', color: theme.palette.brand.primaryBlue, segments: toSegments(baseScenarioKey) },
+      { key: 'selected', label: 'Selected', color: theme.palette.brand.primaryGreen, segments: toSegments(selectedScenarioKey) },
+    ];
+  }, [baseScenarioKey, d1641Data, data.dates, data.stations, region, selectedScenarioKey, theme.palette.brand.primaryBlue, theme.palette.brand.primaryGreen]);
   const dateTicks = [0, data.dates.length - 1];
   const indexFromPointer = (event: ReactPointerEvent<SVGSVGElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -186,9 +249,18 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
         {units === "%" ? <><Box component="span" sx={{ display: 'block' }}>Change</Box><Box component="span" sx={{ display: 'block' }}>from</Box><Box component="span" sx={{ display: 'block' }}>base (%)</Box></> : <><Box component="span" sx={{ display: 'block' }}>Δ EC-AVG-AVG</Box><Box component="span" sx={{ display: 'block' }}>(µS/cm)</Box></>}
       </Typography>
       <Box sx={{ display: 'grid', gap: 'inherit', mr: `${PAD.right}px` }}>
-        <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
+        <Box sx={(theme) => ({ alignItems: 'center', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: '1fr auto 1fr' })}>
           <Typography variant="caption" color="text.secondary">Date</Typography>
-          <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryBlue' } }}>{formatDate(data.dates[dateIndex])}</Typography>
+          {enableDateHighlights ? <Select
+            aria-label="Highlighted domain-specific timeframe"
+            size="small"
+            value={timeframeFocus}
+            onChange={(event) => onTimeframeFocusChange(event.target.value as TimeframeFocus)}
+            sx={(theme) => ({ height: theme.spacing(4), minWidth: theme.spacing(20), typography: 'captionSmall' })}
+          >
+            {TIMEFRAME_OPTIONS.map((option) => <MenuItem key={option.key} value={option.key} sx={{ typography: 'captionSmall' }}>{option.label}</MenuItem>)}
+          </Select> : <Box />}
+          <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryBlue' }, justifySelf: 'end' }}>{formatDate(data.dates[dateIndex])}</Typography>
         </Box>
         <Slider
           aria-label="Dashboard date"
@@ -208,12 +280,32 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
         onPointerCancel={() => setScrubbing(false)}
         onPointerMove={(event) => { if (scrubbing) onDateChange(indexFromPointer(event)); }}
       >
+        {timeframeSegments.map((segment) => <rect
+          key={`timeframe-${segment.start}-${segment.end}`}
+          x={x(segment.start)}
+          y={PAD.top}
+          width={Math.max(2, x(Math.min(finalDateIndex, segment.end + 1)) - x(segment.start))}
+          height={height - PAD.top - PAD.bottom}
+          fill={theme.palette.brand.primaryBlue}
+          opacity=".09"
+        />)}
         <g aria-label="Value axis">
           {ticks.map((tick, index) => <g key={index}><line x1={PAD.left} x2={width - PAD.right} y1={y(tick)} y2={y(tick)} stroke={tickColor(tick)} strokeOpacity="0.24" strokeWidth="1" /><text x={PAD.left - 10} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text></g>)}
         </g>
         {dateTicks.map((index) => <text key={index} x={x(index)} y={height - DATE_LABEL_Y_OFFSET} textAnchor={index === 0 ? "start" : "end"} style={textStyle}>{formatDate(data.dates[index])}</text>)}
-        <motion.line key={`baseline-${sequence}`}
-          x1={PAD.left} x2={width - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[400]} strokeWidth="3" initial={{ pathLength: 0, x1: PAD.left, x2: width - PAD.right, y1: y(0), y2: y(0) }} animate={{ pathLength: 1, x1: PAD.left, x2: width - PAD.right, y1: y(0), y2: y(0) }} transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }} onAnimationComplete={() => { if (phase === "baseline") setPhase("line"); }} />
+        <motion.path
+          key={`baseline-${sequence}`}
+          d={`M ${PAD.left} ${y(0)} L ${width - PAD.right} ${y(0)}`}
+          fill="none"
+          stroke={theme.palette.base[400]}
+          strokeLinecap="round"
+          strokeWidth="3"
+          vectorEffect="non-scaling-stroke"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+          onAnimationComplete={() => { if (phase === "baseline") setPhase("line"); }}
+        />
         <motion.text key={`baseline-label-${sequence}`} x={PAD.left + 8} y={y(0) - 8} fill={theme.palette.base[100]} style={{ ...textStyle, fontWeight: 700 }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 0.3 }}>{baseScenarioLabel}</motion.text>
         <text x={width - PAD.right} y={PAD.top + 16} textAnchor="end" style={{ ...textStyle, fill: theme.palette.brand.primaryGreen, fontWeight: 700 }}>Selected: {selectedScenarioLabel}</text>
         <AnimatePresence>{(phase === "regionLine" || phase === "band" || phase === "ready") && series.map((item, index) => {
@@ -236,6 +328,16 @@ function ChartSvg({ data, dashboardMode, region, activeKeys, dateIndex, onDateCh
             <text x={(x(period.start) + x(period.end)) / 2} y={height - YEAR_BAND_Y_OFFSET + 17} textAnchor="middle" style={{ ...textStyle, fill: index === 0 ? theme.palette.common.white : theme.palette.base[100], fontWeight: 700 }}>{period.label}</text>
           </g>)}
         </g>}
+        {complianceRows.length > 0 && <text x={PAD.left} y={height - 43} style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>D-1641 exceedance periods</text>}
+        {complianceRows.map((row, rowIndex) => {
+          const rowY = height - 37 + rowIndex * (COMPLIANCE_ROW_HEIGHT + 3);
+          return <g key={row.key} aria-label={`${row.label} D-1641 exceedance periods`}>
+            <text x={PAD.left - 10} y={rowY + 11} textAnchor="end" style={{ ...textStyle, fill: row.color, fontWeight: 700 }}>{row.label}</text>
+            <rect x={PAD.left} y={rowY} width={width - PAD.left - PAD.right} height={COMPLIANCE_ROW_HEIGHT} rx="3" fill="none" stroke={theme.palette.base[400]} strokeWidth="1" />
+            {row.segments.map((segment) => <rect key={`${segment.start}-${segment.end}`} x={x(segment.start)} y={rowY + 2} width={Math.max(3, x(Math.min(finalDateIndex, segment.end + 1)) - x(segment.start))} height={COMPLIANCE_ROW_HEIGHT - 4} rx="2" fill={row.color} opacity=".9" />)}
+            {!row.segments.length && <text x={PAD.left + 6} y={rowY + 11} style={{ ...textStyle, fill: theme.palette.base[300], fontWeight: 700 }}>No calculated exceedance</text>}
+          </g>;
+        })}
         <motion.line x1={x(dateIndex)} x2={x(dateIndex)} y1={PAD.top} y2={height - PAD.bottom} initial={{ x1: x(dateIndex), x2: x(dateIndex), y1: PAD.top, y2: height - PAD.bottom }} animate={{ x1: x(dateIndex), x2: x(dateIndex), y1: PAD.top, y2: height - PAD.bottom }} transition={{ duration: 0.16, ease: "easeOut" }} stroke={theme.palette.common.white} strokeWidth="1.5" opacity=".85" />
         <AnimatePresence>{(phase === "band" || phase === "ready") && series.map((item) => {
           const selectedValue = item.values[dateIndex];
@@ -269,14 +371,18 @@ interface RegionalChartProps {
   units: string;
   expanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
+  d1641Data: D1641Dataset | null;
+  enableDateHighlights?: boolean;
 }
 
-export default function RegionalChart({ data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units, expanded, onExpandedChange }: RegionalChartProps) {
+export default function RegionalChart({ data, d1641Data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units, expanded, onExpandedChange, enableDateHighlights = false }: RegionalChartProps) {
   const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [deviationInfoAnchor, setDeviationInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [hoveredScenarioKey, setHoveredScenarioKey] = useState<string | null>(null);
+  const [overlayMenuAnchor, setOverlayMenuAnchor] = useState<HTMLElement | null>(null);
+  const [timeframeFocus, setTimeframeFocus] = useState<TimeframeFocus>('all');
   const coverage = rangeMode === "iqr" ? { first: 5, last: 14, label: "Middle 50% of stations" } : rangeMode === "p90" ? { first: 1, last: 18, label: "Middle 90% of stations" } : { first: 0, last: 19, label: "All stations" };
   return (
     <Paper
@@ -299,7 +405,7 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
         },
       }}
     >
-      <Box sx={(theme) => ({ alignItems: 'start', borderBottom: 1, borderColor: "divider", display: "grid", gap: theme.jtSpacing.gap.lg, gridTemplateColumns: 'auto minmax(0, 1fr) auto', p: theme.jtSpacing.component.sm })}>
+      <Box sx={(theme) => ({ alignItems: 'start', borderBottom: 1, borderColor: "divider", display: "grid", gap: theme.jtSpacing.gap.lg, gridTemplateColumns: 'auto minmax(0, 1fr) auto', p: theme.jtSpacing.component.sm, [theme.breakpoints.down('xl')]: { gap: theme.jtSpacing.gap.xs, gridTemplateColumns: 'auto minmax(5rem, 1fr) auto', p: theme.jtSpacing.component.xs } })}>
           <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs })}>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
               <Typography variant="caption" color="text.secondary">Station range</Typography>
@@ -315,7 +421,10 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
           </Box>
           <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflow: 'hidden' })}>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
-              <Typography variant="caption" color="text.secondary">Scenario overlay</Typography>
+              <Typography variant="caption" color="text.secondary">
+                <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>Scenario overlay</Box>
+                <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>Overlays</Box>
+              </Typography>
               <IconButton aria-label="Explain scenario visibility" onClick={(event) => setVisibilityInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
               <Tooltip title={activeKeys.length > 1 ? (expanded ? 'Restore dashboard layout' : 'Expand line chart') : 'Select another scenario to expand the line chart'}>
                 <Box component="span" data-tour="scenario-overlay-expand" sx={{ alignItems: 'center', display: 'inline-flex', lineHeight: 0 }}>
@@ -331,7 +440,34 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
                 </Box>
               </Tooltip>
             </Box>
-            <Box sx={(theme) => ({ display: 'flex', flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflowX: 'auto', scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } })}>
+            <Button
+              aria-label="Choose scenario overlays"
+              aria-haspopup="menu"
+              onClick={(event) => setOverlayMenuAnchor(event.currentTarget)}
+              size="small"
+              startIcon={<VisibilityOutlinedIcon fontSize="small" />}
+              sx={{ display: { xs: 'inline-flex', xl: 'none' }, justifySelf: 'start', minWidth: 0 }}
+            >
+              Overlays {activeKeys.length}/{data.scenarios.filter((item) => item.key !== baseScenarioKey).length}
+            </Button>
+            <Menu anchorEl={overlayMenuAnchor} open={Boolean(overlayMenuAnchor)} onClose={() => setOverlayMenuAnchor(null)}>
+              {data.scenarios.filter((item) => item.key !== baseScenarioKey).map((item) => {
+                const active = activeKeys.includes(item.key);
+                const primary = item.key === selectedScenario.key;
+                return <MenuItem
+                  key={item.key}
+                  disabled={primary}
+                  onClick={() => {
+                    onActiveKeysChange(active ? activeKeys.filter((key) => key !== item.key) : [...activeKeys, item.key]);
+                  }}
+                  sx={(theme) => ({ gap: theme.jtSpacing.gap.sm, typography: 'button' })}
+                >
+                  {primary || active ? <VisibilityOutlinedIcon fontSize="small" sx={{ color: primary ? 'brand.primaryGreen' : 'common.white' }} /> : <VisibilityOffOutlinedIcon fontSize="small" />}
+                  {abbreviateScenario(item.label)}
+                </MenuItem>;
+              })}
+            </Menu>
+            <Box sx={(theme) => ({ display: { xs: 'none', xl: 'flex' }, flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0 })}>
             {data.scenarios.filter((scenario) => scenario.key !== baseScenarioKey).map((scenario) => {
               const active = activeKeys.includes(scenario.key);
               const primary = scenario.key === selectedScenario.key;
@@ -418,7 +554,7 @@ export default function RegionalChart({ data, dashboardMode, region, selectedSce
         </Box>
         <Typography variant="captionSmall" component="p" color="text.secondary">Because both values use the same regional EC difference, they always have the same direction. Positive values indicate saltier conditions than the selected base scenario; negative values indicate fresher conditions.</Typography>
       </ExplorerInfoPopover>
-      <ChartSvg data={data} dashboardMode={dashboardMode} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} onDateCommit={onDateCommit} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} selectedScenarioLabel={selectedScenario.label} hoveredScenarioKey={hoveredScenarioKey} baseScenarioLabel={baseScenarioLabel} units={units} />
+      <ChartSvg data={data} d1641Data={d1641Data} dashboardMode={dashboardMode} region={region} activeKeys={activeKeys} dateIndex={dateIndex} onDateChange={onDateChange} onDateCommit={onDateCommit} rangeMode={rangeMode} selectedScenarioKey={selectedScenario.key} selectedScenarioLabel={selectedScenario.label} hoveredScenarioKey={hoveredScenarioKey} baseScenarioKey={baseScenarioKey} baseScenarioLabel={baseScenarioLabel} timeframeFocus={enableDateHighlights ? timeframeFocus : 'all'} onTimeframeFocusChange={setTimeframeFocus} enableDateHighlights={enableDateHighlights} units={units} />
     </Paper>
   );
 }

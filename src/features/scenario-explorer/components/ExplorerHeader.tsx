@@ -4,8 +4,8 @@ import type { DashboardMode } from '../types';
 
 const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [
   { number: '01', label: 'RMA Scenario Comparison', value: 'rma-scenarios' },
-  { number: '02', label: 'RMA vs. SCHISM', value: 'rma-schism' },
-  { number: '03', label: 'Tiered Outflows', value: 'tiered-outflows' },
+  { number: '02', label: 'Tiered Outflows', value: 'tiered-outflows' },
+  { number: '03', label: 'RMA vs. SCHISM', value: 'rma-schism' },
 ];
 
 interface ExplorerHeaderProps {

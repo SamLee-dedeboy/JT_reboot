@@ -14,13 +14,13 @@ export default function SalinityScale({ extent, units }: SalinityScaleProps) {
   const [infoAnchor, setInfoAnchor] = useState<HTMLButtonElement | null>(null);
   return (
     <Box sx={{ alignSelf: 'stretch', display: 'grid', minWidth: 0, width: '100%' }}>
-      <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs, mb: theme.jtSpacing.component.xs })}>
-        <Typography variant="caption" color="text.secondary" noWrap>Color scale · 90th percentile</Typography>
+      <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs, mb: theme.jtSpacing.component.xs, minWidth: 0 })}>
+        <Typography variant="caption" color="text.secondary" noWrap sx={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>Color scale · 90th percentile</Typography>
         <IconButton aria-label="Explain the 90th percentile color scale" onClick={(event) => setInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}>
           <InfoOutlinedIcon fontSize="small" />
         </IconButton>
       </Box>
-      <Box sx={(theme) => ({ alignItems: 'center', display: 'grid', gap: theme.jtSpacing.gap.xs, gridTemplateColumns: 'auto minmax(5rem, 1fr) auto', height: theme.spacing(5) })}>
+      <Box sx={(theme) => ({ alignItems: 'center', display: 'grid', gap: theme.jtSpacing.gap.xs, gridTemplateColumns: 'auto minmax(2.5rem, 1fr) auto', height: theme.spacing(5), minWidth: 0 })}>
         <Typography component={motion.span} variant="captionSmall" key={`negative-${formatNumber(extent)}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} sx={{ color: 'common.white', fontWeight: 'bold' }}>
           −{formatNumber(extent)} {units}
         </Typography>

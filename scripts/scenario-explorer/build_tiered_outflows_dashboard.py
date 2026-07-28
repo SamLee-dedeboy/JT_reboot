@@ -4,17 +4,19 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import re
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
 
-EDA_DIR = Path(__file__).resolve().parents[1]
-DATA_DIR = EDA_DIR.parent / "data"
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = Path(os.environ.get("RMA_DATA_DIR", PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"))
 SCHISM_DIR = DATA_DIR / "baseline_schism" / "ec_full_extent_all_stations"
 CROSSWALK = DATA_DIR / "baseline_schism" / "shared_station_crosswalk.csv"
-OUT = EDA_DIR / "public" / "data" / "tiered_outflows_dashboard.json"
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
+OUT = OUTPUT_DIR / "tiered_outflows_dashboard.json"
 
 RUNS = [
     {"key": "run15", "label": "Run 15 · Reference Outflow", "run": "15"},

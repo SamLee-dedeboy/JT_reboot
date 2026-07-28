@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+import os
 import re
 import zipfile
 from collections import defaultdict
@@ -13,13 +14,13 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 
-EDA_DIR = Path(__file__).resolve().parents[1]
-RMA_DIR = EDA_DIR.parent
-DATA_DIR = RMA_DIR / "data"
+PROJECT_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = Path(os.environ.get("RMA_DATA_DIR", PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"))
+UPDATE_DIR = Path(os.environ["RMA_UPDATE_DIR"]) if os.environ.get("RMA_UPDATE_DIR") else None
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
 WORKBOOK = DATA_DIR / "ALL POINT STATIONS_FINAL REVISION_MAY 2026.xlsx"
-PROCESSED_DIR = DATA_DIR / "processed"
-STATIONS_OUT = PROCESSED_DIR / "all_386_unique_stations.csv"
-DASHBOARD_OUT = EDA_DIR / "public" / "data" / "salinity_dashboard.json"
+STATIONS_OUT = OUTPUT_DIR / "all_386_unique_stations.csv"
+DASHBOARD_OUT = OUTPUT_DIR / "salinity_dashboard.json"
 SHEET_NAME = "ALL POINT STATIONS FINALIZED"
 START_DATE = "2018-10-01"
 
@@ -28,7 +29,7 @@ SCENARIOS = [
     ("bolster", "Bolster & Fortify", "bolster"),
     ("ecomachine", "Eco Machine", "ecomachine"),
     ("newgreen", "New Green Watershed", "newgreen"),
-    ("reserve", "Calling on Reserve", "reserve"),
+    ("reserve", "Calling on Reserves", "reserve"),
     ("tunnel", "A Tunnel", "tunnel"),
 ]
 MAIN_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
@@ -132,7 +133,7 @@ def build_stations() -> list[dict]:
     stations.sort(key=lambda row: int(row["station_id"]))
     if len(stations) != 386:
         raise RuntimeError(f"Expected 386 workbook rows, found {len(stations)}")
-    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    STATIONS_OUT.parent.mkdir(parents=True, exist_ok=True)
     with STATIONS_OUT.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(stations[0]))
         writer.writeheader(); writer.writerows(stations)
@@ -142,7 +143,12 @@ def build_stations() -> list[dict]:
 def read_scenario(directory: str, station_by_name: dict[str, int]) -> dict[int, dict[str, float]]:
     totals = defaultdict(lambda: defaultdict(lambda: [0.0, 0]))
     seen = set()
-    for path in sorted((DATA_DIR / directory).glob("*_EC-AVG-AVG.csv")):
+    paths = {path.name: path for path in (DATA_DIR / directory).glob("*_EC-AVG-AVG.csv")}
+    if UPDATE_DIR:
+        scenario_prefix = {"reserve": "COR_", "tunnel": "DCP_", "newgreen": "NGW_"}.get(directory)
+        if scenario_prefix:
+            paths.update({path.name: path for path in UPDATE_DIR.glob(f"{scenario_prefix}*_EC-AVG-AVG.csv")})
+    for path in sorted(paths.values(), key=lambda item: item.name):
         with path.open(newline="", encoding="utf-8-sig") as handle:
             reader = csv.reader(handle)
             selected = []

@@ -11,7 +11,7 @@ import ExplorerHeader from './components/ExplorerHeader';
 import SalinityScale from './components/SalinityScale';
 import ExplorerInfoPopover from './components/ExplorerInfoPopover';
 import ExplorerTutorial from './components/ExplorerTutorial';
-import type { DashboardMode, HistogramBrush, ModelKey, Scenario, ScenarioDataset, ScenarioDatasets, ValueMode, ValueSeries } from './types';
+import type { D1641Dataset, DashboardMode, HistogramBrush, ModelKey, Scenario, ScenarioDataset, ScenarioDatasets, ValueMode, ValueSeries } from './types';
 
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
   'rma-scenarios': { key: 'rmaScenarios', url: '/data/scenario-explorer/salinity_dashboard.json' },
@@ -28,16 +28,36 @@ interface LabeledSelectProps {
   infoLabel?: string;
   value: string;
   tourId?: string;
+  displayValue?: string;
+  compactValue?: string;
 }
 
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual');
+const scenarioAbbreviation = (label: string) => ({
+  'Business as Usual': 'BAU',
+  'Bolster & Fortify': 'B&F',
+  'Calling on Reserves': 'COR',
+  'A Tunnel': 'TUN',
+  'Eco Machine': 'ECO',
+  'New Green Watershed': 'NGW',
+  'Run 15 BAU': 'RUN 15',
+  'Run 16 +30%': 'RUN 16',
+  'Run 17 -10%': 'RUN 17',
+}[label] ?? label);
 const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') => ({
   color,
   typography: 'button',
   '&&:hover': { color: 'text.primary' },
 } as const);
 
-function LabeledSelect({ children, disabled = false, infoLabel, label, onChange, onInfoClick, tourId, value }: LabeledSelectProps) {
+function ResponsiveScenarioLabel({ label }: { label: string }) {
+  return <>
+    <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>{label}</Box>
+    <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>{scenarioAbbreviation(label)}</Box>
+  </>;
+}
+
+function LabeledSelect({ children, compactValue, disabled = false, displayValue, infoLabel, label, onChange, onInfoClick, tourId, value }: LabeledSelectProps) {
   return (
     <FormControl data-tour={tourId} size="small" sx={{ minWidth: 0, width: '100%' }}>
       <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs, mb: theme.jtSpacing.component.xs })}>
@@ -48,6 +68,12 @@ function LabeledSelect({ children, disabled = false, infoLabel, label, onChange,
         disabled={disabled}
         value={value}
         onChange={onChange}
+        renderValue={compactValue ? () => (
+          <Box component="span">
+            <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>{displayValue ?? value}</Box>
+            <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>{compactValue}</Box>
+          </Box>
+        ) : undefined}
         sx={{
           height: '2.5rem',
           '& .MuiSelect-select': {
@@ -77,8 +103,13 @@ function SwapButton({ onClick, label = 'Swap base and selected scenarios' }: { o
   return <Box sx={(theme) => ({ alignSelf: "end", display: "grid", height: theme.spacing(5), placeItems: "center" })}><IconButton aria-label={label} onClick={onClick} sx={{ border: 1, borderColor: "divider", borderRadius: 1, color: "text.secondary" }}><SwapHorizIcon fontSize="small" /></IconButton></Box>;
 }
 
-export default function ScenarioExplorerPage() {
+interface ScenarioExplorerPageProps {
+  enableDateHighlights?: boolean;
+}
+
+export default function ScenarioExplorerPage({ enableDateHighlights = false }: ScenarioExplorerPageProps) {
   const [datasets, setDatasets] = useState<Partial<ScenarioDatasets> | null>(null);
+  const [d1641Data, setD1641Data] = useState<D1641Dataset | null>(null);
   const [dashboardMode, setDashboardMode] = useState<DashboardMode>('rma-scenarios');
   const [baseScenario, setBaseScenario] = useState("baseline");
   const [scenario, setScenario] = useState("bolster");
@@ -96,6 +127,8 @@ export default function ScenarioExplorerPage() {
   const [isChartExpanded, setIsChartExpanded] = useState(false);
 
   useEffect(() => {
+    // Expansion is only meaningful while at least two scenario lines are visible.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (activeKeys.length <= 1 && isChartExpanded) setIsChartExpanded(false);
   }, [activeKeys.length, isChartExpanded]);
   const [, startTransition] = useTransition();
@@ -110,11 +143,14 @@ export default function ScenarioExplorerPage() {
 
   useEffect(() => {
     const initialConfig = DATASET_CONFIG['rma-scenarios'];
-    fetch(assetUrl(initialConfig.url)).then((response) => response.json() as Promise<ScenarioDataset>).then((rmaScenarios) => {
+    Promise.all([
+      fetch(assetUrl(initialConfig.url)).then((response) => response.json() as Promise<ScenarioDataset>),
+      fetch(assetUrl('/data/scenario-explorer/d1641_rma.json')).then((response) => response.json() as Promise<D1641Dataset>),
+    ]).then(([rmaScenarios, compliance]) => {
       setDatasets({ rmaScenarios });
-      const initialDateIndex = 0;
-      setDateIndex(initialDateIndex);
-      setHistogramDateIndex(initialDateIndex);
+      setD1641Data(compliance);
+      setDateIndex(0);
+      setHistogramDateIndex(0);
     });
   }, []);
 
@@ -396,28 +432,28 @@ export default function ScenarioExplorerPage() {
               <MenuItem value="rma" sx={menuItemSx('brand.primaryGreen')}>RMA</MenuItem>
               <MenuItem value="schism" sx={menuItemSx('brand.primaryGreen')}>SCHISM</MenuItem>
             </LabeledSelect>
-            <LabeledSelect tourId="scenario-controls" label="Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
-              {data.scenarios.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>{item.label}</MenuItem>)}
+            <LabeledSelect tourId="scenario-controls" label="Scenario" value={scenario} displayValue={scenarioOptions.find((item) => item.key === scenario)?.label} compactValue={scenarioAbbreviation(scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario)} onChange={(event) => selectMapScenario(event.target.value)}>
+              {data.scenarios.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
             </LabeledSelect>
           </>
         ) : dashboardMode === "tiered-outflows" ? (
           <>
-            <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} onChange={(event) => selectBaseScenario(event.target.value)}>
-              {scenarioOptions.map((item) => <MenuItem disabled={item.key === scenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}>{item.label}</MenuItem>)}
+            <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} displayValue={scenarioOptions.find((item) => item.key === baseScenario)?.label} compactValue={scenarioAbbreviation(scenarioOptions.find((item) => item.key === baseScenario)?.label ?? baseScenario)} onChange={(event) => selectBaseScenario(event.target.value)}>
+              {scenarioOptions.map((item) => <MenuItem disabled={item.key === scenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
             </LabeledSelect>
             <SwapButton onClick={swapScenarios} />
-            <LabeledSelect tourId="scenario-controls" label="Selected Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
-              {scenarioOptions.map((item) => <MenuItem disabled={item.key === baseScenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>{item.label}</MenuItem>)}
+            <LabeledSelect tourId="scenario-controls" label="Selected Scenario" value={scenario} displayValue={scenarioOptions.find((item) => item.key === scenario)?.label} compactValue={scenarioAbbreviation(scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario)} onChange={(event) => selectMapScenario(event.target.value)}>
+              {scenarioOptions.map((item) => <MenuItem disabled={item.key === baseScenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
             </LabeledSelect>
           </>
         ) : (
           <>
-            <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} onChange={(event) => selectBaseScenario(event.target.value)}>
-              {scenarioOptions.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}>{item.label}</MenuItem>)}
+            <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} displayValue={scenarioOptions.find((item) => item.key === baseScenario)?.label} compactValue={scenarioAbbreviation(scenarioOptions.find((item) => item.key === baseScenario)?.label ?? baseScenario)} onChange={(event) => selectBaseScenario(event.target.value)}>
+              {scenarioOptions.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
             </LabeledSelect>
             <SwapButton onClick={swapScenarios} />
-            <LabeledSelect tourId="scenario-controls" label="Selected Scenario" value={scenario} onChange={(event) => selectMapScenario(event.target.value)}>
-              {scenarioOptions.map((item) => <MenuItem disabled={item.key === baseScenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>{item.label}</MenuItem>)}
+            <LabeledSelect tourId="scenario-controls" label="Selected Scenario" value={scenario} displayValue={scenarioOptions.find((item) => item.key === scenario)?.label} compactValue={scenarioAbbreviation(scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario)} onChange={(event) => selectMapScenario(event.target.value)}>
+              {scenarioOptions.map((item) => <MenuItem disabled={item.key === baseScenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
             </LabeledSelect>
           </>
         )}
@@ -433,7 +469,10 @@ export default function ScenarioExplorerPage() {
           </Box>
           <ToggleButtonGroup exclusive size="small" value={valueMode} onChange={(_, value) => { if (value) { setValueMode(value as ValueMode); setHistogramBrush(null); } }} aria-label="Value display mode" sx={{ height: '2.5rem' }}>
             <ToggleButton value="raw" sx={{ textTransform: 'none' }}>{"\u00B5S/cm"}</ToggleButton>
-            <ToggleButton value="percent">Percent change</ToggleButton>
+            <ToggleButton value="percent">
+              <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>Percent change</Box>
+              <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>% change</Box>
+            </ToggleButton>
           </ToggleButtonGroup>
         </Box>
         <Box data-tour="color-scale"><SalinityScale extent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} /></Box>
@@ -471,11 +510,11 @@ export default function ScenarioExplorerPage() {
       </ExplorerInfoPopover>
 
         <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: isChartExpanded ? 'minmax(0, 1fr)' : { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
-        <RegionalChart data={comparisonData} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} />
+        <RegionalChart data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
         {!isChartExpanded && <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />}
         </Box>
         </Box>
-        {!isChartExpanded && <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />}
+        {!isChartExpanded && <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} baseScenario={baseScenario} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />}
       </Box>
     </Box></>
   );
@@ -489,6 +528,19 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
       ? 'minmax(0,.8fr) auto minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
       : 'minmax(0,1fr) auto minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)',
     minWidth: 0, overflow: 'hidden', p: theme.jtSpacing.component.sm,
+    [theme.breakpoints.down('xl')]: {
+      gridTemplateColumns: mode === 'rma-schism'
+        ? 'minmax(4rem,.7fr) auto minmax(4rem,.7fr) minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
+        : 'minmax(4rem,.75fr) auto minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)',
+    },
+    [theme.breakpoints.down('md')]: {
+      '& .MuiTypography-caption': { ...theme.typography.captionSmall },
+      gap: theme.jtSpacing.gap.xs,
+      gridTemplateColumns: mode === 'rma-schism'
+        ? 'minmax(3.5rem,.55fr) auto minmax(3.5rem,.55fr) minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
+        : 'minmax(3.5rem,.6fr) auto minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)',
+      p: theme.jtSpacing.component.xs,
+    },
     [theme.breakpoints.between('lg', 'xl')]: {
       '& .MuiTypography-caption': { ...theme.typography.captionSmall },
       gap: theme.jtSpacing.gap.xs,

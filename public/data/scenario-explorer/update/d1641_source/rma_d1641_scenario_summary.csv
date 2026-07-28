@@ -1,0 +1,7 @@
+scenario,matched_d1641_stations,computable_from_ec,high_tide_data_required,unmapped_catalog_stations,exceedance_intervals,stations_with_exceedance,sum_interval_days
+baseline,14,9,5,2,3,3,142
+bolster,14,9,5,2,3,3,142
+ecomachine,14,9,5,2,3,3,115
+newgreen,14,9,5,2,3,3,116
+reserve,14,9,5,2,9,5,240
+tunnel,14,9,5,2,8,6,323

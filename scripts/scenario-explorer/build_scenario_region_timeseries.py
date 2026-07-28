@@ -16,7 +16,7 @@ SCENARIOS = [
     ("Bolster & Fortify", "bolster"),
     ("Eco Machine", "ecomachine"),
     ("New Green Watershed", "newgreen"),
-    ("Calling on Reserve", "reserve"),
+    ("Calling on Reserves", "reserve"),
     ("A Tunnel", "tunnel"),
 ]
 

@@ -37,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/pages/playground" element={<Playground />} />
           <Route path="/pages/baseline-exploration" element={<BaselineExploration />} />
           <Route path="/pages/scenario-explorer" element={<Suspense fallback={null}><ScenarioExplorerPage /></Suspense>} />
+          <Route path="/pages/scenario-explorer/internal" element={<Suspense fallback={null}><ScenarioExplorerPage enableDateHighlights /></Suspense>} />
           <Route path="/pages/watershed" element={<Watershed />} />
           <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
           <Route path="/design-system" element={<DesignSystem />} />
