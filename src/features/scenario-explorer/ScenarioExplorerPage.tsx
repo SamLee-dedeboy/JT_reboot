@@ -40,9 +40,9 @@ const scenarioAbbreviation = (label: string) => ({
   'A Tunnel': 'TUN',
   'Eco Machine': 'ECO',
   'New Green Watershed': 'NGW',
-  'Run 15 BAU': 'RUN 15',
-  'Run 16 +30%': 'RUN 16',
-  'Run 17 -10%': 'RUN 17',
+  'Business As Usual': 'BAU',
+  '+30% Delta outflow': '+30% outflow',
+  '-10% Delta outflow': '-10% outflow',
 }[label] ?? label);
 const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') => ({
   color,
@@ -200,9 +200,9 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
   const scenarioOptions = useMemo(() => {
     if (!data) return [];
     if (dashboardMode === "tiered-outflows") return data.scenarios.map((item) => {
-      if (item.key === "run15") return { ...item, label: "Run 15 BAU" };
-      if (item.key === "run16") return { ...item, label: "Run 16 +30%" };
-      if (item.key === "run17") return { ...item, label: "Run 17 -10%" };
+      if (item.key === "run15") return { ...item, label: "Business As Usual" };
+      if (item.key === "run16") return { ...item, label: "+30% Delta outflow" };
+      if (item.key === "run17") return { ...item, label: "-10% Delta outflow" };
       return item;
     });
     if (dashboardMode !== "rma-scenarios") return data.scenarios.map((item) => ({ ...item, label: renameBaseline(item.label) }));
@@ -384,7 +384,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
   if (!datasets || !data || !comparisonData || !selectedScenario) {
     return <Box sx={{ display: "grid", minHeight: "100dvh", placeItems: "center" }}><Stack sx={(theme) => ({ alignItems: 'center', gap: theme.jtSpacing.gap.sm })}><CircularProgress color="primary" /><Typography variant="caption" color="text.secondary">Loading scenario explorer…</Typography></Stack></Box>;
   }
-  const headerDescription = 'Explore how salinity changes across scenarios, regions, stations, and time using the linked map, timeline, and station distribution. See Tutorial for a refresher on all interactions supported by this interface.';
+  const headerDescription = 'Explore salinity changes across scenarios, regions, stations, and time with the linked map, timeline, and station distribution. See Tutorial for help. If the layout feels crowded, use a larger screen or zoom out in your browser (Ctrl/Cmd + −).';
 
   return (
     <>
@@ -470,7 +470,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
           <ToggleButtonGroup exclusive size="small" value={valueMode} onChange={(_, value) => { if (value) { setValueMode(value as ValueMode); setHistogramBrush(null); } }} aria-label="Value display mode" sx={{ height: '2.5rem' }}>
             <ToggleButton value="raw" sx={{ textTransform: 'none' }}>{"\u00B5S/cm"}</ToggleButton>
             <ToggleButton value="percent">
-              <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>Percent change</Box>
+              <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>% change</Box>
               <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>% change</Box>
             </ToggleButton>
           </ToggleButtonGroup>
@@ -528,6 +528,9 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
       ? 'minmax(0,.8fr) auto minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
       : 'minmax(0,1fr) auto minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)',
     minWidth: 0, overflow: 'hidden', p: theme.jtSpacing.component.sm,
+    '@media (max-width: 1919.95px)': {
+      '& .MuiTypography-caption': { ...theme.typography.captionSmall },
+    },
     [theme.breakpoints.down('xl')]: {
       gridTemplateColumns: mode === 'rma-schism'
         ? 'minmax(4rem,.7fr) auto minmax(4rem,.7fr) minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'

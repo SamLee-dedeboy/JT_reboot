@@ -73,6 +73,9 @@ const SCENARIO_ABBREVIATIONS: Record<string, string> = {
   'A Tunnel': 'TUN',
   'Eco Machine': 'ECO',
   'New Green Watershed': 'NGW',
+  'Business As Usual': 'BAU',
+  '+30% Delta outflow': '+30% outflow',
+  '-10% Delta outflow': '-10% outflow',
 };
 
 const abbreviateScenario = (label: string) => SCENARIO_ABBREVIATIONS[label] ?? label;
@@ -250,7 +253,15 @@ function ChartSvg({ data, d1641Data, dashboardMode, region, activeKeys, dateInde
       </Typography>
       <Box sx={{ display: 'grid', gap: 'inherit', mr: `${PAD.right}px` }}>
         <Box sx={(theme) => ({ alignItems: 'center', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: '1fr auto 1fr' })}>
-          <Typography variant="caption" color="text.secondary">Date</Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={(theme) => ({
+              '@media (max-width: 1919.95px)': { ...theme.typography.captionSmall },
+            })}
+          >
+            Date
+          </Typography>
           {enableDateHighlights ? <Select
             aria-label="Highlighted domain-specific timeframe"
             size="small"
@@ -405,14 +416,45 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
         },
       }}
     >
-      <Box sx={(theme) => ({ alignItems: 'start', borderBottom: 1, borderColor: "divider", display: "grid", gap: theme.jtSpacing.gap.lg, gridTemplateColumns: 'auto minmax(0, 1fr) auto', p: theme.jtSpacing.component.sm, [theme.breakpoints.down('xl')]: { gap: theme.jtSpacing.gap.xs, gridTemplateColumns: 'auto minmax(5rem, 1fr) auto', p: theme.jtSpacing.component.xs } })}>
+      <Box sx={(theme) => ({
+        alignItems: 'start',
+        borderBottom: 1,
+        borderColor: "divider",
+        display: "grid",
+        gap: theme.jtSpacing.gap.lg,
+        gridTemplateColumns: 'auto minmax(0, 1fr) auto',
+        p: theme.jtSpacing.component.sm,
+        '@media (max-width: 1919.95px)': {
+          '& .MuiTypography-caption': { ...theme.typography.captionSmall },
+        },
+        [theme.breakpoints.down('xl')]: {
+          gap: theme.jtSpacing.gap.xs,
+          gridTemplateColumns: 'auto minmax(5rem, 1fr) auto',
+          p: theme.jtSpacing.component.xs,
+        },
+      })}>
           <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs })}>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
               <Typography variant="caption" color="text.secondary">Station range</Typography>
               <IconButton aria-label="Explain the shaded station range" onClick={(event) => setBandInfoAnchor(event.currentTarget)} size="small" sx={{ color: "text.secondary", p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
             </Box>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
-            <ToggleButtonGroup exclusive size="small" value={rangeMode} onChange={(_, value) => { if (value) setRangeMode(value); }} aria-label="Shaded station range">
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={rangeMode}
+              onChange={(_, value) => { if (value) setRangeMode(value); }}
+              aria-label="Shaded station range"
+              sx={{
+                '@media (max-width: 1919.95px)': {
+                  '& .MuiToggleButton-root': {
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.05em',
+                    px: 1.25,
+                  },
+                },
+              }}
+            >
               <ToggleButton value="minmax">All stations</ToggleButton>
               <ToggleButton value="p90">Middle 90%</ToggleButton>
               <ToggleButton value="iqr">Middle 50%</ToggleButton>
@@ -422,8 +464,8 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
           <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs, minWidth: 0, overflow: 'hidden' })}>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
               <Typography variant="caption" color="text.secondary">
-                <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>Scenario overlay</Box>
-                <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>Overlays</Box>
+                <Box component="span" sx={{ display: 'none', '@media (min-width: 1920px)': { display: 'inline' } }}>Scenario overlay</Box>
+                <Box component="span" sx={{ display: 'inline', '@media (min-width: 1920px)': { display: 'none' } }}>Overlays</Box>
               </Typography>
               <IconButton aria-label="Explain scenario visibility" onClick={(event) => setVisibilityInfoAnchor(event.currentTarget)} size="small" sx={{ color: 'text.secondary', p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
               <Tooltip title={activeKeys.length > 1 ? (expanded ? 'Restore dashboard layout' : 'Expand line chart') : 'Select another scenario to expand the line chart'}>
@@ -446,7 +488,15 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
               onClick={(event) => setOverlayMenuAnchor(event.currentTarget)}
               size="small"
               startIcon={<VisibilityOutlinedIcon fontSize="small" />}
-              sx={{ display: { xs: 'inline-flex', xl: 'none' }, justifySelf: 'start', minWidth: 0 }}
+              sx={(theme) => ({
+                display: 'inline-flex',
+                height: theme.spacing(5),
+                justifySelf: 'start',
+                minWidth: 0,
+                py: 0,
+                whiteSpace: 'nowrap',
+                '@media (min-width: 1920px)': { display: 'none' },
+              })}
             >
               Overlays {activeKeys.length}/{data.scenarios.filter((item) => item.key !== baseScenarioKey).length}
             </Button>
@@ -463,11 +513,11 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
                   sx={(theme) => ({ gap: theme.jtSpacing.gap.sm, typography: 'button' })}
                 >
                   {primary || active ? <VisibilityOutlinedIcon fontSize="small" sx={{ color: primary ? 'brand.primaryGreen' : 'common.white' }} /> : <VisibilityOffOutlinedIcon fontSize="small" />}
-                  {abbreviateScenario(item.label)}
+                  {item.label}
                 </MenuItem>;
               })}
             </Menu>
-            <Box sx={(theme) => ({ display: { xs: 'none', xl: 'flex' }, flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0 })}>
+            <Box sx={(theme) => ({ display: 'none', flexWrap: 'nowrap', gap: theme.jtSpacing.gap.xs, minWidth: 0, '@media (min-width: 1920px)': { display: 'flex' } })}>
             {data.scenarios.filter((scenario) => scenario.key !== baseScenarioKey).map((scenario) => {
               const active = activeKeys.includes(scenario.key);
               const primary = scenario.key === selectedScenario.key;

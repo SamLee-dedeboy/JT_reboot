@@ -167,7 +167,10 @@ const themeOptions = {
         sm: 600,
         md: 900,
         lg: 1200,
-        xl: 1920,
+        // A 15-inch MacBook Air exposes a 1440px-wide CSS workspace at its
+        // default Retina scaling. Switch to the full-label layout slightly
+        // before that width so browser chrome does not force abbreviations.
+        xl: 1400,
         },
     },
     palette: {
@@ -270,7 +273,16 @@ const themeOptions = {
             fontWeight: 300,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            fontSize: 'clamp(1rem, 0.9rem + 0.3vw, 1.15rem)',
+            fontSize: '1rem',
+            lineHeight: 1.2,
+            '@media (max-width: 1919.95px)': {
+              fontSize: '0.875rem',
+              letterSpacing: '0.065em',
+            },
+            '@media (max-width: 1399.95px)': {
+              fontSize: '0.8rem',
+              letterSpacing: '0.055em',
+            },
         },
         eyebrow: {
             fontFamily: fontHeading,
