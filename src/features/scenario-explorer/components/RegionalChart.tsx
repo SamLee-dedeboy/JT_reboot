@@ -282,6 +282,26 @@ function ChartSvg({ data, d1641Data, dashboardMode, region, activeKeys, dateInde
           onChangeCommitted={(_, value) => onDateCommit(value as number)}
           sx={{ color: 'common.white', '& .MuiSlider-rail': { opacity: 0.38 } }}
         />
+        <Box
+          aria-label="Chart legend"
+          sx={(theme) => ({
+            alignItems: 'center',
+            color: 'text.secondary',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: theme.jtSpacing.gap.md,
+            typography: 'captionSmall',
+          })}
+        >
+          <Box component="span" sx={(theme) => ({ alignItems: 'center', display: 'inline-flex', gap: theme.jtSpacing.gap.xs })}>
+            <Box component="span" sx={{ bgcolor: 'brand.primaryGreen', borderRadius: 999, display: 'inline-block', height: 2, width: 24 }} />
+            Average across all stations
+          </Box>
+          <Box component="span" sx={(theme) => ({ alignItems: 'center', display: 'inline-flex', gap: theme.jtSpacing.gap.xs })}>
+            <Box component="span" sx={{ bgcolor: 'brand.primaryGreen', border: 1, borderColor: 'brand.primaryGreen', borderRadius: 0.5, display: 'inline-block', height: 10, opacity: 0.28, width: 24 }} />
+            Selected shaded range
+          </Box>
+        </Box>
       </Box>
     </Box>
     <Box ref={plotRef} sx={(theme) => ({ flex: 1, minHeight: { xs: DEFAULT_HEIGHT, lg: 0 }, mx: theme.jtSpacing.component.sm, overflow: "hidden", position: "relative" })}>
@@ -345,7 +365,23 @@ function ChartSvg({ data, d1641Data, dashboardMode, region, activeKeys, dateInde
           return <g key={row.key} aria-label={`${row.label} D-1641 exceedance periods`}>
             <text x={PAD.left - 10} y={rowY + 11} textAnchor="end" style={{ ...textStyle, fill: row.color, fontWeight: 700 }}>{row.label}</text>
             <rect x={PAD.left} y={rowY} width={width - PAD.left - PAD.right} height={COMPLIANCE_ROW_HEIGHT} rx="3" fill="none" stroke={theme.palette.base[400]} strokeWidth="1" />
-            {row.segments.map((segment) => <rect key={`${segment.start}-${segment.end}`} x={x(segment.start)} y={rowY + 2} width={Math.max(3, x(Math.min(finalDateIndex, segment.end + 1)) - x(segment.start))} height={COMPLIANCE_ROW_HEIGHT - 4} rx="2" fill={row.color} opacity=".9" />)}
+            {row.segments.map((segment) => (
+              <Tooltip
+                key={`${segment.start}-${segment.end}`}
+                placement="top"
+                title={`${row.label}: ${formatDate(data.dates[segment.start])} – ${formatDate(data.dates[segment.end])}`}
+              >
+                <rect
+                  x={x(segment.start)}
+                  y={rowY + 2}
+                  width={Math.max(3, x(Math.min(finalDateIndex, segment.end + 1)) - x(segment.start))}
+                  height={COMPLIANCE_ROW_HEIGHT - 4}
+                  rx="2"
+                  fill={row.color}
+                  opacity=".9"
+                />
+              </Tooltip>
+            ))}
             {!row.segments.length && <text x={PAD.left + 6} y={rowY + 11} style={{ ...textStyle, fill: theme.palette.base[300], fontWeight: 700 }}>No calculated exceedance</text>}
           </g>;
         })}
@@ -379,6 +415,8 @@ interface RegionalChartProps {
   dateIndex: number;
   onDateChange: (index: number) => void;
   onDateCommit: (index: number) => void;
+  rangeMode: RangeMode;
+  onRangeModeChange: (rangeMode: RangeMode) => void;
   units: string;
   expanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
@@ -386,8 +424,7 @@ interface RegionalChartProps {
   enableDateHighlights?: boolean;
 }
 
-export default function RegionalChart({ data, d1641Data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, units, expanded, onExpandedChange, enableDateHighlights = false }: RegionalChartProps) {
-  const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
+export default function RegionalChart({ data, d1641Data, dashboardMode, region, selectedScenario, baseScenarioKey, baseScenarioLabel, rawRegionValue, percentRegionValue, activeKeys, onActiveKeysChange, dateIndex, onDateChange, onDateCommit, rangeMode, onRangeModeChange, units, expanded, onExpandedChange, enableDateHighlights = false }: RegionalChartProps) {
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null);
   const [deviationInfoAnchor, setDeviationInfoAnchor] = useState<HTMLButtonElement | null>(null);
@@ -435,7 +472,7 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
       })}>
           <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs })}>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
-              <Typography variant="caption" color="text.secondary">Station range</Typography>
+              <Typography variant="caption" color="text.secondary">Shaded station spread</Typography>
               <IconButton aria-label="Explain the shaded station range" onClick={(event) => setBandInfoAnchor(event.currentTarget)} size="small" sx={{ color: "text.secondary", p: 0 }}><InfoOutlinedIcon fontSize="small" /></IconButton>
             </Box>
             <Box sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}>
@@ -443,7 +480,7 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
               exclusive
               size="small"
               value={rangeMode}
-              onChange={(_, value) => { if (value) setRangeMode(value); }}
+              onChange={(_, value) => { if (value) onRangeModeChange(value); }}
               aria-label="Shaded station range"
               sx={{
                 '@media (max-width: 1919.95px)': {
@@ -456,8 +493,8 @@ export default function RegionalChart({ data, d1641Data, dashboardMode, region, 
               }}
             >
               <ToggleButton value="minmax">All stations</ToggleButton>
-              <ToggleButton value="p90">Middle 90%</ToggleButton>
-              <ToggleButton value="iqr">Middle 50%</ToggleButton>
+              <ToggleButton value="p90">Central 90%</ToggleButton>
+              <ToggleButton value="iqr">Central 50%</ToggleButton>
             </ToggleButtonGroup>
             </Box>
           </Box>

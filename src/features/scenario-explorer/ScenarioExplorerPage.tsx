@@ -11,7 +11,7 @@ import ExplorerHeader from './components/ExplorerHeader';
 import SalinityScale from './components/SalinityScale';
 import ExplorerInfoPopover from './components/ExplorerInfoPopover';
 import ExplorerTutorial from './components/ExplorerTutorial';
-import type { D1641Dataset, DashboardMode, HistogramBrush, ModelKey, Scenario, ScenarioDataset, ScenarioDatasets, ValueMode, ValueSeries } from './types';
+import type { D1641Dataset, DashboardMode, HistogramBrush, ModelKey, RangeMode, Scenario, ScenarioDataset, ScenarioDatasets, ValueMode, ValueSeries } from './types';
 
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
   'rma-scenarios': { key: 'rmaScenarios', url: '/data/scenario-explorer/salinity_dashboard.json' },
@@ -119,6 +119,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
   const [activeKeys, setActiveKeys] = useState<string[]>(['bolster']);
   const [histogramBrush, setHistogramBrush] = useState<HistogramBrush>(null);
   const [valueMode, setValueMode] = useState<ValueMode>('percent');
+  const [rangeMode, setRangeMode] = useState<RangeMode>('minmax');
   const [selectedModel, setSelectedModel] = useState<ModelKey>('schism');
   const [isModeTransitioning, setIsModeTransitioning] = useState(false);
   const [regionInfoAnchor, setRegionInfoAnchor] = useState<HTMLButtonElement | null>(null);
@@ -510,8 +511,8 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       </ExplorerInfoPopover>
 
         <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: isChartExpanded ? 'minmax(0, 1fr)' : { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
-        <RegionalChart data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
-        {!isChartExpanded && <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} units={valueMode === "percent" ? "%" : "µS/cm"} />}
+        <RegionalChart data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} rangeMode={rangeMode} onRangeModeChange={setRangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
+        {!isChartExpanded && <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} rangeMode={rangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} />}
         </Box>
         </Box>
         {!isChartExpanded && <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} baseScenario={baseScenario} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />}

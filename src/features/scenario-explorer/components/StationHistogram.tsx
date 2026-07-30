@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { motion } from 'framer-motion';
 import { formatDate, formatNumber, valueColor } from '../format';
-import type { HistogramBrush, Scenario, ScenarioDataset, Station } from '../types';
+import type { HistogramBrush, RangeMode, Scenario, ScenarioDataset, Station } from '../types';
 
 const WIDTH = 190;
 const PAD = { left: 52, right: 18, top: 18, bottom: 34 };
@@ -14,13 +14,14 @@ interface StationHistogramProps {
   dateIndex: number;
   onBrushChange: (brush: HistogramBrush) => void;
   mapExtent: number;
+  rangeMode: RangeMode;
   units: string;
 }
 
 interface SwarmPoint { station: Station; value: number; x: number; y: number }
 interface StationEntry { station: Station; value: number }
 
-function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, mapExtent, units }: StationHistogramProps) {
+function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, mapExtent, rangeMode, units }: StationHistogramProps) {
   const theme = useTheme();
   const [brush, setBrush] = useState<HistogramBrush>(null);
   const dragStartRef = useRef<number | null>(null);
@@ -43,6 +44,20 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
     .filter((entry): entry is StationEntry => (region === "All regions" || entry.station.region === region) && entry.value != null && Number.isFinite(entry.value)),
   [data.stations, scenario, dateIndex, region]);
   const values = useMemo(() => entries.map(({ value }) => value), [entries]);
+  const rangeBounds = useMemo<[number, number] | null>(() => {
+    if (rangeMode === 'minmax' || !values.length) return null;
+    const sorted = [...values].sort((a, b) => a - b);
+    const quantile = (fraction: number) => {
+      const position = (sorted.length - 1) * fraction;
+      const lower = Math.floor(position);
+      const upper = Math.ceil(position);
+      const weight = position - lower;
+      return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+    };
+    return rangeMode === 'p90'
+      ? [quantile(0.05), quantile(0.95)]
+      : [quantile(0.25), quantile(0.75)];
+  }, [rangeMode, values]);
   const minimum = values.length ? Math.min(...values, 0) : -1;
   const maximum = values.length ? Math.max(...values, 0) : 1;
   const y = useCallback((value: number) => height - PAD.bottom - (value - minimum) / Math.max(1, maximum - minimum) * (height - PAD.top - PAD.bottom), [height, maximum, minimum]);
@@ -70,6 +85,9 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
   const epsilon = Math.max(0.000001, (maximum - minimum) * 0.000001);
   const minimumBrushSpan = Math.max(epsilon * 10, (maximum - minimum) * 0.005);
   const includes = (value: number) => Boolean(brush && value >= brush[0] - epsilon && value <= brush[1] + epsilon);
+  const includedInRange = (value: number) => !rangeBounds || (value >= rangeBounds[0] - epsilon && value <= rangeBounds[1] + epsilon);
+  const pointOpacity = (value: number) => (brush && !includes(value)) || !includedInRange(value) ? .18 : .88;
+  const pointRadius = (value: number) => includedInRange(value) ? 3.5 : 2;
   const publish = (range: HistogramBrush) => onBrushChange(range ? [range[0] - epsilon, range[1] + epsilon] : null);
   const rememberBrushPosition = (range: [number, number]) => {
     const span = Math.max(Number.EPSILON, maximum - minimum);
@@ -121,7 +139,7 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
       onDoubleClick={() => { brushPositionRef.current = null; setBrush(null); publish(null); }}>
       <line x1={PAD.left} x2={PAD.left} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[500]} />
       {brush && <rect x={PAD.left} y={y(brush[1])} width={WIDTH - PAD.left - PAD.right} height={Math.max(1, y(brush[0]) - y(brush[1]))} fill={theme.palette.brand.primaryGreen} opacity=".12" stroke={theme.palette.brand.primaryGreen} strokeWidth="1.5" />}
-      {swarm.map((point, index) => <motion.circle key={`${scenario.key}-${dateIndex}-${point.station.station_id}`} cx={point.x} cy={point.y} r="3.5" fill={valueColor(point.value, mapExtent)} opacity={brush && !includes(point.value) ? .22 : .88} initial={{ cx: point.x, cy: point.y, opacity: 0, r: 3.5, scale: 0 }} animate={{ cx: point.x, cy: point.y, opacity: brush && !includes(point.value) ? .22 : .88, r: 3.5, scale: 1 }} transition={{ duration: .35, delay: Math.min(index * .002, .35) }}><title>Station {point.station.station_id} · {point.station.long_name} · {formatNumber(point.value)} {units}</title></motion.circle>)}
+      {swarm.map((point, index) => <motion.circle key={`${scenario.key}-${dateIndex}-${point.station.station_id}`} cx={point.x} cy={point.y} r={pointRadius(point.value)} fill={valueColor(point.value, mapExtent)} opacity={pointOpacity(point.value)} initial={{ cx: point.x, cy: point.y, opacity: 0, r: pointRadius(point.value), scale: 0 }} animate={{ cx: point.x, cy: point.y, opacity: pointOpacity(point.value), r: pointRadius(point.value), scale: 1 }} transition={{ duration: .35, delay: Math.min(index * .002, .35) }}><title>Station {point.station.station_id} · {point.station.long_name} · {formatNumber(point.value)} {units}</title></motion.circle>)}
       {minimum <= 0 && maximum >= 0 && <><line x1={PAD.left} x2={WIDTH - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[100]} strokeWidth="2" /><text x={WIDTH - PAD.right} y={y(0) - 6} textAnchor="end" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Business as Usual</text></>}
       {ticks.map((tick, index) => <text key={index} x={PAD.left - 7} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text>)}
     </Box>
