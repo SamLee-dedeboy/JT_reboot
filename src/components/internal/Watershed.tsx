@@ -25,6 +25,7 @@ import Icon, { FloodplainTileIcon, type IconName } from '../common/Icon';
 import Hl from '../common/Highlight';
 import { assetUrl } from '../../utils/baseUrl';
 import { palette } from '../../theme/muiTheme';
+import WatershedLandCoverChart from './WatershedLandCoverChart';
 
 interface WatershedMetricRecord {
   habitat_focus: string;
@@ -1419,6 +1420,151 @@ function buildAttentionScenarios(
     );
 }
 
+function AttentionRestorationBarsSvg({
+  level,
+  scenarios,
+  compareMode,
+  scaleMode,
+  maxScenarioTotal,
+}: {
+  level: string;
+  scenarios: AttentionScenario[];
+  compareMode: AttentionCompareMode;
+  scaleMode: AttentionScaleMode;
+  maxScenarioTotal: number;
+}) {
+  const width = 1600;
+  const height = 620;
+  const headerHeight = 104;
+  const rowHeight = 172;
+  const contentX = 28;
+  const contentWidth = width - contentX * 2;
+  const barWidth = contentWidth - 14;
+  const titleId = `attention-${level}-title`;
+  const levelLabel = level === 'min' ? 'Minimum' : level === 'med' ? 'Medium' : 'Maximum';
+
+  return (
+    <Box
+      component="svg"
+      viewBox={`0 0 ${width} ${height}`}
+      role="img"
+      aria-labelledby={titleId}
+      data-restoration-level={level}
+      sx={{
+        display: 'block',
+        width: '100%',
+        height: 'auto',
+        borderRadius: 1,
+        overflow: 'hidden',
+        bgcolor: 'rgba(16,22,24,0.22)',
+      }}
+    >
+      <title id={titleId}>{levelLabel} Restoration habitat attention</title>
+      <rect x="1" y="1" width={width - 2} height={height - 2} rx="12" fill="#26373c" stroke="#9ba2a4" strokeOpacity="0.2" />
+      <path d={`M 1 13 Q 1 1 13 1 H ${width - 13} Q ${width - 1} 1 ${width - 1} 13 V ${headerHeight} H 1 Z`} fill="#4a595d" fillOpacity="0.42" />
+      <line x1="1" y1={headerHeight} x2={width - 1} y2={headerHeight} stroke="#9ba2a4" strokeOpacity="0.2" />
+      <text x={contentX} y="47" fill="#fff" fontFamily="var(--font-heading)" fontSize="27" fontWeight="700">
+        {levelLabel.toUpperCase()} RESTORATION
+      </text>
+      <text x={contentX} y="78" fill="#c5cacc" fontFamily="var(--font-body)" fontSize="20">
+        Placeholder caption
+      </text>
+
+      {scenarios.map((scenario, rowIndex) => {
+        const rowY = headerHeight + rowIndex * rowHeight;
+        const scenarioTotal = d3.sum(scenario.segments, (segment) =>
+          compareMode === 'acres' ? segment.acres : segment.percent,
+        );
+        const scaledTotal = compareMode === 'acres' && scaleMode === 'log' ? Math.log10(scenarioTotal + 1) : scenarioTotal;
+        const renderedBarWidth = (scaledTotal / maxScenarioTotal) * barWidth;
+        const priorityMeta = HABITAT_META[`${scenario.scenarioHabitat}s`];
+        let segmentX = contentX;
+
+        return (
+          <g key={scenario.id}>
+            <text
+              x={contentX}
+              y={rowY + 37}
+              fill={priorityMeta?.baseColor ?? '#62b6d9'}
+              fontFamily="var(--font-heading)"
+              fontSize="21"
+              fontWeight="700"
+              letterSpacing="4"
+            >
+              PRIORITIZE {formatScenarioHabitat(scenario.scenarioHabitat).toUpperCase()}
+            </text>
+            {scenario.segments.map((segment) => {
+              const value = compareMode === 'acres' ? segment.acres : segment.percent;
+              const segmentWidth = scenarioTotal > 0 ? (value / scenarioTotal) * renderedBarWidth : 0;
+              const x = segmentX;
+              segmentX += segmentWidth;
+
+              return (
+                <rect
+                  key={segment.habitatFocus}
+                  x={x}
+                  y={rowY + 61}
+                  width={Math.max(segmentWidth, 0)}
+                  height="34"
+                  fill={HABITAT_META[segment.habitatFocus].baseColor}
+                  stroke="#9ba2a4"
+                  strokeOpacity="0.42"
+                />
+              );
+            })}
+            {scenario.segments.map((segment, segmentIndex) => {
+              const meta = HABITAT_META[segment.habitatFocus];
+              const valueLabel =
+                compareMode === 'acres' ? `${formatNumber(segment.acres)} acres` : formatPercent(segment.percent);
+              const label = `${meta.label} – ${valueLabel}`;
+              const focused = segment.habitatFocus === `${scenario.scenarioHabitat}s`;
+              const labelX = contentX + segmentIndex * (contentWidth / 3);
+              const pillWidth = Math.min(360, 22 + label.length * 10.5);
+
+              return (
+                <g key={segment.habitatFocus}>
+                  {focused && (
+                    <rect
+                      x={labelX}
+                      y={rowY + 108}
+                      width={pillWidth}
+                      height="37"
+                      rx="18.5"
+                      fill="none"
+                      stroke={meta.baseColor}
+                      strokeWidth="1.5"
+                    />
+                  )}
+                  <text
+                    x={labelX + (focused ? 12 : 0)}
+                    y={rowY + 133}
+                    fill={meta.baseColor}
+                    fontFamily="var(--font-body)"
+                    fontSize="20"
+                    fontWeight="600"
+                  >
+                    {label}
+                  </text>
+                </g>
+              );
+            })}
+            {rowIndex < scenarios.length - 1 && (
+              <line
+                x1={contentX}
+                y1={rowY + rowHeight}
+                x2={width - contentX}
+                y2={rowY + rowHeight}
+                stroke="#9ba2a4"
+                strokeOpacity="0.18"
+              />
+            )}
+          </g>
+        );
+      })}
+    </Box>
+  );
+}
+
 function AttentionStackedChart({
   records,
   selectedRestorationLevel,
@@ -1590,16 +1736,26 @@ function AttentionStackedChart({
       </Box>
 
       <Stack spacing={2}>
-        {scenariosByRestorationLevel.map(({ level, scenarios: groupedScenarios }) => (
-          <Box
-            key={level}
-            sx={{
-              border: '1px solid rgba(155,162,164,0.2)',
-              borderRadius: 1,
-              bgcolor: 'rgba(16,22,24,0.22)',
-              overflow: 'hidden',
-            }}
-          >
+        {scenariosByRestorationLevel.map(({ level, scenarios: groupedScenarios }) =>
+          designMode === 'bars' ? (
+            <AttentionRestorationBarsSvg
+              key={level}
+              level={level}
+              scenarios={groupedScenarios}
+              compareMode={compareMode}
+              scaleMode={scaleMode}
+              maxScenarioTotal={maxScenarioTotal}
+            />
+          ) : (
+            <Box
+              key={level}
+              sx={{
+                border: '1px solid rgba(155,162,164,0.2)',
+                borderRadius: 1,
+                bgcolor: 'rgba(16,22,24,0.22)',
+                overflow: 'hidden',
+              }}
+            >
             <Box
               sx={{
                 display: 'flex',
@@ -1661,7 +1817,7 @@ function AttentionStackedChart({
                             letterSpacing: '0.16em',
                           }}
                         >
-                          {formatScenarioHabitat(scenario.scenarioHabitat)}
+                          Prioritize {formatScenarioHabitat(scenario.scenarioHabitat)}
                         </Typography>
                         <HabitatAttentionOverlayCell scenario={scenario} compact />
                       </Box>
@@ -1670,11 +1826,6 @@ function AttentionStackedChart({
                 </Box>
               ) : (
               groupedScenarios.map((scenario) => {
-                const scenarioTotal = d3.sum(scenario.segments, (segment) =>
-                  compareMode === 'acres' ? segment.acres : segment.percent,
-                );
-                const scaledScenarioTotal = compareMode === 'acres' && scaleMode === 'log' ? Math.log10(scenarioTotal + 1) : scenarioTotal;
-                const totalWidth = `${(scaledScenarioTotal / maxScenarioTotal) * 100}%`;
                 const priorityMeta = HABITAT_META[`${scenario.scenarioHabitat}s`];
 
                 return (
@@ -1695,86 +1846,9 @@ function AttentionStackedChart({
                         letterSpacing: '0.16em',
                       }}
                     >
-                      {formatScenarioHabitat(scenario.scenarioHabitat)}
+                      Prioritize {formatScenarioHabitat(scenario.scenarioHabitat)}
                     </Typography>
-                    {designMode === 'bars' ? (
-                      <Box sx={{ minWidth: 0 }}>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          width: totalWidth,
-                          minHeight: 25,
-                          overflow: 'hidden',
-                          borderRadius: 0,
-                          border: '1px solid rgba(155,162,164,0.18)',
-                          bgcolor: 'rgba(16,22,24,0.45)',
-                        }}
-                        aria-label={`${formatRestorationLevel(scenario.restorationLevel)} ${formatScenarioHabitat(scenario.scenarioHabitat)} habitat attention`}
-                      >
-                        {scenario.segments.map((segment) => {
-                          const meta = HABITAT_META[segment.habitatFocus];
-                          const value = compareMode === 'acres' ? segment.acres : segment.percent;
-                          const width = scenarioTotal > 0 ? `${(value / scenarioTotal) * 100}%` : '0%';
-
-                          return (
-                            <Box
-                              key={segment.habitatFocus}
-                              sx={{
-                                width,
-                                bgcolor: meta.baseColor,
-                                borderRight: '1px solid',
-                                borderColor: 'base.300',
-                                '&:last-of-type': { borderRight: 0 },
-                              }}
-                              title={`${meta.label} – ${formatPercent(segment.percent)} / ${formatNumber(segment.acres)} acres`}
-                            />
-                          );
-                        })}
-                      </Box>
-                      <Box
-                        sx={{
-                          display: 'grid',
-                          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, minmax(0, 1fr))' },
-                          gap: 0.8,
-                          mt: 0.8,
-                        }}
-                      >
-                        {scenario.segments.map((segment) => {
-                          const meta = HABITAT_META[segment.habitatFocus];
-                          const label = compareMode === 'acres' ? `${formatNumber(segment.acres)} acres` : formatPercent(segment.percent);
-                          const isFocusedHabitat = segment.habitatFocus === `${scenario.scenarioHabitat}s`;
-
-                          return (
-                            <Box
-                              key={segment.habitatFocus}
-                              sx={{
-                                display: 'inline-flex',
-                                width: 'fit-content',
-                                alignItems: 'center',
-                                minHeight: isFocusedHabitat ? 28 : 'auto',
-                                border: isFocusedHabitat ? `1px solid ${meta.baseColor}` : '1px solid transparent',
-                                borderRadius: 999,
-                                px: isFocusedHabitat ? 1 : 0,
-                                py: 0,
-                              }}
-                            >
-                              <Typography
-                                variant="captionSmall"
-                                component="span"
-                                sx={{ color: meta.baseColor, m: 0, lineHeight: 1, display: 'flex', alignItems: 'center' }}
-                              >
-                                <span style={{ fontWeight: 800 }}>
-                                  {meta.label}
-                                </span>
-                                {'\u00a0–\u00a0'}
-                                {label}
-                              </Typography>
-                            </Box>
-                          );
-                        })}
-                      </Box>
-                      </Box>
-                    ) : designMode === 'icons' ? (
+                    {designMode === 'icons' ? (
                       <Box
                         sx={{
                           display: 'grid',
@@ -1810,8 +1884,9 @@ function AttentionStackedChart({
               })
               )}
             </Stack>
-          </Box>
-        ))}
+            </Box>
+          )
+        )}
       </Stack>
     </Stack>
   );
@@ -2343,6 +2418,19 @@ export default function Watershed() {
                   compareMode={attentionCompareMode}
                   onCompareModeChange={setAttentionCompareMode}
                 />
+
+                <Box>
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="h4" component="h3" sx={{ color: 'primary.main', mb: 1 }}>
+                      Land Cover Change
+                    </Typography>
+                    <Typography variant="body2" sx={{ maxWidth: '76ch' }}>
+                      Forest-cover loss and habitat gains across all three restoration levels. The charts use identical
+                      scales so bar lengths can be compared directly between <Hl>Minimum, Medium, and Maximum</Hl>.
+                    </Typography>
+                  </Box>
+                  <WatershedLandCoverChart records={metrics} />
+                </Box>
 
                 <ChangesComparisonChart
                   records={changes}

@@ -140,7 +140,18 @@ function StationHistogram({ data, region, scenario, dateIndex, onBrushChange, ma
       <line x1={PAD.left} x2={PAD.left} y1={PAD.top} y2={height - PAD.bottom} stroke={theme.palette.base[500]} />
       {brush && <rect x={PAD.left} y={y(brush[1])} width={WIDTH - PAD.left - PAD.right} height={Math.max(1, y(brush[0]) - y(brush[1]))} fill={theme.palette.brand.primaryGreen} opacity=".12" stroke={theme.palette.brand.primaryGreen} strokeWidth="1.5" />}
       {swarm.map((point, index) => <motion.circle key={`${scenario.key}-${dateIndex}-${point.station.station_id}`} cx={point.x} cy={point.y} r={pointRadius(point.value)} fill={valueColor(point.value, mapExtent)} opacity={pointOpacity(point.value)} initial={{ cx: point.x, cy: point.y, opacity: 0, r: pointRadius(point.value), scale: 0 }} animate={{ cx: point.x, cy: point.y, opacity: pointOpacity(point.value), r: pointRadius(point.value), scale: 1 }} transition={{ duration: .35, delay: Math.min(index * .002, .35) }}><title>Station {point.station.station_id} · {point.station.long_name} · {formatNumber(point.value)} {units}</title></motion.circle>)}
-      {minimum <= 0 && maximum >= 0 && <><line x1={PAD.left} x2={WIDTH - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[100]} strokeWidth="2" /><text x={WIDTH - PAD.right} y={y(0) - 6} textAnchor="end" style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}>Business as Usual</text></>}
+      {minimum <= 0 && maximum >= 0 && <>
+        <line x1={PAD.left} x2={WIDTH - PAD.right} y1={y(0)} y2={y(0)} stroke={theme.palette.base[100]} strokeWidth="2" />
+        <text
+          x={PAD.left - 7}
+          y={y(0) - 3}
+          textAnchor="end"
+          style={{ ...textStyle, fill: theme.palette.base[100], fontSize: 11, fontWeight: 700 }}
+        >
+          <tspan x={PAD.left - 7} dy="-0.45em">Business</tspan>
+          <tspan x={PAD.left - 7} dy="1.05em">as Usual</tspan>
+        </text>
+      </>}
       {ticks.map((tick, index) => <text key={index} x={PAD.left - 7} y={y(tick) + 4} textAnchor="end" style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}>{formatTick(tick)}</text>)}
     </Box>
     </Box>
