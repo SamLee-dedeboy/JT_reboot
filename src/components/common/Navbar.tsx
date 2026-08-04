@@ -53,6 +53,7 @@ const navItems: NavItem[] = [
     caption: 'Project tools and design references for the team.',
     dropdown: [
       { label: 'Scenario Explorer', href: '/pages/scenario-explorer/internal' },
+      { label: 'Regional Summary', href: '/pages/regional-summary' },
       { label: 'Design System', href: '/design-system' },
       { label: 'EJ Playground', href: '/pages/playground' },
       { label: 'Baseline Exploration', href: '/pages/baseline-exploration' },

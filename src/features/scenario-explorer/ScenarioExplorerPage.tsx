@@ -17,6 +17,7 @@ const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: 
   'rma-scenarios': { key: 'rmaScenarios', url: '/data/scenario-explorer/salinity_dashboard.json' },
   'rma-schism': { key: 'rmaSchism', url: '/data/scenario-explorer/rma_schism_dashboard.json' },
   'tiered-outflows': { key: 'tieredOutflows', url: '/data/scenario-explorer/tiered_outflows_dashboard.json' },
+  'schism-runs': { key: 'schismRuns', url: '/data/scenario-explorer/schism_runs_dashboard.json' },
 };
 
 interface LabeledSelectProps {
@@ -110,6 +111,7 @@ interface ScenarioExplorerPageProps {
 export default function ScenarioExplorerPage({ enableDateHighlights = false }: ScenarioExplorerPageProps) {
   const [datasets, setDatasets] = useState<Partial<ScenarioDatasets> | null>(null);
   const [d1641Data, setD1641Data] = useState<D1641Dataset | null>(null);
+  const [schismD1641Data, setSchismD1641Data] = useState<D1641Dataset | null>(null);
   const [dashboardMode, setDashboardMode] = useState<DashboardMode>('rma-scenarios');
   const [baseScenario, setBaseScenario] = useState("baseline");
   const [scenario, setScenario] = useState("bolster");
@@ -159,6 +161,8 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
     ? datasets?.rmaSchism
     : dashboardMode === "tiered-outflows"
       ? datasets?.tieredOutflows
+      : dashboardMode === "schism-runs"
+        ? datasets?.schismRuns
       : datasets?.rmaScenarios;
 
   const selectDashboardMode = async (nextMode: DashboardMode) => {
@@ -168,7 +172,14 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
     const config = DATASET_CONFIG[nextMode];
     let nextData = datasets[config.key];
     if (!nextData) {
-      nextData = await fetch(assetUrl(config.url)).then((response) => response.json() as Promise<ScenarioDataset>);
+      const [loadedData, loadedCompliance] = await Promise.all([
+        fetch(assetUrl(config.url)).then((response) => response.json() as Promise<ScenarioDataset>),
+        nextMode === 'schism-runs' && !schismD1641Data
+          ? fetch(assetUrl('/data/scenario-explorer/d1641_schism.json')).then((response) => response.json() as Promise<D1641Dataset>)
+          : Promise.resolve(null),
+      ]);
+      nextData = loadedData;
+      if (loadedCompliance) setSchismD1641Data(loadedCompliance);
       setDatasets((current) => ({ ...current, [config.key]: nextData }));
     }
     if (!nextData) return;
@@ -181,6 +192,10 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       setBaseScenario("run15");
       setScenario("run16");
       setActiveKeys(["run16"]);
+    } else if (nextMode === "schism-runs") {
+      setBaseScenario("run15");
+      setScenario("run30");
+      setActiveKeys(["run30"]);
     } else {
       setBaseScenario("baseline");
       setScenario("bolster");
@@ -206,6 +221,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       if (item.key === "run17") return { ...item, label: "-10% Delta outflow" };
       return item;
     });
+    if (dashboardMode === "schism-runs") return data.scenarios;
     if (dashboardMode !== "rma-scenarios") return data.scenarios.map((item) => ({ ...item, label: renameBaseline(item.label) }));
     const zeroSeries = data.dates.map(() => 0);
     const baseline = {
@@ -240,7 +256,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       return value == null || baseValue == null ? null : value - baseValue;
     });
 
-    return {
+    const compared: ScenarioDataset = {
       ...data,
       scenarios: scenarioOptions.map((item) => ({
         ...item,
@@ -251,7 +267,28 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
         ])),
       })),
     };
-  }, [baseScenario, dashboardMode, data, scenarioOptions, selectedModel]);
+    if (dashboardMode !== 'schism-runs') return compared;
+
+    const selected = scenarioOptions.find((item) => item.key === scenario);
+    if (!selected) return compared;
+    const available = data.dates.map((_, dateIndex) => base.stationValues.some((values, stationIndex) =>
+      values[dateIndex] != null && selected.stationValues[stationIndex]?.[dateIndex] != null));
+    const first = available.findIndex(Boolean);
+    const last = available.findLastIndex(Boolean);
+    if (first < 0 || last < first) return compared;
+    const sliceSeries = (values: ValueSeries) => values.slice(first, last + 1);
+    return {
+      ...compared,
+      dates: compared.dates.slice(first, last + 1),
+      referenceStationValues: compared.referenceStationValues?.map(sliceSeries),
+      scenarios: compared.scenarios.map((item) => ({
+        ...item,
+        stationValues: item.stationValues.map(sliceSeries),
+        regionValues: Object.fromEntries(Object.entries(item.regionValues).map(([regionName, values]) => [regionName, sliceSeries(values)])),
+        referenceStationValues: item.referenceStationValues?.map(sliceSeries),
+      })),
+    };
+  }, [baseScenario, dashboardMode, data, scenario, scenarioOptions, selectedModel]);
   const percentComparisonData = useMemo<ScenarioDataset | undefined>(() => {
     if (!rawComparisonData) return rawComparisonData;
     const canonicalReference = rawComparisonData.referenceStationValues;
@@ -264,7 +301,9 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
     const scenarios = rawComparisonData.scenarios.map((item) => {
       const itemReference = item.referenceStationValues ?? canonicalReference;
       const stationValues = item.stationValues.map((values, stationIndex) => {
-        const referenceSeries = itemReference?.[stationIndex]?.map((canonical, dateIndex) => {
+        const referenceSeries = dashboardMode === 'schism-runs'
+          ? scenarioOptions.find((scenarioItem) => scenarioItem.key === baseScenario)?.stationValues[stationIndex] ?? []
+          : itemReference?.[stationIndex]?.map((canonical, dateIndex) => {
           if (canonical == null) return null;
           if (dashboardMode !== "rma-schism") return canonical + (baseDeltas?.[stationIndex]?.[dateIndex] ?? 0);
           return baseScenario === "schism" ? canonical - (values[dateIndex] ?? 0) : canonical;
@@ -294,6 +333,10 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       setScenario(nextMapScenario);
       setActiveKeys([nextMapScenario]);
       setHistogramBrush(null);
+      if (dashboardMode === 'schism-runs') {
+        setDateIndex(0);
+        setHistogramDateIndex(0);
+      }
     });
   };
   const selectMapScenario = (nextMapScenario: string) => {
@@ -302,6 +345,10 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       setScenario(nextMapScenario);
       setActiveKeys([nextMapScenario]);
       setHistogramBrush(null);
+      if (dashboardMode === 'schism-runs') {
+        setDateIndex(0);
+        setHistogramDateIndex(0);
+      }
     });
   };
   const selectDateIndex = (nextDateIndex: number) => {
@@ -334,6 +381,10 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       setScenario(previousBase);
       setActiveKeys([previousBase]);
       setHistogramBrush(null);
+      if (dashboardMode === 'schism-runs') {
+        setDateIndex(0);
+        setHistogramDateIndex(0);
+      }
     });
   };
   const selectedScenario = useMemo<Scenario | undefined>(() => comparisonData?.scenarios.find((item) => item.key === scenario), [comparisonData, scenario]);
@@ -370,11 +421,13 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       .map((station, index) => region === "All regions" || station.region === region ? index : -1)
       .filter((index) => index >= 0);
     const stationMeans = stationIndices.map((stationIndex) => {
-      const references = itemReference?.[stationIndex]?.map((canonical, referenceDateIndex) => {
+      const references = (dashboardMode === 'schism-runs'
+        ? scenarioOptions.find((scenarioItem) => scenarioItem.key === baseScenario)?.stationValues[stationIndex]
+        : itemReference?.[stationIndex]?.map((canonical, referenceDateIndex) => {
         if (canonical == null) return null;
         if (dashboardMode !== "rma-schism") return canonical + (baseDeltas?.[stationIndex]?.[referenceDateIndex] ?? 0);
         return baseScenario === "schism" ? canonical - (rawSelectedScenario.stationValues[stationIndex][referenceDateIndex] ?? 0) : canonical;
-      }).filter((value): value is number => value != null && Number.isFinite(value)) ?? [];
+      }))?.filter((value): value is number => value != null && Number.isFinite(value)) ?? [];
       return references.length ? references.reduce((sum, value) => sum + value, 0) / references.length : null;
     }).filter((value): value is number => value != null && Number.isFinite(value));
     return stationMeans.length ? stationMeans.reduce((sum, value) => sum + value, 0) / stationMeans.length : null;
@@ -416,6 +469,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
         mode={dashboardMode}
         onModeChange={selectDashboardMode}
         onTutorialOpen={() => setTutorialOpen(true)}
+        showSchismRuns={enableDateHighlights}
       />
       <ExplorerTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
@@ -437,7 +491,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
               {data.scenarios.map((item) => <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
             </LabeledSelect>
           </>
-        ) : dashboardMode === "tiered-outflows" ? (
+        ) : dashboardMode === "tiered-outflows" || dashboardMode === "schism-runs" ? (
           <>
             <LabeledSelect tourId="scenario-controls" label="Base Scenario" value={baseScenario} displayValue={scenarioOptions.find((item) => item.key === baseScenario)?.label} compactValue={scenarioAbbreviation(scenarioOptions.find((item) => item.key === baseScenario)?.label ?? baseScenario)} onChange={(event) => selectBaseScenario(event.target.value)}>
               {scenarioOptions.map((item) => <MenuItem disabled={item.key === scenario} key={item.key} value={item.key} sx={menuItemSx('brand.primaryBlue')}><ResponsiveScenarioLabel label={item.label} /></MenuItem>)}
@@ -511,11 +565,11 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       </ExplorerInfoPopover>
 
         <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: isChartExpanded ? 'minmax(0, 1fr)' : { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
-        <RegionalChart data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} rangeMode={rangeMode} onRangeModeChange={setRangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
+        <RegionalChart data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : dashboardMode === 'schism-runs' ? schismD1641Data : null} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} rangeMode={rangeMode} onRangeModeChange={setRangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
         {!isChartExpanded && <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} rangeMode={rangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} />}
         </Box>
         </Box>
-        {!isChartExpanded && <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : null} baseScenario={baseScenario} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />}
+        {!isChartExpanded && <DeltaMap key={`${dashboardMode}-map`} data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : dashboardMode === 'schism-runs' ? schismD1641Data : null} baseScenario={baseScenario} scenario={scenario} dateIndex={dateIndex} region={region} mapExtent={mapExtent} histogramBrush={histogramBrush} />}
       </Box>
     </Box></>
   );

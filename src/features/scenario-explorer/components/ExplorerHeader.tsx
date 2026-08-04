@@ -6,6 +6,7 @@ const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode
   { number: '01', label: 'RMA Scenario Comparison', value: 'rma-scenarios' },
   { number: '02', label: 'Tiered Outflows', value: 'tiered-outflows' },
   { number: '03', label: 'RMA vs. SCHISM', value: 'rma-schism' },
+  { number: '04', label: 'SCHISM Runs', value: 'schism-runs' },
 ];
 
 interface ExplorerHeaderProps {
@@ -13,9 +14,10 @@ interface ExplorerHeaderProps {
   mode: DashboardMode;
   onModeChange: (mode: DashboardMode) => void;
   onTutorialOpen: () => void;
+  showSchismRuns?: boolean;
 }
 
-export default function ExplorerHeader({ description, mode, onModeChange, onTutorialOpen }: ExplorerHeaderProps) {
+export default function ExplorerHeader({ description, mode, onModeChange, onTutorialOpen, showSchismRuns = false }: ExplorerHeaderProps) {
   return (
     <Box
       component="header"
@@ -80,7 +82,7 @@ export default function ExplorerHeader({ description, mode, onModeChange, onTuto
             '& .MuiTabs-scroller::-webkit-scrollbar': { display: 'none' },
           })}
         >
-          {MODES.map(({ number, label, value }) => (
+          {MODES.filter(({ value }) => value !== 'schism-runs' || showSchismRuns).map(({ number, label, value }) => (
             <Tab
               key={value}
               value={value}

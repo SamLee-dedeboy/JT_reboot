@@ -9,6 +9,7 @@ import ScrollReveal from '../animation/ScrollReveal';
 import Footer from '../common/Footer';
 import Navbar from '../common/Navbar';
 import { assetUrl } from '../../utils/baseUrl';
+import ScenarioRidgelinePlot from './ScenarioRidgelinePlot';
 
 const outflowVariations = [
   {
@@ -41,37 +42,31 @@ const adaptationScenarios = [
   {
     title: 'Business as Usual',
     image: '/images/scenarios/business-as-usual.jpg',
-    accent: '#7ed957',
     description: 'Current operations continue forward. Use this path to compare how familiar choices shape future Delta tradeoffs.',
   },
   {
     title: 'Eco Machine',
     image: '/images/scenarios/eco-machine-2.JPG',
-    accent: '#79e1e4',
     description: 'A nature-based future that works with wetlands, habitat, and water flows. It asks what restoration can do as infrastructure.',
   },
   {
     title: 'New Green Watershed',
     image: '/images/scenarios/new-green-watershed.jpg',
-    accent: '#f2c820',
     description: 'A watershed-scale path focused on upstream change and green infrastructure. It connects Delta outcomes to broader land and water choices.',
   },
   {
     title: 'Calling on Reserves',
     image: '/images/scenarios/calling-on-reserves.jpg',
-    accent: '#b280ff',
     description: 'A future that leans on stored capacity and emergency reserves. It explores how backup systems affect risk, reliability, and equity.',
   },
   {
     title: 'Bolster and Fortify',
     image: '/images/scenarios/bolster-fortify-2.JPG',
-    accent: '#ff677d',
     description: 'A protection-focused path built around stronger edges and defenses. It asks what is secured, and what pressures remain.',
   },
   {
     title: 'A Tunnel',
     image: '/images/scenarios/a-tunnel.jpg',
-    accent: '#f77c3b',
     description: 'A conveyance-centered future for moving water differently. It helps compare system-wide effects across communities and ecosystems.',
   },
 ];
@@ -95,7 +90,7 @@ const sectionLabelSx = {
 const glassPanelSx = {
   border: '2px solid',
   borderColor: 'translucent.primaryGreen',
-  bgcolor: 'rgba(20,29,31,0.74)',
+  bgcolor: 'surface',
   boxShadow: 'none',
   backdropFilter: 'blur(14px)',
 } as const;
@@ -106,7 +101,7 @@ export default function ScenariosLandingPage() {
   return (
     <>
       <Navbar />
-      <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white', overflow: 'hidden' }}>
+      <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white', overflowX: 'clip' }}>
         <Box
           component="header"
           sx={{
@@ -134,9 +129,9 @@ export default function ScenariosLandingPage() {
             },
           }}
         >
-          <Container maxWidth="lg" sx={{ py: { xs: 7, md: 10 } }}>
+          <Container maxWidth="lg" sx={{ py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.xl } }}>
             <ScrollReveal>
-              <Stack spacing={3} sx={{ maxWidth: 760 }}>
+              <Stack spacing={theme.jtSpacing.gap.lg} sx={{ maxWidth: theme.jtSpacing.paragraphMaxWidth.default }}>
                 <Box sx={sectionLabelSx}>
                   <ExploreIcon fontSize="small" />
                   Scenario Explorer
@@ -147,7 +142,7 @@ export default function ScenariosLandingPage() {
                 <Typography variant="body1" sx={{ maxWidth: '58ch', color: 'base.100' }}>
                   Start with current operations, then move through outflow variations and adaptation pathways to compare what different Delta futures ask of communities, ecosystems, and water systems.
                 </Typography>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.4} sx={{ pt: 1 }}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={theme.jtSpacing.gap.sm} sx={{ pt: theme.jtSpacing.component.xs }}>
                   <Button variant="contained" color="primary" component="a" href="#shared-context" endIcon={<ArrowForwardIcon />}>
                     Start with Current Operations
                   </Button>
@@ -173,12 +168,12 @@ export default function ScenariosLandingPage() {
               sx={{
                 display: 'grid',
                 gridTemplateColumns: { xs: '1fr', md: '0.95fr 1.05fr' },
-                gap: { xs: 4, md: 6 },
+                gap: { xs: theme.jtSpacing.gap.xl, md: theme.jtSpacing.section.md },
                 alignItems: 'center',
               }}
             >
               <ScrollReveal>
-                <Stack spacing={2.4}>
+                <Stack spacing={theme.jtSpacing.component.md}>
                   <Box sx={sectionLabelSx}>
                     <BoltIcon fontSize="small" />
                     Start Here
@@ -187,7 +182,7 @@ export default function ScenariosLandingPage() {
                   <Typography variant="body1" sx={{ color: 'base.100' }}>
                     Read the background context first: this helps you understand the key factors shaping the Delta, and how the scenarios are designed to explore tradeoffs in water management, ecosystems, and communities.
                   </Typography>
-                  <Stack spacing={1.4} sx={{ alignItems: 'flex-start' }}>
+                  <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
                     <Button
                       component={Link}
                       to="/scenarios/key-parameters"
@@ -233,27 +228,30 @@ export default function ScenariosLandingPage() {
                       background: 'linear-gradient(180deg, rgba(16,22,24,0.08), rgba(16,22,24,0.9))',
                     }}
                   />
-                  <Box sx={{ position: 'absolute', left: { xs: 20, md: 30 }, right: { xs: 20, md: 30 }, bottom: { xs: 20, md: 30 } }}>
-                    <Box
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      left: {
+                        xs: theme.spacing(theme.jtSpacing.component.md),
+                        md: theme.spacing(theme.jtSpacing.gap.lg),
+                      },
+                      right: {
+                        xs: theme.spacing(theme.jtSpacing.component.md),
+                        md: theme.spacing(theme.jtSpacing.gap.lg),
+                      },
+                      bottom: {
+                        xs: theme.spacing(theme.jtSpacing.component.md),
+                        md: theme.spacing(theme.jtSpacing.gap.lg),
+                      },
+                    }}
+                  >
+                    <Typography
                       component="span"
-                      sx={{
-                        display: 'inline-flex',
-                        mb: 1.5,
-                        px: 1.1,
-                        py: 0.55,
-                        border: 1,
-                        borderColor: 'primary.main',
-                        bgcolor: 'translucent.primaryGreen',
-                        color: 'primary.main',
-                        fontFamily: 'var(--font-heading)',
-                        fontSize: '0.78rem',
-                        letterSpacing: '0.08em',
-                        lineHeight: 1,
-                        textTransform: 'uppercase',
-                      }}
+                      variant="eyebrow"
+                      sx={{ display: 'inline-flex', mb: theme.jtSpacing.gap.sm, px: theme.jtSpacing.component.xs, py: theme.jtSpacing.component.xs, border: 1, borderColor: 'primary.main', bgcolor: 'translucent.primaryGreen' }}
                     >
                       Business as Usual
-                    </Box>
+                    </Typography>
                     <Typography variant="h3" component="p" sx={{ maxWidth: 460 }}>
                       One starting point, many comparisons
                     </Typography>
@@ -290,6 +288,9 @@ export default function ScenariosLandingPage() {
           <ExpandableScenarioPanels
             items={expandableScenarioItems}
             collapseOnScroll
+            comparisonContent={(selectedPanel, onSelectPanel, active, seaLevelRise) => (
+              <ScenarioRidgelinePlot selectedIndex={selectedPanel} onSelect={onSelectPanel} active={active} seaLevelRise={seaLevelRise} />
+            )}
             header={
               <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 'none' } }}>
                 <Box sx={sectionLabelSx}>

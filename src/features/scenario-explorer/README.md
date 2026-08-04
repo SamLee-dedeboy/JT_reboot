@@ -10,10 +10,12 @@ Confirm the original code and dataset licensing before distributing this feature
 
 ## Data
 
-The browser loads three generated files from `public/data/scenario-explorer`:
+The browser loads generated files from `public/data/scenario-explorer`. The internal route additionally exposes the full-range SCHISM comparison:
 
 - `salinity_dashboard.json`
 - `rma_schism_dashboard.json`
 - `tiered_outflows_dashboard.json`
+- `schism_runs_dashboard.json` (internal only)
+- `d1641_schism.json` (internal only)
 
 The source preprocessing utilities are retained in `scripts/scenario-explorer`. They may contain source-machine paths and should be reviewed before regenerating data.

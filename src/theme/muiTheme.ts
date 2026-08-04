@@ -10,6 +10,7 @@ export const palette = {
     base: "#253439",
     primaryBlue: "#51a2bd",
     primaryGreen: "#7ed957",
+    primaryPink: "#fb0169",
   },
   common: {
     white: "#f2f0ef",
@@ -41,6 +42,7 @@ export const palette = {
   },
   translucent: {
     primaryGreen: "rgba(126,217,87,0.18)",
+    primaryPink: "rgba(251,1,105,0.18)",
     textShadow: "rgba(16,22,24,0.6)",
   },
   surface:  "rgba(81, 93, 97, 0.3)", // 400 with 30% opacity, can be used for cards and surfaces
@@ -88,7 +90,26 @@ export const jtSpacing = {
     paragraphMaxWidth: {
         default: '70ch',
         compact: '40ch',
-    }
+    },
+    scenario: {
+        panelHeaderInset: {
+            xs: 2.5,
+            md: 4.5,
+        },
+        panelContentInline: {
+            xs: 2.5,
+            md: 3,
+        },
+        panelContentBottom: {
+            xs: 3.5,
+            md: 9,
+        },
+        comparisonHeader: 2.5,
+        comparisonRowInline: {
+            xs: 2,
+            md: 3,
+        },
+    },
 }
 
 /* 
@@ -264,6 +285,7 @@ const themeOptions = {
             color: palette.base[100],
         },
         captionSmall: {
+            fontFamily: fontBody,
             fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
             lineHeight: 1.2,
             color: palette.base[100],

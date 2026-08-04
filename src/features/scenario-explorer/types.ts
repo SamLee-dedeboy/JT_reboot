@@ -32,9 +32,10 @@ export interface ScenarioDatasets {
   rmaScenarios: ScenarioDataset;
   rmaSchism: ScenarioDataset;
   tieredOutflows: ScenarioDataset;
+  schismRuns: ScenarioDataset;
 }
 
-export type DashboardMode = 'rma-scenarios' | 'rma-schism' | 'tiered-outflows';
+export type DashboardMode = 'rma-scenarios' | 'rma-schism' | 'tiered-outflows' | 'schism-runs';
 export type ValueMode = 'raw' | 'percent';
 export type ModelKey = 'rma' | 'schism';
 export type RangeMode = 'minmax' | 'p90' | 'iqr';

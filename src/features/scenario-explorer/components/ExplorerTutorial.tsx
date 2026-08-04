@@ -19,7 +19,7 @@ const STEPS: TutorialStep[] = [
   {
     title: 'Choose a comparison',
     target: '[data-tour="comparison-tabs"]',
-    paragraphs: ['Use these tabs to compare RMA scenarios, RMA with SCHISM, or tiered-outflow runs. Each comparison has its own available dates and scenarios.'],
+    paragraphs: ['Use these tabs to compare RMA scenarios, RMA with SCHISM, tiered-outflow runs, or (in the internal explorer) full-range SCHISM runs. Each comparison has its own available dates and scenarios.'],
     interactions: ['Select any tab to load that comparison.'],
   },
   {

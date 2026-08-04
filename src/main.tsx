@@ -18,6 +18,7 @@ import ScenariosKeyParametersPage from './components/scenarios/ScenariosKeyParam
 import theme from './theme/muiTheme'
 
 const ScenarioExplorerPage = lazy(() => import('./features/scenario-explorer/ScenarioExplorerPage'))
+const RegionalSummaryPage = lazy(() => import('./features/regional-summary/RegionalSummaryPage'))
 const Watershed = lazy(() => import('./components/internal/Watershed'))
 
 createRoot(document.getElementById('root')!).render(
@@ -38,6 +39,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/pages/baseline-exploration" element={<BaselineExploration />} />
           <Route path="/pages/scenario-explorer" element={<Suspense fallback={null}><ScenarioExplorerPage /></Suspense>} />
           <Route path="/pages/scenario-explorer/internal" element={<Suspense fallback={null}><ScenarioExplorerPage enableDateHighlights /></Suspense>} />
+          <Route path="/pages/regional-summary" element={<Suspense fallback={null}><RegionalSummaryPage /></Suspense>} />
           <Route path="/pages/watershed" element={<Suspense fallback={null}><Watershed /></Suspense>} />
           <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
           <Route path="/design-system" element={<DesignSystem />} />
