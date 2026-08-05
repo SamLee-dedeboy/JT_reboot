@@ -17,7 +17,7 @@ SCHISM_DIR = BASE / "ec_full_extent_all_stations"
 CROSSWALK = BASE / "shared_station_crosswalk.csv"
 OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
 OUT = OUTPUT_DIR / "d1641_schism.json"
-RUNS = {"run15": "15", "run30": "30", "run31": "31"}
+RUNS = {"run27": "27", "run30": "30", "run31": "31"}
 DEFINITIONS = [
     ("EMM", "agricultural", 14), ("JER", "agricultural", 14), ("STI", "agricultural", 14), ("SAL", "agricultural", 14),
     ("SJR", "agricultural", 30), ("BDT", "agricultural", 30), ("UNI", "agricultural", 30), ("OLD", "agricultural", 30),

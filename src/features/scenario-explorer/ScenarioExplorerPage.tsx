@@ -193,7 +193,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       setScenario("run16");
       setActiveKeys(["run16"]);
     } else if (nextMode === "schism-runs") {
-      setBaseScenario("run15");
+      setBaseScenario("run27");
       setScenario("run30");
       setActiveKeys(["run30"]);
     } else {

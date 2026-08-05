@@ -159,9 +159,14 @@ function ChartSvg({ data, d1641Data, dashboardMode, region, activeKeys, dateInde
   const finalDateIndex = data.dates.length - 1;
   const periods = (() => {
     if (dashboardMode === 'rma-schism') {
+      const dryStart = boundaryIndex('2019-10-01');
       const criticalStart = boundaryIndex('2020-10-01');
-      return criticalStart >= 0
-        ? [{ start: 0, end: criticalStart, label: 'Dry year' }, { start: criticalStart, end: finalDateIndex, label: 'Critical' }]
+      return dryStart >= 0 && criticalStart >= 0
+        ? [
+            { start: 0, end: dryStart, label: 'Wet year' },
+            { start: dryStart, end: criticalStart, label: 'Dry year' },
+            { start: criticalStart, end: finalDateIndex, label: 'Critical' },
+          ]
         : [];
     }
     if (dashboardMode === 'tiered-outflows') {
@@ -176,19 +181,13 @@ function ChartSvg({ data, d1641Data, dashboardMode, region, activeKeys, dateInde
         : [];
     }
     if (dashboardMode === 'schism-runs') {
-      const wy2021 = boundaryIndex('2020-10-01');
-      const wy2022 = boundaryIndex('2021-10-01');
-      const wy2023 = boundaryIndex('2022-10-01');
-      return wy2021 >= 0 && wy2022 >= 0
+      const dryStart = boundaryIndex('2019-10-01');
+      const criticalStart = boundaryIndex('2020-10-01');
+      return dryStart >= 0 && criticalStart >= 0
         ? [
-            { start: 0, end: wy2021, label: 'Dry year' },
-            { start: wy2021, end: wy2022, label: 'Critical' },
-            ...(wy2023 >= 0
-              ? [
-                  { start: wy2022, end: wy2023, label: 'Critical' },
-                  { start: wy2023, end: finalDateIndex, label: 'Wet year' },
-                ]
-              : [{ start: wy2022, end: finalDateIndex, label: 'Critical' }]),
+            { start: 0, end: dryStart, label: 'Wet year' },
+            { start: dryStart, end: criticalStart, label: 'Dry year' },
+            { start: criticalStart, end: finalDateIndex, label: 'Critical' },
           ]
         : [];
     }

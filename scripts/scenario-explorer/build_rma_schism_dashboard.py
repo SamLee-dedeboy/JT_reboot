@@ -1,4 +1,4 @@
-"""Build station-level SCHISM minus RMA comparisons for runs 15, 30, and 31."""
+"""Build station-level SCHISM minus RMA comparisons for runs 27, 30, and 31."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ SCENARIOS = [
     {
         "key": "baseline",
         "label": "Baseline",
-        "run": "15",
+        "run": "27",
         "rma_dir": "baseline",
         "rma_glob": "Base_*_JT_BASE_EC_EC.csv",
     },
