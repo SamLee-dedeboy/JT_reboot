@@ -174,7 +174,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
     if (!nextData) {
       const [loadedData, loadedCompliance] = await Promise.all([
         fetch(assetUrl(config.url)).then((response) => response.json() as Promise<ScenarioDataset>),
-        nextMode === 'schism-runs' && !schismD1641Data
+        (nextMode === 'rma-schism' || nextMode === 'schism-runs') && !schismD1641Data
           ? fetch(assetUrl('/data/scenario-explorer/d1641_schism.json')).then((response) => response.json() as Promise<D1641Dataset>)
           : Promise.resolve(null),
       ]);
@@ -389,6 +389,24 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
   };
   const selectedScenario = useMemo<Scenario | undefined>(() => comparisonData?.scenarios.find((item) => item.key === scenario), [comparisonData, scenario]);
   const rawSelectedScenario = useMemo(() => rawComparisonData?.scenarios.find((item) => item.key === scenario), [rawComparisonData, scenario]);
+  const chartD1641Data = useMemo<D1641Dataset | null>(() => {
+    if (dashboardMode === 'rma-scenarios') return d1641Data;
+    if (dashboardMode === 'schism-runs') return schismD1641Data;
+    if (dashboardMode !== 'rma-schism' || !d1641Data || !schismD1641Data) return null;
+    const schismScenarioKey = ({ baseline: 'run27', reserve: 'run30', tunnel: 'run31' } as Record<string, string>)[scenario];
+    const rmaCompliance = d1641Data.scenarios[scenario];
+    const schismCompliance = schismD1641Data.scenarios[schismScenarioKey];
+    if (!rmaCompliance || !schismCompliance) return null;
+    const byModel = { rma: rmaCompliance, schism: schismCompliance };
+    return {
+      source: `${d1641Data.source}; ${schismD1641Data.source}`,
+      generatedFrom: `${d1641Data.generatedFrom}; ${schismD1641Data.generatedFrom}`,
+      scenarios: {
+        [baseScenario]: byModel[baseScenario as ModelKey],
+        [scenario]: byModel[selectedModel],
+      },
+    };
+  }, [baseScenario, d1641Data, dashboardMode, scenario, schismD1641Data, selectedModel]);
   const mapExtent = useMemo(() => {
     if (!comparisonData || !selectedScenario) return 1;
     const stationIndices = comparisonData.stations
@@ -565,7 +583,7 @@ export default function ScenarioExplorerPage({ enableDateHighlights = false }: S
       </ExplorerInfoPopover>
 
         <Box sx={(theme) => ({ alignItems: 'stretch', display: 'grid', gap: theme.jtSpacing.gap.sm, gridTemplateColumns: isChartExpanded ? 'minmax(0, 1fr)' : { xs: '1fr', md: 'minmax(0, 1fr) minmax(9rem, .18fr)', xl: 'minmax(0, 1fr) minmax(8rem, .22fr)' }, minHeight: 0, minWidth: 0, overflow: { xs: 'visible', lg: 'hidden' } })}>
-        <RegionalChart data={comparisonData} d1641Data={dashboardMode === 'rma-scenarios' ? d1641Data : dashboardMode === 'schism-runs' ? schismD1641Data : null} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} rangeMode={rangeMode} onRangeModeChange={setRangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
+        <RegionalChart data={comparisonData} d1641Data={chartD1641Data} dashboardMode={dashboardMode} region={region} selectedScenario={selectedScenario} baseScenarioKey={baseScenario} baseScenarioLabel={comparisonBaseLabel} rawRegionValue={rawRegionValue} percentRegionValue={percentRegionValue} activeKeys={activeKeys} onActiveKeysChange={setActiveKeys} dateIndex={dateIndex} onDateChange={selectDateIndex} onDateCommit={commitDateIndex} rangeMode={rangeMode} onRangeModeChange={setRangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} expanded={isChartExpanded} onExpandedChange={setIsChartExpanded} enableDateHighlights={enableDateHighlights} />
         {!isChartExpanded && <StationHistogram data={comparisonData} region={region} scenario={selectedScenario} dateIndex={histogramDateIndex} onBrushChange={setHistogramBrush} mapExtent={mapExtent} rangeMode={rangeMode} units={valueMode === "percent" ? "%" : "µS/cm"} />}
         </Box>
         </Box>
