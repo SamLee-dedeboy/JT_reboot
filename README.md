@@ -45,16 +45,16 @@ src/
 
 Current routes:
 
-| Path | Component |
-| --- | --- |
-| `/` | `App` / `LandingPage` |
+| Path                           | Component                              |
+| ------------------------------ | -------------------------------------- |
+| `/`                            | `App` / `LandingPage`                  |
 | `/pages/project-documentation` | `components/repo/ProjectDocumentation` |
-| `/pages/service-learning` | `components/repo/ServiceLearning` |
-| `/pages/resources` | `components/repo/Resources` |
-| `/pages/playground` | `components/internal/Playground` |
-| `/pages/watershed` | `components/internal/Watershed` |
-| `/pages/kelp-diagram` | `components/internal/KelpDiagram` |
-| `/design-system` | `design/DesignSystem` |
+| `/pages/service-learning`      | `components/repo/ServiceLearning`      |
+| `/pages/resources`             | `components/repo/Resources`            |
+| `/pages/playground`            | `components/internal/Playground`       |
+| `/pages/watershed`             | `components/internal/Watershed`        |
+| `/pages/kelp-diagram`          | `components/internal/KelpDiagram`      |
+| `/design-system`               | `design/DesignSystem`                  |
 
 `src/App.tsx` is intentionally small. It renders `LandingPage`, which composes the public home page from the home-section components.
 

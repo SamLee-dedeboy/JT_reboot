@@ -7,18 +7,21 @@
     <title>Just Transitions in the Delta</title>
     <!-- Handle SPA redirect from 404.html on GitHub Pages -->
     <script>
-      (function(){
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
+      ;(function () {
+        var redirect = sessionStorage.redirect
+        delete sessionStorage.redirect
         if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
+          history.replaceState(null, null, redirect)
         }
-      })();
+      })()
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://use.typekit.net/hbv7jhu.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Nunito+Sans:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="root"></div>

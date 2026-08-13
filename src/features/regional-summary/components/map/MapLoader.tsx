@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Typography } from '@mui/material'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { palette } from '../../../../theme/muiTheme'
+import { palette } from '../../../../theme/index'
 
 interface MapLoaderProps {
   isLoaded: boolean

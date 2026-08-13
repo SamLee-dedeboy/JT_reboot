@@ -3,16 +3,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import type { SvgIconComponent } from '@mui/icons-material'
-import {
-  Box,
-  Button,
-  IconButton,
-  Popover,
-  Stack,
-  Typography,
-} from '@mui/material'
-import Eyebrow from '../../../../../components/common/Eyebrow'
-import { palette } from '../../../../../theme/muiTheme'
+import { Box, Button, IconButton, Popover, Stack, Typography } from '@mui/material'
+import Eyebrow from '../../../../../ui/Eyebrow'
+import { palette } from '../../../../../theme/index'
 
 export interface PlacePopoverProps {
   anchorEl: HTMLElement | null
@@ -160,4 +153,3 @@ function PlacePopover({
 }
 
 export default PlacePopover
-

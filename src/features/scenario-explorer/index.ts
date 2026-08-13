@@ -1,1 +1,1 @@
-export { default as ScenarioExplorerPage } from './ScenarioExplorerPage';
+export { default as ScenarioExplorerPage } from './ScenarioExplorerPage'

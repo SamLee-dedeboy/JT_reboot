@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+public
+docs/design-prototypes
+*.log
+*.pdf

@@ -26,21 +26,21 @@ function PlaceMarkerLayer() {
         const [longitude, latitude] = place.coordinates
 
         return (
-        <Marker
-          key={place.id}
-          anchor="bottom-left"
-          latitude={latitude}
-          longitude={longitude}
-          offset={[-23, 0]}
-        >
-          <PlaceMarker
-            color={place.color}
-            description={place.description}
-            icon={Icon}
-            placeName={place.name}
-            takeaway={place.takeaway}
-          />
-        </Marker>
+          <Marker
+            key={place.id}
+            anchor="bottom-left"
+            latitude={latitude}
+            longitude={longitude}
+            offset={[-23, 0]}
+          >
+            <PlaceMarker
+              color={place.color}
+              description={place.description}
+              icon={Icon}
+              placeName={place.name}
+              takeaway={place.takeaway}
+            />
+          </Marker>
         )
       })}
     </>
@@ -48,5 +48,3 @@ function PlaceMarkerLayer() {
 }
 
 export default PlaceMarkerLayer
-
-

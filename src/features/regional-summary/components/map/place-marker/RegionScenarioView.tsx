@@ -3,19 +3,21 @@ import type { MouseEvent } from 'react'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import { Box, Button, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { motion, useReducedMotion } from 'framer-motion'
-import { palette } from '../../../../../theme/muiTheme'
+import { palette } from '../../../../../theme/index'
 import ScenarioLoadingScreen from './ScenarioLoadingScreen'
 
 const DATA_URL = `${import.meta.env.BASE_URL}data/regional-summary/region-scenarios.json`
 const MINIMUM_LOADING_TIME = 1800
-const SALINITY_COLORS = ['#7ED2E1', '#70C1D5', '#5EAAC5', '#4991B1', '#32759A', '#235C86', '#174670']
-const DEVIATION_COLORS = [
-  '#255C6E',
-  '#5B9AAA',
-  '#263638',
-  '#B84872',
-  '#FB0169',
+const SALINITY_COLORS = [
+  '#7ED2E1',
+  '#70C1D5',
+  '#5EAAC5',
+  '#4991B1',
+  '#32759A',
+  '#235C86',
+  '#174670',
 ]
+const DEVIATION_COLORS = ['#255C6E', '#5B9AAA', '#263638', '#B84872', '#FB0169']
 
 type ViewMode = 'raw' | 'deviation'
 
@@ -74,7 +76,10 @@ function colorForDeviation(value: number | null, maxAbsoluteDeviation: number) {
   const logRange = Math.log10(1 + range)
   const signedLogValue = Math.sign(value) * Math.log10(1 + Math.abs(value))
   const position = Math.min(1, Math.max(0, (signedLogValue + logRange) / (logRange * 2)))
-  const index = Math.min(DEVIATION_COLORS.length - 1, Math.round(position * (DEVIATION_COLORS.length - 1)))
+  const index = Math.min(
+    DEVIATION_COLORS.length - 1,
+    Math.round(position * (DEVIATION_COLORS.length - 1)),
+  )
   return DEVIATION_COLORS[index]
 }
 
@@ -99,13 +104,18 @@ function ColorLegend({ max, min, mode }: { max: number; min: number; mode: ViewM
   const isDeviation = mode === 'deviation'
   const colors = isDeviation ? DEVIATION_COLORS : SALINITY_COLORS
   const ticks = legendValues(min, max, isDeviation)
-  const formatLegend = (value: number) => isDeviation ? formatDeviation(value) : formatLegendValue(value)
+  const formatLegend = (value: number) =>
+    isDeviation ? formatDeviation(value) : formatLegendValue(value)
 
   return (
     <Box sx={{ minWidth: { xs: 280, md: 460 }, width: { xs: '100%', md: '32vw' } }}>
       <Stack direction="row" sx={{ justifyContent: 'space-between', mb: 0.75 }}>
-        <Typography sx={legendEndpointStyle}>{isDeviation ? 'Below baseline' : 'Fresher'}</Typography>
-        <Typography sx={legendEndpointStyle}>{isDeviation ? 'Above baseline' : 'Saltier'}</Typography>
+        <Typography sx={legendEndpointStyle}>
+          {isDeviation ? 'Below baseline' : 'Fresher'}
+        </Typography>
+        <Typography sx={legendEndpointStyle}>
+          {isDeviation ? 'Above baseline' : 'Saltier'}
+        </Typography>
       </Stack>
       <Box
         sx={{
@@ -118,7 +128,13 @@ function ColorLegend({ max, min, mode }: { max: number; min: number; mode: ViewM
         }}
       >
         {colors.map((color) => (
-          <Box key={color} sx={{ backgroundColor: color, boxShadow: `inset 0 0 0 1px rgba(242,240,239,.1), 0 0 8px ${color}` }} />
+          <Box
+            key={color}
+            sx={{
+              backgroundColor: color,
+              boxShadow: `inset 0 0 0 1px rgba(242,240,239,.1), 0 0 8px ${color}`,
+            }}
+          />
         ))}
         {LEGEND_POSITIONS.slice(1, -1).map((position) => (
           <Box
@@ -139,25 +155,22 @@ function ColorLegend({ max, min, mode }: { max: number; min: number; mode: ViewM
       <Box sx={{ height: 24, mt: 0.75, position: 'relative' }}>
         {ticks.map((value, index) => {
           const position = LEGEND_POSITIONS[index]
-          const transform = position === 0
-            ? 'none'
-            : position === 1
-              ? 'translateX(-100%)'
-              : 'translateX(-50%)'
+          const transform =
+            position === 0 ? 'none' : position === 1 ? 'translateX(-100%)' : 'translateX(-50%)'
 
           return (
-          <Typography
-            component="span"
-            key={position}
-            sx={{
-              ...legendValueStyle,
-              left: `${position * 100}%`,
-              position: 'absolute',
-              transform,
-            }}
-          >
-            {formatLegend(value)}
-          </Typography>
+            <Typography
+              component="span"
+              key={position}
+              sx={{
+                ...legendValueStyle,
+                left: `${position * 100}%`,
+                position: 'absolute',
+                transform,
+              }}
+            >
+              {formatLegend(value)}
+            </Typography>
           )
         })}
       </Box>
@@ -211,11 +224,12 @@ function ScenarioRow({
   const prefersReducedMotion = useReducedMotion()
   const rawActiveValue = scenario.values[activeIndex]
   const baselineActiveValue = baselineValues[activeIndex]
-  const activeValue = mode === 'deviation'
-    ? rawActiveValue == null || baselineActiveValue == null
-      ? null
-      : rawActiveValue - baselineActiveValue
-    : rawActiveValue
+  const activeValue =
+    mode === 'deviation'
+      ? rawActiveValue == null || baselineActiveValue == null
+        ? null
+        : rawActiveValue - baselineActiveValue
+      : rawActiveValue
 
   const handleMove = (event: MouseEvent<HTMLDivElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
@@ -230,7 +244,8 @@ function ScenarioRow({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: prefersReducedMotion ? 0 : 0.18 + index * 0.08, duration: 0.42 }}
       sx={{
-        borderTop: index === 0 ? `1px solid ${palette.base[700]}` : `5px solid ${palette.base[900]}`,
+        borderTop:
+          index === 0 ? `1px solid ${palette.base[700]}` : `5px solid ${palette.base[900]}`,
         display: 'grid',
         gridTemplateColumns: { xs: '128px minmax(700px, 1fr)', md: '152px minmax(0, 1fr)' },
         minHeight: 112,
@@ -259,8 +274,15 @@ function ScenarioRow({
         >
           {scenario.name}
         </Typography>
-        <Typography sx={{ color: palette.brand.primaryPink, fontSize: '0.95rem', fontWeight: 800, mt: 1 }}>
-          {activeValue == null ? 'n/a' : mode === 'deviation' ? formatDeviation(activeValue) : formatValue(activeValue)} {units}
+        <Typography
+          sx={{ color: palette.brand.primaryPink, fontSize: '0.95rem', fontWeight: 800, mt: 1 }}
+        >
+          {activeValue == null
+            ? 'n/a'
+            : mode === 'deviation'
+              ? formatDeviation(activeValue)
+              : formatValue(activeValue)}{' '}
+          {units}
         </Typography>
       </Box>
 
@@ -274,28 +296,38 @@ function ScenarioRow({
           component={motion.div}
           initial={prefersReducedMotion ? false : { clipPath: 'inset(0 100% 0 0)' }}
           animate={{ clipPath: 'inset(0 0% 0 0)' }}
-          transition={{ delay: prefersReducedMotion ? 0 : 0.28 + index * 0.08, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          sx={{ display: 'grid', gridTemplateColumns: `repeat(${scenario.values.length}, minmax(0, 1fr))`, height: '100%' }}
+          transition={{
+            delay: prefersReducedMotion ? 0 : 0.28 + index * 0.08,
+            duration: 0.65,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${scenario.values.length}, minmax(0, 1fr))`,
+            height: '100%',
+          }}
         >
           {scenario.values.map((value, valueIndex) => {
             const baselineValue = baselineValues[valueIndex]
-            const displayValue = mode === 'deviation'
-              ? value == null || baselineValue == null
-                ? null
-                : value - baselineValue
-              : value
+            const displayValue =
+              mode === 'deviation'
+                ? value == null || baselineValue == null
+                  ? null
+                  : value - baselineValue
+                : value
 
             return (
-            <Box
-              aria-hidden="true"
-              key={valueIndex}
-              sx={{
-                backgroundColor: mode === 'deviation'
-                  ? colorForDeviation(displayValue, maxAbsoluteDeviation)
-                  : colorForValue(displayValue, min, max),
-                minWidth: 0,
-              }}
-            />
+              <Box
+                aria-hidden="true"
+                key={valueIndex}
+                sx={{
+                  backgroundColor:
+                    mode === 'deviation'
+                      ? colorForDeviation(displayValue, maxAbsoluteDeviation)
+                      : colorForValue(displayValue, min, max),
+                  minWidth: 0,
+                }}
+              />
             )
           })}
         </Box>
@@ -323,9 +355,12 @@ function RegionScenarioView({ onBack, regionName }: RegionScenarioViewProps) {
       })
       .then((payload) => {
         const elapsed = performance.now() - loadingStartedAt
-        revealTimer = setTimeout(() => {
-          if (active) setData(payload)
-        }, Math.max(0, MINIMUM_LOADING_TIME - elapsed))
+        revealTimer = setTimeout(
+          () => {
+            if (active) setData(payload)
+          },
+          Math.max(0, MINIMUM_LOADING_TIME - elapsed),
+        )
       })
       .catch((error: unknown) => {
         if (active) {
@@ -380,7 +415,14 @@ function RegionScenarioView({ onBack, regionName }: RegionScenarioViewProps) {
       animate={{ clipPath: 'inset(0 0% 0 0)', opacity: 1 }}
       exit={prefersReducedMotion ? { opacity: 0 } : { clipPath: 'inset(0 100% 0 0)', opacity: 1 }}
       transition={{ duration: prefersReducedMotion ? 0 : 0.58, ease: [0.76, 0, 0.24, 1] }}
-      sx={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', minWidth: 900, position: 'relative', width: '100%' }}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100dvh',
+        minWidth: 900,
+        position: 'relative',
+        width: '100%',
+      }}
     >
       <Box
         sx={{
@@ -404,7 +446,10 @@ function RegionScenarioView({ onBack, regionName }: RegionScenarioViewProps) {
             color: palette.brand.primaryPink,
             flex: '0 0 auto',
             fontWeight: (theme) => theme.typography.fontWeightBold,
-            '&:hover': { backgroundColor: palette.translucent.primaryPink, borderColor: palette.brand.primaryPink },
+            '&:hover': {
+              backgroundColor: palette.translucent.primaryPink,
+              borderColor: palette.brand.primaryPink,
+            },
           }}
         >
           Back to briefing
@@ -437,7 +482,10 @@ function RegionScenarioView({ onBack, regionName }: RegionScenarioViewProps) {
                 '& .MuiToggleButton-root.Mui-selected': {
                   backgroundColor: palette.brand.primaryPink,
                   color: palette.base[900],
-                  '&:hover': { backgroundColor: palette.brand.primaryPink, filter: 'brightness(1.08)' },
+                  '&:hover': {
+                    backgroundColor: palette.brand.primaryPink,
+                    filter: 'brightness(1.08)',
+                  },
                 },
               }}
             >
@@ -453,7 +501,14 @@ function RegionScenarioView({ onBack, regionName }: RegionScenarioViewProps) {
         </Box>
       </Box>
 
-      <Box sx={{ display: 'grid', flex: 1, gridTemplateRows: 'repeat(6, minmax(112px, 1fr))', overflowX: 'auto' }}>
+      <Box
+        sx={{
+          display: 'grid',
+          flex: 1,
+          gridTemplateRows: 'repeat(6, minmax(112px, 1fr))',
+          overflowX: 'auto',
+        }}
+      >
         {region.scenarios.map((scenario, index) => (
           <ScenarioRow
             activeIndex={activeIndex}
