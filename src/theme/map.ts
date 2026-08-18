@@ -11,6 +11,25 @@ export const map = {
     sacramento: palette.brand.primaryGreen,
     sanJoaquin: palette.accent.blue,
   },
+  boundaries: {
+    legalDelta: palette.base[50],
+    watershedShade: {
+      fill: palette.brand.base,
+      outline: '#5a636c',
+    },
+    watershedRegion: palette.brand.primaryGreen,
+    indigenousTerritory: palette.accent.yellow,
+  },
+  scenarios: {
+    newGreenWatershedHabitats: {
+      soil: '#453caf',
+      transitional: '#7187e1',
+      tidal: '#5862d2',
+      riparian: '#dcb038',
+      fallback: palette.common.black,
+      outline: palette.common.black,
+    },
+  },
   labels: {
     text: palette.common.white,
     muted: palette.base[100],

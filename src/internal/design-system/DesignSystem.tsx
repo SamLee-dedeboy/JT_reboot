@@ -2013,7 +2013,6 @@ export default function DesignSystem() {
               }
             >
               <StudioFeatureCard
-                badge="Design Studio"
                 number="01"
                 title="Studio Feature Row"
                 image="/images/repo/studio-isleton.png"

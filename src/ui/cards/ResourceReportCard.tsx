@@ -2,6 +2,7 @@ import { Box, Stack, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import Icon from '../Icon'
 import { assetUrl } from '../../utils/baseUrl'
+import { jtSpacing } from '../../theme'
 
 export interface ResourceReportAction {
   label: string
@@ -27,13 +28,11 @@ function ActionLink({ action }: { action: ResourceReportAction }) {
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '0.45rem',
+        gap: jtSpacing.gap.xs,
         typography: 'button',
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
-        paddingInline: '1.1rem',
-        paddingBlock: '0.62rem',
-        borderRadius: '999px',
+        paddingInline: jtSpacing.component.md,
+        paddingBlock: jtSpacing.component.xs,
+        borderRadius: 999,
         border: '1.5px solid',
         borderColor: ghost ? 'border.strong' : 'primary.main',
         color: ghost ? 'secondary.light' : 'primary.main',
@@ -112,7 +111,7 @@ export default function ResourceReportCard({
               display: 'grid',
               placeItems: 'center',
               bgcolor: 'primary.main',
-              padding: '1.4rem',
+              padding: jtSpacing.gap.lg,
             }}
           >
             <Typography
@@ -127,8 +126,8 @@ export default function ResourceReportCard({
         <Box
           sx={{
             position: 'absolute',
-            left: '0.9rem',
-            top: '0.9rem',
+            left: (theme) => theme.spacing(jtSpacing.component.sm),
+            top: (theme) => theme.spacing(jtSpacing.component.sm),
             display: 'inline-flex',
             alignItems: 'center',
             bgcolor: 'translucent.700',
@@ -136,21 +135,17 @@ export default function ResourceReportCard({
             borderColor: 'translucent.primaryGreen',
             color: 'primary.main',
             typography: 'eyebrow',
-            paddingInline: '0.7rem',
-            paddingBlock: '0.36rem',
-            borderRadius: '999px',
+            paddingInline: jtSpacing.component.sm,
+            paddingBlock: jtSpacing.component.xs,
+            borderRadius: 999,
             backdropFilter: 'blur(2px)',
           }}
         >
           {badge}
         </Box>
       </Box>
-      <Stack spacing={1.2} sx={{ padding: '1.4rem 1.4rem 1.5rem', flex: 1 }}>
-        <Typography
-          variant="cardTitle"
-          component="h3"
-          sx={{ color: 'secondary.light', letterSpacing: '0.03em', lineHeight: 1.15 }}
-        >
+      <Stack spacing={jtSpacing.gap.sm} sx={{ padding: jtSpacing.component.md, flex: 1 }}>
+        <Typography variant="cardTitle" component="h3" sx={{ color: 'secondary.light' }}>
           {title}
         </Typography>
         <Typography variant="cardBody" sx={{ color: 'base.100' }}>
@@ -161,9 +156,9 @@ export default function ResourceReportCard({
             sx={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '0.6rem',
+              gap: jtSpacing.gap.sm,
               marginTop: 'auto',
-              paddingTop: '0.4rem',
+              paddingTop: jtSpacing.component.xs,
             }}
           >
             {actions.map((action) => (

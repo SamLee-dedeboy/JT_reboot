@@ -3,6 +3,7 @@
 import { Box, Container, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import ScrollReveal from '../../ui/animation/ScrollReveal'
+import { jtSpacing } from '../../theme'
 
 interface RepoHeroProps {
   title: ReactNode
@@ -14,15 +15,19 @@ interface RepoHeroProps {
 /** Shared chrome across all three repository pages. */
 export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
   return (
-    <Box component="header" id="top" sx={{ pt: { xs: '2.6rem', md: '3.4rem' } }}>
-      <Container maxWidth="lg" sx={{ px: { xs: '1.5rem', md: '2rem' } }}>
+    <Box
+      component="header"
+      id="top"
+      sx={{ pt: { xs: jtSpacing.component.lg, md: jtSpacing.section.sm } }}
+    >
+      <Container maxWidth="lg" sx={{ px: { xs: jtSpacing.gap.lg, md: jtSpacing.gap.xl } }}>
         <ScrollReveal>
           <Typography
             variant="h1"
             component="h1"
             sx={{
               maxWidth: '24ch',
-              mb: '1.4rem',
+              mb: jtSpacing.component.md,
             }}
           >
             {title}
@@ -30,15 +35,11 @@ export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
         </ScrollReveal>
         <ScrollReveal delay={0.08}>
           <Typography
+            variant="body1"
             component="p"
             sx={{
-              maxWidth: '60ch',
-              fontSize: '1.3rem',
-              lineHeight: 1.7,
+              maxWidth: '70ch',
               color: 'base.100',
-              borderLeft: '3px solid',
-              borderColor: 'primary.main',
-              pl: '1.5rem',
             }}
           >
             {lede}
@@ -50,10 +51,10 @@ export default function RepoHero({ title, lede, meta }: RepoHeroProps) {
             sx={{
               display: 'flex',
               alignItems: 'baseline',
-              gap: '1rem',
-              mt: '2.2rem',
+              gap: jtSpacing.gap.md,
+              mt: jtSpacing.section.sm,
               color: 'base.200',
-              fontSize: '1rem',
+              typography: 'meta',
             }}
           >
             {meta}

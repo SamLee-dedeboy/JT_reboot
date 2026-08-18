@@ -10,6 +10,7 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "audit:tokens": "node scripts/check-theme-tokens.mjs",
+    "audit:tokens:repository": "node scripts/check-theme-tokens.mjs src/features/repository src/ui/cards/StudioFeatureCard.tsx src/ui/cards/ResourceReportCard.tsx",
     "preview": "vite preview"
   },
   "dependencies": {

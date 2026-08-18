@@ -1,58 +1,58 @@
-// Compact reference card for research citations and supporting resources.
-import { Box } from '@mui/material'
+// Flat editorial entry for research citations and supporting resources.
+import { Box, Typography } from '@mui/material'
 import Icon from '../../ui/Icon'
 import type { Reference } from './data/resources'
+import { jtSpacing } from '../../theme'
 
-/** Reference literature card — blue left accent, hover lifts and turns green. */
 export default function ReferenceCard({ r }: { r: Reference }) {
   return (
     <Box
       component="a"
       href={r.href ?? '#'}
       sx={{
-        display: 'block',
-        bgcolor: 'surface',
-        border: '1px solid rgba(155,162,164,0.16)',
-        borderLeft: '3px solid',
-        borderLeftColor: 'secondary.main',
-        borderRadius: '10px',
-        p: '1.5rem 1.6rem',
-        transition: 'transform 180ms ease, border-color 180ms ease, background 180ms ease',
-        '&:hover': {
-          transform: 'translateY(-2px)',
-          borderLeftColor: 'primary.main',
-          bgcolor: 'surfaceStrong',
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: '1.2fr 1fr 0.8fr' },
+        gap: { xs: jtSpacing.gap.xs, md: jtSpacing.gap.lg },
+        height: '100%',
+        borderTop: 1,
+        borderColor: 'border.default',
+        borderRadius: 0,
+        py: jtSpacing.component.md,
+        transition: 'border-color 180ms ease',
+        '&:hover, &:focus-visible': {
+          borderColor: 'primary.main',
+          outline: 'none',
+          '& .reference-title': { color: 'primary.main' },
         },
       }}
     >
-      <Box
-        sx={{
-          fontSize: '1.2rem',
-          fontWeight: 700,
-          lineHeight: 1.3,
-          color: 'common.white',
-          mb: '0.7rem',
-        }}
+      <Typography
+        className="reference-title"
+        variant="cardTitle"
+        component="h3"
+        sx={{ color: 'common.white', transition: 'color 180ms ease' }}
       >
         {r.title}
-      </Box>
+      </Typography>
+
       <Box
         sx={{
           display: 'flex',
           alignItems: 'flex-start',
-          gap: '0.4rem',
+          gap: jtSpacing.gap.xs,
           color: 'primary.main',
-          fontSize: '0.98rem',
-          fontWeight: 600,
-          mb: '0.4rem',
+          typography: 'navigationLabel',
         }}
       >
-        <Box component="span" sx={{ mt: '0.18em', flex: 'none', opacity: 0.8 }}>
+        <Box component="span" sx={{ flex: 'none', opacity: 0.8 }}>
           <Icon name="arrow-up-right" size={15} />
         </Box>
         {r.source}
       </Box>
-      <Box sx={{ fontSize: '0.95rem', color: 'base.200' }}>{r.meta}</Box>
+
+      <Typography variant="meta" sx={{ color: 'base.200' }}>
+        {r.meta}
+      </Typography>
     </Box>
   )
 }

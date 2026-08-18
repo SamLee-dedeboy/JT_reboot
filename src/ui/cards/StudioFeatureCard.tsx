@@ -2,9 +2,9 @@ import { Box, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import Icon from '../Icon'
 import { assetUrl } from '../../utils/baseUrl'
+import { jtSpacing } from '../../theme'
 
 export interface StudioFeatureCardProps {
-  badge: string
   number: string
   title: string
   body: ReactNode
@@ -17,7 +17,6 @@ export interface StudioFeatureCardProps {
 }
 
 export default function StudioFeatureCard({
-  badge,
   number,
   title,
   body,
@@ -33,9 +32,9 @@ export default function StudioFeatureCard({
       sx={{
         display: 'grid',
         gridTemplateColumns: { xs: '1fr', md: flip ? '1fr 1.35fr' : '1.35fr 1fr', sm: '1fr 1.2fr' },
-        gap: { xs: '1.3rem', md: '2.6rem' },
+        gap: { xs: jtSpacing.gap.md, md: jtSpacing.component.xl },
         alignItems: 'center',
-        paddingBlock: { xs: '1.3rem', md: '2.6rem' },
+        paddingBlock: { xs: jtSpacing.component.md, md: jtSpacing.component.xl },
         borderBlock: '1px solid',
         borderColor: 'border.subtle',
       }}
@@ -43,7 +42,7 @@ export default function StudioFeatureCard({
       <Box
         sx={{
           order: { xs: 0, md: flip ? 2 : 0 },
-          borderRadius: 1,
+          borderRadius: 0,
           overflow: 'hidden',
           border: '1px solid',
           borderColor: 'border.default',
@@ -58,43 +57,19 @@ export default function StudioFeatureCard({
           sx={{ width: '100%', display: 'block' }}
         />
       </Box>
-      <Box>
-        <Box
-          sx={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            bgcolor: 'base.800',
-            border: 1,
-            borderColor: 'translucent.primaryGreen',
-            color: 'primary.main',
-            typography: 'eyebrow',
-            paddingInline: '0.7rem',
-            paddingBlock: '0.36rem',
-            borderRadius: '999px',
-            marginBottom: '1rem',
-          }}
-        >
-          {badge}
-        </Box>
-        <Typography variant="numberGhost" component="div" sx={{ marginBottom: '0.6rem' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: jtSpacing.gap.xs }}>
+        <Typography variant="numberGhost" component="div">
           {number}
         </Typography>
-        <Typography
-          variant="h3"
-          component="h3"
-          sx={{ color: 'primary.main', marginBottom: '0.7rem' }}
-        >
+        <Typography variant="h3" component="h3" sx={{ color: 'primary.main' }}>
           {title}
         </Typography>
         {place && (
           <Typography
             variant="meta"
             sx={{
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              typography: 'eyebrow',
               color: 'secondary.light',
-              marginBottom: '1rem',
             }}
           >
             {place}
@@ -103,8 +78,6 @@ export default function StudioFeatureCard({
         <Typography
           variant="body1"
           sx={{
-            lineHeight: place ? 1.6 : undefined,
-            marginBottom: actionLabel ? '1.6rem' : 0,
             maxWidth: place ? '42ch' : undefined,
             color: 'base.100',
           }}
@@ -117,14 +90,14 @@ export default function StudioFeatureCard({
             href={actionHref}
             sx={{
               display: 'inline-flex',
+              alignSelf: 'flex-start',
               alignItems: 'center',
-              gap: '0.45rem',
+              gap: jtSpacing.gap.xs,
+              marginTop: jtSpacing.component.sm,
               typography: 'button',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              paddingInline: '1.1rem',
-              paddingBlock: '0.62rem',
-              borderRadius: '999px',
+              paddingInline: jtSpacing.component.md,
+              paddingBlock: jtSpacing.component.xs,
+              borderRadius: 999,
               border: '1.5px solid',
               borderColor: 'primary.main',
               color: 'primary.main',

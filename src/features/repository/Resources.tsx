@@ -10,6 +10,7 @@ import ReferenceCard from './ReferenceCard'
 import ArticleAccordion from './ArticleAccordion'
 import { assetUrl } from '../../utils/baseUrl'
 import { REFERENCES } from './data/resources'
+import { jtSpacing } from '../../theme'
 
 export default function Resources() {
   return (
@@ -30,15 +31,17 @@ export default function Resources() {
         <ScrollReveal
           sx={{
             position: 'relative',
-            borderRadius: 'var(--mui-shape-borderRadius)',
+            borderRadius: 1,
             overflow: 'hidden',
-            border: '1px solid rgba(155,162,164,0.18)',
-            mb: '3.2rem',
+            border: 1,
+            borderColor: 'border.subtle',
+            mb: jtSpacing.section.md,
             '&::after': {
               content: '""',
               position: 'absolute',
               inset: 0,
-              background: 'linear-gradient(90deg, rgba(37,52,57,0.55), transparent 45%)',
+              background: (theme) =>
+                `linear-gradient(90deg, ${theme.palette.translucent[600]}, transparent 45%)`,
             },
           }}
         >
@@ -50,17 +53,17 @@ export default function Resources() {
             sx={{ width: '100%', display: 'block', aspectRatio: '24 / 7', objectFit: 'cover' }}
           />
         </ScrollReveal>
-        <SectionHead eyebrow="Foundations" title="Building on Existing Delta Research" />
+        <SectionHead
+          eyebrow="Foundations"
+          title="Building on Existing Delta Research"
+          sx={{ marginBottom: jtSpacing.component.md }}
+        />
         <ScrollReveal
           delay={0.06}
           sx={{
-            borderLeft: '4px solid',
-            borderColor: 'primary.main',
-            pl: '1.6rem',
-            fontSize: '1.3rem',
-            lineHeight: 1.75,
+            typography: 'body2',
             maxWidth: '70ch',
-            mb: '2.6rem',
+            mb: jtSpacing.component.lg,
           }}
         >
           The following content is provided as a small collection of reference literature that has
@@ -71,8 +74,8 @@ export default function Resources() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(min(330px, 100%), 1fr))',
-            gap: '1.3rem',
+            gridTemplateColumns: '1fr',
+            gap: jtSpacing.gap.xs,
           }}
         >
           {REFERENCES.map((r) => (
@@ -90,20 +93,20 @@ export default function Resources() {
       </Section>
 
       {/* Modeling resources */}
-      <Section id="modeling" bg="base.600">
+      <Section id="modeling" bg="base.700">
         <Box
           sx={{
             display: 'grid',
             gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: { xs: '1.6rem', md: '2.6rem' },
+            gap: { xs: jtSpacing.gap.lg, md: jtSpacing.component.xl },
             alignItems: 'center',
           }}
         >
           <ScrollReveal
             sx={{
               bgcolor: 'common.white',
-              borderRadius: 'var(--mui-shape-borderRadius)',
-              p: '2.2rem',
+              borderRadius: 1,
+              p: jtSpacing.section.sm,
               display: 'grid',
               placeItems: 'center',
             }}
@@ -118,12 +121,14 @@ export default function Resources() {
           </ScrollReveal>
           <ScrollReveal delay={0.08}>
             <Eyebrow>Modeling Resources</Eyebrow>
-            <Typography variant="h2" component="h3" sx={{ mt: '0.6rem', mb: '1rem' }}>
+            <Typography
+              variant="h2"
+              component="h3"
+              sx={{ mt: jtSpacing.component.sm, mb: jtSpacing.component.md }}
+            >
               California Water &amp; Environmental Modeling Forum
             </Typography>
-            <Typography
-              sx={{ fontSize: '1.2rem', lineHeight: 1.7, mb: '1.6rem', maxWidth: '46ch' }}
-            >
+            <Typography variant="body1" sx={{ mb: jtSpacing.component.lg, maxWidth: '46ch' }}>
               This wiki serves as a collaborative platform for sharing information, resources, and
               documentation related to modeling efforts focused on the Delta ecosystem.
             </Typography>

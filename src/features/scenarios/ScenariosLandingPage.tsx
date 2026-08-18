@@ -1,7 +1,6 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import BoltIcon from '@mui/icons-material/Bolt'
 import ExploreIcon from '@mui/icons-material/Explore'
-import WaterDropIcon from '@mui/icons-material/WaterDrop'
 import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/material'
 import { Link } from 'react-router-dom'
 import ExpandableScenarioPanels from '../../ui/animation/ExpandableScenarioPanels'
@@ -9,34 +8,9 @@ import ScrollReveal from '../../ui/animation/ScrollReveal'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
 import { assetUrl } from '../../utils/baseUrl'
+import OutflowVariationGrid from './OutflowVariationGrid'
 import ScenarioRidgelinePlot from './ScenarioRidgelinePlot'
-
-const outflowVariations = [
-  {
-    label: 'Less Delta outflow',
-    percent: 'Variation II',
-    body: 'Explore a more constrained outflow condition (10% decrease) in the Delta.',
-  },
-  {
-    label: 'Business as Usual',
-    percent: 'Current operations',
-    body: 'Begin with this starting point before changing Delta outflow assumptions.',
-  },
-  {
-    label: 'More Delta outflow',
-    percent: 'Variation I',
-    body: 'Explore how a stronger outflow (30% increase) can shift water quality, habitats, and tradeoffs.',
-  },
-]
-
-const outflowVariationPanels = outflowVariations.map((variation, index) => ({
-  title: variation.label,
-  image: assetUrl('/images/scenarios/outflow.jpg'),
-  eyebrow: variation.percent,
-  body: variation.body,
-  href: '/scenarios',
-  key: `outflow-${index}`,
-}))
+import ScenarioRankingOverview from './ScenarioRankingOverview'
 
 const adaptationScenarios = [
   {
@@ -61,18 +35,18 @@ const adaptationScenarios = [
     slug: 'new-green-watershed',
   },
   {
-    title: 'Calling on Reserves',
-    image: '/images/scenarios/calling-on-reserves.jpg',
-    description:
-      'A future that leans on stored capacity and emergency reserves. It explores how backup systems affect risk, reliability, and equity.',
-    slug: 'calling-on-reserves',
-  },
-  {
     title: 'Bolster and Fortify',
     image: '/images/scenarios/bolster-fortify-2.JPG',
     description:
       'A protection-focused path built around stronger edges and defenses. It asks what is secured, and what pressures remain.',
     slug: 'bolster-and-fortify',
+  },
+  {
+    title: 'Calling on Reserves',
+    image: '/images/scenarios/calling-on-reserves.jpg',
+    description:
+      'A future that leans on stored capacity and emergency reserves. It explores how backup systems affect risk, reliability, and equity.',
+    slug: 'calling-on-reserves',
   },
   {
     title: 'A Tunnel',
@@ -92,11 +66,12 @@ const expandableScenarioItems = adaptationScenarios.map((scenario, index) => ({
 }))
 
 const sectionLabelSx = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 1,
   color: 'primary.main',
-  typography: 'eyebrow',
+  '& .MuiSvgIcon-root': {
+    fontSize: 'inherit',
+    verticalAlign: 'middle',
+    mr: 1,
+  },
 } as const
 
 const glassPanelSx = {
@@ -106,6 +81,13 @@ const glassPanelSx = {
   boxShadow: 'none',
   backdropFilter: 'blur(14px)',
 } as const
+
+const scenarioSectionLinks = [
+  { label: 'Examine Probable Outflow Variations', href: '#outflow-variations' },
+  { label: 'Examine Possible adaptation scenarios', href: '#adaptations', primary: true },
+  { label: 'Compare adaptation scenarios', href: '#scenario-comparison' },
+  { label: 'View Scenario Rankings', href: '#ranking-overview' },
+] as const
 
 export default function ScenariosLandingPage() {
   const theme = useTheme()
@@ -150,10 +132,10 @@ export default function ScenariosLandingPage() {
                 spacing={theme.jtSpacing.gap.lg}
                 sx={{ maxWidth: theme.jtSpacing.paragraphMaxWidth.default }}
               >
-                <Box sx={sectionLabelSx}>
-                  <ExploreIcon fontSize="small" />
+                <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
+                  <ExploreIcon />
                   Scenario Explorer
-                </Box>
+                </Typography>
                 <Typography variant="h1" component="h1" sx={{ maxWidth: '15ch' }}>
                   Choose a future to explore
                 </Typography>
@@ -162,29 +144,38 @@ export default function ScenariosLandingPage() {
                   pathways to compare what different Delta futures ask of communities, ecosystems,
                   and water systems.
                 </Typography>
-                <Stack
-                  direction={{ xs: 'column', sm: 'row' }}
-                  spacing={theme.jtSpacing.gap.sm}
+                <Box
+                  component="nav"
+                  aria-label="Explore sections on this page"
                   sx={{ pt: theme.jtSpacing.component.xs }}
                 >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    component="a"
-                    href="#shared-context"
-                    endIcon={<ArrowForwardIcon />}
+                  <Stack
+                    direction="row"
+                    useFlexGap
+                    spacing={theme.jtSpacing.gap.sm}
+                    sx={{ flexWrap: 'wrap' }}
                   >
-                    Start with Current Operations
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    component="a"
-                    href="#adaptations"
-                    sx={{ color: 'common.white', borderColor: 'base.300' }}
-                  >
-                    Browse Adaptations
-                  </Button>
-                </Stack>
+                    {scenarioSectionLinks.map((link) => (
+                      <Button
+                        key={link.href}
+                        variant={'primary' in link && link.primary ? 'contained' : 'outlined'}
+                        color="primary"
+                        component="a"
+                        href={link.href}
+                        endIcon={
+                          'primary' in link && link.primary ? <ArrowForwardIcon /> : undefined
+                        }
+                        sx={
+                          'primary' in link && link.primary
+                            ? undefined
+                            : { color: 'common.white', borderColor: 'base.300' }
+                        }
+                      >
+                        {link.label}
+                      </Button>
+                    ))}
+                  </Stack>
+                </Box>
               </Stack>
             </ScrollReveal>
           </Container>
@@ -209,15 +200,14 @@ export default function ScenariosLandingPage() {
             >
               <ScrollReveal>
                 <Stack spacing={theme.jtSpacing.component.md}>
-                  <Box sx={sectionLabelSx}>
-                    <BoltIcon fontSize="small" />
+                  <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
+                    <BoltIcon />
                     Start Here
-                  </Box>
+                  </Typography>
                   <Typography variant="h2">Starting point</Typography>
                   <Typography variant="body1" sx={{ color: 'base.100' }}>
-                    Read the background context first: this helps you understand the key factors
-                    shaping the Delta, and how the scenarios are designed to explore tradeoffs in
-                    water management, ecosystems, and communities.
+                    This section helps you understand the key factors shaping how we model the
+                    Delta, as well as the essentials you need to know about the Delta.
                   </Typography>
                   <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
                     <Button
@@ -228,7 +218,7 @@ export default function ScenariosLandingPage() {
                       endIcon={<ArrowForwardIcon />}
                       sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' }, color: 'base.900' }}
                     >
-                      Key Parameters
+                      View Key Parameters
                     </Button>
                     <Button
                       component={Link}
@@ -237,7 +227,7 @@ export default function ScenariosLandingPage() {
                       endIcon={<ArrowForwardIcon />}
                       sx={{ color: 'common.white', borderColor: 'base.300' }}
                     >
-                      Read Background Context
+                      Read Delta Essentials
                     </Button>
                   </Stack>
                 </Stack>
@@ -302,7 +292,7 @@ export default function ScenariosLandingPage() {
                         bgcolor: 'translucent.primaryGreen',
                       }}
                     >
-                      Business as Usual
+                      Current Operations
                     </Typography>
                     <Typography variant="h3" component="p" sx={{ maxWidth: 460 }}>
                       One starting point, many comparisons
@@ -314,30 +304,21 @@ export default function ScenariosLandingPage() {
           </Container>
         </Box>
 
-        <Box component="section" aria-labelledby="outflow-panels-title">
-          <ExpandableScenarioPanels
-            items={outflowVariationPanels}
-            actionLabel="Explore"
-            sharedImage
-            header={
-              <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 760 } }}>
-                <Box sx={sectionLabelSx}>
-                  <WaterDropIcon fontSize="small" />
-                  Outflow Variations
-                </Box>
-                <Typography id="outflow-panels-title" variant="h2" component="h2">
-                  Three views of one water future
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'base.100', maxWidth: '58ch' }}>
-                  Three vertical panels use one shared image to compare less Delta outflow, current
-                  operations, and more Delta outflow.
-                </Typography>
-              </Stack>
-            }
-          />
+        <Box
+          component="section"
+          id="outflow-variations"
+          aria-labelledby="outflow-panels-title"
+          sx={{ scrollMarginTop: { xs: '72px', md: '76px' } }}
+        >
+          <OutflowVariationGrid />
         </Box>
 
-        <Box component="section" id="adaptations" aria-labelledby="scenario-panels-title">
+        <Box
+          component="section"
+          id="adaptations"
+          aria-labelledby="scenario-panels-title"
+          sx={{ scrollMarginTop: { xs: '72px', md: '76px' } }}
+        >
           <ExpandableScenarioPanels
             items={expandableScenarioItems}
             collapseOnScroll
@@ -350,28 +331,55 @@ export default function ScenariosLandingPage() {
               />
             )}
             header={
-              <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 'none' } }}>
-                <Box sx={sectionLabelSx}>
-                  <ExploreIcon fontSize="small" />
-                  Adaptation Pathways
-                </Box>
-                <Typography
-                  id="scenario-panels-title"
-                  variant="h2"
-                  component="h2"
-                  sx={{
-                    whiteSpace: { xs: 'normal', md: 'nowrap' },
-                    maxWidth: 'none',
-                  }}
-                >
-                  Six futures, side by side
+              <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 760 } }}>
+                <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
+                  <ExploreIcon />
+                  Adaptation Scenarios
+                </Typography>
+                <Typography id="scenario-panels-title" variant="h2" component="h2">
+                  Possible water futures
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'base.100', maxWidth: '58ch' }}>
-                  A full-screen panel view for browsing the same pathways as expandable columns.
+                  Explore six adaptation scenarios and compare how different pathways could shape
+                  communities, ecosystems, and water systems across the Delta.
                 </Typography>
               </Stack>
             }
           />
+        </Box>
+
+        <Box
+          component="section"
+          id="ranking-overview"
+          aria-labelledby="ranking-overview-title"
+          sx={{
+            bgcolor: 'base.700',
+            py: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
+            scrollMarginTop: { xs: '72px', md: '76px' },
+          }}
+        >
+          <Container maxWidth="lg">
+            <ScrollReveal>
+              <Stack spacing={theme.jtSpacing.gap.xl}>
+                <Stack spacing={theme.jtSpacing.component.sm} sx={{ maxWidth: '66ch' }}>
+                  <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
+                    <ExploreIcon />
+                    Ranking Overview
+                  </Typography>
+                  <Typography id="ranking-overview-title" variant="h2">
+                    Compare priorities across adaptation scenarios
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: 'base.100' }}>
+                    This matrix will summarize how each adaptation scenario performs across shared
+                    water, ecosystem, equity, and implementation criteria. Rankings will be added
+                    after the evaluation framework and results are finalized.
+                  </Typography>
+                </Stack>
+
+                <ScenarioRankingOverview scenarios={adaptationScenarios} />
+              </Stack>
+            </ScrollReveal>
+          </Container>
         </Box>
       </Box>
       <Footer />

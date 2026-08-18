@@ -5,6 +5,7 @@ import ScrollReveal from '../../ui/animation/ScrollReveal'
 import Eyebrow from '../../ui/Eyebrow'
 import StudioFeatureCard from '../../ui/cards/StudioFeatureCard'
 import { STUDIOS } from './data/studios'
+import { jtSpacing } from '../../theme'
 
 /** Alternating left/right feature rows for the design studios. */
 export default function StudioShowcase() {
@@ -14,8 +15,8 @@ export default function StudioShowcase() {
         sx={{
           display: 'flex',
           alignItems: 'baseline',
-          gap: '1rem',
-          mb: '2.4rem',
+          gap: jtSpacing.gap.md,
+          mb: jtSpacing.component.xl,
           flexWrap: 'wrap',
         }}
       >
@@ -28,7 +29,6 @@ export default function StudioShowcase() {
       {STUDIOS.map((s, i) => (
         <ScrollReveal key={s.title + s.place} delay={0.04}>
           <StudioFeatureCard
-            badge="Design Studio"
             number={s.n}
             title={s.title}
             place={s.place}

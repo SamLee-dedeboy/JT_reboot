@@ -3,6 +3,7 @@ import { Box, Paper, Typography } from '@mui/material'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
+import { SCENARIO_EXPLORER_MAP_STYLE } from '../mapConfig'
 import { palette } from '../../../theme/index'
 import type { FeatureCollection, Point } from 'geojson'
 import type { GeoJSONSource } from 'mapbox-gl'
@@ -13,7 +14,6 @@ import type {
   ScenarioDataset,
 } from '../types'
 
-const MAP_STYLE = 'mapbox://styles/justtransition/cmreic454000z01sle8uh6v7n'
 const MAP_BOUNDS: mapboxgl.LngLatBoundsLike = [
   [-122.82, 37.8],
   [-121.1, 38.36],
@@ -242,7 +242,7 @@ function MapCanvas({
     if (!containerRef.current) return
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: MAP_STYLE,
+      style: SCENARIO_EXPLORER_MAP_STYLE,
       bounds: MAP_BOUNDS,
       fitBoundsOptions: { padding: 10 },
       attributionControl: false,

@@ -19,6 +19,8 @@ export const numbering = {
 
 export const highlighter = {
   defaultColor: palette.translucent.primaryGreen,
+  accentBlueBalanced: palette.translucent.accentBlueBalanced,
+  accentBlueVibrant: palette.translucent.accentBlueVibrant,
   vibrancy: { subtle: 0.18, balanced: 0.32, vibrant: 0.52 },
 } as const
 

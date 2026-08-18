@@ -43,6 +43,8 @@ export const palette = {
     primaryBlueSubtle: 'rgba(81,162,189,0.10)',
     primaryBlueStrong: 'rgba(81,162,189,0.68)',
     primaryBlueGlow: 'rgba(81,162,189,0.80)',
+    accentBlueBalanced: 'rgba(121,225,228,0.32)',
+    accentBlueVibrant: 'rgba(121,225,228,0.52)',
     primaryPink: 'rgba(251,1,105,0.18)',
     orange: 'rgba(247,124,59,0.18)',
     textShadow: 'rgba(16,22,24,0.6)',

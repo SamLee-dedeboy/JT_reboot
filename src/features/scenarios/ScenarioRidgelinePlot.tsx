@@ -1,4 +1,5 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
 import { Box, Button, CircularProgress, Stack, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
@@ -13,12 +14,19 @@ interface ScenarioRidgelinePlotProps {
   seaLevelRise: boolean
 }
 
-const scenarioKeys = ['ecomachine', 'newgreen', 'reserve', 'bolster', 'tunnel'] as const
+const scenarioKeys = ['ecomachine', 'newgreen', 'bolster', 'reserve', 'tunnel'] as const
+const scenarioSlugs = [
+  'eco-machine',
+  'new-green-watershed',
+  'bolster-and-fortify',
+  'calling-on-reserves',
+  'a-tunnel',
+] as const
 const scenarioLabels = [
   'Eco Machine',
   'New Green Watershed',
-  'Calling on Reserves',
   'Bolster and Fortify',
+  'Calling on Reserves',
   'A Tunnel',
 ]
 const samples = 260
@@ -110,7 +118,7 @@ export default function ScenarioRidgelinePlot({
         }),
         display: 'grid',
         gridTemplateColumns: { xs: '1fr', md: '20dvw minmax(0, 1fr)' },
-        gridTemplateRows: { xs: 'auto minmax(0, 1fr) 5dvh', md: '15dvh minmax(0, 1fr) 5dvh' },
+        gridTemplateRows: { xs: 'auto minmax(0, 1fr) 5dvh', md: '20dvh minmax(0, 1fr) 5dvh' },
       }}
     >
       <Box
@@ -127,12 +135,33 @@ export default function ScenarioRidgelinePlot({
         <Stack
           spacing={theme.jtSpacing.component.xs}
           sx={{
-            p: theme.jtSpacing.scenario.comparisonHeader,
-            maxWidth: { md: theme.jtSpacing.paragraphMaxWidth.default },
+            p: {
+              xs: theme.jtSpacing.scenario.panelHeaderInset.xs,
+              md: theme.jtSpacing.scenario.panelHeaderInset.md,
+            },
+            maxWidth: { xs: 620, md: 'none' },
           }}
         >
-          <Typography variant="eyebrow">Scenario comparison</Typography>
-          <Typography id="ridgeline-title" variant="h3">
+          <Typography
+            component="p"
+            variant="eyebrow"
+            sx={{
+              color: 'primary.main',
+              '& .MuiSvgIcon-root': {
+                fontSize: 'inherit',
+                verticalAlign: 'middle',
+                mr: 1,
+              },
+            }}
+          >
+            <CompareArrowsIcon />
+            Scenario comparison
+          </Typography>
+          <Typography
+            id="ridgeline-title"
+            variant="h2"
+            sx={{ whiteSpace: { xs: 'normal', md: 'nowrap' } }}
+          >
             Five paths through time
             <Box
               component={motion.span}
@@ -147,7 +176,7 @@ export default function ScenarioRidgelinePlot({
               {seaLevelRise ? 'with sea level rise' : ''}
             </Box>
           </Typography>
-          <Typography variant="body2" sx={{ color: 'base.200' }}>
+          <Typography variant="body2" sx={{ color: 'base.100', maxWidth: '58ch' }}>
             Daily average across all stations relative to{' '}
             <Box component="span" sx={{ color: 'brand.primaryBlue' }}>
               Business as Usual
@@ -219,7 +248,7 @@ export default function ScenarioRidgelinePlot({
               </Box>
               <Button
                 component={Link}
-                to={`/pages/scenario-explorer/internal?scenario=${scenarioKeys[index]}${seaLevelRise ? '&seaLevelRise=true' : ''}`}
+                to={`/scenarios/${scenarioSlugs[index]}/results${seaLevelRise ? '?seaLevelRise=true' : ''}`}
                 variant={seaLevelRise ? 'contained' : 'outlined'}
                 color="primary"
                 size="small"

@@ -5,6 +5,7 @@ import ProjectDocumentation from '../features/repository/ProjectDocumentation'
 import Resources from '../features/repository/Resources'
 import ServiceLearning from '../features/repository/ServiceLearning'
 import ScenarioTemplatePage from '../features/scenarios/ScenarioTemplatePage'
+import ScenarioResultsPage from '../features/scenarios/ScenarioResultsPage'
 import ScenariosBackgroundPage from '../features/scenarios/ScenariosBackgroundPage'
 import ScenariosKeyParametersPage from '../features/scenarios/ScenariosKeyParametersPage'
 import ScenariosLandingPage from '../features/scenarios/ScenariosLandingPage'
@@ -28,6 +29,7 @@ export default function AppRouter() {
       <Route path="/scenarios" element={<ScenariosLandingPage />} />
       <Route path="/scenarios/background-context" element={<ScenariosBackgroundPage />} />
       <Route path="/scenarios/key-parameters" element={<ScenariosKeyParametersPage />} />
+      <Route path="/scenarios/:scenarioSlug/results" element={<ScenarioResultsPage />} />
       <Route path="/scenarios/:scenarioSlug" element={<ScenarioTemplatePage />} />
       <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
       <Route path="/pages/service-learning" element={<ServiceLearning />} />

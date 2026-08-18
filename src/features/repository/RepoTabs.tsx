@@ -2,6 +2,7 @@
 // sections.
 import { Link } from 'react-router-dom'
 import { Box, Container, Typography } from '@mui/material'
+import { jtSpacing } from '../../theme'
 
 export type RepoTabKey = 'docs' | 'learning' | 'resources'
 
@@ -39,22 +40,22 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
         position: 'sticky',
         top: { xs: 72, md: 76 },
         zIndex: 90,
-        bgcolor: 'rgba(34,47,52,0.96)',
-        backdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(155,162,164,0.16)',
-        borderBottom: '1px solid rgba(155,162,164,0.2)',
-        boxShadow: '0 12px 28px rgba(0,0,0,0.18)',
+        bgcolor: 'base.700',
+        borderTop: 1,
+        borderBottom: 1,
+        borderColor: 'border.subtle',
+        boxShadow: (theme) => theme.navigation.dropdownShadow,
       }}
     >
       <Container
         maxWidth="lg"
         sx={{
-          px: { xs: '1.5rem', md: '2rem' },
+          px: { xs: jtSpacing.gap.lg, md: jtSpacing.gap.xl },
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', md: 'auto minmax(0, 1fr)' },
           alignItems: 'center',
-          gap: { xs: 0.75, md: 2 },
-          py: { xs: 0.75, md: 0 },
+          gap: { xs: jtSpacing.component.xs, md: jtSpacing.gap.md },
+          py: { xs: jtSpacing.component.xs, md: 0 },
         }}
       >
         <Typography
@@ -62,7 +63,7 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
           component="p"
           sx={{
             display: { xs: 'none', md: 'block' },
-            pr: 2,
+            pr: jtSpacing.gap.md,
             color: 'base.100',
             whiteSpace: 'nowrap',
           }}
@@ -73,7 +74,7 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
           sx={{
             display: 'grid',
             gridTemplateColumns: { xs: 'repeat(3, max-content)', sm: 'repeat(3, minmax(0, 1fr))' },
-            gap: { xs: 0.75, md: 1 },
+            gap: { xs: jtSpacing.component.xs, md: jtSpacing.gap.xs },
             overflowX: 'auto',
             scrollbarWidth: 'none',
             '&::-webkit-scrollbar': { display: 'none' },
@@ -92,47 +93,28 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
                   display: 'grid',
                   gridTemplateColumns: { xs: 'auto', sm: 'auto minmax(0, 1fr)' },
                   alignItems: 'center',
-                  gap: { xs: 0.35, sm: 0.75 },
+                  gap: { xs: jtSpacing.component.xs, sm: jtSpacing.gap.xs },
                   minWidth: { xs: 132, sm: 0 },
-                  px: { xs: 1.25, md: 1.6 },
-                  py: { xs: 1, md: 1.15 },
-                  borderRadius: 'var(--mui-shape-borderRadius)',
+                  px: { xs: jtSpacing.component.sm, md: jtSpacing.gap.md },
+                  py: { xs: jtSpacing.component.xs, md: jtSpacing.component.sm },
+                  borderRadius: 1,
                   color: active ? 'common.black' : 'common.white',
                   bgcolor: active ? 'primary.main' : 'transparent',
-                  border: '1px solid',
-                  borderColor: active ? 'primary.main' : 'transparent',
-                  transition:
-                    'background-color 180ms ease, border-color 180ms ease, color 180ms ease',
+                  transition: 'background-color 180ms ease, color 180ms ease',
                   '&:hover, &:focus-visible': {
                     bgcolor: active ? 'primary.main' : 'translucent.primaryGreen',
-                    borderColor: active ? 'primary.main' : 'translucent.primaryGreen',
                     outline: 'none',
                   },
                 }}
               >
                 <Typography
                   component="span"
-                  sx={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '0.72rem',
-                    letterSpacing: '0.1em',
-                    lineHeight: 1,
-                    color: active ? 'common.black' : 'primary.main',
-                  }}
+                  variant="numberBadge"
+                  sx={{ color: active ? 'common.black' : 'primary.main' }}
                 >
                   {tab.n}
                 </Typography>
-                <Typography
-                  component="span"
-                  sx={{
-                    fontFamily: 'var(--font-heading)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                    lineHeight: 1.15,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <Typography component="span" variant="button" sx={{ whiteSpace: 'nowrap' }}>
                   <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
                     {tab.label}
                   </Box>

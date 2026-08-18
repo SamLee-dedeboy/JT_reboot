@@ -17,7 +17,7 @@ export default function Hl({
 }) {
   const styleByVariant = {
     underline: {
-      background: `linear-gradient(transparent 62%, ${color} 62%)`,
+      background: `linear-gradient(transparent 32%, ${color} 32%)`,
       paddingInline: '0.1em',
       borderRadius: '2px',
     },
@@ -31,9 +31,12 @@ export default function Hl({
       WebkitBoxDecorationBreak: 'clone',
     },
     wash: {
-      background: color,
+      background: `linear-gradient(transparent 15%, ${color} 15%)`,
       paddingInline: '0.16em',
-      borderRadius: '4px',
+      borderRadius: '1px',
+      lineHeight: 1,
+      boxDecorationBreak: 'clone',
+      WebkitBoxDecorationBreak: 'clone',
     },
     pill: {
       background: color,

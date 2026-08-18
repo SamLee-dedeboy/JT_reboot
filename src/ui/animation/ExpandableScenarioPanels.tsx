@@ -52,7 +52,6 @@ export default function ExpandableScenarioPanels({
   useMotionValueEvent(collapsedHeight, 'change', (height) => {
     setIsComparisonActive(Number.parseFloat(height) <= 20.05)
   })
-  const contentOpacity = useTransform(scrollYProgress, [0, 0.08, 0.26, 1], [1, 1, 0, 0])
   const storyBackground = useTransform(
     scrollYProgress,
     [0, 0.64, 0.72, 1],
@@ -116,6 +115,7 @@ export default function ExpandableScenarioPanels({
               inset: '100dvh 0 auto',
               height: '100dvh',
               pointerEvents: 'none',
+              scrollMarginTop: { xs: '72px', md: '76px' },
             }}
           >
             <Typography
@@ -144,6 +144,7 @@ export default function ExpandableScenarioPanels({
               inset: '200dvh 0 auto',
               height: '100dvh',
               pointerEvents: 'none',
+              scrollMarginTop: { xs: '72px', md: '76px' },
             }}
           >
             <Typography
@@ -166,6 +167,30 @@ export default function ExpandableScenarioPanels({
         </>
       )}
 
+      {collapseOnScroll && header && (
+        <Box
+          sx={{
+            position: 'absolute',
+            zIndex: 4,
+            top: {
+              xs: theme.spacing(theme.jtSpacing.scenario.panelHeaderInset.xs),
+              md: theme.spacing(theme.jtSpacing.scenario.panelHeaderInset.md),
+            },
+            left: {
+              xs: theme.spacing(theme.jtSpacing.scenario.panelHeaderInset.xs),
+              md: theme.spacing(theme.jtSpacing.scenario.panelHeaderInset.md),
+            },
+            right: {
+              xs: theme.spacing(theme.jtSpacing.scenario.panelHeaderInset.xs),
+              md: theme.spacing(theme.jtSpacing.scenario.panelHeaderInset.md),
+            },
+            pointerEvents: 'none',
+          }}
+        >
+          {header}
+        </Box>
+      )}
+
       <Box
         sx={{
           position: collapseOnScroll ? 'sticky' : 'relative',
@@ -181,14 +206,8 @@ export default function ExpandableScenarioPanels({
             style={{ position: 'absolute', inset: 0, zIndex: 0, backgroundColor: storyBackground }}
           />
         )}
-        {header && (
-          <motion.div
-            style={
-              collapseOnScroll
-                ? { position: 'relative', zIndex: 3, opacity: contentOpacity }
-                : undefined
-            }
-          >
+        {!collapseOnScroll && header && (
+          <motion.div>
             <Box
               sx={{
                 position: 'absolute',

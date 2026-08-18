@@ -1,26 +1,182 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
-import { Box, Button, Container, Divider, Stack, Typography, useTheme } from '@mui/material'
+import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import BaseMap from '../../map/BaseMap'
+import ScenarioMapCamera from '../../map/layers/ScenarioMapCamera'
+import ScenarioMapLegend from '../../map/layers/ScenarioMapLegend'
+import ScenarioMapLayers from '../../map/layers/ScenarioMapLayers'
 import Footer from '../../ui/Footer'
+import Hl from '../../ui/Highlight'
 import Navbar from '../../ui/Navbar'
 import NavRail from '../../ui/NavRail'
+import { highlighter, jtSpacing } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
-import { evaluationCriteria, scenarioBySlug, scenarios } from './content/scenarioContent'
+import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
+import { scenarioBySlug } from './content/scenarioContent'
+import ScenarioNarrativeHighlight from './ScenarioNarrativeHighlight'
+import ScenarioTabs from './ScenarioTabs'
+
+const scenarioDetailGridColumns = {
+  xs: '1fr',
+  lg: 'minmax(180px, .3fr) minmax(0, 1fr) minmax(320px, .9fr)',
+} as const
+
+const scenarioMapViewState = {
+  longitude: -121.73,
+  latitude: 38.04,
+  zoom: 8.75,
+} as const
+
+const californiaMapBounds = [
+  [-124.6, 32.4],
+  [-114, 42.1],
+] as [[number, number], [number, number]]
+
+const paragraphHighlights = [
+  'the land to sink',
+  'If a levee fails, water can rapidly flood the deeply subsided island.',
+  'water salinity intrudes',
+  'restoring watersheds',
+  'multi-benefit',
+  'within the Delta',
+  'its much larger watershed',
+] as const
+
+const scenarioSectionNavigationLabels = [
+  'Motivation',
+  'Adaptation approach',
+  'Supporting strategy',
+  'Key Takeaway',
+] as const
+
+function HighlightedParagraph({ text }: { text: string }) {
+  const parts: ReactNode[] = []
+  let cursor = 0
+
+  while (cursor < text.length) {
+    const nextHighlight = paragraphHighlights
+      .map((phrase) => ({ phrase, index: text.indexOf(phrase, cursor) }))
+      .filter(({ index }) => index >= 0)
+      .sort((a, b) => a.index - b.index)[0]
+
+    if (!nextHighlight) {
+      parts.push(text.slice(cursor))
+      break
+    }
+
+    if (nextHighlight.index > cursor) {
+      parts.push(text.slice(cursor, nextHighlight.index))
+    }
+
+    const isPrimaryHighlight = [
+      'restoring watersheds',
+      'within the Delta',
+      'its much larger watershed',
+    ].includes(nextHighlight.phrase)
+    const usesAccentUnderline =
+      nextHighlight.phrase ===
+      'If a levee fails, water can rapidly flood the deeply subsided island.'
+    parts.push(
+      usesAccentUnderline ? (
+        <Hl
+          key={`${nextHighlight.phrase}-${nextHighlight.index}`}
+          color={highlighter.accentBlueBalanced}
+          styleVariant="wash"
+        >
+          {nextHighlight.phrase}
+        </Hl>
+      ) : (
+        <Box
+          component="strong"
+          key={`${nextHighlight.phrase}-${nextHighlight.index}`}
+          sx={{ color: isPrimaryHighlight ? 'primary.main' : 'inherit' }}
+        >
+          {nextHighlight.phrase}
+        </Box>
+      ),
+    )
+    cursor = nextHighlight.index + nextHighlight.phrase.length
+  }
+
+  return <>{parts}</>
+}
 
 export default function ScenarioTemplatePage() {
   const { scenarioSlug = '' } = useParams()
   const scenario = scenarioBySlug[scenarioSlug]
-  const theme = useTheme()
+  const [selectedHabitatType, setSelectedHabitatType] = useState<string | null>(null)
+  const [showStatewideMap, setShowStatewideMap] = useState(false)
+  const [showEcoculturalLayers, setShowEcoculturalLayers] = useState(false)
+
+  useEffect(() => {
+    if (scenarioSlug !== 'new-green-watershed') {
+      setShowStatewideMap(false)
+      return
+    }
+
+    const supportingStrategySection = document.getElementById('chapter-3')
+    if (!supportingStrategySection) return
+
+    let animationFrame = 0
+    const updateCameraMode = () => {
+      cancelAnimationFrame(animationFrame)
+      animationFrame = requestAnimationFrame(() => {
+        const readingThreshold = window.innerHeight * 0.25
+        setShowStatewideMap(
+          supportingStrategySection.getBoundingClientRect().top <= readingThreshold,
+        )
+      })
+    }
+
+    updateCameraMode()
+    window.addEventListener('scroll', updateCameraMode, { passive: true })
+    window.addEventListener('resize', updateCameraMode)
+
+    return () => {
+      cancelAnimationFrame(animationFrame)
+      window.removeEventListener('scroll', updateCameraMode)
+      window.removeEventListener('resize', updateCameraMode)
+    }
+  }, [scenarioSlug])
+
+  useEffect(() => {
+    if (scenarioSlug !== 'new-green-watershed') {
+      setShowEcoculturalLayers(false)
+      return
+    }
+
+    const ecoculturalSection = document.getElementById('ecocultural-stewardship')
+    if (!ecoculturalSection) return
+
+    let animationFrame = 0
+    const updateEcoculturalLayers = () => {
+      cancelAnimationFrame(animationFrame)
+      animationFrame = requestAnimationFrame(() => {
+        const readingThreshold = window.innerHeight * 0.25
+        setShowEcoculturalLayers(ecoculturalSection.getBoundingClientRect().top <= readingThreshold)
+      })
+    }
+
+    updateEcoculturalLayers()
+    window.addEventListener('scroll', updateEcoculturalLayers, { passive: true })
+    window.addEventListener('resize', updateEcoculturalLayers)
+
+    return () => {
+      cancelAnimationFrame(animationFrame)
+      window.removeEventListener('scroll', updateEcoculturalLayers)
+      window.removeEventListener('resize', updateEcoculturalLayers)
+    }
+  }, [scenarioSlug])
+
   if (!scenario) return <Navigate to="/scenarios" replace />
-  const index = scenarios.findIndex((item) => item.slug === scenario.slug)
-  const next = scenarios[(index + 1) % scenarios.length]
 
   return (
     <>
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
+        {/* Establishes the scenario identity and the plain-language premise. */}
         <Box
           id="overview"
           component="header"
@@ -34,7 +190,8 @@ export default function ScenarioTemplatePage() {
               content: '""',
               position: 'absolute',
               inset: 0,
-              backgroundImage: `linear-gradient(90deg, rgba(16,22,24,.94), rgba(16,22,24,.42)), url(${assetUrl(scenario.image)})`,
+              backgroundImage: (theme) =>
+                `linear-gradient(90deg, ${theme.palette.translucent[900]}, ${theme.palette.translucent[600]}), url(${assetUrl(scenario.image)})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               zIndex: -1,
@@ -42,12 +199,22 @@ export default function ScenarioTemplatePage() {
           }}
         >
           <Container
-            maxWidth="xl"
-            sx={{ py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg } }}
+            maxWidth={false}
+            sx={{
+              width: '90dvw',
+              px: 0,
+              py: { xs: jtSpacing.section.md, md: jtSpacing.section.lg },
+              display: 'grid',
+              gridTemplateColumns: scenarioDetailGridColumns,
+              gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
+            }}
           >
             <Stack
-              spacing={theme.jtSpacing.gap.md}
-              sx={{ maxWidth: theme.jtSpacing.paragraphMaxWidth.default }}
+              spacing={jtSpacing.gap.md}
+              sx={{
+                gridColumn: { lg: '2 / 4' },
+                maxWidth: jtSpacing.paragraphMaxWidth.default,
+              }}
             >
               <Button
                 component={Link}
@@ -59,37 +226,60 @@ export default function ScenarioTemplatePage() {
               </Button>
               <Typography variant="numberArticle">{scenario.number}</Typography>
               <Typography variant="h1">{scenario.title}</Typography>
-              <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '58ch' }}>
+              <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '60ch' }}>
                 {scenario.summary}
               </Typography>
+              {scenario.comparisonNote && (
+                <Typography
+                  variant="meta"
+                  sx={{
+                    maxWidth: '64ch',
+                    color: 'base.50',
+                    borderLeft: 2,
+                    borderColor: 'primary.main',
+                    pl: jtSpacing.component.sm,
+                  }}
+                >
+                  {scenario.comparisonNote}
+                </Typography>
+              )}
             </Stack>
           </Container>
         </Box>
 
+        <ScenarioTabs currentSlug={scenario.slug} />
+
+        {/* Keeps section navigation visible while the narrative is inspected. */}
         <Container
-          maxWidth="xl"
-          sx={{ py: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl } }}
+          maxWidth={false}
+          sx={{
+            width: '90dvw',
+            px: 0,
+            py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl },
+          }}
         >
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                lg: 'minmax(170px, .38fr) minmax(0, 1fr) minmax(0, 1fr)',
-              },
-              gap: { xs: theme.jtSpacing.gap.xl, lg: theme.jtSpacing.section.md },
+              gridTemplateColumns: scenarioDetailGridColumns,
+              gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
               alignItems: 'start',
             }}
           >
-            <Stack
-              component="aside"
-              spacing={theme.jtSpacing.gap.md}
-              sx={{ position: { lg: 'sticky' }, top: { lg: 110 } }}
-            >
-              <Typography variant="h5">Evaluation criteria</Typography>
+            <Box component="aside" sx={{ position: { lg: 'sticky' }, top: { lg: 110 } }}>
+              <Typography
+                variant="eyebrow"
+                sx={{ display: 'block', color: 'base.200', mb: jtSpacing.section.md }}
+              >
+                On this page
+              </Typography>
               <NavRail
                 ariaLabel={`${scenario.title} sections`}
-                items={evaluationCriteria.map(({ id, label }) => ({ id, label }))}
+                items={scenario.story.map((_, chapterIndex) => ({
+                  id: `chapter-${chapterIndex + 1}`,
+                  label:
+                    scenarioSectionNavigationLabels[chapterIndex] ?? `Section ${chapterIndex + 1}`,
+                }))}
                 sx={{
                   position: 'relative',
                   inset: 'auto',
@@ -100,110 +290,182 @@ export default function ScenarioTemplatePage() {
                   '& button': { justifyContent: 'flex-start', flexDirection: 'row-reverse' },
                 }}
               />
-            </Stack>
+            </Box>
 
-            <Stack spacing={theme.jtSpacing.section.md}>
-              <Box id="key-parameters" sx={{ scrollMarginTop: 110 }}>
-                <Typography variant="eyebrow">Scenario inputs</Typography>
-                <Typography variant="h3" sx={{ mt: 1, mb: 3 }}>
-                  Key parameters
-                </Typography>
-                <Stack divider={<Divider flexItem />}>
-                  {scenario.keyParameters.map((parameter) => (
-                    <Box key={parameter.label} sx={{ py: 2.25, display: 'grid', gap: 0.5 }}>
-                      <Typography variant="captionSmall">{parameter.label}</Typography>
-                      <Typography variant="h5" sx={{ color: 'primary.main' }}>
-                        {parameter.value}
+            {/* Carries the reader through one continuous scenario narrative. */}
+            <Stack spacing={jtSpacing.section.lg}>
+              {scenario.story.map((chapter, chapterIndex) => (
+                <Box
+                  component="section"
+                  id={`chapter-${chapterIndex + 1}`}
+                  key={chapter.title}
+                  sx={{
+                    scrollMarginTop: (theme) => theme.spacing(jtSpacing.section.lg),
+                    pt: jtSpacing.section.md,
+                    borderTop: 1,
+                    borderColor: 'border.subtle',
+                  }}
+                >
+                  <Typography variant="h3" component="h3">
+                    {chapter.title}
+                  </Typography>
+                  <Stack spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.lg }}>
+                    {chapter.paragraphs.map((paragraph) => (
+                      <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
+                        <HighlightedParagraph text={paragraph} />
                       </Typography>
-                    </Box>
-                  ))}
-                </Stack>
-              </Box>
-              <Box id="narrative" sx={{ scrollMarginTop: 110 }}>
-                <Typography variant="h3" sx={{ mb: 2 }}>
-                  Narrative
-                </Typography>
-                <Stack spacing={2}>
-                  {scenario.narrative.map((paragraph) => (
-                    <Typography key={paragraph} variant="body2">
-                      {paragraph}
-                    </Typography>
-                  ))}
-                </Stack>
-              </Box>
+                    ))}
+                    {chapter.highlights?.map((highlight) => (
+                      <ScenarioNarrativeHighlight
+                        key={highlight.title}
+                        title={highlight.title}
+                        paragraphs={highlight.paragraphs}
+                        selected={
+                          selectedHabitatType ===
+                          (highlight.mapHabitatType ?? highlight.exploreHabitat)
+                        }
+                        onSelect={
+                          highlight.mapHabitatType || highlight.exploreHabitat
+                            ? () =>
+                                setSelectedHabitatType((current) =>
+                                  current === (highlight.mapHabitatType ?? highlight.exploreHabitat)
+                                    ? null
+                                    : (highlight.mapHabitatType ?? highlight.exploreHabitat)!,
+                                )
+                            : undefined
+                        }
+                      />
+                    ))}
+                    {chapter.highlightsAction && (
+                      <Button
+                        component={Link}
+                        to={chapter.highlightsAction.href}
+                        variant="contained"
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{ alignSelf: 'flex-start', mt: jtSpacing.component.lg }}
+                      >
+                        {chapter.highlightsAction.label}
+                      </Button>
+                    )}
+                    {chapter.subsections?.map((subsection) => (
+                      <Box
+                        id={subsection.id}
+                        key={subsection.title}
+                        sx={{ pt: jtSpacing.component.lg }}
+                      >
+                        <Typography variant="h4" component="h4">
+                          {subsection.title}
+                        </Typography>
+                        <Stack spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.md }}>
+                          {subsection.paragraphs.map((paragraph) => (
+                            <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
+                              <HighlightedParagraph text={paragraph} />
+                            </Typography>
+                          ))}
+                          {subsection.orderedItems && (
+                            <Box
+                              component="ol"
+                              sx={{
+                                m: 0,
+                                pl: jtSpacing.component.xl,
+                                color: 'base.100',
+                              }}
+                            >
+                              {subsection.orderedItems.map((item) => (
+                                <Typography
+                                  component="li"
+                                  variant="body1"
+                                  key={item}
+                                  sx={{ pl: jtSpacing.gap.sm }}
+                                >
+                                  {item}
+                                </Typography>
+                              ))}
+                            </Box>
+                          )}
+                        </Stack>
+                      </Box>
+                    ))}
+                    {chapter.endingParagraphs?.map((paragraph) => (
+                      <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
+                        <HighlightedParagraph text={paragraph} />
+                      </Typography>
+                    ))}
+                    {chapter.primaryAction && (
+                      <Button
+                        component={Link}
+                        to={chapter.primaryAction.href}
+                        variant="contained"
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{ alignSelf: 'flex-start', mt: jtSpacing.component.lg }}
+                      >
+                        {chapter.primaryAction.label}
+                      </Button>
+                    )}
+                  </Stack>
+                </Box>
+              ))}
             </Stack>
 
-            <Stack id="map-features" spacing={theme.jtSpacing.gap.md} sx={{ scrollMarginTop: 110 }}>
-              <Typography variant="eyebrow">Spatial view</Typography>
-              <Typography variant="h3">Map features</Typography>
+            {/* Preserves the map inspection area beside the scenario narrative. */}
+            <Box
+              id="map-features"
+              sx={{
+                position: { lg: 'sticky' },
+                top: { lg: 110 },
+                scrollMarginTop: 110,
+              }}
+            >
               <Box
+                aria-label={`Interactive map for ${scenario.title}`}
                 sx={{
-                  minHeight: { xs: 360, lg: 620 },
+                  height: { xs: 360, lg: 'calc(100dvh - 110px)' },
                   position: 'relative',
                   overflow: 'hidden',
                   borderRadius: 1,
                   border: 1,
                   borderColor: 'base.400',
                   bgcolor: 'base.700',
-                  backgroundImage: `linear-gradient(rgba(20,29,31,.38), rgba(20,29,31,.88)), url(${assetUrl(scenario.image)})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
+                  '& .mapboxgl-ctrl-bottom-left': { display: 'none' },
                 }}
               >
-                <Stack
-                  sx={{
-                    position: 'absolute',
-                    inset: 0,
-                    p: { xs: 3, md: 4 },
-                    justifyContent: 'flex-end',
-                  }}
-                  spacing={2}
+                <BaseMap
+                  initialViewState={scenarioMapViewState}
+                  mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
+                  interactive={false}
+                  maxBounds={californiaMapBounds}
                 >
-                  <MapOutlinedIcon color="primary" fontSize="large" />
-                  <Typography variant="h4">Interactive map coming next</Typography>
-                  <Stack component="ul" spacing={1} sx={{ m: 0, pl: 2.5 }}>
-                    {scenario.mapFeatures.map((feature) => (
-                      <Typography component="li" variant="body2" key={feature}>
-                        {feature}
-                      </Typography>
-                    ))}
-                  </Stack>
-                </Stack>
+                  <ScenarioMapCamera statewide={showStatewideMap} />
+                  <ScenarioMapLayers
+                    scenarioSlug={scenario.slug}
+                    selectedHabitatType={selectedHabitatType}
+                    visibilityScope={
+                      showStatewideMap
+                        ? showEcoculturalLayers
+                          ? 'statewide-ecocultural'
+                          : 'statewide'
+                        : 'delta'
+                    }
+                  />
+                </BaseMap>
+                {!showStatewideMap && (
+                  <ScenarioMapLegend
+                    scenarioSlug={scenario.slug}
+                    selectedHabitatType={selectedHabitatType}
+                  />
+                )}
               </Box>
-            </Stack>
+            </Box>
           </Box>
 
-          <Stack spacing={theme.jtSpacing.section.md} sx={{ mt: theme.jtSpacing.section.xl }}>
-            {evaluationCriteria.map((criterion) => (
-              <Box
-                id={criterion.id}
-                key={criterion.id}
-                sx={{
-                  minHeight: 180,
-                  scrollMarginTop: 110,
-                  py: theme.jtSpacing.section.md,
-                  borderTop: 1,
-                  borderColor: 'base.400',
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', md: '.55fr 1fr' },
-                  gap: theme.jtSpacing.gap.lg,
-                }}
-              >
-                <Typography variant="h3">{criterion.label}</Typography>
-                <Typography variant="body2">
-                  Evaluation content for {scenario.title} will be added here as the scenario
-                  analysis is finalized.
-                </Typography>
-              </Box>
-            ))}
+          <Stack sx={{ mt: jtSpacing.section.xl, alignItems: 'center' }}>
             <Button
               component={Link}
-              to={`/scenarios/${next.slug}`}
+              to={`/scenarios/${scenario.slug}/results`}
               variant="contained"
               endIcon={<ArrowForwardIcon />}
-              sx={{ alignSelf: 'flex-end' }}
             >
-              Next: {next.title}
+              Explore modeling results and evaluation criteria
             </Button>
           </Stack>
         </Container>
