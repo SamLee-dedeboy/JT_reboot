@@ -1,5 +1,5 @@
 import type { Map as MapboxMap } from 'mapbox-gl'
-import { palette } from '../../../../theme/muiTheme'
+import { palette } from '../../../../theme/index'
 
 export const STRIPE_PATTERN_ID = 'primary-pink-stripes'
 export const DOT_PATTERN_ID = 'primary-pink-dots'

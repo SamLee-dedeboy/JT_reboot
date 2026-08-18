@@ -1,25 +1,43 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const projectRoot = path.resolve(scriptDir, '..', '..');
-const metricsPath = path.join(projectRoot, 'public', 'data', 'watershed', 'metrics.json');
-const outputDir = path.join(projectRoot, 'public', 'exports', 'watershed');
+const scriptDir = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.resolve(scriptDir, '..', '..')
+const metricsPath = path.join(projectRoot, 'public', 'data', 'watershed', 'metrics.json')
+const outputDir = path.join(projectRoot, 'public', 'exports', 'watershed')
 
 const levels = [
   { key: 'min', label: 'Minimum Restoration', slug: 'minimum-restoration' },
   { key: 'med', label: 'Medium Restoration', slug: 'medium-restoration' },
   { key: 'max', label: 'Maximum Restoration', slug: 'maximum-restoration' },
-];
+]
 
 const habitats = [
-  { focus: 'forests', scenario: 'forest', label: 'Forests', color: '#4fb06f', metric: 'change in et' },
-  { focus: 'meadows', scenario: 'meadow', label: 'Meadows', color: '#d8bf42', metric: 'change in et**' },
-  { focus: 'floodplains', scenario: 'floodplain', label: 'Floodplains', color: '#62b6d9', metric: 'change in gw recharge' },
-];
+  {
+    focus: 'forests',
+    scenario: 'forest',
+    label: 'Forests',
+    color: '#4fb06f',
+    metric: 'change in et',
+  },
+  {
+    focus: 'meadows',
+    scenario: 'meadow',
+    label: 'Meadows',
+    color: '#d8bf42',
+    metric: 'change in et**',
+  },
+  {
+    focus: 'floodplains',
+    scenario: 'floodplain',
+    label: 'Floodplains',
+    color: '#62b6d9',
+    metric: 'change in gw recharge',
+  },
+]
 
-const { data: records } = JSON.parse(fs.readFileSync(metricsPath, 'utf8'));
+const { data: records } = JSON.parse(fs.readFileSync(metricsPath, 'utf8'))
 
 function restoredAcres(scenarioRecords, habitat) {
   const record = scenarioRecords.find(
@@ -29,15 +47,16 @@ function restoredAcres(scenarioRecords, habitat) {
       Number.isFinite(item.value_high) &&
       Number.isFinite(item.metric_high) &&
       item.metric_high !== 0,
-  );
-  return record ? Math.abs(record.value_high / record.metric_high) : 0;
+  )
+  return record ? Math.abs(record.value_high / record.metric_high) : 0
 }
 
 const scenarios = levels.flatMap((level) =>
   habitats.map((priority) => {
     const scenarioRecords = records.filter(
-      (record) => record.restoration_level === level.key && record.scenario_habitat === priority.scenario,
-    );
+      (record) =>
+        record.restoration_level === level.key && record.scenario_habitat === priority.scenario,
+    )
     return {
       level: level.key,
       priority,
@@ -45,60 +64,68 @@ const scenarios = levels.flatMap((level) =>
         ...habitat,
         acres: restoredAcres(scenarioRecords, habitat),
       })),
-    };
+    }
   }),
-);
+)
 
-const maxTotal = Math.max(...scenarios.map((scenario) => scenario.segments.reduce((sum, segment) => sum + segment.acres, 0)));
-const format = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
+const maxTotal = Math.max(
+  ...scenarios.map((scenario) =>
+    scenario.segments.reduce((sum, segment) => sum + segment.acres, 0),
+  ),
+)
+const format = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
 const escapeXml = (value) =>
-  String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
 
 function renderLevel(level) {
-  const levelScenarios = scenarios.filter((scenario) => scenario.level === level.key);
-  const width = 2048;
-  const height = 792;
-  const panelX = 8;
-  const panelWidth = width - panelX * 2;
-  const headerHeight = 134;
-  const contentX = 38;
-  const contentWidth = width - contentX * 2;
-  const rowHeight = 215;
-  const barYWithinRow = 88;
-  const barHeight = 44;
+  const levelScenarios = scenarios.filter((scenario) => scenario.level === level.key)
+  const width = 2048
+  const height = 792
+  const panelX = 8
+  const panelWidth = width - panelX * 2
+  const headerHeight = 134
+  const contentX = 38
+  const contentWidth = width - contentX * 2
+  const rowHeight = 215
+  const barYWithinRow = 88
+  const barHeight = 44
 
   const rows = levelScenarios
     .map((scenario, rowIndex) => {
-      const rowY = headerHeight + rowIndex * rowHeight;
-      const total = scenario.segments.reduce((sum, segment) => sum + segment.acres, 0);
-      const totalWidth = (total / maxTotal) * (contentWidth - 18);
-      let segmentX = contentX;
+      const rowY = headerHeight + rowIndex * rowHeight
+      const total = scenario.segments.reduce((sum, segment) => sum + segment.acres, 0)
+      const totalWidth = (total / maxTotal) * (contentWidth - 18)
+      let segmentX = contentX
       const barSegments = scenario.segments
         .map((segment) => {
-          const segmentWidth = total > 0 ? (segment.acres / total) * totalWidth : 0;
-          const rect = `<rect x="${segmentX.toFixed(2)}" y="${rowY + barYWithinRow}" width="${segmentWidth.toFixed(2)}" height="${barHeight}" fill="${segment.color}" stroke="#9ba2a4" stroke-opacity=".42"/>`;
-          segmentX += segmentWidth;
-          return rect;
+          const segmentWidth = total > 0 ? (segment.acres / total) * totalWidth : 0
+          const rect = `<rect x="${segmentX.toFixed(2)}" y="${rowY + barYWithinRow}" width="${segmentWidth.toFixed(2)}" height="${barHeight}" fill="${segment.color}" stroke="#9ba2a4" stroke-opacity=".42"/>`
+          segmentX += segmentWidth
+          return rect
         })
-        .join('');
+        .join('')
 
       const labels = scenario.segments
         .map((segment, index) => {
-          const x = contentX + index * (contentWidth / 3);
-          const focused = segment.focus === scenario.priority.focus;
-          const label = `${segment.label} – ${format.format(segment.acres)} acres`;
-          const estimatedWidth = 24 + label.length * 14.2;
+          const x = contentX + index * (contentWidth / 3)
+          const focused = segment.focus === scenario.priority.focus
+          const label = `${segment.label} – ${format.format(segment.acres)} acres`
+          const estimatedWidth = 24 + label.length * 14.2
           return focused
             ? `<rect x="${x}" y="${rowY + 146}" width="${estimatedWidth}" height="50" rx="25" fill="none" stroke="${segment.color}" stroke-width="2"/>
                <text x="${x + 16}" y="${rowY + 178}" class="value" fill="${segment.color}">${escapeXml(label)}</text>`
-            : `<text x="${x}" y="${rowY + 178}" class="value" fill="${segment.color}">${escapeXml(label)}</text>`;
+            : `<text x="${x}" y="${rowY + 178}" class="value" fill="${segment.color}">${escapeXml(label)}</text>`
         })
-        .join('');
+        .join('')
 
       const divider =
         rowIndex < levelScenarios.length - 1
           ? `<line x1="${contentX}" y1="${rowY + rowHeight}" x2="${width - contentX}" y2="${rowY + rowHeight}" stroke="#9ba2a4" stroke-opacity=".18"/>`
-          : '';
+          : ''
 
       return `
         <g>
@@ -106,9 +133,9 @@ function renderLevel(level) {
           ${barSegments}
           ${labels}
           ${divider}
-        </g>`;
+        </g>`
     })
-    .join('');
+    .join('')
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width / 2}" height="${height / 2}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title desc">
   <title id="title">${escapeXml(level.label)} habitat attention</title>
@@ -127,12 +154,12 @@ function renderLevel(level) {
   <text x="${contentX}" y="58" class="heading" fill="#fff">${escapeXml(level.label.toUpperCase())}</text>
   <text x="${contentX}" y="96" class="caption" fill="#c5cacc">Placeholder caption</text>
   ${rows}
-</svg>`;
+</svg>`
 }
 
-fs.mkdirSync(outputDir, { recursive: true });
+fs.mkdirSync(outputDir, { recursive: true })
 for (const level of levels) {
-  fs.writeFileSync(path.join(outputDir, `${level.slug}.svg`), renderLevel(level), 'utf8');
+  fs.writeFileSync(path.join(outputDir, `${level.slug}.svg`), renderLevel(level), 'utf8')
 }
 
-console.log(outputDir);
+console.log(outputDir)

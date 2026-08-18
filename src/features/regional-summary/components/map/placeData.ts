@@ -70,5 +70,3 @@ export const PLACES: PlaceOfInterest[] = [
     takeaway: LOREM_TAKEAWAY,
   },
 ]
-
-

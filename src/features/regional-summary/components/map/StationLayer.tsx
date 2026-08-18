@@ -1,5 +1,5 @@
 import { Layer, Source } from 'react-map-gl/mapbox'
-import { palette } from '../../../../theme/muiTheme'
+import { palette } from '../../../../theme/index'
 
 const STATION_DATA_URL = `${import.meta.env.BASE_URL}data/regional-summary/rma-stations.geojson`
 

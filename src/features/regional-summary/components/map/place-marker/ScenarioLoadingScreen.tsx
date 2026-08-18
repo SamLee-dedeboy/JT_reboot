@@ -1,6 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { motion, useReducedMotion } from 'framer-motion'
-import { palette } from '../../../../../theme/muiTheme'
+import { palette } from '../../../../../theme/index'
 
 interface ScenarioLoadingScreenProps {
   regionName: string
@@ -53,11 +53,14 @@ function ScenarioLoadingScreen({ regionName }: ScenarioLoadingScreenProps) {
               component={motion.div}
               key={ripple}
               animate={
-                prefersReducedMotion
-                  ? undefined
-                  : { opacity: [0, 0.5, 0], scale: [0.55, 1.2] }
+                prefersReducedMotion ? undefined : { opacity: [0, 0.5, 0], scale: [0.55, 1.2] }
               }
-              transition={{ delay: ripple * 0.48, duration: 1.5, ease: 'easeOut', repeat: Infinity }}
+              transition={{
+                delay: ripple * 0.48,
+                duration: 1.5,
+                ease: 'easeOut',
+                repeat: Infinity,
+              }}
               sx={{
                 border: `4px solid ${palette.brand.primaryPink}`,
                 borderRadius: '50%',
@@ -89,7 +92,13 @@ function ScenarioLoadingScreen({ regionName }: ScenarioLoadingScreenProps) {
           </Typography>
         </Stack>
 
-        <Box sx={{ border: `1px solid ${palette.brand.primaryPink}`, p: '7px 12px', position: 'relative' }}>
+        <Box
+          sx={{
+            border: `1px solid ${palette.brand.primaryPink}`,
+            p: '7px 12px',
+            position: 'relative',
+          }}
+        >
           <Typography
             component={motion.p}
             animate={prefersReducedMotion ? undefined : { opacity: [0.45, 1, 0.45] }}
@@ -112,4 +121,3 @@ function ScenarioLoadingScreen({ regionName }: ScenarioLoadingScreenProps) {
 }
 
 export default ScenarioLoadingScreen
-

@@ -9,4 +9,3 @@ export const REFERENCE_BOUNDS: LngLatBoundsLike = [
   [-122.82, 37.8],
   [-121.1, 38.36],
 ]
-

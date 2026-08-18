@@ -1,23 +1,29 @@
-import { Box, Button, Tab, Tabs, Typography } from '@mui/material';
-import { alpha } from '@mui/material/styles';
-import type { DashboardMode } from '../types';
+import { Box, Button, Tab, Tabs, Typography } from '@mui/material'
+import { alpha } from '@mui/material/styles'
+import type { DashboardMode } from '../types'
 
 const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [
   { number: '01', label: 'RMA Scenario Comparison', value: 'rma-scenarios' },
   { number: '02', label: 'Tiered Outflows', value: 'tiered-outflows' },
   { number: '03', label: 'RMA vs. SCHISM', value: 'rma-schism' },
   { number: '04', label: 'SCHISM Runs', value: 'schism-runs' },
-];
+]
 
 interface ExplorerHeaderProps {
-  description: string;
-  mode: DashboardMode;
-  onModeChange: (mode: DashboardMode) => void;
-  onTutorialOpen: () => void;
-  showSchismRuns?: boolean;
+  description: string
+  mode: DashboardMode
+  onModeChange: (mode: DashboardMode) => void
+  onTutorialOpen: () => void
+  showSchismRuns?: boolean
 }
 
-export default function ExplorerHeader({ description, mode, onModeChange, onTutorialOpen, showSchismRuns = false }: ExplorerHeaderProps) {
+export default function ExplorerHeader({
+  description,
+  mode,
+  onModeChange,
+  onTutorialOpen,
+  showSchismRuns = false,
+}: ExplorerHeaderProps) {
   return (
     <Box
       component="header"
@@ -36,12 +42,19 @@ export default function ExplorerHeader({ description, mode, onModeChange, onTuto
           alignItems: 'center',
           display: 'grid',
           gap: theme.jtSpacing.gap.sm,
-          gridTemplateColumns: { xs: '1fr', lg: 'minmax(max-content, 1fr) auto minmax(max-content, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            lg: 'minmax(max-content, 1fr) auto minmax(max-content, 1fr)',
+          },
           width: '100%',
         })}
       >
         <Typography component="h1" variant="h2" sx={{ alignSelf: 'center', justifySelf: 'start' }}>
-          Salinity <Box component="span" color="primary.main">difference</Box> explorer
+          Salinity{' '}
+          <Box component="span" color="primary.main">
+            difference
+          </Box>{' '}
+          explorer
         </Typography>
         <Tabs
           data-tour="comparison-tabs"
@@ -82,20 +95,50 @@ export default function ExplorerHeader({ description, mode, onModeChange, onTuto
             '& .MuiTabs-scroller::-webkit-scrollbar': { display: 'none' },
           })}
         >
-          {MODES.filter(({ value }) => value !== 'schism-runs' || showSchismRuns).map(({ number, label, value }) => (
-            <Tab
-              key={value}
-              value={value}
-              label={
-                <Box sx={(theme) => ({ alignItems: 'center', display: 'grid', gap: theme.jtSpacing.gap.xs, gridTemplateColumns: 'auto minmax(0, 1fr)', width: '100%' })}>
-                  <Typography component="span" variant="button" sx={{ color: mode === value ? 'common.black' : 'brand.primaryBlue' }}>{number}</Typography>
-                  <Typography component="span" variant="button" sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}>{label}</Typography>
-                </Box>
-              }
-            />
-          ))}
+          {MODES.filter(({ value }) => value !== 'schism-runs' || showSchismRuns).map(
+            ({ number, label, value }) => (
+              <Tab
+                key={value}
+                value={value}
+                label={
+                  <Box
+                    sx={(theme) => ({
+                      alignItems: 'center',
+                      display: 'grid',
+                      gap: theme.jtSpacing.gap.xs,
+                      gridTemplateColumns: 'auto minmax(0, 1fr)',
+                      width: '100%',
+                    })}
+                  >
+                    <Typography
+                      component="span"
+                      variant="button"
+                      sx={{ color: mode === value ? 'common.black' : 'brand.primaryBlue' }}
+                    >
+                      {number}
+                    </Typography>
+                    <Typography
+                      component="span"
+                      variant="button"
+                      sx={{ textAlign: 'left', whiteSpace: 'nowrap' }}
+                    >
+                      {label}
+                    </Typography>
+                  </Box>
+                }
+              />
+            ),
+          )}
         </Tabs>
-        <Button onClick={onTutorialOpen} variant="outlined" sx={(theme) => ({ alignSelf: 'center', height: theme.spacing(5), justifySelf: { xs: 'start', lg: 'end' } })}>
+        <Button
+          onClick={onTutorialOpen}
+          variant="outlined"
+          sx={(theme) => ({
+            alignSelf: 'center',
+            height: theme.spacing(5),
+            justifySelf: { xs: 'start', lg: 'end' },
+          })}
+        >
           Tutorial
         </Button>
       </Box>
@@ -103,5 +146,5 @@ export default function ExplorerHeader({ description, mode, onModeChange, onTuto
         {description}
       </Typography>
     </Box>
-  );
+  )
 }

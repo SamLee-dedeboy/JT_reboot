@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import type { SvgIconComponent } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { palette } from '../../../../../theme/muiTheme'
+import { palette } from '../../../../../theme/index'
 import PlaceExploreScreen from './PlaceExploreScreen'
 import PlacePopover from './PlacePopover'
 
@@ -40,96 +40,104 @@ function PlaceMarker({
   return (
     <>
       <motion.div
-      aria-label={placeName}
-      aria-haspopup="dialog"
-      aria-expanded={Boolean(popoverAnchor)}
-      onBlur={() => setIsLabelVisible(false)}
-      onClick={openPopover}
-      onFocus={() => setIsLabelVisible(true)}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault()
-          setPopoverAnchor(markerAnchorRef.current)
-        }
-      }}
-      onMouseEnter={() => setIsLabelVisible(true)}
-      onMouseLeave={() => setIsLabelVisible(false)}
-      role="button"
-      tabIndex={0}
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        outline: 'none',
-        pointerEvents: 'auto',
-        userSelect: 'none',
-      }}
-    >
-      <motion.div
-        ref={markerAnchorRef}
-        initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.45, y: 18 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{
-          type: 'spring',
-          stiffness: 420,
-          damping: 20,
-          mass: 0.75,
+        aria-label={placeName}
+        aria-haspopup="dialog"
+        aria-expanded={Boolean(popoverAnchor)}
+        onBlur={() => setIsLabelVisible(false)}
+        onClick={openPopover}
+        onFocus={() => setIsLabelVisible(true)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            setPopoverAnchor(markerAnchorRef.current)
+          }
         }}
+        onMouseEnter={() => setIsLabelVisible(true)}
+        onMouseLeave={() => setIsLabelVisible(false)}
+        role="button"
+        tabIndex={0}
         style={{
-          flex: '0 0 auto',
-          height: MARKER_HEIGHT,
-          position: 'relative',
-          transformOrigin: '50% 100%',
-          width: MARKER_WIDTH,
-          zIndex: 1,
+          alignItems: 'center',
+          display: 'flex',
+          outline: 'none',
+          pointerEvents: 'auto',
+          userSelect: 'none',
         }}
       >
-        <Box
-          aria-hidden="true"
-          component="svg"
-          viewBox="0 0 27 37"
-          sx={{ display: 'block', height: MARKER_HEIGHT, pointerEvents: 'none', width: MARKER_WIDTH }}
+        <motion.div
+          ref={markerAnchorRef}
+          initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.45, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 420,
+            damping: 20,
+            mass: 0.75,
+          }}
+          style={{
+            flex: '0 0 auto',
+            height: MARKER_HEIGHT,
+            position: 'relative',
+            transformOrigin: '50% 100%',
+            width: MARKER_WIDTH,
+            zIndex: 1,
+          }}
         >
-          <path
-            d="M11.5 2C5.776 2 2 6.583 2 12.235c0 2.622 1.727 6.824 2.591 8.53C5.455 22.47 10.636 31 11.5 31s6.045-8.53 6.909-10.235C19.273 19.059 21 14.857 21 12.235 21 6.583 17.224 2 11.5 2Z"
-            fill={color}
-            style={{
-              filter: `drop-shadow(2px 2px 2px ${palette.translucent.textShadow})`,
+          <Box
+            aria-hidden="true"
+            component="svg"
+            viewBox="0 0 27 37"
+            sx={{
+              display: 'block',
+              height: MARKER_HEIGHT,
+              pointerEvents: 'none',
+              width: MARKER_WIDTH,
+            }}
+          >
+            <path
+              d="M11.5 2C5.776 2 2 6.583 2 12.235c0 2.622 1.727 6.824 2.591 8.53C5.455 22.47 10.636 31 11.5 31s6.045-8.53 6.909-10.235C19.273 19.059 21 14.857 21 12.235 21 6.583 17.224 2 11.5 2Z"
+              fill={color}
+              style={{
+                filter: `drop-shadow(2px 2px 2px ${palette.translucent.textShadow})`,
+              }}
+            />
+            <circle cx="11.5" cy="11.5" fill={palette.common.white} r="7.5" />
+          </Box>
+          <Icon
+            aria-hidden="true"
+            sx={{
+              color,
+              fontSize: 24,
+              left: 11,
+              position: 'absolute',
+              top: 11,
             }}
           />
-          <circle cx="11.5" cy="11.5" fill={palette.common.white} r="7.5" />
-        </Box>
-        <Icon
-          aria-hidden="true"
-          sx={{
-            color,
-            fontSize: 24,
-            left: 11,
-            position: 'absolute',
-            top: 11,
-          }}
-        />
-      </motion.div>
+        </motion.div>
 
-      <AnimatePresence initial={false}>
-        {isLabelVisible && (
-          <motion.div
-            key="place-label"
-            initial={
-              prefersReducedMotion
-                ? { opacity: 0 }
-                : { clipPath: 'inset(0 100% 0 0)', opacity: 0, x: -10 }
-            }
-            animate={{ clipPath: 'inset(0 0% 0 0)', opacity: 1, x: 0 }}
-            exit={
-              prefersReducedMotion
-                ? { opacity: 0 }
-                : { clipPath: 'inset(0 100% 0 0)', opacity: 0, x: -10 }
-            }
-            transition={{ duration: prefersReducedMotion ? 0.12 : 0.36, ease: [0.22, 1, 0.36, 1] }}
-            style={{ marginLeft: -4, marginTop: -26 }}
-          >
-            <Typography
-              component="span"
+        <AnimatePresence initial={false}>
+          {isLabelVisible && (
+            <motion.div
+              key="place-label"
+              initial={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { clipPath: 'inset(0 100% 0 0)', opacity: 0, x: -10 }
+              }
+              animate={{ clipPath: 'inset(0 0% 0 0)', opacity: 1, x: 0 }}
+              exit={
+                prefersReducedMotion
+                  ? { opacity: 0 }
+                  : { clipPath: 'inset(0 100% 0 0)', opacity: 0, x: -10 }
+              }
+              transition={{
+                duration: prefersReducedMotion ? 0.12 : 0.36,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              style={{ marginLeft: -4, marginTop: -26 }}
+            >
+              <Typography
+                component="span"
                 sx={{
                   backgroundColor: color,
                   boxShadow: `2px 2px 4px ${palette.translucent.textShadow}`,
@@ -141,14 +149,13 @@ function PlaceMarker({
                   lineHeight: 1,
                   padding: '5px 7px',
                   whiteSpace: 'nowrap',
-              }}
-            >
-              {placeName}
-            </Typography>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+                }}
+              >
+                {placeName}
+              </Typography>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       <PlacePopover
@@ -163,7 +170,10 @@ function PlaceMarker({
         }}
         open={Boolean(popoverAnchor)}
         placeName={placeName}
-        takeaway={takeaway ?? 'Present findings from the scenario comparison view and connect them to this location.'}
+        takeaway={
+          takeaway ??
+          'Present findings from the scenario comparison view and connect them to this location.'
+        }
       />
 
       <PlaceExploreScreen
@@ -178,4 +188,3 @@ function PlaceMarker({
 }
 
 export default PlaceMarker
-

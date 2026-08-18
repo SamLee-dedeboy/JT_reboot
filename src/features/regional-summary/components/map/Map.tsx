@@ -20,7 +20,13 @@ interface ArtworkMapProps {
   onSelectedRegionChange: (region: SelectedRegionTimeline | null) => void
 }
 
-function ArtworkMap({ showStations, scenario, comparisonFilter, focusedReportId, onSelectedRegionChange }: ArtworkMapProps) {
+function ArtworkMap({
+  showStations,
+  scenario,
+  comparisonFilter,
+  focusedReportId,
+  onSelectedRegionChange,
+}: ArtworkMapProps) {
   const [mapLoaded, setMapLoaded] = useState(false)
   const [highlightedSubarea, setHighlightedSubarea] = useState<string | null>(null)
 
@@ -65,19 +71,65 @@ function ArtworkMap({ showStations, scenario, comparisonFilter, focusedReportId,
           />
         )}
       </MapboxMap>
-      <Box aria-label="Map marker legend" role="group" sx={(theme) => ({ bgcolor: 'base.800', border: 1, borderColor: 'divider', borderRadius: 1, display: 'grid', gap: theme.jtSpacing.gap.xs, p: theme.jtSpacing.component.sm, position: 'absolute', right: theme.jtSpacing.component.md, top: theme.jtSpacing.component.md, zIndex: 5 })}>
-        <Typography variant="captionSmall" sx={{ color: 'base.50', fontWeight: 700 }}>Report markers</Typography>
-        <Box sx={(theme) => ({ alignItems: 'center', display: 'grid', gap: theme.jtSpacing.gap.xs, gridTemplateColumns: 'auto 1fr' })}>
-          <Box aria-hidden sx={{ bgcolor: 'base.800', border: 2, borderColor: 'brand.primaryGreen', borderRadius: '50%', height: 18, width: 18 }} />
-          <Typography variant="captionSmall" sx={{ color: 'base.100' }}>Qualifying reports</Typography>
-          <Box aria-hidden sx={{ bgcolor: 'brand.primaryGreen', border: 2, borderColor: 'brand.primaryGreen', borderRadius: '50%', height: 18, width: 18 }} />
-          <Typography variant="captionSmall" sx={{ color: 'base.100' }}>Includes strongest signal</Typography>
+      <Box
+        aria-label="Map marker legend"
+        role="group"
+        sx={(theme) => ({
+          bgcolor: 'base.800',
+          border: 1,
+          borderColor: 'divider',
+          borderRadius: 1,
+          display: 'grid',
+          gap: theme.jtSpacing.gap.xs,
+          p: theme.jtSpacing.component.sm,
+          position: 'absolute',
+          right: theme.jtSpacing.component.md,
+          top: theme.jtSpacing.component.md,
+          zIndex: 5,
+        })}
+      >
+        <Typography variant="captionSmall" sx={{ color: 'base.50', fontWeight: 700 }}>
+          Report markers
+        </Typography>
+        <Box
+          sx={(theme) => ({
+            alignItems: 'center',
+            display: 'grid',
+            gap: theme.jtSpacing.gap.xs,
+            gridTemplateColumns: 'auto 1fr',
+          })}
+        >
+          <Box
+            aria-hidden
+            sx={{
+              bgcolor: 'base.800',
+              border: 2,
+              borderColor: 'brand.primaryGreen',
+              borderRadius: '50%',
+              height: 18,
+              width: 18,
+            }}
+          />
+          <Typography variant="captionSmall" sx={{ color: 'base.100' }}>
+            Qualifying reports
+          </Typography>
+          <Box
+            aria-hidden
+            sx={{
+              bgcolor: 'brand.primaryGreen',
+              border: 2,
+              borderColor: 'brand.primaryGreen',
+              borderRadius: '50%',
+              height: 18,
+              width: 18,
+            }}
+          />
+          <Typography variant="captionSmall" sx={{ color: 'base.100' }}>
+            Includes strongest signal
+          </Typography>
         </Box>
       </Box>
-      <MapLoader
-        isLoaded={mapLoaded}
-        onExitComplete={() => undefined}
-      />
+      <MapLoader isLoaded={mapLoaded} onExitComplete={() => undefined} />
     </motion.div>
   )
 }

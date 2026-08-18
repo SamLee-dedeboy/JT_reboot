@@ -1,5 +1,5 @@
 import { Layer, Source } from 'react-map-gl/mapbox'
-import { palette } from '../../../../theme/muiTheme'
+import { palette } from '../../../../theme/index'
 import { NOISE_PATTERN_ID } from './polygonPatterns'
 
 const REGION_DATA_URL = `${import.meta.env.BASE_URL}data/regional-summary/region_of_interest_artwork.geojson`
