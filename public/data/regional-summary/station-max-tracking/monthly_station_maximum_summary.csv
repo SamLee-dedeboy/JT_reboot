@@ -1,0 +1,131 @@
+﻿month,baseline,scenario,mean_daily_maximum_difference_us_cm_signed,mean_daily_maximum_difference_percent_signed,direction,dominant_maximum_station_id,dominant_maximum_station_name,dominant_maximum_days,days_in_month_with_data,dominant_maximum_share,meets_50_us_cm,meets_10_percent,meets_both_thresholds
+2018-10,Baseline (BAU),Bolster & Fortify,401.906452,101.665072,saltier,285,Frank's Tract North East,31,31,1.000000,True,True,True
+2018-11,Baseline (BAU),Bolster & Fortify,369.098000,93.365943,saltier,285,Frank's Tract North East,30,30,1.000000,True,True,True
+2018-12,Baseline (BAU),Bolster & Fortify,377.830968,95.575009,saltier,285,Frank's Tract North East,31,31,1.000000,True,True,True
+2019-01,Baseline (BAU),Bolster & Fortify,170.242903,42.157818,saltier,285,Frank's Tract North East,28,31,0.903226,True,True,True
+2019-02,Baseline (BAU),Bolster & Fortify,13.592857,2.979957,saltier,281,South Franks Tract at Bethel Island,9,28,0.321429,False,False,False
+2019-03,Baseline (BAU),Bolster & Fortify,9.748710,2.107096,saltier,282,South Central Franks Tract,18,31,0.580645,False,False,False
+2019-04,Baseline (BAU),Bolster & Fortify,7.263000,1.613648,saltier,282,South Central Franks Tract,15,30,0.500000,False,False,False
+2019-05,Baseline (BAU),Bolster & Fortify,4.447419,0.964051,saltier,281,South Franks Tract at Bethel Island,13,31,0.419355,False,False,False
+2019-06,Baseline (BAU),Bolster & Fortify,2.795333,0.705919,saltier,285,Frank's Tract North East,16,30,0.533333,False,False,False
+2019-07,Baseline (BAU),Bolster & Fortify,3.492581,0.883747,saltier,285,Frank's Tract North East,28,31,0.903226,False,False,False
+2019-08,Baseline (BAU),Bolster & Fortify,11.598387,2.933894,saltier,285,Frank's Tract North East,31,31,1.000000,False,False,False
+2019-09,Baseline (BAU),Bolster & Fortify,6.659333,1.684525,saltier,285,Frank's Tract North East,30,30,1.000000,False,False,False
+2019-10,Baseline (BAU),Bolster & Fortify,2.596129,0.619441,saltier,285,Frank's Tract North East,10,31,0.322581,False,False,False
+2019-11,Baseline (BAU),Bolster & Fortify,-0.587667,-0.181955,fresher,285,Frank's Tract North East,15,30,0.500000,False,False,False
+2019-12,Baseline (BAU),Bolster & Fortify,47.069677,11.906607,saltier,285,Frank's Tract North East,31,31,1.000000,False,True,False
+2020-01,Baseline (BAU),Bolster & Fortify,11.597742,2.933731,saltier,285,Frank's Tract North East,31,31,1.000000,False,False,False
+2020-02,Baseline (BAU),Bolster & Fortify,5.882069,1.472482,saltier,285,Frank's Tract North East,19,29,0.655172,False,False,False
+2020-03,Baseline (BAU),Bolster & Fortify,2.191290,0.519152,saltier,282,South Central Franks Tract,14,31,0.451613,False,False,False
+2020-04,Baseline (BAU),Bolster & Fortify,3.416667,0.835320,saltier,285,Frank's Tract North East,17,30,0.566667,False,False,False
+2020-05,Baseline (BAU),Bolster & Fortify,1.365484,0.324862,saltier,285,Frank's Tract North East,16,31,0.516129,False,False,False
+2020-06,Baseline (BAU),Bolster & Fortify,5.940000,1.501930,saltier,285,Frank's Tract North East,27,30,0.900000,False,False,False
+2020-07,Baseline (BAU),Bolster & Fortify,44.898387,11.357364,saltier,285,Frank's Tract North East,31,31,1.000000,False,True,False
+2020-08,Baseline (BAU),Bolster & Fortify,151.767097,38.390558,saltier,285,Frank's Tract North East,31,31,1.000000,True,True,True
+2020-09,Baseline (BAU),Bolster & Fortify,422.179667,106.793325,saltier,285,Frank's Tract North East,30,30,1.000000,True,True,True
+2020-10,Baseline (BAU),Bolster & Fortify,424.704839,107.432085,saltier,285,Frank's Tract North East,31,31,1.000000,True,True,True
+2020-11,Baseline (BAU),Bolster & Fortify,410.482414,103.834423,saltier,285,Frank's Tract North East,29,29,1.000000,True,True,True
+2018-10,Baseline (BAU),Eco Machine,-33.806774,-8.582535,fresher,285,Frank's Tract North East,25,31,0.806452,False,False,False
+2018-11,Baseline (BAU),Eco Machine,-158.009667,-39.412478,fresher,292,Frank's Tract at Old River,20,30,0.666667,True,True,True
+2018-12,Baseline (BAU),Eco Machine,-81.168065,-20.195718,fresher,292,Frank's Tract at Old River,19,31,0.612903,True,True,True
+2019-01,Baseline (BAU),Eco Machine,56.519355,12.966506,saltier,285,Frank's Tract North East,11,31,0.354839,True,True,True
+2019-02,Baseline (BAU),Eco Machine,66.677857,15.135411,saltier,283,Franks Tract,17,28,0.607143,True,True,True
+2019-03,Baseline (BAU),Eco Machine,73.180968,17.824861,saltier,285,Frank's Tract North East,22,31,0.709677,True,True,True
+2019-04,Baseline (BAU),Eco Machine,62.499667,14.826695,saltier,283,Franks Tract,19,30,0.633333,True,True,True
+2019-05,Baseline (BAU),Eco Machine,33.165484,7.447072,saltier,283,Franks Tract,31,31,1.000000,False,False,False
+2019-06,Baseline (BAU),Eco Machine,22.661333,5.027357,saltier,283,Franks Tract,18,30,0.600000,False,False,False
+2019-07,Baseline (BAU),Eco Machine,1.506129,0.253144,saltier,281,South Franks Tract at Bethel Island,21,31,0.677419,False,False,False
+2019-08,Baseline (BAU),Eco Machine,-8.495161,-2.167216,fresher,285,Frank's Tract North East,23,31,0.741935,False,False,False
+2019-09,Baseline (BAU),Eco Machine,1.399000,0.306846,saltier,281,South Franks Tract at Bethel Island,19,30,0.633333,False,False,False
+2019-10,Baseline (BAU),Eco Machine,4.260323,0.978706,saltier,283,Franks Tract,10,31,0.322581,False,False,False
+2019-11,Baseline (BAU),Eco Machine,-8.269333,-2.151820,fresher,292,Frank's Tract at Old River,16,30,0.533333,False,False,False
+2019-12,Baseline (BAU),Eco Machine,-47.757097,-12.292167,fresher,292,Frank's Tract at Old River,31,31,1.000000,False,True,False
+2020-01,Baseline (BAU),Eco Machine,-25.357097,-6.428150,fresher,285,Frank's Tract North East,28,31,0.903226,False,False,False
+2020-02,Baseline (BAU),Eco Machine,-5.025517,-1.136152,fresher,281,South Franks Tract at Bethel Island,17,29,0.586207,False,False,False
+2020-03,Baseline (BAU),Eco Machine,-4.852581,-1.190357,fresher,285,Frank's Tract North East,20,31,0.645161,False,False,False
+2020-04,Baseline (BAU),Eco Machine,4.029667,0.864711,saltier,283,Franks Tract,16,30,0.533333,False,False,False
+2020-05,Baseline (BAU),Eco Machine,-6.646774,-1.606358,fresher,291,Frank's Tract at Sheep Slough,12,31,0.387097,False,False,False
+2020-06,Baseline (BAU),Eco Machine,-20.438000,-5.147101,fresher,285,Frank's Tract North East,27,30,0.900000,False,False,False
+2020-07,Baseline (BAU),Eco Machine,-72.180968,-18.492610,fresher,292,Frank's Tract at Old River,21,31,0.677419,True,True,True
+2020-08,Baseline (BAU),Eco Machine,-116.450968,-29.924989,fresher,292,Frank's Tract at Old River,28,31,0.903226,True,True,True
+2020-09,Baseline (BAU),Eco Machine,-110.845333,-28.100385,fresher,285,Frank's Tract North East,28,30,0.933333,True,True,True
+2020-10,Baseline (BAU),Eco Machine,-161.273871,-38.858470,fresher,285,Frank's Tract North East,13,31,0.419355,True,True,True
+2020-11,Baseline (BAU),Eco Machine,-179.674828,-42.766141,fresher,292,Frank's Tract at Old River,13,29,0.448276,True,True,True
+2018-10,Baseline (BAU),New Green Watershed,-30.351613,-7.708909,fresher,285,Frank's Tract North East,24,31,0.774194,False,False,False
+2018-11,Baseline (BAU),New Green Watershed,-155.170667,-38.669867,fresher,292,Frank's Tract at Old River,20,30,0.666667,True,True,True
+2018-12,Baseline (BAU),New Green Watershed,-83.636452,-20.718919,fresher,292,Frank's Tract at Old River,19,31,0.612903,True,True,True
+2019-01,Baseline (BAU),New Green Watershed,49.430968,11.332623,saltier,285,Frank's Tract North East,11,31,0.354839,False,True,False
+2019-02,Baseline (BAU),New Green Watershed,64.892857,14.735870,saltier,283,Franks Tract,17,28,0.607143,True,True,True
+2019-03,Baseline (BAU),New Green Watershed,73.280323,17.848977,saltier,285,Frank's Tract North East,22,31,0.709677,True,True,True
+2019-04,Baseline (BAU),New Green Watershed,62.668000,14.866804,saltier,283,Franks Tract,19,30,0.633333,True,True,True
+2019-05,Baseline (BAU),New Green Watershed,33.271613,7.470903,saltier,283,Franks Tract,31,31,1.000000,False,False,False
+2019-06,Baseline (BAU),New Green Watershed,22.745333,5.045981,saltier,283,Franks Tract,18,30,0.600000,False,False,False
+2019-07,Baseline (BAU),New Green Watershed,1.902581,0.343334,saltier,281,South Franks Tract at Bethel Island,21,31,0.677419,False,False,False
+2019-08,Baseline (BAU),New Green Watershed,-7.876774,-2.007488,fresher,285,Frank's Tract North East,20,31,0.645161,False,False,False
+2019-09,Baseline (BAU),New Green Watershed,2.394333,0.524445,saltier,281,South Franks Tract at Bethel Island,20,30,0.666667,False,False,False
+2019-10,Baseline (BAU),New Green Watershed,4.896452,1.109048,saltier,281,South Franks Tract at Bethel Island,10,31,0.322581,False,False,False
+2019-11,Baseline (BAU),New Green Watershed,-7.843667,-2.046375,fresher,292,Frank's Tract at Old River,16,30,0.533333,False,False,False
+2019-12,Baseline (BAU),New Green Watershed,-47.302258,-12.175096,fresher,292,Frank's Tract at Old River,31,31,1.000000,False,True,False
+2020-01,Baseline (BAU),New Green Watershed,-27.785484,-7.038024,fresher,285,Frank's Tract North East,29,31,0.935484,False,False,False
+2020-02,Baseline (BAU),New Green Watershed,-7.174483,-1.625355,fresher,281,South Franks Tract at Bethel Island,16,29,0.551724,False,False,False
+2020-03,Baseline (BAU),New Green Watershed,-5.371935,-1.313380,fresher,285,Frank's Tract North East,20,31,0.645161,False,False,False
+2020-04,Baseline (BAU),New Green Watershed,4.386000,0.948202,saltier,283,Franks Tract,16,30,0.533333,False,False,False
+2020-05,Baseline (BAU),New Green Watershed,-5.927742,-1.438183,fresher,291,Frank's Tract at Sheep Slough,12,31,0.387097,False,False,False
+2020-06,Baseline (BAU),New Green Watershed,-19.256333,-4.850851,fresher,285,Frank's Tract North East,27,30,0.900000,False,False,False
+2020-07,Baseline (BAU),New Green Watershed,-68.442581,-17.534653,fresher,292,Frank's Tract at Old River,21,31,0.677419,True,True,True
+2020-08,Baseline (BAU),New Green Watershed,-107.855806,-27.715425,fresher,292,Frank's Tract at Old River,28,31,0.903226,True,True,True
+2020-09,Baseline (BAU),New Green Watershed,-94.062000,-23.850251,fresher,285,Frank's Tract North East,28,30,0.933333,True,True,True
+2020-10,Baseline (BAU),New Green Watershed,-149.523226,-36.338585,fresher,285,Frank's Tract North East,13,31,0.419355,True,True,True
+2020-11,Baseline (BAU),New Green Watershed,-170.526552,-40.663333,fresher,292,Frank's Tract at Old River,13,29,0.448276,True,True,True
+2018-10,Baseline (BAU),Calling on Reserve,804.549677,146.145557,saltier,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,True,True,True
+2018-11,Baseline (BAU),Calling on Reserve,649.279000,117.940811,saltier,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,True,True,True
+2018-12,Baseline (BAU),Calling on Reserve,758.668065,141.572375,saltier,265,Little Franks Tract at Fisherman's Cut,25,31,0.806452,True,True,True
+2019-01,Baseline (BAU),Calling on Reserve,184.151613,39.157379,saltier,281,South Franks Tract at Bethel Island,31,31,1.000000,True,True,True
+2019-02,Baseline (BAU),Calling on Reserve,7.474286,2.018126,saltier,265,Little Franks Tract at Fisherman's Cut,10,28,0.357143,False,False,False
+2019-03,Baseline (BAU),Calling on Reserve,-35.440000,-6.437637,fresher,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,False,False,False
+2019-04,Baseline (BAU),Calling on Reserve,-25.963667,-4.716271,fresher,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,False,False,False
+2019-05,Baseline (BAU),Calling on Reserve,-16.666774,-3.082698,fresher,265,Little Franks Tract at Fisherman's Cut,23,31,0.741935,False,False,False
+2019-06,Baseline (BAU),Calling on Reserve,6.251667,1.214253,saltier,265,Little Franks Tract at Fisherman's Cut,15,30,0.500000,False,False,False
+2019-07,Baseline (BAU),Calling on Reserve,1.011935,0.260230,saltier,292,Frank's Tract at Old River,28,31,0.903226,False,False,False
+2019-08,Baseline (BAU),Calling on Reserve,260.888387,47.378970,saltier,265,Little Franks Tract at Fisherman's Cut,29,31,0.935484,True,True,True
+2019-09,Baseline (BAU),Calling on Reserve,329.396333,59.834479,saltier,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,True,True,True
+2019-10,Baseline (BAU),Calling on Reserve,119.420323,22.518862,saltier,265,Little Franks Tract at Fisherman's Cut,25,31,0.806452,True,True,True
+2019-11,Baseline (BAU),Calling on Reserve,544.420667,98.893411,saltier,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,True,True,True
+2019-12,Baseline (BAU),Calling on Reserve,200.575161,41.478420,saltier,281,South Franks Tract at Bethel Island,28,31,0.903226,True,True,True
+2020-01,Baseline (BAU),Calling on Reserve,-31.319677,-8.254371,fresher,292,Frank's Tract at Old River,14,31,0.451613,False,False,False
+2020-02,Baseline (BAU),Calling on Reserve,113.078966,20.540669,saltier,265,Little Franks Tract at Fisherman's Cut,29,29,1.000000,True,True,True
+2020-03,Baseline (BAU),Calling on Reserve,78.067097,14.218605,saltier,265,Little Franks Tract at Fisherman's Cut,30,31,0.967742,True,True,True
+2020-04,Baseline (BAU),Calling on Reserve,52.276667,9.784236,saltier,265,Little Franks Tract at Fisherman's Cut,23,30,0.766667,True,False,False
+2020-05,Baseline (BAU),Calling on Reserve,22.030968,4.272324,saltier,281,South Franks Tract at Bethel Island,16,31,0.516129,False,False,False
+2020-06,Baseline (BAU),Calling on Reserve,72.235667,13.121529,saltier,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,True,True,True
+2020-07,Baseline (BAU),Calling on Reserve,91.900968,17.488676,saltier,265,Little Franks Tract at Fisherman's Cut,18,31,0.580645,True,True,True
+2020-08,Baseline (BAU),Calling on Reserve,-94.741935,-24.517915,fresher,292,Frank's Tract at Old River,24,31,0.774194,True,True,True
+2020-09,Baseline (BAU),Calling on Reserve,70.920333,7.419226,saltier,265,Little Franks Tract at Fisherman's Cut,23,30,0.766667,True,False,False
+2020-10,Baseline (BAU),Calling on Reserve,429.541613,78.025758,saltier,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,True,True,True
+2020-11,Baseline (BAU),Calling on Reserve,681.000690,128.506552,saltier,265,Little Franks Tract at Fisherman's Cut,20,29,0.689655,True,True,True
+2018-10,Baseline (BAU),A Tunnel,872.069032,158.410373,saltier,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,True,True,True
+2018-11,Baseline (BAU),A Tunnel,1487.684667,270.236271,saltier,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,True,True,True
+2018-12,Baseline (BAU),A Tunnel,1721.440968,320.856617,saltier,265,Little Franks Tract at Fisherman's Cut,25,31,0.806452,True,True,True
+2019-01,Baseline (BAU),A Tunnel,619.341613,131.694715,saltier,281,South Franks Tract at Bethel Island,31,31,1.000000,True,True,True
+2019-02,Baseline (BAU),A Tunnel,58.197500,12.619833,saltier,281,South Franks Tract at Bethel Island,17,28,0.607143,True,True,True
+2019-03,Baseline (BAU),A Tunnel,-34.286452,-6.228096,fresher,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,False,False,False
+2019-04,Baseline (BAU),A Tunnel,-23.160333,-4.207049,fresher,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,False,False,False
+2019-05,Baseline (BAU),A Tunnel,-22.987742,-4.175698,fresher,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,False,False,False
+2019-06,Baseline (BAU),A Tunnel,7.883000,1.519521,saltier,265,Little Franks Tract at Fisherman's Cut,19,30,0.633333,False,False,False
+2019-07,Baseline (BAU),A Tunnel,4.960645,1.196754,saltier,292,Frank's Tract at Old River,20,31,0.645161,False,False,False
+2019-08,Baseline (BAU),A Tunnel,317.719032,57.713310,saltier,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,True,True,True
+2019-09,Baseline (BAU),A Tunnel,410.560667,75.695040,saltier,265,Little Franks Tract at Fisherman's Cut,26,30,0.866667,True,True,True
+2019-10,Baseline (BAU),A Tunnel,134.994194,25.949261,saltier,265,Little Franks Tract at Fisherman's Cut,22,31,0.709677,True,True,True
+2019-11,Baseline (BAU),A Tunnel,983.467000,178.645691,saltier,265,Little Franks Tract at Fisherman's Cut,30,30,1.000000,True,True,True
+2019-12,Baseline (BAU),A Tunnel,706.685484,142.366397,saltier,281,South Franks Tract at Bethel Island,22,31,0.709677,True,True,True
+2020-01,Baseline (BAU),A Tunnel,194.344516,37.211491,saltier,265,Little Franks Tract at Fisherman's Cut,17,31,0.548387,True,True,True
+2020-02,Baseline (BAU),A Tunnel,346.045172,64.274674,saltier,265,Little Franks Tract at Fisherman's Cut,23,29,0.793103,True,True,True
+2020-03,Baseline (BAU),A Tunnel,117.051935,23.630853,saltier,281,South Franks Tract at Bethel Island,22,31,0.709677,True,True,True
+2020-04,Baseline (BAU),A Tunnel,50.061000,12.885167,saltier,292,Frank's Tract at Old River,30,30,1.000000,True,True,True
+2020-05,Baseline (BAU),A Tunnel,26.470000,6.479544,saltier,292,Frank's Tract at Old River,25,31,0.806452,False,False,False
+2020-06,Baseline (BAU),A Tunnel,32.007667,7.109950,saltier,292,Frank's Tract at Old River,19,30,0.633333,False,False,False
+2020-07,Baseline (BAU),A Tunnel,-11.506452,-2.961638,fresher,292,Frank's Tract at Old River,31,31,1.000000,False,False,False
+2020-08,Baseline (BAU),A Tunnel,-116.306452,-29.936038,fresher,292,Frank's Tract at Old River,31,31,1.000000,True,True,True
+2020-09,Baseline (BAU),A Tunnel,150.988333,23.920845,saltier,265,Little Franks Tract at Fisherman's Cut,24,30,0.800000,True,True,True
+2020-10,Baseline (BAU),A Tunnel,457.463871,83.097805,saltier,265,Little Franks Tract at Fisherman's Cut,31,31,1.000000,True,True,True
+2020-11,Baseline (BAU),A Tunnel,650.807241,123.667923,saltier,265,Little Franks Tract at Fisherman's Cut,18,29,0.620690,True,True,True

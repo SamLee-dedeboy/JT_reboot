@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "layers": {
+    "scenario_ngw_upstream_meadows": {
+      "source": "mapbox://tileset-source/justtransition/scenario_ngw_upstream_meadows",
+      "minzoom": 6,
+      "maxzoom": 9,
+      "features": {
+        "simplification": {
+          "distance": 2,
+          "outward_only": true
+        }
+      }
+    }
+  }
+}

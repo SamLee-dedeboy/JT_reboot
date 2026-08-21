@@ -1,11 +1,15 @@
 import type { LayerProps } from 'react-map-gl/mapbox'
+import type { FeatureCollection, Point } from 'geojson'
 import { map } from '../../theme'
 
 export interface ScenarioMapSourceConfig {
   id: string
-  type: 'vector'
-  url: string
+  type: 'vector' | 'raster-array' | 'geojson'
+  url?: string
+  data?: FeatureCollection<Point>
+  tileSize?: number
   layers: LayerProps[]
+  activation?: 'adaptation'
   visibilityScope?: 'delta' | 'statewide' | 'statewide-ecocultural'
   selectableProperty?: string
   selectionKey?: string
@@ -20,11 +24,53 @@ export interface ScenarioMapSourceConfig {
   }
 }
 
+const newGreenWatershedSubsidence: ScenarioMapSourceConfig = {
+  id: 'scenario-ngw-land-subsidence-2017',
+  type: 'raster-array',
+  url: 'mapbox://justtransition.delta_land_subsidence_2017_res10',
+  tileSize: 512,
+  visibilityScope: 'delta',
+  layers: [
+    {
+      id: 'scenario-ngw-land-subsidence-2017-raster',
+      type: 'raster',
+      source: 'scenario-ngw-land-subsidence-2017',
+      'source-layer': 'masked_values',
+      minzoom: 0,
+      maxzoom: 22,
+      paint: {
+        'raster-color-range': [-25, 0],
+        'raster-emissive-strength': 1,
+        'raster-color': [
+          'interpolate',
+          ['linear'],
+          ['raster-value'],
+          -25,
+          map.scenarios.newGreenWatershedSubsidence.elevationMinus25,
+          -20,
+          map.scenarios.newGreenWatershedSubsidence.elevationMinus20,
+          -15,
+          map.scenarios.newGreenWatershedSubsidence.elevationMinus15,
+          -10,
+          map.scenarios.newGreenWatershedSubsidence.elevationMinus10,
+          -5,
+          map.scenarios.newGreenWatershedSubsidence.elevationMinus5,
+          0,
+          map.scenarios.newGreenWatershedSubsidence.elevation0,
+        ],
+        'raster-fade-duration': 0,
+        'raster-resampling': 'nearest',
+      },
+    },
+  ],
+}
+
 const newGreenWatershedHabitats: ScenarioMapSourceConfig = {
   id: 'scenario-ngw-delta-habitats',
   type: 'vector',
   url: 'mapbox://justtransition.i7mkqy',
   visibilityScope: 'delta',
+  activation: 'adaptation',
   selectableProperty: 'type',
   legend: {
     title: 'Delta habitats',
@@ -84,6 +130,7 @@ const newGreenWatershedRiparian: ScenarioMapSourceConfig = {
   type: 'vector',
   url: 'mapbox://justtransition.esdnqq',
   visibilityScope: 'delta',
+  activation: 'adaptation',
   selectionKey: 'transitional',
   layers: [
     {
@@ -167,17 +214,50 @@ const statewideWatershedRegions: ScenarioMapSourceConfig = {
         'line-width': 2,
       },
     },
+  ],
+}
+
+const statewideWatershedRegionLabels: ScenarioMapSourceConfig = {
+  id: 'statewide-watershed-region-labels',
+  type: 'geojson',
+  visibilityScope: 'statewide',
+  data: {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: { name: 'SACRAMENTO\nSUB REGION' },
+        geometry: { type: 'Point', coordinates: [-121.55, 39.15] },
+      },
+      {
+        type: 'Feature',
+        properties: { name: 'SAN FRANCISCO\nBAY SUB REGION' },
+        geometry: { type: 'Point', coordinates: [-122.2, 37.9] },
+      },
+      {
+        type: 'Feature',
+        properties: { name: 'SAN JOAQUIN\nSUB REGION' },
+        geometry: { type: 'Point', coordinates: [-120.65, 37.55] },
+      },
+      {
+        type: 'Feature',
+        properties: { name: 'TULARE BASIN\nSUB REGION' },
+        geometry: { type: 'Point', coordinates: [-119.25, 36.25] },
+      },
+    ],
+  },
+  layers: [
     {
-      id: 'statewide-watershed-regions-label',
+      id: 'statewide-watershed-region-labels-symbol',
       type: 'symbol',
-      source: 'statewide-watershed-regions',
-      'source-layer': 'watershed_region.zip-16ybkn',
+      source: 'statewide-watershed-region-labels',
       minzoom: 0,
       maxzoom: 22,
       layout: {
         'text-field': ['get', 'name'],
         'text-size': 12,
-        'text-max-width': 10,
+        'text-max-width': 12,
+        'text-allow-overlap': false,
       },
       paint: {
         'text-color': map.boundaries.watershedRegion,
@@ -233,8 +313,10 @@ export const scenarioMapLayersBySlug: Record<string, ScenarioMapSourceConfig[]> 
     legalDeltaBoundary,
     newGreenWatershedHabitats,
     newGreenWatershedRiparian,
+    newGreenWatershedSubsidence,
     statewideWatershedShade,
     statewideWatershedRegions,
+    statewideWatershedRegionLabels,
     statewideIndigenousTerritories,
   ],
 }

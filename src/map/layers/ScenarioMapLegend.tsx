@@ -1,13 +1,16 @@
 import { Box, Stack, Typography } from '@mui/material'
+import { map } from '../../theme'
 import { scenarioMapLayersBySlug } from './scenarioLayerConfig'
 
 interface ScenarioMapLegendProps {
   scenarioSlug: string
+  visible?: boolean
   selectedHabitatType?: string | null
 }
 
 export default function ScenarioMapLegend({
   scenarioSlug,
+  visible = true,
   selectedHabitatType,
 }: ScenarioMapLegendProps) {
   const legends = (scenarioMapLayersBySlug[scenarioSlug] ?? [])
@@ -19,7 +22,7 @@ export default function ScenarioMapLegend({
   return (
     <Stack
       spacing={2}
-      sx={{
+      sx={(theme) => ({
         position: 'absolute',
         zIndex: 2,
         top: (theme) => theme.spacing(theme.jtSpacing.component.sm),
@@ -32,7 +35,12 @@ export default function ScenarioMapLegend({
         borderRadius: 1,
         backdropFilter: 'blur(10px)',
         pointerEvents: 'none',
-      }}
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : theme.spacing(-1),
+        transition: theme.transitions.create(['opacity', 'transform'], {
+          duration: map.scenarios.layerFadeDurationMs,
+        }),
+      })}
     >
       {legends.map((legend) => (
         <Box key={legend.title}>

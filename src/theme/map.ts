@@ -21,6 +21,15 @@ export const map = {
     indigenousTerritory: palette.accent.yellow,
   },
   scenarios: {
+    layerFadeDurationMs: 500,
+    newGreenWatershedSubsidence: {
+      elevation0: 'rgba(0,0,0,0)',
+      elevationMinus5: 'rgba(96,120,128,0.2)',
+      elevationMinus10: 'rgba(96,120,128,0.4)',
+      elevationMinus15: 'rgba(96,120,128,0.6)',
+      elevationMinus20: 'rgba(96,120,128,0.8)',
+      elevationMinus25: '#607880',
+    },
     newGreenWatershedHabitats: {
       soil: '#453caf',
       transitional: '#7187e1',

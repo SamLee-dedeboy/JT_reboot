@@ -12,7 +12,7 @@ const scenarioOrder = [
   'a-tunnel',
 ] as const
 
-export const orderedScenarios = scenarioOrder
+const orderedScenarios = scenarioOrder
   .map((slug) => scenarios.find((scenario) => scenario.slug === slug))
   .filter((scenario): scenario is (typeof scenarios)[number] => scenario != null)
 

@@ -6,6 +6,7 @@ import ComparisonFilterControl from './components/ComparisonFilterControl'
 import TimeRangeControl from './components/TimeRangeControl'
 import RegionalSummaryTutorial from './components/RegionalSummaryTutorial'
 import RegionalSummaryMethod from './components/RegionalSummaryMethod'
+import StationMaximumMode from './components/StationMaximumMode'
 import ArtworkMap from './components/map/Map'
 import {
   DISABLED_SCENARIOS,
@@ -16,6 +17,7 @@ import {
 } from './types'
 
 export default function RegionalSummaryPage() {
+  const [viewMode, setViewMode] = useState<'regional' | 'station-maximum'>('regional')
   const [showStations, setShowStations] = useState(false)
   const [scenario, setScenario] = useState<RegionalScenario>(SCENARIOS[1])
   const [tutorialOpen, setTutorialOpen] = useState(false)
@@ -88,17 +90,46 @@ export default function RegionalSummaryPage() {
                 Regional Summary
               </Typography>
               <Typography variant="caption" sx={{ color: 'base.100', display: 'block', mt: 0.75 }}>
-                Explore where and when each planning scenario produces meaningful salinity changes
-                relative to Business as Usual.
+                {viewMode === 'regional'
+                  ? 'Explore where and when each planning scenario produces meaningful salinity changes relative to Business as Usual.'
+                  : 'Examine the most salt-affected station among 10 Franks Tract stations for each day and scenario.'}
               </Typography>
             </Box>
-            <Box sx={(theme) => ({ display: 'flex', gap: theme.jtSpacing.gap.sm })}>
-              <Button variant="outlined" onClick={() => setMethodOpen(true)}>
-                Method
-              </Button>
-              <Button variant="outlined" onClick={() => setTutorialOpen(true)}>
-                Tutorial
-              </Button>
+            <Box
+              sx={(theme) => ({
+                alignItems: 'center',
+                display: 'flex',
+                gap: theme.jtSpacing.gap.sm,
+              })}
+            >
+              <Tabs
+                value={viewMode}
+                onChange={(_, value: 'regional' | 'station-maximum') => {
+                  setViewMode(value)
+                  if (value === 'regional' && DISABLED_SCENARIOS.includes(scenario)) {
+                    setScenario(SCENARIOS[1])
+                  }
+                }}
+                aria-label="Regional Summary analysis mode"
+                sx={{
+                  minHeight: 40,
+                  '& .MuiTab-root': { minHeight: 40 },
+                  '& .MuiTabs-indicator': { bgcolor: 'brand.primaryGreen' },
+                }}
+              >
+                <Tab label="Regional reports" value="regional" />
+                <Tab label="Station maximum" value="station-maximum" />
+              </Tabs>
+              {viewMode === 'regional' && (
+                <>
+                  <Button variant="outlined" onClick={() => setMethodOpen(true)}>
+                    Method
+                  </Button>
+                  <Button variant="outlined" onClick={() => setTutorialOpen(true)}>
+                    Tutorial
+                  </Button>
+                </>
+              )}
             </Box>
           </Box>
           <Box
@@ -182,9 +213,11 @@ export default function RegionalSummaryPage() {
                   '& .MuiTabs-scroller::-webkit-scrollbar': { display: 'none' },
                 })}
               >
-                {SCENARIOS.filter((it) => !DISABLED_SCENARIOS.includes(it)).map((item) => (
+                {SCENARIOS.filter(
+                  (item) => viewMode === 'station-maximum' || !DISABLED_SCENARIOS.includes(item),
+                ).map((item) => (
                   <Tab
-                    disabled={DISABLED_SCENARIOS.includes(item)}
+                    disabled={viewMode === 'regional' && DISABLED_SCENARIOS.includes(item)}
                     key={item}
                     value={item}
                     label={item}
@@ -192,28 +225,38 @@ export default function RegionalSummaryPage() {
                 ))}
               </Tabs>
             </Box>
-            <ComparisonFilterControl
+            {viewMode === 'regional' && (
+              <ComparisonFilterControl
+                filter={comparisonFilter}
+                scenario={scenario}
+                onChange={setComparisonFilter}
+              />
+            )}
+            {viewMode === 'regional' && (
+              <StationToggle showStations={showStations} onStationsChange={setShowStations} />
+            )}
+          </Box>
+          {viewMode === 'regional' && (
+            <TimeRangeControl
               filter={comparisonFilter}
               scenario={scenario}
+              selectedRegion={selectedRegion}
+              onReportSelect={setFocusedReportId}
               onChange={setComparisonFilter}
             />
-            <StationToggle showStations={showStations} onStationsChange={setShowStations} />
-          </Box>
-          <TimeRangeControl
-            filter={comparisonFilter}
-            scenario={scenario}
-            selectedRegion={selectedRegion}
-            onReportSelect={setFocusedReportId}
-            onChange={setComparisonFilter}
-          />
+          )}
         </Box>
-        <ArtworkMap
-          showStations={showStations}
-          scenario={scenario}
-          comparisonFilter={comparisonFilter}
-          focusedReportId={focusedReportId}
-          onSelectedRegionChange={handleSelectedRegionChange}
-        />
+        {viewMode === 'regional' ? (
+          <ArtworkMap
+            showStations={showStations}
+            scenario={scenario}
+            comparisonFilter={comparisonFilter}
+            focusedReportId={focusedReportId}
+            onSelectedRegionChange={handleSelectedRegionChange}
+          />
+        ) : (
+          <StationMaximumMode scenario={scenario} />
+        )}
       </Box>
       <RegionalSummaryTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
       <RegionalSummaryMethod open={methodOpen} onClose={() => setMethodOpen(false)} />

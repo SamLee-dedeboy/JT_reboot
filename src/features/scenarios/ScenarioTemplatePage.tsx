@@ -2,6 +2,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { useEffect, useState, type ReactNode } from 'react'
+import { NavigationControl } from 'react-map-gl/mapbox'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import BaseMap from '../../map/BaseMap'
 import ScenarioMapCamera from '../../map/layers/ScenarioMapCamera'
@@ -11,7 +12,7 @@ import Footer from '../../ui/Footer'
 import Hl from '../../ui/Highlight'
 import Navbar from '../../ui/Navbar'
 import NavRail from '../../ui/NavRail'
-import { highlighter, jtSpacing } from '../../theme'
+import { highlighter, jtSpacing, map } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
 import { scenarioBySlug } from './content/scenarioContent'
@@ -106,27 +107,48 @@ function HighlightedParagraph({ text }: { text: string }) {
 export default function ScenarioTemplatePage() {
   const { scenarioSlug = '' } = useParams()
   const scenario = scenarioBySlug[scenarioSlug]
+  const isNewGreenWatershed = scenarioSlug === 'new-green-watershed'
   const [selectedHabitatType, setSelectedHabitatType] = useState<string | null>(null)
+  const [showAdaptationLayers, setShowAdaptationLayers] = useState(false)
   const [showStatewideMap, setShowStatewideMap] = useState(false)
   const [showEcoculturalLayers, setShowEcoculturalLayers] = useState(false)
+  const effectiveShowAdaptationLayers = isNewGreenWatershed && showAdaptationLayers
+  const effectiveShowStatewideMap = isNewGreenWatershed && showStatewideMap
+  const effectiveShowEcoculturalLayers = isNewGreenWatershed && showEcoculturalLayers
 
   useEffect(() => {
-    if (scenarioSlug !== 'new-green-watershed') {
-      setShowStatewideMap(false)
-      return
-    }
+    if (!isNewGreenWatershed) return
 
+    const adaptationSection = document.getElementById('chapter-2')
     const supportingStrategySection = document.getElementById('chapter-3')
-    if (!supportingStrategySection) return
+    if (!adaptationSection || !supportingStrategySection) return
 
     let animationFrame = 0
+    let statewideTransitionTimer: number | undefined
     const updateCameraMode = () => {
       cancelAnimationFrame(animationFrame)
       animationFrame = requestAnimationFrame(() => {
         const readingThreshold = window.innerHeight * 0.25
-        setShowStatewideMap(
-          supportingStrategySection.getBoundingClientRect().top <= readingThreshold,
-        )
+        const hasReachedAdaptation =
+          adaptationSection.getBoundingClientRect().top <= readingThreshold
+        const hasReachedSupportingStrategy =
+          supportingStrategySection.getBoundingClientRect().top <= readingThreshold
+
+        if (hasReachedSupportingStrategy) {
+          setShowAdaptationLayers(false)
+          if (statewideTransitionTimer == null) {
+            statewideTransitionTimer = window.setTimeout(() => {
+              setShowStatewideMap(true)
+            }, map.scenarios.layerFadeDurationMs)
+          }
+        } else {
+          if (statewideTransitionTimer != null) {
+            window.clearTimeout(statewideTransitionTimer)
+            statewideTransitionTimer = undefined
+          }
+          setShowStatewideMap(false)
+          setShowAdaptationLayers(hasReachedAdaptation)
+        }
       })
     }
 
@@ -136,16 +158,14 @@ export default function ScenarioTemplatePage() {
 
     return () => {
       cancelAnimationFrame(animationFrame)
+      if (statewideTransitionTimer != null) window.clearTimeout(statewideTransitionTimer)
       window.removeEventListener('scroll', updateCameraMode)
       window.removeEventListener('resize', updateCameraMode)
     }
-  }, [scenarioSlug])
+  }, [isNewGreenWatershed])
 
   useEffect(() => {
-    if (scenarioSlug !== 'new-green-watershed') {
-      setShowEcoculturalLayers(false)
-      return
-    }
+    if (!isNewGreenWatershed) return
 
     const ecoculturalSection = document.getElementById('ecocultural-stewardship')
     if (!ecoculturalSection) return
@@ -168,7 +188,7 @@ export default function ScenarioTemplatePage() {
       window.removeEventListener('scroll', updateEcoculturalLayers)
       window.removeEventListener('resize', updateEcoculturalLayers)
     }
-  }, [scenarioSlug])
+  }, [isNewGreenWatershed])
 
   if (!scenario) return <Navigate to="/scenarios" replace />
 
@@ -432,25 +452,34 @@ export default function ScenarioTemplatePage() {
                 <BaseMap
                   initialViewState={scenarioMapViewState}
                   mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
-                  interactive={false}
+                  interactive={scenario.slug === 'new-green-watershed'}
+                  dragPan={scenario.slug === 'new-green-watershed'}
+                  dragRotate={false}
+                  scrollZoom={scenario.slug === 'new-green-watershed'}
+                  touchZoomRotate={scenario.slug === 'new-green-watershed'}
                   maxBounds={californiaMapBounds}
                 >
-                  <ScenarioMapCamera statewide={showStatewideMap} />
+                  <ScenarioMapCamera statewide={effectiveShowStatewideMap} />
                   <ScenarioMapLayers
                     scenarioSlug={scenario.slug}
+                    showAdaptationLayers={effectiveShowAdaptationLayers}
                     selectedHabitatType={selectedHabitatType}
                     visibilityScope={
-                      showStatewideMap
-                        ? showEcoculturalLayers
+                      effectiveShowStatewideMap
+                        ? effectiveShowEcoculturalLayers
                           ? 'statewide-ecocultural'
                           : 'statewide'
                         : 'delta'
                     }
                   />
+                  {scenario.slug === 'new-green-watershed' && (
+                    <NavigationControl position="bottom-right" showCompass={false} />
+                  )}
                 </BaseMap>
-                {!showStatewideMap && (
+                {!effectiveShowStatewideMap && (
                   <ScenarioMapLegend
                     scenarioSlug={scenario.slug}
+                    visible={effectiveShowAdaptationLayers}
                     selectedHabitatType={selectedHabitatType}
                   />
                 )}
