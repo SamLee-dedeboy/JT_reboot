@@ -28,10 +28,11 @@ export const navigation = {
   desktopButtonMinWidth: 140,
   activeBorder: `1px solid ${palette.translucent.primaryGreen}`,
   activeBackground: palette.translucent.primaryGreen,
-  menuPanelBackground: palette.base[500],
-  drawerPanelBackground: palette.base[500],
-  panelBorder: `1px solid ${palette.border.default}`,
-  dropdownShadow: `0 18px 46px ${palette.translucent.blackShadow}`,
+  menuPanelBackground: palette.base[800],
+  drawerPanelBackground: palette.base[900],
+  panelBorder: `1px solid ${palette.translucent.primaryGreen}`,
+  panelRadius: '8px',
+  dropdownShadow: `0 20px 48px ${palette.translucent.cardShadow}`,
   drawerShadow: `-18px 0 46px ${palette.translucent.blackShadow}`,
   spacing: {
     menuItemInline: 1.75,
@@ -44,12 +45,12 @@ export const navigation = {
 } as const
 
 export const logoWordmark = {
-  desktopMinWidth: 360,
+  desktopMinWidth: 220,
   containerLineHeight: 1.05,
   fontSize: {
     mobile: 'clamp(1.05rem, 4vw, 1.2rem)',
     tablet: 'clamp(1.1rem, 2.4vw, 1.25rem)',
-    desktop: { md: 'clamp(1.2rem, 1.6vw, 1.35rem)', lg: 'clamp(1.35rem, 1.35vw, 1.5rem)' },
+    desktop: { md: 'clamp(0.9rem, 1.2vw, 1.05rem)', lg: 'clamp(1.35rem, 1.35vw, 1.5rem)' },
   },
   footerFontSize: 'clamp(1.05rem, 1.4vw, 1.35rem)',
 } as const

@@ -11,6 +11,7 @@ declare module '@mui/material/styles' {
     eyebrow: CSSProperties
     logo: CSSProperties
     logoHero: CSSProperties
+    editorialEmphasis: CSSProperties
     cardTitle: CSSProperties
     cardBody: CSSProperties
     meta: CSSProperties
@@ -74,6 +75,7 @@ declare module '@mui/material/Typography' {
     eyebrow: true
     logo: true
     logoHero: true
+    editorialEmphasis: true
     cardTitle: true
     cardBody: true
     meta: true

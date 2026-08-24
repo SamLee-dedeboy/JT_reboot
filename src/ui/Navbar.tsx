@@ -25,12 +25,13 @@ import CloseIcon from '@mui/icons-material/Close'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-//import './Navbar.css';
+import { assetUrl } from '../utils/baseUrl'
 
 interface DropdownItem {
   label: string
   href: string
   external?: boolean
+  disabled?: boolean
 }
 
 interface NavItem {
@@ -44,37 +45,39 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    label: 'Adaptation Scenarios',
-    href: '/scenarios',
-  },
-  {
-    label: 'Repository',
-    caption: 'Browse reports, learning materials, and project resources.',
+    label: 'Background',
+    caption: 'Explore the project background and its approach to just transitions.',
     dropdown: [
-      { label: 'Project Documentation & Reports', href: '/pages/project-documentation' },
-      { label: 'Service Learning & Education', href: '/pages/service-learning' },
-      { label: 'References & Resources', href: '/pages/resources' },
+      { label: 'A Delta in Transition', href: '#', disabled: true },
+      { label: 'Participatory Scenario Planning', href: '#', disabled: true },
+      { label: 'What Is a Just Transition?', href: '#', disabled: true },
     ],
   },
   {
-    label: 'Related Projects',
-    caption: 'Visit companion Delta planning and adaptation efforts.',
+    label: 'Co-Designing',
+    caption: 'Explore the collaborative process, participant input, and workshop materials.',
     dropdown: [
-      {
-        label: 'Franks Tract Futures',
-        href: 'https://franks-tract-futures-ucdavis.hub.arcgis.com/',
-        external: true,
-      },
-      {
-        label: 'Delta Island Adaptations',
-        href: 'https://deltaislandadaptations-ucdavis.hub.arcgis.com/',
-        external: true,
-      },
-      {
-        label: 'Delta Adapts',
-        href: 'https://www.deltacouncil.ca.gov/delta-plan/climate-change',
-        external: true,
-      },
+      { label: 'Co-Design Dashboard', href: '#', disabled: true },
+      { label: 'Participant Responses', href: '#', disabled: true },
+      { label: 'Workshop Reports', href: '#', disabled: true },
+    ],
+  },
+  {
+    label: 'Future Scenarios',
+    caption: 'Explore possible futures, modeling, evaluation, and scenario performance.',
+    dropdown: [
+      { label: 'Choose a Future', href: '/scenarios' },
+      { label: 'Modeling & Evaluation', href: '/scenarios#outflow-variations' },
+      { label: 'Performance & Ranking', href: '/scenarios#ranking-overview' },
+    ],
+  },
+  {
+    label: 'Resources',
+    caption: 'Browse governance, project documentation, and related resources.',
+    dropdown: [
+      { label: 'Governance & Implementation', href: '#', disabled: true },
+      { label: 'Project Documentation', href: '/pages/project-documentation' },
+      { label: 'References & Related Projects', href: '/pages/resources' },
     ],
   },
   {
@@ -118,6 +121,11 @@ function DesktopNavbar() {
     color: 'common.white',
     whiteSpace: 'normal',
     transition: 'border-color 180ms ease, background-color 180ms ease, transform 180ms ease',
+    '&.Mui-disabled': {
+      color: 'base.300',
+      opacity: 0.58,
+      '& .dropdown-link-marker': { bgcolor: 'base.300' },
+    },
     '&:hover, &:focus-visible': {
       bgcolor: 'translucent.primaryGreen',
       borderColor: 'translucent.primaryGreen',
@@ -147,8 +155,8 @@ function DesktopNavbar() {
       {/* Primary desktop links and buttons that open the active dropdown. */}
       <Stack
         direction="row"
-        spacing={theme.jtSpacing.gap.xs}
-        sx={{ alignItems: 'center', paddingLeft: theme.jtSpacing.component.lg }}
+        spacing={{ md: 0, lg: theme.jtSpacing.gap.xs }}
+        sx={{ alignItems: 'center', paddingLeft: { md: 0, lg: theme.jtSpacing.component.lg } }}
       >
         {navItems.map((item, i) =>
           item.disabled ? (
@@ -156,7 +164,8 @@ function DesktopNavbar() {
               key={item.label}
               disabled
               sx={{
-                minWidth: theme.navigation.desktopButtonMinWidth,
+                minWidth: 0,
+                paddingInline: { md: 0.75, lg: 1.25 },
                 whiteSpace: 'nowrap',
                 '&.Mui-disabled': { color: 'base.300' },
               }}
@@ -169,7 +178,8 @@ function DesktopNavbar() {
               component={Link}
               to={item.href}
               sx={{
-                minWidth: theme.navigation.desktopButtonMinWidth,
+                minWidth: 0,
+                paddingInline: { md: 0.75, lg: 1.25 },
                 whiteSpace: 'nowrap',
                 color: 'common.white',
               }}
@@ -179,15 +189,38 @@ function DesktopNavbar() {
           ) : (
             <Button
               key={item.label}
+              aria-haspopup="menu"
+              aria-expanded={desktopMenuIndex === i ? 'true' : undefined}
               sx={{
-                minWidth: theme.navigation.desktopButtonMinWidth,
+                minWidth: 0,
+                paddingInline: { md: 0.75, lg: 1.25 },
                 whiteSpace: 'nowrap',
                 color: 'common.white',
+                borderRadius: 999,
                 border:
                   desktopMenuIndex === i ? theme.navigation.activeBorder : '1px solid transparent',
                 bgcolor: desktopMenuIndex === i ? theme.navigation.activeBackground : 'transparent',
+                transition:
+                  'color 180ms ease, border-color 180ms ease, background-color 180ms ease',
+                '&:hover, &:focus-visible': {
+                  color: 'primary.light',
+                  borderColor: 'translucent.primaryGreen',
+                  bgcolor: 'translucent.primaryGreen',
+                },
+                '& .MuiButton-endIcon': {
+                  marginLeft: { md: 0.125, lg: 0.375 },
+                  marginRight: { md: -0.5, lg: -0.25 },
+                },
               }}
-              endIcon={<KeyboardArrowDownIcon />}
+              endIcon={
+                <KeyboardArrowDownIcon
+                  sx={{
+                    fontSize: { md: 15, lg: 18 },
+                    transform: desktopMenuIndex === i ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 180ms ease',
+                  }}
+                />
+              }
               onClick={(event) => handleDesktopMenuOpen(event, i)}
             >
               {item.label}
@@ -206,13 +239,13 @@ function DesktopNavbar() {
         slotProps={{
           paper: {
             sx: {
-              marginTop: theme.navigation.spacing.mobileButtonBlock,
-              minWidth: 330,
-              maxWidth: 380,
+              marginTop: theme.jtSpacing.component.xs,
+              minWidth: 312,
+              maxWidth: 360,
               overflow: 'visible',
               bgcolor: theme.navigation.menuPanelBackground,
               border: theme.navigation.panelBorder,
-              borderRadius: theme.shape.borderRadius,
+              borderRadius: theme.navigation.panelRadius,
               boxShadow: theme.navigation.dropdownShadow,
               backdropFilter: 'blur(12px)',
               backgroundImage: 'none',
@@ -229,7 +262,7 @@ function DesktopNavbar() {
                 transform: 'rotate(45deg)',
               },
               '& .MuiList-root': {
-                padding: theme.jtSpacing.component.xs,
+                padding: theme.jtSpacing.component.sm,
               },
             },
           },
@@ -238,9 +271,9 @@ function DesktopNavbar() {
         {activeDesktopMenu?.dropdown && (
           <Box
             sx={{
-              paddingInline: theme.jtSpacing.component.sm,
-              paddingTop: theme.jtSpacing.component.xs,
-              paddingBottom: theme.jtSpacing.component.xs,
+              paddingInline: theme.jtSpacing.component.xs,
+              paddingTop: 0,
+              paddingBottom: theme.jtSpacing.component.sm,
               position: 'relative',
             }}
           >
@@ -256,16 +289,25 @@ function DesktopNavbar() {
             </Typography>
             <Box
               sx={{
-                marginTop: 1.25,
-                height: 2,
-                width: 56,
-                bgcolor: 'primary.main',
+                marginTop: theme.jtSpacing.component.sm,
+                height: 1,
+                width: '100%',
+                bgcolor: 'border.default',
               }}
             />
           </Box>
         )}
         {activeDesktopMenu?.dropdown?.map((sub) =>
-          sub.external ? (
+          sub.disabled ? (
+            <MenuItem key={sub.label} disabled sx={menuItemSx}>
+              <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
+                <Box className="dropdown-link-marker" component="span" sx={desktopMenuMarkerSx} />
+                <Typography component="span" variant="navigationLabel" sx={{ lineHeight: 1.25 }}>
+                  {sub.label}
+                </Typography>
+              </Box>
+            </MenuItem>
+          ) : sub.external ? (
             <MenuItem
               key={sub.label}
               component="a"
@@ -541,7 +583,30 @@ function MobileNavbar() {
                           Explore
                         </Typography>
                         {item.dropdown?.map((sub) =>
-                          sub.external ? (
+                          sub.disabled ? (
+                            <ListItemButton key={sub.label} disabled sx={mobileSubItemSx}>
+                              <Box
+                                component="span"
+                                sx={{
+                                  width: 3,
+                                  height: 22,
+                                  marginTop: theme.jtSpacing.component.xs / 4,
+                                  marginRight: theme.jtSpacing.component.xs * 1.1,
+                                  borderRadius: '50%',
+                                  bgcolor: 'base.300',
+                                  flex: 'none',
+                                }}
+                              />
+                              <ListItemText
+                                primary={sub.label}
+                                secondary="Coming soon"
+                                slotProps={{
+                                  primary: { sx: { typography: 'navigationLabel' } },
+                                  secondary: { sx: { typography: 'captionSmall' } },
+                                }}
+                              />
+                            </ListItemButton>
+                          ) : sub.external ? (
                             <ListItemButton
                               key={sub.label}
                               component="a"
@@ -636,21 +701,42 @@ export default function Navbar() {
       component="nav"
       color="transparent"
       elevation={4}
-      sx={{ height: 'auto', overflow: 'hidden' }}
+      sx={{ height: 'auto', overflow: 'hidden', bgcolor: 'base.900' }}
     >
       {/* Shared navigation shell with the brand at left and one breakpoint-specific menu at right. */}
       <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', height: navHeight }}>
-        <Toolbar sx={{ maxWidth: '1400px', margin: '0 auto', width: '100%', height: '100%' }}>
+        <Toolbar
+          sx={{
+            maxWidth: '1400px',
+            margin: '0 auto',
+            width: '100%',
+            height: '100%',
+            paddingInline: { md: 1, lg: 3 },
+          }}
+        >
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               width: '100%',
-              gap: 2,
+              gap: { md: 0.5, lg: 2 },
             }}
           >
-            <Logo />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.25, md: 1, lg: 2 } }}>
+              <Box
+                component="img"
+                src={assetUrl('/images/uc-logo-white.png')}
+                alt="University of California"
+                sx={{
+                  display: 'block',
+                  width: { xs: 48, sm: 58, md: 44, lg: 76 },
+                  height: 'auto',
+                  flex: 'none',
+                }}
+              />
+              <Logo />
+            </Box>
             {isDesktopNav ? <DesktopNavbar /> : <MobileNavbar />}
           </Box>
         </Toolbar>

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { useMediaQuery, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
@@ -7,6 +7,7 @@ import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoub
 import { HERO } from '../../features/home/content/homeContent'
 import BaseMap from '../BaseMap'
 import MapLayerOrchestrator from '../MapLayerOrchestrator'
+import SalinityVector155Layer from '../layers/SalinityVector155Layer'
 import { HERO_MAP_STYLE, SUISUN_BAY_CENTER } from '../mapCameraView'
 
 const mapContainerStyle = {
@@ -14,12 +15,6 @@ const mapContainerStyle = {
   inset: 0,
   pointerEvents: 'none',
 } as const
-const salinityLayerIds = [
-  'salinity-mockup-june-3kgk8e',
-  'salinity-mockup-september-dh1h3e',
-  'salinity-mockup-october-v2-zi-vxywcj',
-  'salinity-mockup-april-0pn2k2',
-]
 
 function getHeroBreakpoint(isXlUp: boolean, isLgUp: boolean, isMdUp: boolean, isSmUp: boolean) {
   if (isXlUp) return 'xl'
@@ -37,13 +32,32 @@ const heroZoomByBreakpoint = {
   xl: 10.25,
 } as const
 
-const salinityLayerCycle = {
-  layerIds: salinityLayerIds,
-  crossfadeMs: 1400,
-  cycleMs: 2800,
+/** Pauses the salinity animation while the hero is off-screen or the tab is hidden. */
+function useHeroVisibility(sectionRef: React.RefObject<HTMLElement | null>) {
+  const [isInViewport, setIsInViewport] = useState(true)
+  const [isPageVisible, setIsPageVisible] = useState(() => document.visibilityState === 'visible')
+
+  useEffect(() => {
+    const node = sectionRef.current
+    if (!node) return
+
+    const observer = new IntersectionObserver(([entry]) => setIsInViewport(entry.isIntersecting), {
+      threshold: 0,
+    })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [sectionRef])
+
+  useEffect(() => {
+    const handleVisibilityChange = () => setIsPageVisible(document.visibilityState === 'visible')
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [])
+
+  return isInViewport && isPageVisible
 }
 
-export default function HeroMap() {
+export default function HeroMapPilot() {
   const theme = useTheme()
   const isSmUp = useMediaQuery(theme.breakpoints.up('sm'))
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
@@ -51,6 +65,8 @@ export default function HeroMap() {
   const isXlUp = useMediaQuery(theme.breakpoints.up('xl'))
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null)
   const mapRef = useRef<MapboxMap | null>(null)
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const isAnimationPlaying = useHeroVisibility(sectionRef)
   const heroBreakpoint = getHeroBreakpoint(isXlUp, isLgUp, isMdUp, isSmUp)
   const [heroInitialViewState] = useState(() => ({
     ...SUISUN_BAY_CENTER,
@@ -66,6 +82,7 @@ export default function HeroMap() {
   return (
     <Box
       component="section"
+      ref={sectionRef}
       id="top"
       sx={{
         position: 'sticky',
@@ -86,11 +103,9 @@ export default function HeroMap() {
           onMapReady={handleMapAvailable}
           onMapStyleData={handleMapAvailable}
         >
-          <MapLayerOrchestrator
-            map={mapObj}
-            layerCycle={salinityLayerCycle}
-            showDeltaStations={false}
-          />
+          <MapLayerOrchestrator map={mapObj} showDeltaStations={false}>
+            <SalinityVector155Layer map={mapObj} playing={isAnimationPlaying} intervalMs={100} />
+          </MapLayerOrchestrator>
         </BaseMap>
       </Box>
 
@@ -148,7 +163,7 @@ export default function HeroMap() {
           position: 'absolute',
           left: 'var(--home-rail-inset)',
           right: { xs: theme.spacing(3), md: 'auto' },
-          top: 'auto',
+          top: '65%',
           bottom: 0,
           minHeight: { xs: '58%', sm: '49%', md: '43%' },
           zIndex: 24,

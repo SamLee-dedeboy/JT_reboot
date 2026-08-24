@@ -33,6 +33,13 @@ export const typography = {
     letterSpacing: '0.03em',
     textTransform: 'uppercase',
   },
+  editorialEmphasis: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.4rem, 1.4vw, 1.7rem)',
+    lineHeight: 1.2,
+    fontWeight: 700,
+    letterSpacing: '0.03em',
+  },
   h5: {
     fontFamily: fontBody,
     fontSize: 'clamp(1rem, 0.7rem + 0.5vw, 1.05rem)',
@@ -87,7 +94,7 @@ export const typography = {
   },
   logoHero: {
     fontFamily: fontHeading,
-    fontSize: 'clamp(2.65rem, 1.5rem + 4vw, 4.7rem)',
+    fontSize: 'clamp(2rem, 1.2rem + 4vw, 4.7rem)',
     lineHeight: 0.95,
     fontWeight: 300,
     letterSpacing: '0.015em',

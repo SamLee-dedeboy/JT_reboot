@@ -22,6 +22,9 @@ npm run audit:tokens:repository # Check repository UI and its shared cards
 npm run preview      # Preview the production build
 ```
 
+`npm run format` runs Prettier across the entire repository. In a dirty worktree, use
+`npm exec prettier -- --write <edited-files...>` so unrelated user changes are not rewritten.
+
 ## Application Entry and Routing
 
 - `src/main.tsx` creates the React root and renders `AppProviders` and `PublicSiteShell`.
@@ -58,7 +61,10 @@ Keep route-specific code in its feature. Move code into `src/ui`, `src/map`, or 
 
 ## Key Composition
 
-- `src/features/home/HomePage.tsx` composes Navbar, the lazy-loaded `HeroMap`, editorial home sections, and Footer.
+- `src/features/home/HomePage.tsx` composes Navbar, the lazy-loaded sticky `HeroMap`, scrolling editorial panels, and Footer.
+- The rebuilt home currently mounts `WhatIfSectionEditorial` and `FuturesPanels`. Older home-section components remain in the repository but are intentionally unmounted until they are rebuilt or deletion is explicitly requested.
+- `HomeNavRail` adapts the shared `NavRail` for the home narrative. Its active items must correspond to mounted section IDs.
+- The hero and home panels share `--home-rail-inset`, defined by `HomePage`, so hero copy, panel rules, rails, and editorial content remain aligned across breakpoints.
 - Repository pages use `RepoLayout`, `RepoHero`, and `RepoTabs` from `src/features/repository/`.
 - Internal tools can use `src/internal/PageLayout.tsx` for a shared Navbar/hero/Footer shell.
 - `src/ui/Navbar.tsx` contains `DesktopNavbar` and `MobileNavbar`; the parent mounts exactly one based on the MUI `md` breakpoint.
@@ -80,6 +86,8 @@ Keep route-specific code in its feature. Move code into `src/ui`, `src/map`, or 
 The active breakpoints are `xs: 0`, `sm: 600`, `md: 900`, `lg: 1200`, and `xl: 1400`. Use theme breakpoints instead of introducing unrelated media-query values.
 
 The internal design reference is `src/internal/design-system/DesignSystem.tsx` at `/design-system`. It must demonstrate production tokens and components, not maintain a separate set of visual values.
+
+`typography.editorialEmphasis` is the semantic Proxima Nova bold treatment used for emphasized statements in the rebuilt home narrative.
 
 ## UI Implementation Rules
 
@@ -123,6 +131,16 @@ These are requirements for new UI and UI refactors.
 - Do not remove an interaction or animation during cleanup unless explicitly requested.
 - Internal links use React Router `Link`. External links use anchors with `target="_blank"` and `rel="noopener noreferrer"` when opening a new tab.
 
+### Home landing page
+
+- Treat the current user-provided screenshots and explicit design decisions as authoritative for the landing-page rebuild. They supersede conflicting geometry, copy, navigation, or styling on the legacy ArcGIS site.
+- Keep the map hero sticky while the introductory narrative is pulled over it, then continue with normal document scrolling.
+- Preserve the shared home rail alignment through `--home-rail-inset`; do not introduce independent horizontal offsets in individual panels.
+- The home rail is sticky within narrative panels. Do not reintroduce legacy global fixed-rail behavior on the rebuilt home.
+- Angled panel boundaries must be opaque overlaps. Do not use a transparent clipped corner where the sticky map or another unintended layer can show through.
+- Use feature-owned components under `src/features/home/` for panel-specific layouts and use `src/ui/` only for genuinely reusable primitives.
+- Introduce editorial elements with restrained viewport motion and honor Framer Motion/reduced-motion behavior already established by shared animation components.
+
 ## Static Assets and Data
 
 - Static files live in `public/`, primarily under `public/images/`, `public/data/`, and `public/exports/`.
@@ -133,13 +151,13 @@ These are requirements for new UI and UI refactors.
 
 Before considering implementation work complete, validate in proportion to the change:
 
-- Run `npm run format` after editing maintained files.
+- Format edited files after changes. In a dirty worktree, use `npm exec prettier -- --write <edited-files...>` instead of the repository-wide `npm run format` command.
 - Run `npm run build` for TypeScript or application changes.
 - Run `npm run lint` when changes could affect lint rules or code quality.
 - Run `npm run audit:tokens` for theme, typography, palette, or component styling work.
 - Inspect production components and their Design System examples for drift when both exist.
 - Search for local overrides that bypass a semantic token changed by the task.
-- For public-site fidelity work, compare the rendered UI with <https://delta-just-transitions-ucdavis.hub.arcgis.com/>. Internal tools and new data experiences do not need to imitate pages that do not exist on the reference site.
+- For public-site fidelity work, use the legacy site at <https://delta-just-transitions-ucdavis.hub.arcgis.com/> only where it does not conflict with current user-provided references or approved rebuild decisions. Internal tools and new data experiences do not need to imitate pages that do not exist on the reference site.
 - Check responsive behavior at the MUI `md` boundary and verify relevant interaction states.
 
 Preserve unrelated work in a dirty worktree and avoid broad formatting or refactors outside the requested scope.
