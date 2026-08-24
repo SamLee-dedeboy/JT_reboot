@@ -161,7 +161,7 @@ export default function WorksPanels() {
               The Project
             </Typography>
             <Typography variant="h2" component="h2" sx={{ mt: 1, color: 'common.white' }}>
-              How it works?
+              How it works
             </Typography>
             <Typography
               variant="body1"
