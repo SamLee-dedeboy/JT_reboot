@@ -39,6 +39,15 @@ export const map = {
       outline: palette.common.black,
     },
   },
+  salinityAnimation: {
+    frameIntervalMs: 300,
+    fresh: '#7ed2e1',
+    oligohalineLow: '#69b6ca',
+    oligohalineHigh: '#559ab4',
+    mesohaline: '#407e9d',
+    polyhaline: '#2c6287',
+    euhaline: '#174670',
+  },
   labels: {
     text: palette.common.white,
     muted: palette.base[100],

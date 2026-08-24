@@ -91,8 +91,6 @@ export default function Footer() {
             alignItems: { xs: 'flex-start', md: 'center' },
             marginTop: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.section.sm },
             paddingTop: theme.jtSpacing.component.md,
-            borderTop: '1px solid',
-            borderColor: 'surface',
             color: 'base.200',
             textAlign: 'left',
           }}

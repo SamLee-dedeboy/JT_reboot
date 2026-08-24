@@ -28,3 +28,11 @@ export function splitLead(text: string): [string, string] {
   const m = text.match(/^(.*?[.?!])\s+(.*)$/s)
   return m ? [m[1], m[2]] : [text, '../ui/Highlight']
 }
+
+/** Split off the first `count` sentences as a lead, with the remainder (if any) as rest. */
+export function splitLeadSentences(text: string, count: number): [string, string] {
+  const sentences = text.match(/[^.?!]+[.?!]+(?:\s+|$)/g) ?? [text]
+  const lead = sentences.slice(0, count).join('').trim()
+  const rest = sentences.slice(count).join('').trim()
+  return [lead, rest]
+}
