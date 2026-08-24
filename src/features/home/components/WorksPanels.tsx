@@ -11,13 +11,13 @@ const workSteps = [
   },
   {
     number: '02',
-    text: 'Community engagement, dialogue, co-learning, and responsive research',
-    label: 'Co-Learning',
+    text: 'Speculative planning strategies that compare a broad range of adaptations',
+    label: 'Scenario Adaptations',
   },
   {
     number: '03',
-    text: 'Speculative planning strategies that compare a broad range of adaptations',
-    label: 'Scenario Adaptations',
+    text: 'Community engagement, dialogue, co-learning, and responsive research',
+    label: 'Co-Learning',
   },
   {
     number: '04',
@@ -161,7 +161,7 @@ export default function WorksPanels() {
               The Project
             </Typography>
             <Typography variant="h2" component="h2" sx={{ mt: 1, color: 'common.white' }}>
-              How it works
+              How it works?
             </Typography>
             <Typography
               variant="body1"
@@ -201,7 +201,7 @@ export default function WorksPanels() {
                 }}
               >
                 <WorkStep step={workSteps[0]} index={0} />
-                <WorkStep step={workSteps[1]} index={1} />
+                <WorkStep step={workSteps[2]} index={1} />
               </Box>
 
               <Box
@@ -211,7 +211,7 @@ export default function WorksPanels() {
                   gap: theme.jtSpacing.section.sm,
                 }}
               >
-                <WorkStep step={workSteps[2]} index={2} />
+                <WorkStep step={workSteps[1]} index={2} />
                 <WorkStep step={workSteps[3]} index={3} />
               </Box>
             </Box>
