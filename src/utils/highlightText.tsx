@@ -17,7 +17,7 @@ export function emphasize(text: string, phrase?: string): ReactNode {
   return (
     <>
       {text.slice(0, idx)}
-      <Hl>{phrase}</Hl>
+      <span style={{ color: '#51a2bd' }}>{phrase}</span>
       {text.slice(idx + phrase.length)}
     </>
   )

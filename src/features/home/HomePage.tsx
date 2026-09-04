@@ -1,50 +1,18 @@
 import { Box } from '@mui/material'
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense } from 'react'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
-import WhatIfSectionEditorial from './components/WhatIfSectionEditorial'
-import FuturesPanels from './components/FuturesPanels'
-import StakesPanels from './components/StakesPanels'
-import WorksPanels from './components/WorksPanels'
+import WhatIfPanel from './components/01_WhatIfPanel'
+import FuturesPanel from './components/02_FuturesPanel'
+import StakesPanel from './components/03_StakesPanel'
+import WorksPanel from './components/04_WorksPanel'
+import HomeImagePanel from './components/HomeImagePanel'
 import HomeNavRail from './components/HomeNavRail'
+import PanelSlant from './components/PanelSlant'
 
-const HeroMap = lazy(() => import('../../map/instances/HeroMapPilot'))
-
-// Photo sections have no id anchor of their own in the rail. Bumping their own
-// z-index above the rail broke the torn-paper overlap with adjacent sections,
-// so instead the rail's own z-index drops below every section (min z is 30)
-// whenever one of these scrolls through its band, and rises back above all of
-// them otherwise — real occlusion, no opacity fade.
-const RAIL_OBSCURING_SECTION_IDS = ['futures-photo', 'stakes-photo', 'works-photo']
+const HeroMap = lazy(() => import('../../map/instances/HeroMap'))
 
 export default function HomePage() {
-  const [obscuredBy, setObscuredBy] = useState<Set<string>>(() => new Set())
-
-  useEffect(() => {
-    const els = RAIL_OBSCURING_SECTION_IDS.map((id) => document.getElementById(id)).filter(
-      (el): el is HTMLElement => !!el,
-    )
-    if (!els.length) return
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        setObscuredBy((prev) => {
-          const next = new Set(prev)
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) next.add(entry.target.id)
-            else next.delete(entry.target.id)
-          })
-          return next
-        })
-      },
-      { rootMargin: '-24% 0px -55% 0px', threshold: 0 },
-    )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
-  }, [])
-
-  const railHidden = obscuredBy.size > 0
-
   return (
     <>
       <Navbar />
@@ -57,24 +25,32 @@ export default function HomePage() {
             [theme.breakpoints.up('lg')]: { '--home-rail-inset': theme.spacing(10) },
           })}
         >
-          <Suspense
-            fallback={
-              <Box
-                component="section"
-                id="top"
-                sx={{ width: '100%', height: 'calc(100svh - 76px)', bgcolor: 'brand.base' }}
-              />
-            }
+          <Box
+            sx={{
+              position: 'relative',
+              zIndex: 0,
+              height: { xs: 'calc(120dvh - 72px)', md: 'calc(120dvh - 76px)' },
+            }}
           >
-            <HeroMap />
-          </Suspense>
+            <Suspense
+              fallback={
+                <Box
+                  component="section"
+                  id="top"
+                  sx={{ width: '100%', height: 'calc(100svh - 76px)', bgcolor: 'brand.base' }}
+                />
+              }
+            >
+              <HeroMap />
+            </Suspense>
+          </Box>
           <Box sx={{ position: 'relative' }}>
             <Box
               sx={(theme) => ({
                 position: 'absolute',
                 top: 0,
                 bottom: 0,
-                zIndex: railHidden ? 10 : 70,
+                zIndex: 3,
                 pointerEvents: 'none',
                 display: { xs: 'none', lg: 'block' },
                 pl: `calc(var(--home-rail-inset) - ${theme.spacing(1.125 / 2)} + 1px)`,
@@ -83,10 +59,49 @@ export default function HomePage() {
             >
               <HomeNavRail />
             </Box>
-            <WhatIfSectionEditorial />
-            <FuturesPanels />
-            <StakesPanels />
-            <WorksPanels />
+            <PanelSlant color="#384550" attachment="before" tilt="up-right" />
+            <WhatIfPanel />
+            <PanelSlant color="#384550" attachment="after" tilt="down-right" />
+            <HomeImagePanel
+              id="futures-photo"
+              ariaLabel="What is a just transition?"
+              image="images/community-fishing.jpg"
+              textPositionY="35%"
+              backgroundSize={{ xs: 'cover', md: 'cover', lg: '130% auto' }}
+              backgroundPosition={{ xs: '62% center', md: 'center 57%', lg: '0% 35%' }}
+              text="The term Just Transition is used in the domains of climate, energy, and environmental justice and refers to efforts to reduce inequity in society. This project seeks to advance such efforts by democratizing science and decision making in the Delta through a participatory scenario planning process."
+              buttonLabel="What is a just transition?"
+              buttonHref="#foundations"
+            />
+            <PanelSlant color="base.500" attachment="before" tilt="down-right" />
+            <FuturesPanel />
+            <PanelSlant color="base.500" attachment="after" tilt="down-right" />
+            <HomeImagePanel
+              id="stakes-photo"
+              ariaLabel="Participatory scenario planning"
+              image="images/exhibit.jpg"
+              backgroundPosition={{ xs: '62% center', md: 'center 38%', lg: 'center 35%' }}
+              textWidth="60ch"
+              text="By envisioning diverse ways in which climate, governance, and ecosystems might co-evolve, scenario-based planning offers tools to reflect on current actions and goals, and in turn, fosters shared learning and socio-technical innovation."
+              buttonLabel="Participatory Scenario Planning"
+              buttonHref="#stakes"
+            />
+            <PanelSlant color="base.800" attachment="before" tilt="down-right" />
+            <StakesPanel />
+            <PanelSlant color="base.800" attachment="after" tilt="up-right" />
+            <HomeImagePanel
+              id="works-photo"
+              ariaLabel="A delta in transition"
+              image="images/tulare-basin.jpg"
+              textPositionY="50%"
+              backgroundPosition={{ xs: '62% center', md: 'center 42%', lg: 'center bottom 10%' }}
+              text="Salinity management in the Delta during drought has historically been done on an emergency basis. However, with future droughts and sea-level rise more likely, long-range planning that creatively visions new futures for salinity management while holistically considering the tradeoffs associated with those futures is needed."
+              buttonLabel="A Delta in Transition"
+              buttonHref="#works"
+              textWidth="75ch"
+            />
+            <PanelSlant color="base.900" attachment="before" tilt="down-right" />
+            <WorksPanel />
           </Box>
         </Box>
         <Footer />

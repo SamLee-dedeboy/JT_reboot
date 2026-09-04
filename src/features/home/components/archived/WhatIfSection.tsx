@@ -1,8 +1,8 @@
 // Legacy animated "what if" prompt strip that cycles through project questions.
 import { useEffect, useState } from 'react'
 import { Box, Container } from '@mui/material'
-import { WHATIF_QUESTIONS } from '../content/homeContent'
-import { highlightKeywords } from '../../../utils/highlightText'
+import { WHATIF_QUESTIONS } from '../../content/homeContent'
+import { highlightKeywords } from '../../../../utils/highlightText'
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches

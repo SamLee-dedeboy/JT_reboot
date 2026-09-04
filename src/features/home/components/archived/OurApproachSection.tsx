@@ -3,12 +3,12 @@
 import { Link } from 'react-router-dom'
 import { Box, Button } from '@mui/material'
 import type { ReactNode } from 'react'
-import Section from '../../../ui/Section'
-import SectionHead from '../../../ui/SectionHead'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Hl from '../../../ui/Highlight'
-import { assetUrl } from '../../../utils/baseUrl'
-import { APPROACH_QUOTE, APPROACH_MODES } from '../content/homeContent'
+import Section from '../../../../ui/Section'
+import SectionHead from '../../../../ui/SectionHead'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
+import Hl from '../../../../ui/Highlight'
+import { assetUrl } from '../../../../utils/baseUrl'
+import { APPROACH_QUOTE, APPROACH_MODES } from '../../content/homeContent'
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 const blueHighlight = 'rgba(81,162,189,0.38)'

@@ -31,18 +31,20 @@ interface SalinityVector155LayerProps {
   map?: MapboxMap | null
   playing?: boolean
   intervalMs?: number
+  beforeId?: string
 }
 
 const INITIAL_PAIR_INDEX = 0
 const INITIAL_PRELOAD_PAIR = getNextSalinityPair(INITIAL_PAIR_INDEX)
 
-function buildInitialLayer(pair: SalinityVectorPair): LayerProps {
+function buildInitialLayer(pair: SalinityVectorPair, beforeId?: string): LayerProps {
   const isActive = pair.pairIndex === INITIAL_PAIR_INDEX
   const isPreload = pair.pairIndex === INITIAL_PRELOAD_PAIR.pairIndex
   const initialFrame = isActive ? 0 : pair.frameStart
 
   return {
     id: pair.layerId,
+    beforeId,
     type: 'fill',
     source: pair.sourceId,
     'source-layer': SALINITY_VECTOR_155_SOURCE_LAYER,
@@ -115,6 +117,7 @@ export default function SalinityVector155Layer({
   map,
   playing = true,
   intervalMs = 100,
+  beforeId,
 }: SalinityVector155LayerProps) {
   useSalinityVector155Playback(map, playing, intervalMs)
 
@@ -122,7 +125,7 @@ export default function SalinityVector155Layer({
     <>
       {SALINITY_VECTOR_PAIRS.map((pair) => (
         <Source key={pair.sourceId} id={pair.sourceId} type="vector" url={pair.tilesetUrl}>
-          <Layer {...buildInitialLayer(pair)} />
+          <Layer {...buildInitialLayer(pair, beforeId)} />
         </Source>
       ))}
     </>

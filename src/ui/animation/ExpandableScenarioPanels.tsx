@@ -71,7 +71,9 @@ export default function ExpandableScenarioPanels({
       ref={sectionRef}
       sx={{
         position: 'relative',
-        height: collapseOnScroll ? '300dvh' : 'auto',
+        width: '100%',
+        height: collapseOnScroll ? '300dvh' : '100%',
+        flex: '1 1 auto',
         minHeight: collapseOnScroll ? 0 : panelHeight,
         bgcolor: collapseOnScroll ? 'base.800' : 'base.900',
       }}
@@ -247,6 +249,7 @@ export default function ExpandableScenarioPanels({
               margin: 0,
               padding: 0,
               height: '100%',
+              width: '100%',
               display: 'flex',
               flexDirection: collapseOnScroll ? 'row' : { xs: 'column', md: 'row' },
               listStyle: 'none',
@@ -258,11 +261,11 @@ export default function ExpandableScenarioPanels({
                 key={item.title}
                 tabIndex={0}
                 aria-current={isCollapsed && selectedPanel === index ? 'true' : undefined}
-                data-selected={isCollapsed && selectedPanel === index ? 'true' : undefined}
-                onMouseEnter={isCollapsed ? () => setSelectedPanel(index) : undefined}
-                onMouseLeave={isCollapsed ? () => setSelectedPanel(null) : undefined}
-                onFocus={isCollapsed ? () => setSelectedPanel(index) : undefined}
-                onBlur={isCollapsed ? () => setSelectedPanel(null) : undefined}
+                data-selected={selectedPanel === index ? 'true' : undefined}
+                onMouseEnter={() => setSelectedPanel(index)}
+                onMouseLeave={() => setSelectedPanel(null)}
+                onFocus={() => setSelectedPanel(index)}
+                onBlur={() => setSelectedPanel(null)}
                 sx={{
                   position: 'relative',
                   flex: { xs: '1 1 15rem', md: '1 1 0' },
@@ -271,13 +274,12 @@ export default function ExpandableScenarioPanels({
                   minHeight: collapseOnScroll ? 0 : { xs: '15rem', md: 'calc(100svh - 76px)' },
                   isolation: 'isolate',
                   overflow: 'hidden',
-                  borderRight: { xs: 0, md: 1 },
-                  borderBottom: { xs: 1, md: 0 },
                   borderColor: 'translucent.primaryGreen',
                   transition: 'flex 520ms cubic-bezier(0.22, 1, 0.36, 1), filter 240ms ease',
                   outline: 'none',
+                  cursor: 'pointer',
                   ...(!isCollapsed && {
-                    '&:hover, &:focus-within, &:focus-visible': {
+                    '&[data-selected="true"]': {
                       flex: { xs: '1.6 1 18rem', md: '2.45 1 0' },
                       '& .expandable-panel-image': {
                         transform: 'scale(1.05)',
@@ -468,10 +470,8 @@ export default function ExpandableScenarioPanels({
                           color: 'base.100',
                           maxHeight: { xs: 'none', md: '7.6rem' },
                           overflow: 'hidden',
-                          opacity: collapseOnScroll ? 1 : { xs: 1, md: 0 },
-                          transform: collapseOnScroll
-                            ? 'translateY(0)'
-                            : { xs: 'translateY(0)', md: 'translateY(10px)' },
+                          opacity: 1,
+                          transform: 'translateY(0)',
                           transition: 'opacity 220ms ease, transform 220ms ease',
                           alignSelf: 'start',
                           justifySelf: 'start',
@@ -493,10 +493,8 @@ export default function ExpandableScenarioPanels({
                           color: 'common.white',
                           borderColor: 'primary.main',
                           bgcolor: 'transparent',
-                          opacity: collapseOnScroll ? 1 : { xs: 1, md: 0 },
-                          transform: collapseOnScroll
-                            ? 'translateY(0)'
-                            : { xs: 'translateY(0)', md: 'translateY(10px)' },
+                          opacity: 1,
+                          transform: 'translateY(0)',
                           transition:
                             'opacity 220ms ease, transform 220ms ease, border-color 180ms ease, background-color 180ms ease',
                           '&:hover': {

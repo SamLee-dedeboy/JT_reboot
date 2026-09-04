@@ -1,7 +1,7 @@
 import WaterDropIcon from '@mui/icons-material/WaterDrop'
 import { Stack, Typography } from '@mui/material'
-import ExpandableScenarioPanels from '../../ui/animation/ExpandableScenarioPanels'
-import { assetUrl } from '../../utils/baseUrl'
+import ExpandableScenarioPanels from '../../../ui/animation/ExpandableScenarioPanels'
+import { assetUrl } from '../../../utils/baseUrl'
 
 const outflowVariations = [
   {

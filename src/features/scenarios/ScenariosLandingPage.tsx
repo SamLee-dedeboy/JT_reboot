@@ -2,92 +2,271 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import BoltIcon from '@mui/icons-material/Bolt'
 import ExploreIcon from '@mui/icons-material/Explore'
 import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/material'
+import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import ExpandableScenarioPanels from '../../ui/animation/ExpandableScenarioPanels'
-import ScrollReveal from '../../ui/animation/ScrollReveal'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
+import NavRail from '../../ui/NavRail'
+import ExpandableScenarioPanels from '../../ui/animation/ExpandableScenarioPanels'
+import ScrollReveal from '../../ui/animation/ScrollReveal'
 import { assetUrl } from '../../utils/baseUrl'
 import OutflowVariationGrid from './OutflowVariationGrid'
-import ScenarioRidgelinePlot from './ScenarioRidgelinePlot'
-import ScenarioRankingOverview from './ScenarioRankingOverview'
 
-const adaptationScenarios = [
+const stickyPanels = [
   {
-    title: 'Business as Usual',
+    id: 'outflow-variations',
+    railLabel: 'Current Operations',
+    eyebrow: 'Start Here',
+    title: 'Understand Current Operations',
+    body: 'This section helps you understand the current operations and key parameters that shape how we model the Delta.',
+    bgcolor: 'base.700',
     image: '/images/scenarios/business-as-usual.jpg',
-    description:
-      'Current operations continue forward. Use this path to compare how familiar choices shape future Delta tradeoffs.',
-    slug: 'business-as-usual',
   },
   {
+    id: 'tiered-outflows',
+    railLabel: 'Tiered Outflows',
+    eyebrow: 'Tiered Outflows',
+    title: 'Explore Outflow Variations',
+    body: 'Explore water outflow variations and how they compare against current operations by increasing or reducing the amount of water flowing through the Delta.',
+    bgcolor: 'base.500',
+  },
+  {
+    id: 'adaptations',
+    railLabel: 'Adaptation Scenarios',
+    eyebrow: 'Possible Water Futures',
+    title: 'Explore Adaptation Scenarios',
+    body: 'Explore five potential adaptation pathways and how they might shape communities, ecosystems, and water systems across the Delta.',
+    bgcolor: 'base.800',
+  },
+] as const
+
+const adaptationScenarioItems = [
+  {
     title: 'Eco Machine',
-    image: '/images/scenarios/eco-machine-2.JPG',
-    description:
-      'A nature-based future that works with wetlands, habitat, and water flows. It asks what restoration can do as infrastructure.',
-    slug: 'eco-machine',
+    image: assetUrl('/images/scenarios/eco-machine-2.JPG'),
+    eyebrow: '01',
+    body: 'A nature-based future that works with wetlands, habitat, and water flows. It asks what restoration can do as infrastructure.',
+    href: '/scenarios/eco-machine',
   },
   {
     title: 'New Green Watershed',
-    image: '/images/scenarios/new-green-watershed.jpg',
-    description:
-      'A watershed-scale path focused on upstream change and green infrastructure. It connects Delta outcomes to broader land and water choices.',
-    slug: 'new-green-watershed',
-  },
-  {
-    title: 'Bolster and Fortify',
-    image: '/images/scenarios/bolster-fortify-2.JPG',
-    description:
-      'A protection-focused path built around stronger edges and defenses. It asks what is secured, and what pressures remain.',
-    slug: 'bolster-and-fortify',
+    image: assetUrl('/images/scenarios/new-green-watershed.jpg'),
+    eyebrow: '02',
+    body: 'A watershed-scale path focused on upstream change and green infrastructure. It connects Delta outcomes to broader land and water choices.',
+    href: '/scenarios/new-green-watershed',
   },
   {
     title: 'Calling on Reserves',
-    image: '/images/scenarios/calling-on-reserves.jpg',
-    description:
-      'A future that leans on stored capacity and emergency reserves. It explores how backup systems affect risk, reliability, and equity.',
-    slug: 'calling-on-reserves',
+    image: assetUrl('/images/scenarios/calling-on-reserves.jpg'),
+    eyebrow: '03',
+    body: 'A future that leans on stored capacity and emergency reserves. It explores how backup systems affect risk, reliability, and equity.',
+    href: '/scenarios/calling-on-reserves',
+  },
+  {
+    title: 'Bolster and Fortify',
+    image: assetUrl('/images/scenarios/bolster-fortify-2.JPG'),
+    eyebrow: '04',
+    body: 'A protection-focused path built around stronger edges and defenses. It asks what is secured, and what pressures remain.',
+    href: '/scenarios/bolster-and-fortify',
   },
   {
     title: 'A Tunnel',
-    image: '/images/scenarios/a-tunnel.jpg',
-    description:
-      'A conveyance-centered future for moving water differently. It helps compare system-wide effects across communities and ecosystems.',
-    slug: 'a-tunnel',
+    image: assetUrl('/images/scenarios/a-tunnel.jpg'),
+    eyebrow: '05',
+    body: 'A conveyance-centered future for moving water differently. It helps compare system-wide effects across communities and ecosystems.',
+    href: '/scenarios/a-tunnel',
   },
 ]
 
-const expandableScenarioItems = adaptationScenarios.map((scenario, index) => ({
-  title: scenario.title,
-  image: assetUrl(scenario.image),
-  eyebrow: `0${index + 1}`,
-  body: scenario.description,
-  href: `/scenarios/${scenario.slug}`,
+const scenarioSectionLinks = stickyPanels.map((panel) => ({
+  label: panel.title,
+  href: `#${panel.id}`,
 }))
 
-const sectionLabelSx = {
-  color: 'primary.main',
-  '& .MuiSvgIcon-root': {
-    fontSize: 'inherit',
-    verticalAlign: 'middle',
-    mr: 1,
-  },
-} as const
+const STICKY_PANEL_SCROLL_DVH = 150
+const scenarioRailItems = [
+  ...stickyPanels.map((panel) => ({ id: panel.id, label: panel.railLabel })),
+  { id: 'whats-next', label: "What's Next?" },
+]
 
-const glassPanelSx = {
-  border: '2px solid',
-  borderColor: 'translucent.primaryGreen',
-  bgcolor: 'surface',
-  boxShadow: 'none',
-  backdropFilter: 'blur(14px)',
-} as const
+function StickyScenarioPanels() {
+  const theme = useTheme()
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const [activePanel, setActivePanel] = useState(0)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+  const firstOpacity = useTransform(scrollYProgress, [0, 0.28, 0.38], [1, 1, 0])
+  const secondOpacity = useTransform(scrollYProgress, [0.28, 0.38, 0.62, 0.72], [0, 1, 1, 0])
+  const thirdOpacity = useTransform(scrollYProgress, [0.62, 0.72, 1], [0, 1, 1])
+  const opacities = [firstOpacity, secondOpacity, thirdOpacity]
 
-const scenarioSectionLinks = [
-  { label: 'Examine Probable Outflow Variations', href: '#outflow-variations' },
-  { label: 'Examine Possible adaptation scenarios', href: '#adaptations', primary: true },
-  { label: 'Compare adaptation scenarios', href: '#scenario-comparison' },
-  { label: 'View Scenario Rankings', href: '#ranking-overview' },
-] as const
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+    const nextPanel = progress < 0.34 ? 0 : progress < 0.67 ? 1 : 2
+    setActivePanel((currentPanel) => (currentPanel === nextPanel ? currentPanel : nextPanel))
+  })
+
+  return (
+    <Box
+      ref={sectionRef}
+      sx={{
+        position: 'relative',
+        height: `${100 + stickyPanels.length * STICKY_PANEL_SCROLL_DVH}dvh`,
+      }}
+    >
+      {stickyPanels.map((panel, index) => (
+        <Box
+          key={panel.id}
+          id={panel.id}
+          sx={{
+            position: 'absolute',
+            top: `${index * STICKY_PANEL_SCROLL_DVH}dvh`,
+            width: 1,
+            height: `${STICKY_PANEL_SCROLL_DVH}dvh`,
+            pointerEvents: 'none',
+            scrollMarginTop: '76px',
+          }}
+        />
+      ))}
+
+      <Box
+        sx={{
+          position: 'sticky',
+          top: { xs: 72, md: 76 },
+          height: { xs: 'calc(100dvh - 72px)', md: 'calc(100dvh - 76px)' },
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '20dvw 80dvw', lg: '15dvw 85dvw' },
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          component="nav"
+          aria-label="Scenario landing sections"
+          sx={{
+            display: { xs: 'none', lg: 'flex' },
+            position: 'relative',
+            zIndex: 2,
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            bgcolor: 'base.900',
+            borderRight: '2px solid',
+            borderColor: 'primary.main',
+          }}
+        >
+          <NavRail
+            items={scenarioRailItems}
+            ariaLabel="Scenario landing sections"
+            variant="home"
+            sx={{
+              position: 'static',
+              top: 'auto',
+              display: 'flex',
+              width: '100%',
+              alignSelf: 'center',
+              px: theme.jtSpacing.component.md,
+            }}
+          />
+        </Box>
+
+        <Box sx={{ position: 'relative', minWidth: 0, bgcolor: 'base.800' }}>
+          {stickyPanels.map((panel, index) => (
+            <Box
+              key={panel.id}
+              component={motion.article}
+              style={{ opacity: opacities[index] }}
+              aria-hidden={activePanel !== index}
+              inert={activePanel !== index}
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                zIndex: activePanel === index ? 1 : 0,
+                pointerEvents: activePanel === index ? 'auto' : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                bgcolor: panel.bgcolor,
+                backgroundImage:
+                  'image' in panel
+                    ? `linear-gradient(90deg, ${theme.palette.translucent.blackShadow}, transparent 72%), url(${assetUrl(panel.image)})`
+                    : undefined,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center 70%',
+                px:
+                  index === 1 || index === 2
+                    ? 0
+                    : { xs: theme.jtSpacing.page.x.xs, md: theme.jtSpacing.section.lg },
+              }}
+            >
+              {index === 1 ? (
+                <OutflowVariationGrid
+                  variationKeys={['fresher', 'saltier']}
+                  eyebrow={panel.eyebrow}
+                  title={panel.title}
+                  description={panel.body}
+                />
+              ) : index === 2 ? (
+                <ExpandableScenarioPanels
+                  items={adaptationScenarioItems}
+                  actionLabel="Explore"
+                  header={
+                    <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 760 } }}>
+                      <Typography component="p" variant="eyebrow" sx={{ color: 'primary.main' }}>
+                        <ExploreIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle', mr: 1 }} />
+                        {panel.eyebrow}
+                      </Typography>
+                      <Typography variant="h2" component="h2">
+                        {panel.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'common.white', maxWidth: '58ch' }}>
+                        {panel.body}
+                      </Typography>
+                    </Stack>
+                  }
+                />
+              ) : (
+                <Stack spacing={theme.jtSpacing.component.md} sx={{ maxWidth: '52ch' }}>
+                  <Typography variant="eyebrow" component="p" sx={{ color: 'primary.main' }}>
+                    {index === 0 && (
+                      <BoltIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle', mr: 1 }} />
+                    )}
+                    {panel.eyebrow}
+                  </Typography>
+                  <Typography variant="h2" component="h2">
+                    {panel.title}
+                  </Typography>
+                  <Typography variant="body1">{panel.body}</Typography>
+                  {index === 0 && (
+                    <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
+                      <Button
+                        component={Link}
+                        to="/scenarios/key-parameters"
+                        variant="contained"
+                        color="primary"
+                        sx={{ color: 'common.black' }}
+                      >
+                        Understand Key Parameters
+                      </Button>
+                      <Button
+                        component={Link}
+                        to="/scenarios/background-context"
+                        variant="outlined"
+                        sx={{ color: 'common.white', borderColor: 'common.white' }}
+                      >
+                        Understand Salinity Basics
+                      </Button>
+                    </Stack>
+                  )}
+                </Stack>
+              )}
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    </Box>
+  )
+}
 
 export default function ScenariosLandingPage() {
   const theme = useTheme()
@@ -100,7 +279,7 @@ export default function ScenariosLandingPage() {
           component="header"
           sx={{
             position: 'relative',
-            minHeight: { xs: 'calc(100vh - 72px)', md: 'calc(100vh - 76px)' },
+            height: { xs: 'calc(100dvh - 72px)', md: 'calc(100dvh - 76px)' },
             display: 'flex',
             alignItems: 'center',
             isolation: 'isolate',
@@ -111,29 +290,18 @@ export default function ScenariosLandingPage() {
               backgroundImage: `linear-gradient(90deg, rgba(16,22,24,0.94) 0%, rgba(16,22,24,0.78) 44%, rgba(16,22,24,0.32) 100%), url(${assetUrl('/images/scenarios/cover.jpg')})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              zIndex: -2,
-            },
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              inset: 'auto 0 0',
-              height: '34%',
-              background: 'linear-gradient(180deg, rgba(20,29,31,0), #141d1f 88%)',
               zIndex: -1,
             },
           }}
         >
-          <Container
-            maxWidth="lg"
-            sx={{ py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.xl } }}
-          >
+          <Container maxWidth="lg">
             <ScrollReveal>
               <Stack
                 spacing={theme.jtSpacing.gap.lg}
                 sx={{ maxWidth: theme.jtSpacing.paragraphMaxWidth.default }}
               >
-                <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
-                  <ExploreIcon />
+                <Typography component="p" variant="eyebrow" sx={{ color: 'primary.main' }}>
+                  <ExploreIcon sx={{ fontSize: 'inherit', verticalAlign: 'middle', mr: 1 }} />
                   Scenario Explorer
                 </Typography>
                 <Typography variant="h1" component="h1" sx={{ maxWidth: '15ch' }}>
@@ -144,241 +312,70 @@ export default function ScenariosLandingPage() {
                   pathways to compare what different Delta futures ask of communities, ecosystems,
                   and water systems.
                 </Typography>
-                <Box
-                  component="nav"
-                  aria-label="Explore sections on this page"
-                  sx={{ pt: theme.jtSpacing.component.xs }}
+                <Stack
+                  direction="row"
+                  useFlexGap
+                  spacing={theme.jtSpacing.gap.sm}
+                  sx={{ flexWrap: 'wrap' }}
                 >
-                  <Stack
-                    direction="row"
-                    useFlexGap
-                    spacing={theme.jtSpacing.gap.sm}
-                    sx={{ flexWrap: 'wrap' }}
-                  >
-                    {scenarioSectionLinks.map((link) => (
-                      <Button
-                        key={link.href}
-                        variant={'primary' in link && link.primary ? 'contained' : 'outlined'}
-                        color="primary"
-                        component="a"
-                        href={link.href}
-                        endIcon={
-                          'primary' in link && link.primary ? <ArrowForwardIcon /> : undefined
-                        }
-                        sx={
-                          'primary' in link && link.primary
-                            ? undefined
-                            : { color: 'common.white', borderColor: 'base.300' }
-                        }
-                      >
-                        {link.label}
-                      </Button>
-                    ))}
-                  </Stack>
-                </Box>
+                  {scenarioSectionLinks.map((link, index) => (
+                    <Button
+                      key={link.href}
+                      variant={index === 2 ? 'contained' : 'outlined'}
+                      color="primary"
+                      component="a"
+                      href={link.href}
+                      endIcon={index === 2 ? <ArrowForwardIcon /> : undefined}
+                      sx={
+                        index === 2 ? undefined : { color: 'common.white', borderColor: 'base.300' }
+                      }
+                    >
+                      {link.label}
+                    </Button>
+                  ))}
+                </Stack>
               </Stack>
             </ScrollReveal>
           </Container>
         </Box>
 
+        <StickyScenarioPanels />
+
         <Box
           component="section"
-          id="shared-context"
+          id="whats-next"
           sx={{
-            bgcolor: 'base.700',
-            py: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
-          }}
-        >
-          <Container maxWidth="lg">
-            <Box
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: '0.95fr 1.05fr' },
-                gap: { xs: theme.jtSpacing.gap.xl, md: theme.jtSpacing.section.md },
-                alignItems: 'center',
-              }}
-            >
-              <ScrollReveal>
-                <Stack spacing={theme.jtSpacing.component.md}>
-                  <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
-                    <BoltIcon />
-                    Start Here
-                  </Typography>
-                  <Typography variant="h2">Starting point</Typography>
-                  <Typography variant="body1" sx={{ color: 'base.100' }}>
-                    This section helps you understand the key factors shaping how we model the
-                    Delta, as well as the essentials you need to know about the Delta.
-                  </Typography>
-                  <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                    <Button
-                      component={Link}
-                      to="/scenarios/key-parameters"
-                      variant="contained"
-                      color="secondary"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{ alignSelf: { xs: 'stretch', sm: 'flex-start' }, color: 'base.900' }}
-                    >
-                      View Key Parameters
-                    </Button>
-                    <Button
-                      component={Link}
-                      to="/scenarios/background-context"
-                      variant="outlined"
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{ color: 'common.white', borderColor: 'base.300' }}
-                    >
-                      Read Delta Essentials
-                    </Button>
-                  </Stack>
-                </Stack>
-              </ScrollReveal>
-              <ScrollReveal delay={0.1}>
-                <Box
-                  sx={{
-                    ...glassPanelSx,
-                    position: 'relative',
-                    minHeight: { xs: 360, md: 440 },
-                    borderRadius: 2,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <Box
-                    component="img"
-                    src={assetUrl('/images/scenarios/business-as-usual.jpg')}
-                    alt=""
-                    sx={{
-                      width: '100%',
-                      height: '100%',
-                      minHeight: 'inherit',
-                      objectFit: 'cover',
-                      opacity: 0.72,
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      inset: 0,
-                      background:
-                        'linear-gradient(180deg, rgba(16,22,24,0.08), rgba(16,22,24,0.9))',
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      left: {
-                        xs: theme.spacing(theme.jtSpacing.component.md),
-                        md: theme.spacing(theme.jtSpacing.gap.lg),
-                      },
-                      right: {
-                        xs: theme.spacing(theme.jtSpacing.component.md),
-                        md: theme.spacing(theme.jtSpacing.gap.lg),
-                      },
-                      bottom: {
-                        xs: theme.spacing(theme.jtSpacing.component.md),
-                        md: theme.spacing(theme.jtSpacing.gap.lg),
-                      },
-                    }}
-                  >
-                    <Typography
-                      component="span"
-                      variant="eyebrow"
-                      sx={{
-                        display: 'inline-flex',
-                        mb: theme.jtSpacing.gap.sm,
-                        px: theme.jtSpacing.component.xs,
-                        py: theme.jtSpacing.component.xs,
-                        border: 1,
-                        borderColor: 'primary.main',
-                        bgcolor: 'translucent.primaryGreen',
-                      }}
-                    >
-                      Current Operations
-                    </Typography>
-                    <Typography variant="h3" component="p" sx={{ maxWidth: 460 }}>
-                      One starting point, many comparisons
-                    </Typography>
-                  </Box>
-                </Box>
-              </ScrollReveal>
-            </Box>
-          </Container>
-        </Box>
-
-        <Box
-          component="section"
-          id="outflow-variations"
-          aria-labelledby="outflow-panels-title"
-          sx={{ scrollMarginTop: { xs: '72px', md: '76px' } }}
-        >
-          <OutflowVariationGrid />
-        </Box>
-
-        <Box
-          component="section"
-          id="adaptations"
-          aria-labelledby="scenario-panels-title"
-          sx={{ scrollMarginTop: { xs: '72px', md: '76px' } }}
-        >
-          <ExpandableScenarioPanels
-            items={expandableScenarioItems}
-            collapseOnScroll
-            comparisonContent={(selectedPanel, onSelectPanel, active, seaLevelRise) => (
-              <ScenarioRidgelinePlot
-                selectedIndex={selectedPanel}
-                onSelect={onSelectPanel}
-                active={active}
-                seaLevelRise={seaLevelRise}
-              />
-            )}
-            header={
-              <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 760 } }}>
-                <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
-                  <ExploreIcon />
-                  Adaptation Scenarios
-                </Typography>
-                <Typography id="scenario-panels-title" variant="h2" component="h2">
-                  Possible water futures
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'base.100', maxWidth: '58ch' }}>
-                  Explore six adaptation scenarios and compare how different pathways could shape
-                  communities, ecosystems, and water systems across the Delta.
-                </Typography>
-              </Stack>
-            }
-          />
-        </Box>
-
-        <Box
-          component="section"
-          id="ranking-overview"
-          aria-labelledby="ranking-overview-title"
-          sx={{
-            bgcolor: 'base.700',
-            py: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
+            minHeight: '70dvh',
+            display: 'flex',
+            alignItems: 'center',
+            bgcolor: 'base.900',
+            py: theme.jtSpacing.section.lg,
             scrollMarginTop: { xs: '72px', md: '76px' },
           }}
         >
           <Container maxWidth="lg">
-            <ScrollReveal>
-              <Stack spacing={theme.jtSpacing.gap.xl}>
-                <Stack spacing={theme.jtSpacing.component.sm} sx={{ maxWidth: '66ch' }}>
-                  <Typography component="p" variant="eyebrow" sx={sectionLabelSx}>
-                    <ExploreIcon />
-                    Ranking Overview
-                  </Typography>
-                  <Typography id="ranking-overview-title" variant="h2">
-                    Compare priorities across adaptation scenarios
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: 'base.100' }}>
-                    This matrix will summarize how each adaptation scenario performs across shared
-                    water, ecosystem, equity, and implementation criteria. Rankings will be added
-                    after the evaluation framework and results are finalized.
-                  </Typography>
-                </Stack>
-
-                <ScenarioRankingOverview scenarios={adaptationScenarios} />
+            <Stack spacing={theme.jtSpacing.gap.lg} sx={{ maxWidth: '70ch' }}>
+              <Stack spacing={theme.jtSpacing.component.sm}>
+                <Typography variant="eyebrow" component="p" sx={{ color: 'primary.main' }}>
+                  What's Next?
+                </Typography>
+                <Typography variant="h2" component="h2">
+                  Dive deeper into the scenarios
+                </Typography>
+                <Typography variant="body1" sx={{ color: 'base.100' }}>
+                  Understand how each future is modeled and evaluated, then compare its benefits,
+                  impacts, and performance side by side.
+                </Typography>
               </Stack>
-            </ScrollReveal>
+              <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
+                <Button component={Link} to="/scenarios/key-parameters" variant="contained">
+                  Modeling &amp; Evaluation
+                </Button>
+                <Button component={Link} to="/pages/scenario-explorer" variant="outlined">
+                  Comparison
+                </Button>
+              </Stack>
+            </Stack>
           </Container>
         </Box>
       </Box>

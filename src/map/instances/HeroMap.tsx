@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { useMediaQuery, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
@@ -7,6 +7,7 @@ import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoub
 import { HERO } from '../../features/home/content/homeContent'
 import BaseMap from '../BaseMap'
 import MapLayerOrchestrator from '../MapLayerOrchestrator'
+import SalinityVector155Layer from '../layers/SalinityVector155Layer'
 import { HERO_MAP_STYLE, SUISUN_BAY_CENTER } from '../mapCameraView'
 
 const mapContainerStyle = {
@@ -14,12 +15,6 @@ const mapContainerStyle = {
   inset: 0,
   pointerEvents: 'none',
 } as const
-const salinityLayerIds = [
-  'salinity-mockup-june-3kgk8e',
-  'salinity-mockup-september-dh1h3e',
-  'salinity-mockup-october-v2-zi-vxywcj',
-  'salinity-mockup-april-0pn2k2',
-]
 
 function getHeroBreakpoint(isXlUp: boolean, isLgUp: boolean, isMdUp: boolean, isSmUp: boolean) {
   if (isXlUp) return 'xl'
@@ -37,12 +32,6 @@ const heroZoomByBreakpoint = {
   xl: 10.25,
 } as const
 
-const salinityLayerCycle = {
-  layerIds: salinityLayerIds,
-  crossfadeMs: 1400,
-  cycleMs: 2800,
-}
-
 export default function HeroMap() {
   const theme = useTheme()
   const isSmUp = useMediaQuery(theme.breakpoints.up('sm'))
@@ -50,17 +39,18 @@ export default function HeroMap() {
   const isLgUp = useMediaQuery(theme.breakpoints.up('lg'))
   const isXlUp = useMediaQuery(theme.breakpoints.up('xl'))
   const [mapObj, setMapObj] = useState<MapboxMap | null>(null)
-  const mapRef = useRef<MapboxMap | null>(null)
+  const [firstLabelLayerId, setFirstLabelLayerId] = useState<string>()
   const heroBreakpoint = getHeroBreakpoint(isXlUp, isLgUp, isMdUp, isSmUp)
   const [heroInitialViewState] = useState(() => ({
     ...SUISUN_BAY_CENTER,
     zoom: heroZoomByBreakpoint[heroBreakpoint],
   }))
+  const [heroLedeLocation, heroLedeConditions] = HERO.lede.split(' amid ')
 
   const handleMapAvailable = useCallback((map: MapboxMap) => {
-    if (mapRef.current === map) return
-    mapRef.current = map
     setMapObj(map)
+    const labelLayerId = map.getStyle().layers?.find((layer) => layer.type === 'symbol')?.id
+    setFirstLabelLayerId((current) => (current === labelLayerId ? current : labelLayerId))
   }, [])
 
   return (
@@ -86,62 +76,11 @@ export default function HeroMap() {
           onMapReady={handleMapAvailable}
           onMapStyleData={handleMapAvailable}
         >
-          <MapLayerOrchestrator
-            map={mapObj}
-            layerCycle={salinityLayerCycle}
-            showDeltaStations={false}
-          />
+          <MapLayerOrchestrator map={mapObj} showDeltaStations={false}>
+            <SalinityVector155Layer map={mapObj} intervalMs={100} beforeId={firstLabelLayerId} />
+          </MapLayerOrchestrator>
         </BaseMap>
       </Box>
-
-      <Box
-        sx={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 21,
-          pointerEvents: 'none',
-          background: {
-            xs: 'linear-gradient(180deg, rgba(16,22,24,0.04) 0%, rgba(16,22,24,0.18) 36%, rgba(37,52,57,0.84) 100%)',
-            md: 'radial-gradient(ellipse at 22% 76%, rgba(37,52,57,0.88) 0%, rgba(37,52,57,0.64) 12%, rgba(37,52,57,0.18) 33%, rgba(37,52,57,0) 58%)',
-          },
-        }}
-      />
-
-      <motion.div
-        aria-hidden="true"
-        initial={{ opacity: 0, y: 0 }}
-        animate={{ opacity: 1, y: [0, 10, 0] }}
-        transition={{
-          opacity: { duration: 0.8, ease: 'easeOut' },
-          y: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' },
-        }}
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: theme.spacing(theme.jtSpacing.section.sm),
-          display: 'flex',
-          justifyContent: 'center',
-          zIndex: 23,
-          pointerEvents: 'none',
-        }}
-      >
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: theme.jtSpacing.component.xs,
-            color: 'common.white',
-            textShadow: `0 1px 8px ${theme.palette.translucent.textShadow}`,
-          }}
-        >
-          <KeyboardDoubleArrowDownRoundedIcon sx={{ typography: 'h3' }} />
-          <Typography variant="button" component="span">
-            Scroll
-          </Typography>
-        </Box>
-      </motion.div>
 
       <Box
         sx={{
@@ -149,25 +88,19 @@ export default function HeroMap() {
           left: 'var(--home-rail-inset)',
           right: { xs: theme.spacing(3), md: 'auto' },
           top: 'auto',
-          bottom: 0,
-          minHeight: { xs: '58%', sm: '49%', md: '43%' },
+          bottom: theme.spacing(12),
+          minHeight: 'max-content',
           zIndex: 24,
           pointerEvents: 'auto',
           color: 'common.white',
-          width: {
-            xs: 'auto',
-            md: 'calc(100vw - 8rem)',
-            lg: 'min(calc(100vw - 12rem), 76rem)',
-          },
+          width: 'max-content',
           pl: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.component.lg },
-          borderLeft: '2px solid',
-          borderColor: 'common.white',
           boxSizing: 'border-box',
         }}
       >
         <Box
           sx={{
-            maxWidth: { xs: '30rem', sm: '100%', md: '100%', lg: '76rem' },
+            maxWidth: '76ch',
             mx: { xs: 'auto', sm: 0 },
             paddingTop: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
           }}
@@ -192,16 +125,54 @@ export default function HeroMap() {
             sx={{
               mt: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
               mb: 0,
-              maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
+              maxWidth: { xs: theme.jtSpacing.paragraphMaxWidth.default, md: 'none' },
               textShadow: `0 1px 12px ${theme.palette.translucent.textShadow}`,
               hyphens: 'none',
               overflowWrap: 'normal',
               wordBreak: 'normal',
-              textWrap: 'balance',
             }}
           >
-            {HERO.lede}
+            <Box component="span" sx={{ display: 'block', whiteSpace: { md: 'nowrap' } }}>
+              {heroLedeLocation}
+            </Box>
+            <Box component="span" sx={{ display: 'block' }}>
+              amid {heroLedeConditions}
+            </Box>
           </Typography>
+          <motion.div
+            aria-hidden="true"
+            initial={{ opacity: 0, y: 0 }}
+            animate={{ opacity: 1, y: [0, 10, 0] }}
+            transition={{
+              opacity: { duration: 0.8, ease: 'easeOut' },
+              y: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' },
+            }}
+            style={{
+              width: '100%',
+              margin: '0 auto',
+              paddingTop: theme.spacing(theme.jtSpacing.component.lg),
+              display: isMdUp ? 'flex' : 'none',
+              justifyContent: 'center',
+              transform: `translateX(-${theme.spacing(theme.jtSpacing.section.md)})`,
+              pointerEvents: 'none',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: theme.jtSpacing.component.xs,
+                color: 'common.white',
+                textShadow: `0 1px 8px ${theme.palette.translucent.textShadow}`,
+              }}
+            >
+              <KeyboardDoubleArrowDownRoundedIcon sx={{ typography: 'h3' }} />
+              <Typography variant="button" component="span">
+                Scroll
+              </Typography>
+            </Box>
+          </motion.div>
         </Box>
       </Box>
     </Box>

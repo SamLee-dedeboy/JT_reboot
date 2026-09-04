@@ -7,7 +7,7 @@ export interface MapViewState {
 }
 
 export const DELTA_MAP_STYLE = 'mapbox://styles/justtransition/cmo0kote1006j01st023g37ga'
-export const HERO_MAP_STYLE = 'mapbox://styles/justtransition/cmqa9drzx000p01rh2s259fpn'
+export const HERO_MAP_STYLE = 'mapbox://styles/justtransition/cmtncuva000dx01sl6l106n20'
 
 export const DELTA_INITIAL_VIEW_STATE: MapViewState = {
   longitude: -121.95,

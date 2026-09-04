@@ -2,12 +2,12 @@
 // management stakes as interactive cards.
 import { useState } from 'react'
 import { Box, Typography } from '@mui/material'
-import Section from '../../../ui/Section'
-import SectionHead from '../../../ui/SectionHead'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Icon from '../../../ui/Icon'
-import { emphasize, splitLead } from '../../../utils/highlightText'
-import { STAKE, DROUGHT, type StakeBlock } from '../content/homeContent'
+import Section from '../../../../ui/Section'
+import SectionHead from '../../../../ui/SectionHead'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
+import Icon from '../../../../ui/Icon'
+import { emphasize, splitLead } from '../../../../utils/highlightText'
+import { STAKE, DROUGHT, type StakeBlock } from '../../content/homeContent'
 
 function ExpandableProse({ block }: { block: StakeBlock }) {
   const [open, setOpen] = useState(false)

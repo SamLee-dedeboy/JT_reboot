@@ -1,13 +1,13 @@
 // Landing-page foundations section that introduces the research premise and
 // supporting context cards.
 import { Box } from '@mui/material'
-import Section from '../../../ui/Section'
-import SectionHead from '../../../ui/SectionHead'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Icon from '../../../ui/Icon'
-import SimpleCard from '../../../ui/cards/SimpleCard'
-import { FOUNDATIONS } from '../content/homeContent'
-import { splitLead } from '../../../utils/highlightText'
+import Section from '../../../../ui/Section'
+import SectionHead from '../../../../ui/SectionHead'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
+import Icon from '../../../../ui/Icon'
+import SimpleCard from '../../../../ui/cards/SimpleCard'
+import { FOUNDATIONS } from '../../content/homeContent'
+import { splitLead } from '../../../../utils/highlightText'
 
 export default function Foundations() {
   return (

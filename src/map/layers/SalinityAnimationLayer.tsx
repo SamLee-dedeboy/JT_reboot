@@ -22,9 +22,14 @@ interface SalinityAnimationLayerProps {
   opacity?: number
 }
 
+// Sequential (continuous) scale: smoothly interpolates between the same
+// anchor colors instead of the categorical 'step' classification, so PSU
+// value differences within a class are still visible as color differences.
 const salinityColorExpression: ExpressionSpecification = [
-  'step',
+  'interpolate',
+  ['linear'],
   ['raster-value'],
+  0,
   mapTheme.salinityAnimation.fresh,
   0.5,
   mapTheme.salinityAnimation.oligohalineLow,

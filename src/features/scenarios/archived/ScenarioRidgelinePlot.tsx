@@ -4,8 +4,8 @@ import { Box, Button, CircularProgress, Stack, Typography, useTheme } from '@mui
 import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { ScenarioDataset } from '../scenario-explorer/types'
-import { assetUrl } from '../../utils/baseUrl'
+import type { ScenarioDataset } from '../../scenario-explorer/types'
+import { assetUrl } from '../../../utils/baseUrl'
 
 interface ScenarioRidgelinePlotProps {
   selectedIndex: number | null

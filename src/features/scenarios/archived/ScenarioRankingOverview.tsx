@@ -2,7 +2,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import { Box, IconButton, Stack, Typography, useTheme } from '@mui/material'
 import { useState } from 'react'
-import { assetUrl } from '../../utils/baseUrl'
+import { assetUrl } from '../../../utils/baseUrl'
 
 interface RankingScenario {
   title: string

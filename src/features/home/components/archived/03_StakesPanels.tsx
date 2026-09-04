@@ -1,19 +1,50 @@
 import { useState } from 'react'
 import { Box, Button, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
-import { assetUrl } from '../../../utils/baseUrl'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Icon from '../../../ui/Icon'
-import { emphasize, splitLeadSentences } from '../../../utils/highlightText'
-import { STAKE, DROUGHT, type StakeBlock } from '../content/homeContent'
+import { assetUrl } from '../../../../utils/baseUrl'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
+import { emphasize } from '../../../../utils/highlightText'
 
-const stakeBlocks = [STAKE, DROUGHT]
+const stakeSections = [
+  {
+    title: 'The Bay-Delta Region',
+    emphasize:
+      "responses to climate management in the Delta have often been short-term 'bandaid' solutions with significant and possibly inequitable tradeoffs",
+    introduction: [
+      'The Bay-Delta region holds immense economic, ecological, and cultural significance, yet research and long-term planning have historically lagged behind its challenges.',
+      'Fragmented governance and competing demands have often resulted in short-term responses with significant and potentially inequitable tradeoffs.',
+    ],
+    details: [
+      'Estuary-scale approaches for envisioning alternative futures and evaluating tradeoffs through inclusive public engagement have seen limited progress.',
+      "The region's complex relationship between science and governance has often been fraught with conflict because many groups depend on the same natural resources in different ways.",
+      "As a consequence, responses to climate management in the Delta have often been short-term 'bandaid' solutions with significant and possibly inequitable tradeoffs, leaving long-term solutions unclear.",
+    ],
+  },
+  {
+    title: 'Drought, Salinity & Sea-Level Rise',
+    emphasize:
+      'nearly as much reservoir water may be needed to keep salinity from entering the Delta as is available for in-Delta use and exports',
+    introduction: [
+      'During extreme drought years, nearly as much reservoir water may be needed to keep salinity from entering the Delta as is available for in-Delta use and exports.',
+      'As drought and sea-level rise intensify, managing this balance creates increasingly difficult tradeoffs.',
+    ],
+    details: [
+      'Water releases for salinity control protect in-Delta uses as well as exports to central and southern California. If ocean tides push salinity into the southern Delta, recovering freshwater exports could take months or years.',
+      'During multi-year droughts, limited reservoir supplies can lead to reduced exports, temporarily relaxed salinity standards, and emergency barriers that redirect tidal energy.',
+      'These responses can reduce the water needed to control salinity, but each creates different consequences for communities and ecosystems.',
+    ],
+  },
+]
 
-function StakeCard({ block, index }: { block: StakeBlock; index: number }) {
+function StakeSection({
+  section,
+  index,
+}: {
+  section: (typeof stakeSections)[number]
+  index: number
+}) {
   const theme = useTheme()
-  const [open, setOpen] = useState(false)
-  const [lead, rest] = splitLeadSentences(block.text, 2)
-  const number = String(index + 1).padStart(2, '0')
+  const [expanded, setExpanded] = useState(false)
 
   return (
     <Box
@@ -23,71 +54,42 @@ function StakeCard({ block, index }: { block: StakeBlock; index: number }) {
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       sx={{
-        bgcolor: 'base.600',
-        border: '1px solid',
-        borderColor: 'border.default',
-        p: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.section.sm },
-        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="numberBadge" sx={{ color: 'base.100' }}>
-          {number}
+      <Typography variant="h3" component="h3" sx={{ color: 'primary.main' }}>
+        {section.title}
+      </Typography>
+      {section.introduction.map((paragraph) => (
+        <Typography key={paragraph} variant="body1" sx={{ color: 'common.white', mt: 1.5 }}>
+          {emphasize(paragraph, section.emphasize)}
         </Typography>
-        <Icon name={block.icon} size={20} stroke={theme.palette.primary.main} />
-      </Box>
-      <Typography variant="h3" component="h3" sx={{ color: 'primary.main', mt: 2 }}>
-        {block.tag}
-      </Typography>
-
-      <Typography variant="body1" sx={{ color: 'common.white', mt: 1.5 }}>
-        {emphasize(lead, block.emphasize)}
-      </Typography>
-
+      ))}
       <Box
         sx={{
           display: 'grid',
-          gridTemplateRows: open ? '1fr' : '0fr',
+          gridTemplateRows: expanded ? '1fr' : '0fr',
           transition: 'grid-template-rows 320ms ease',
         }}
       >
         <Box sx={{ overflow: 'hidden' }}>
-          <Typography variant="body1" sx={{ color: 'common.white', mt: 1.5 }}>
-            {emphasize(rest, block.emphasize)}
-          </Typography>
+          {section.details.map((paragraph) => (
+            <Typography key={paragraph} variant="body1" sx={{ color: 'common.white', mt: 1.5 }}>
+              {emphasize(paragraph, section.emphasize)}
+            </Typography>
+          ))}
         </Box>
       </Box>
-
-      {rest && (
-        <Box
-          component="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-expanded={open}
-          sx={{
-            mt: theme.jtSpacing.component.sm,
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: theme.jtSpacing.gap.xs,
-            p: 0,
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            typography: 'eyebrow',
-            color: 'primary.main',
-            '&:hover': { opacity: 0.8 },
-          }}
-        >
-          {open ? 'Show less' : 'Read more'}
-          <Icon
-            name="chevron-down"
-            size={16}
-            style={{
-              transform: open ? 'rotate(180deg)' : 'none',
-              transition: 'transform 200ms ease',
-            }}
-          />
-        </Box>
-      )}
+      <Button
+        variant="text"
+        onClick={() => setExpanded((current) => !current)}
+        aria-expanded={expanded}
+        sx={{ alignSelf: 'flex-start', mt: theme.jtSpacing.component.sm, px: 0 }}
+      >
+        {expanded ? 'Show less' : 'Read more'}
+      </Button>
     </Box>
   )
 }
@@ -106,7 +108,7 @@ export default function StakesPanels() {
           zIndex: 33,
           // Bleed past the matching clipped edge to prevent subpixel seams.
           mt: { md: '-2rem', lg: 'calc(-2rem - 1px)' },
-          minHeight: { xs: '34rem', md: '42rem', lg: '48rem' },
+          height: '100dvh',
           display: 'flex',
           alignItems: 'center',
           backgroundImage: `linear-gradient(90deg, ${theme.palette.translucent.blackShadow}, transparent 58%), url(${assetUrl('images/exhibit.jpg')})`,
@@ -172,23 +174,18 @@ export default function StakesPanels() {
           mt: { md: '-2rem', lg: 'calc(-2rem - 1px)' },
           pt: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
           pb: theme.jtSpacing.section.xl,
+          minHeight: '100dvh',
+          boxSizing: 'border-box',
+          display: 'flex',
+          alignItems: 'center',
           bgcolor: 'base.800',
           color: 'common.white',
           clipPath: { md: 'polygon(0 0, 100% 2rem, 100% 100%, 0 calc(100% - 2rem))' },
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 'var(--home-rail-inset)',
-            width: 2,
-            bgcolor: 'common.white',
-            zIndex: 1,
-          },
         }}
       >
         <Box
           sx={{
+            width: '100%',
             pl: 'var(--home-rail-inset)',
             pr: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
             display: 'grid',
@@ -207,13 +204,13 @@ export default function StakesPanels() {
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
-                gap: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
+                gridTemplateColumns: 'minmax(0, 1fr)',
+                gap: theme.jtSpacing.section.md,
                 mt: theme.jtSpacing.section.sm,
               }}
             >
-              {stakeBlocks.map((block, index) => (
-                <StakeCard key={block.tag} block={block} index={index} />
+              {stakeSections.map((section, index) => (
+                <StakeSection key={section.title} section={section} index={index} />
               ))}
             </Box>
           </Box>

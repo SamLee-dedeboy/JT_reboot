@@ -5,7 +5,8 @@
 
 export const SALINITY_ANIMATION_SOURCE_ID = 'salinity-animation-source'
 export const SALINITY_ANIMATION_LAYER_ID = 'salinity-animation-raster'
-export const SALINITY_ANIMATION_TILESET_URL = 'mapbox://justtransition.salinity_waterway_mask_10m'
+export const SALINITY_ANIMATION_TILESET_URL =
+  'mapbox://justtransition.salinity_oct_nov_2018_pilot_10m'
 export const SALINITY_ANIMATION_SOURCE_LAYER = 'salinity'
 export const SALINITY_ANIMATION_TILE_SIZE = 512
 export const SALINITY_ANIMATION_VALUE_RANGE: [number, number] = [0, 35]

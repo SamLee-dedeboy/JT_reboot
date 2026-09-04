@@ -1,30 +1,24 @@
 import { Box, Button, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
-import { assetUrl } from '../../../utils/baseUrl'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Icon from '../../../ui/Icon'
+import { assetUrl } from '../../../../utils/baseUrl'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
 
 const futures = [
   {
-    number: '01',
     title: 'What are scenarios?',
     body: 'Scenarios are models and depictions of possible futures and the pathways through which they could manifest.',
-    detailTitle: 'What is participatory scenario planning?',
-    detail:
-      'Participatory scenario planning is a “bottom up” approach that involves working directly with public contributors to create and evaluate future scenarios for a particular place.',
   },
   {
-    number: '02',
+    title: 'What is participatory scenario planning?',
+    body: 'Participatory scenario planning is a “bottom up” approach that involves working directly with public contributors to create and evaluate future scenarios for a particular place.',
+  },
+  {
     title: 'Why participatory scenario planning?',
     body: 'Scenario planning is an approach increasingly used in conservation and climate change adaptation research, especially when uncertainty, vulnerability, and divergent stakeholder interests create conflicting mandates.',
-    detail:
-      'It gives communities space to compare possible futures, surface tradeoffs, and shape the questions that guide planning.',
   },
 ]
 
-function FutureCard({ future, index }: { future: (typeof futures)[number]; index: number }) {
-  const theme = useTheme()
-
+function FutureRow({ future, index }: { future: (typeof futures)[number]; index: number }) {
   return (
     <Box
       component={motion.article}
@@ -33,36 +27,17 @@ function FutureCard({ future, index }: { future: (typeof futures)[number]; index
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.5, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       sx={{
-        bgcolor: 'base.600',
-        border: '1px solid',
-        borderColor: 'border.default',
-        p: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.section.sm },
-        minHeight: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        minHeight: 0,
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="numberBadge" sx={{ color: 'base.100' }}>
-          {future.number}
-        </Typography>
-        {index === 0 && <Icon name="compass" size={20} stroke={theme.palette.primary.main} />}
-        {index === 1 && <Icon name="users" size={20} stroke={theme.palette.primary.main} />}
-      </Box>
-      <Typography variant="h3" component="h3" sx={{ color: 'primary.main', mt: 2 }}>
+      <Typography variant="h3" component="h3" sx={{ color: 'primary.main' }}>
         {future.title}
       </Typography>
       <Typography variant="body1" sx={{ color: 'common.white', mt: 1.5 }}>
         {future.body}
-      </Typography>
-      {future.detailTitle && (
-        <Typography variant="h3" component="h3" sx={{ color: 'primary.main', mt: 2.5 }}>
-          {future.detailTitle}
-        </Typography>
-      )}
-      <Typography
-        variant="body1"
-        sx={{ color: 'common.white', mt: future.detailTitle ? 1.5 : 2.5 }}
-      >
-        {future.detail}
       </Typography>
     </Box>
   )
@@ -81,7 +56,7 @@ export default function FuturesPanels() {
           position: 'relative',
           zIndex: 31,
           mt: { md: '-1px' },
-          minHeight: { xs: '34rem', md: '42rem', lg: '48rem' },
+          height: '100dvh',
           display: 'flex',
           alignItems: 'center',
           backgroundImage: `linear-gradient(90deg, ${theme.palette.translucent.blackShadow}, transparent 58%), url(${assetUrl('images/community-fishing.jpg')})`,
@@ -148,23 +123,18 @@ export default function FuturesPanels() {
           mt: { md: '-2rem', lg: 'calc(-2rem - 1px)' },
           pt: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
           pb: theme.jtSpacing.section.xl,
+          minHeight: '100dvh',
+          boxSizing: 'border-box',
+          display: 'flex',
+          alignItems: 'center',
           bgcolor: 'base.500',
           color: 'common.white',
           clipPath: { md: 'polygon(0 0, 100% 2rem, 100% 100%, 0 calc(100% - 2rem))' },
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 'var(--home-rail-inset)',
-            width: 2,
-            bgcolor: 'common.white',
-            zIndex: 1,
-          },
         }}
       >
         <Box
           sx={{
+            width: '100%',
             pl: 'var(--home-rail-inset)',
             pr: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
             display: 'grid',
@@ -183,13 +153,14 @@ export default function FuturesPanels() {
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
-                gap: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
+                gridTemplateColumns: 'minmax(0, 1fr)',
+                gridTemplateRows: 'repeat(3, minmax(0, 1fr))',
+                gap: theme.jtSpacing.section.sm,
                 mt: theme.jtSpacing.section.sm,
               }}
             >
               {futures.map((future, index) => (
-                <FutureCard key={future.number} future={future} index={index} />
+                <FutureRow key={future.title} future={future} index={index} />
               ))}
             </Box>
           </Box>

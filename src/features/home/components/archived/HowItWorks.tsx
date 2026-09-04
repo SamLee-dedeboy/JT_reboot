@@ -2,12 +2,12 @@
 // community input through scenario planning and modeled outcomes.
 import { Box, Button, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import Section from '../../../ui/Section'
-import SectionHead from '../../../ui/SectionHead'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Icon from '../../../ui/Icon'
-import { assetUrl } from '../../../utils/baseUrl'
-import { WORKS_LEDE, WORKS_STEPS, WORKS_OUTRO } from '../content/homeContent'
+import Section from '../../../../ui/Section'
+import SectionHead from '../../../../ui/SectionHead'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
+import Icon from '../../../../ui/Icon'
+import { assetUrl } from '../../../../utils/baseUrl'
+import { WORKS_LEDE, WORKS_STEPS, WORKS_OUTRO } from '../../content/homeContent'
 
 export default function HowItWorks() {
   return (

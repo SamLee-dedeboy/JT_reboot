@@ -1,9 +1,9 @@
 // Full-width mission statement band that anchors the landing page narrative.
 import { Box, Typography } from '@mui/material'
-import Section from '../../../ui/Section'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import Icon from '../../../ui/Icon'
-import { MISSION_QUOTE, MISSION_STATEMENT } from '../content/homeContent'
+import Section from '../../../../ui/Section'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
+import Icon from '../../../../ui/Icon'
+import { MISSION_QUOTE, MISSION_STATEMENT } from '../../content/homeContent'
 
 export default function MissionBand() {
   return (

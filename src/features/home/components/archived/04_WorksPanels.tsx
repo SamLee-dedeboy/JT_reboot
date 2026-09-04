@@ -1,7 +1,7 @@
 import { Box, Button, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
-import { assetUrl } from '../../../utils/baseUrl'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
+import { assetUrl } from '../../../../utils/baseUrl'
+import ScrollReveal from '../../../../ui/animation/ScrollReveal'
 
 const workSteps = [
   {
@@ -36,14 +36,22 @@ function WorkStep({ step, index }: { step: (typeof workSteps)[number]; index: nu
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.4 }}
       transition={{ duration: 0.45, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 9fr)',
+        gridTemplateRows: 'auto auto',
+        columnGap: theme.jtSpacing.gap.md,
+        rowGap: theme.jtSpacing.gap.sm,
+        alignItems: 'start',
+      }}
     >
-      <Typography variant="numberBadge" component="p" sx={{ mb: theme.jtSpacing.component.xs }}>
+      <Typography variant="numberBadge" component="p" sx={{ gridColumn: 1, gridRow: 1 }}>
         {step.number}
       </Typography>
-      <Typography variant="body2" sx={{ color: 'common.white', mb: theme.jtSpacing.component.sm }}>
+      <Typography variant="body2" sx={{ gridColumn: 2, gridRow: 1, color: 'common.white' }}>
         {step.text}
       </Typography>
-      <Button variant="contained" sx={{ width: '100%' }}>
+      <Button variant="contained" sx={{ gridColumn: 2, gridRow: 2, width: '100%' }}>
         {step.label}
       </Button>
     </Box>
@@ -64,7 +72,7 @@ export default function WorksPanels() {
           zIndex: 35,
           // Bleed past the matching clipped edge to prevent subpixel seams.
           mt: { md: '-2rem', lg: 'calc(-2rem - 1px)' },
-          minHeight: { xs: '34rem', md: '42rem', lg: '48rem' },
+          height: '100dvh',
           display: 'flex',
           alignItems: 'center',
           backgroundImage: `linear-gradient(90deg, ${theme.palette.translucent.blackShadow}, transparent 58%), url(${assetUrl('images/tulare-basin.jpg')})`,
@@ -131,23 +139,18 @@ export default function WorksPanels() {
           mt: { md: '-2rem', lg: 'calc(-2rem - 1px)' },
           pt: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
           pb: theme.jtSpacing.section.xl,
+          minHeight: '100dvh',
+          boxSizing: 'border-box',
+          display: 'flex',
+          alignItems: 'center',
           bgcolor: 'base.900',
           color: 'common.white',
           clipPath: { md: 'polygon(0 0, 100% 2rem, 100% 100%, 0 100%)' },
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 'var(--home-rail-inset)',
-            width: 2,
-            bgcolor: 'common.white',
-            zIndex: 1,
-          },
         }}
       >
         <Box
           sx={{
+            width: '100%',
             pl: 'var(--home-rail-inset)',
             pr: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
             display: 'grid',
@@ -178,11 +181,7 @@ export default function WorksPanels() {
 
             <Box
               sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', md: 'max-content repeat(2, minmax(0, 1fr))' },
-                gap: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
                 mt: theme.jtSpacing.section.sm,
-                alignItems: 'start',
               }}
             >
               <Typography
@@ -198,21 +197,12 @@ export default function WorksPanels() {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: theme.jtSpacing.section.sm,
+                  mt: theme.jtSpacing.component.lg,
                 }}
               >
-                <WorkStep step={workSteps[0]} index={0} />
-                <WorkStep step={workSteps[2]} index={1} />
-              </Box>
-
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: theme.jtSpacing.section.sm,
-                }}
-              >
-                <WorkStep step={workSteps[1]} index={2} />
-                <WorkStep step={workSteps[3]} index={3} />
+                {workSteps.map((step, index) => (
+                  <WorkStep key={step.number} step={step} index={index} />
+                ))}
               </Box>
             </Box>
           </Box>
