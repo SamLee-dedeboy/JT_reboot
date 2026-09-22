@@ -21,6 +21,12 @@ declare module '@mui/material/styles' {
     accentCardTitle: CSSProperties
     scenarioPanelTitle: CSSProperties
     footerLogo: CSSProperties
+    chartTitle: CSSProperties
+    chartLabel: CSSProperties
+    chartColumnHead: CSSProperties
+    chartAxis: CSSProperties
+    chartValue: CSSProperties
+    chartValueLarge: CSSProperties
     numberGhost: CSSProperties
     numberArticle: CSSProperties
     numberTimeline: CSSProperties
@@ -34,6 +40,7 @@ declare module '@mui/material/styles' {
     salinity: typeof palette.salinity
     translucent: typeof palette.translucent
     border: typeof palette.border
+    dataViz: typeof palette.dataViz
     surface: string
     surfaceStrong: string
     footerBg: string
@@ -45,6 +52,7 @@ declare module '@mui/material/styles' {
     salinity?: typeof palette.salinity
     translucent?: typeof palette.translucent
     border?: typeof palette.border
+    dataViz?: typeof palette.dataViz
     surface?: string
     surfaceStrong?: string
     footerBg?: string
@@ -85,6 +93,12 @@ declare module '@mui/material/Typography' {
     accentCardTitle: true
     scenarioPanelTitle: true
     footerLogo: true
+    chartTitle: true
+    chartLabel: true
+    chartColumnHead: true
+    chartAxis: true
+    chartValue: true
+    chartValueLarge: true
     numberGhost: true
     numberArticle: true
     numberTimeline: true

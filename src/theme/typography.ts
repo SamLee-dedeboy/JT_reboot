@@ -138,6 +138,38 @@ export const typography = {
     lineHeight: 1.05,
     textTransform: 'uppercase',
   },
+  // Dense chart labels for data-heavy internal visualizations.
+  chartTitle: {
+    fontFamily: fontHeading,
+    fontSize: '1.1rem',
+    lineHeight: 1.2,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
+  chartLabel: {
+    fontFamily: fontBody,
+    fontSize: '0.72rem',
+    lineHeight: 1.15,
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
+  chartColumnHead: {
+    fontFamily: fontBody,
+    fontSize: '0.66rem',
+    lineHeight: 1.2,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    color: palette.base[100],
+  },
+  chartAxis: {
+    fontFamily: fontBody,
+    fontSize: '0.64rem',
+    lineHeight: 1.2,
+    color: palette.base[300],
+  },
+  chartValue: { fontFamily: fontHeading, fontSize: '0.9rem', lineHeight: 1 },
+  chartValueLarge: { fontFamily: fontHeading, fontSize: '1.15rem', lineHeight: 1 },
   numberGhost: {
     fontFamily: fontHeading,
     fontSize: 'clamp(1.8rem, 1.4rem + 1vw, 2.2rem)',

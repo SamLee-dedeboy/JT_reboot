@@ -13,6 +13,7 @@ export const palette = {
     yellow: '#f2c820',
     purple: '#b280ff',
     pink: '#ff677d',
+    indigo: '#5b6cf0',
   },
   salinity: { pink: '#fb0169', teal: '#77d6d7' },
   base: {
@@ -56,6 +57,20 @@ export const palette = {
     subtle: 'rgba(155,162,164,0.16)',
     default: 'rgba(155,162,164,0.24)',
     strong: 'rgba(155,162,164,0.40)',
+  },
+  // Data-only hues for team identity in charts. Chosen outside the heavily used
+  // brand green / blue-teal-cyan / magenta families and away from the score pair
+  // (brand blue = good, accent orange = unacceptable); >= ΔE 15 (OKLab) from those
+  // site colors and mutually distinct incl. protan/deutan simulation.
+  dataViz: {
+    // Team palette ("Color"): best-separated set found (teams >= ΔE 24 apart,
+    // >= ΔE 19.7 under protan/deutan, >= ΔE 15.8 from the score blue/orange).
+    gold: '#efbd24',
+    orchid: '#f69efe',
+    clay: '#ae6259',
+    cobalt: '#586de3',
+    // Single light neutral for every team (9.9:1 on the card surface)
+    neutral: '#c9cecf',
   },
   surface: 'rgba(81,93,97,0.30)',
   surfaceStrong: '#39474b',
