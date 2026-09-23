@@ -44,6 +44,14 @@ const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: 
     url: '/data/scenario-explorer/tiered_outflows_dashboard.json',
   },
   'schism-runs': { key: 'schismRuns', url: '/data/scenario-explorer/schism_runs_dashboard.json' },
+  'slr-current': {
+    key: 'slrScenarios',
+    url: '/data/scenario-explorer/slr_scenarios_dashboard.json',
+  },
+  'slr-scenarios': {
+    key: 'slrScenarios',
+    url: '/data/scenario-explorer/slr_scenarios_dashboard.json',
+  },
 }
 
 interface LabeledSelectProps {
@@ -60,6 +68,7 @@ interface LabeledSelectProps {
 }
 
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual')
+const SLR_SCENARIO_ORDER = ['baseline-slr', 'bolster-slr', 'ecomachine-slr', 'newgreen-slr']
 const scenarioAbbreviation = (label: string) =>
   ({
     'Business as Usual': 'BAU',
@@ -68,6 +77,10 @@ const scenarioAbbreviation = (label: string) =>
     'A Tunnel': 'TUN',
     'Eco Machine': 'ECO',
     'New Green Watershed': 'NGW',
+    'Baseline (SLR)': 'BAU SLR',
+    'Bolster & Fortify (SLR)': 'B&F SLR',
+    'Eco Machine (SLR)': 'ECO SLR',
+    'New Green Watershed (SLR)': 'NGW SLR',
     'Business As Usual': 'BAU',
     '+30% Delta outflow': '+30% outflow',
     '-10% Delta outflow': '-10% outflow',
@@ -201,14 +214,17 @@ function SwapButton({
 
 interface ScenarioExplorerPageProps {
   enableDateHighlights?: boolean
+  enableSlrModes?: boolean
 }
 
 export default function ScenarioExplorerPage({
   enableDateHighlights = false,
+  enableSlrModes = false,
 }: ScenarioExplorerPageProps) {
   const [datasets, setDatasets] = useState<Partial<ScenarioDatasets> | null>(null)
   const [d1641Data, setD1641Data] = useState<D1641Dataset | null>(null)
   const [schismD1641Data, setSchismD1641Data] = useState<D1641Dataset | null>(null)
+  const [slrD1641Data, setSlrD1641Data] = useState<D1641Dataset | null>(null)
   const [dashboardMode, setDashboardMode] = useState<DashboardMode>('rma-scenarios')
   const [baseScenario, setBaseScenario] = useState('baseline')
   const [scenario, setScenario] = useState('bolster')
@@ -269,7 +285,9 @@ export default function ScenarioExplorerPage({
         ? datasets?.tieredOutflows
         : dashboardMode === 'schism-runs'
           ? datasets?.schismRuns
-          : datasets?.rmaScenarios
+          : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
+            ? datasets?.slrScenarios
+            : datasets?.rmaScenarios
 
   const selectDashboardMode = async (nextMode: DashboardMode) => {
     if (!datasets || nextMode === dashboardMode) return
@@ -284,10 +302,18 @@ export default function ScenarioExplorerPage({
           ? fetch(assetUrl('/data/scenario-explorer/d1641_schism.json')).then(
               (response) => response.json() as Promise<D1641Dataset>,
             )
-          : Promise.resolve(null),
+          : (nextMode === 'slr-current' || nextMode === 'slr-scenarios') && !slrD1641Data
+            ? fetch(assetUrl('/data/scenario-explorer/d1641_rma_slr.json')).then(
+                (response) => response.json() as Promise<D1641Dataset>,
+              )
+            : Promise.resolve(null),
       ])
       nextData = loadedData
-      if (loadedCompliance) setSchismD1641Data(loadedCompliance)
+      if (loadedCompliance) {
+        if (nextMode === 'slr-current' || nextMode === 'slr-scenarios')
+          setSlrD1641Data(loadedCompliance)
+        else setSchismD1641Data(loadedCompliance)
+      }
       setDatasets((current) => ({ ...current, [config.key]: nextData }))
     }
     if (!nextData) return
@@ -304,6 +330,14 @@ export default function ScenarioExplorerPage({
       setBaseScenario('run27')
       setScenario('run30')
       setActiveKeys(['run30'])
+    } else if (nextMode === 'slr-current') {
+      setBaseScenario('baseline')
+      setScenario('baseline-slr')
+      setActiveKeys(['baseline-slr'])
+    } else if (nextMode === 'slr-scenarios') {
+      setBaseScenario('baseline-slr')
+      setScenario('bolster-slr')
+      setActiveKeys(['bolster-slr'])
     } else {
       setBaseScenario('baseline')
       setScenario('bolster')
@@ -323,6 +357,10 @@ export default function ScenarioExplorerPage({
 
   const scenarioOptions = useMemo(() => {
     if (!data) return []
+    if (dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios')
+      return data.scenarios
+        .filter((item) => item.climateCondition === 'slr')
+        .sort((a, b) => SLR_SCENARIO_ORDER.indexOf(a.key) - SLR_SCENARIO_ORDER.indexOf(b.key))
     if (dashboardMode === 'tiered-outflows')
       return data.scenarios.map((item) => {
         if (item.key === 'run15') return { ...item, label: 'Business As Usual' }
@@ -334,7 +372,7 @@ export default function ScenarioExplorerPage({
     if (dashboardMode !== 'rma-scenarios')
       return data.scenarios.map((item) => ({ ...item, label: renameBaseline(item.label) }))
     const zeroSeries = data.dates.map(() => 0)
-    const baseline = {
+    const baseline: Scenario = {
       key: 'baseline',
       label: 'Business as Usual',
       stationValues: data.stations.map(() => zeroSeries),
@@ -346,8 +384,10 @@ export default function ScenarioExplorerPage({
     () =>
       dashboardMode === 'rma-schism'
         ? baseScenario.toUpperCase()
-        : scenarioOptions.find((item) => item.key === baseScenario)?.label || 'Business as Usual',
-    [baseScenario, dashboardMode, scenarioOptions],
+        : dashboardMode === 'slr-current'
+          ? `Current ${scenarioOptions.find((item) => item.key === scenario)?.label.replace(/\s*\(SLR\)$/, '') ?? 'scenario'}`
+          : scenarioOptions.find((item) => item.key === baseScenario)?.label || 'Business as Usual',
+    [baseScenario, dashboardMode, scenario, scenarioOptions],
   )
   const rawComparisonData = useMemo<ScenarioDataset | undefined>(() => {
     if (!data) return data
@@ -368,6 +408,37 @@ export default function ScenarioExplorerPage({
             ]),
           ),
         })),
+      }
+    }
+    if (dashboardMode === 'slr-current') {
+      const byKey = new Map(data.scenarios.map((item) => [item.key, item]))
+      const subtractSeries = (
+        values: ValueSeries,
+        baseValues: ValueSeries | undefined,
+        usesCurrentBaseline: boolean,
+      ) =>
+        values.map((value, index) => {
+          const baseValue = usesCurrentBaseline ? 0 : baseValues?.[index]
+          return value == null || baseValue == null ? null : value - baseValue
+        })
+      return {
+        ...data,
+        scenarios: scenarioOptions.map((item) => {
+          const counterpart = byKey.get(item.currentCounterpart ?? '')
+          const usesCurrentBaseline = item.currentCounterpart === 'baseline'
+          return {
+            ...item,
+            stationValues: item.stationValues.map((values, stationIndex) =>
+              subtractSeries(values, counterpart?.stationValues[stationIndex], usesCurrentBaseline),
+            ),
+            regionValues: Object.fromEntries(
+              Object.entries(item.regionValues).map(([regionName, values]) => [
+                regionName,
+                subtractSeries(values, counterpart?.regionValues[regionName], usesCurrentBaseline),
+              ]),
+            ),
+          }
+        }),
       }
     }
     const base = scenarioOptions.find((item) => item.key === baseScenario)
@@ -429,7 +500,7 @@ export default function ScenarioExplorerPage({
     if (!rawComparisonData) return rawComparisonData
     const canonicalReference = rawComparisonData.referenceStationValues
     const baseDeltas =
-      dashboardMode !== 'rma-schism'
+      dashboardMode !== 'rma-schism' && dashboardMode !== 'slr-current'
         ? scenarioOptions.find((item) => item.key === baseScenario)?.stationValues
         : null
     const toPercent = (difference: number | null, reference: number | null) =>
@@ -439,12 +510,18 @@ export default function ScenarioExplorerPage({
     const scenarios = rawComparisonData.scenarios.map((item) => {
       const itemReference = item.referenceStationValues ?? canonicalReference
       const stationValues = item.stationValues.map((values, stationIndex) => {
+        const pairedCurrent =
+          dashboardMode === 'slr-current'
+            ? data?.scenarios.find((candidate) => candidate.key === item.currentCounterpart)
+            : null
         const referenceSeries =
           dashboardMode === 'schism-runs'
             ? (scenarioOptions.find((scenarioItem) => scenarioItem.key === baseScenario)
                 ?.stationValues[stationIndex] ?? [])
             : (itemReference?.[stationIndex]?.map((canonical, dateIndex) => {
                 if (canonical == null) return null
+                if (dashboardMode === 'slr-current')
+                  return canonical + (pairedCurrent?.stationValues[stationIndex]?.[dateIndex] ?? 0)
                 if (dashboardMode !== 'rma-schism')
                   return canonical + (baseDeltas?.[stationIndex]?.[dateIndex] ?? 0)
                 return baseScenario === 'schism' ? canonical - (values[dateIndex] ?? 0) : canonical
@@ -479,7 +556,7 @@ export default function ScenarioExplorerPage({
       return { ...item, stationValues, regionValues }
     })
     return { ...rawComparisonData, scenarios, units: '%' }
-  }, [rawComparisonData, dashboardMode, scenarioOptions, baseScenario])
+  }, [rawComparisonData, dashboardMode, scenarioOptions, baseScenario, data])
   const comparisonData = valueMode === 'raw' ? rawComparisonData : percentComparisonData
   const selectBaseScenario = (nextBaseScenario: string) => {
     const nextMapScenario = nextBaseScenario === scenario ? baseScenario : scenario
@@ -504,6 +581,16 @@ export default function ScenarioExplorerPage({
         setDateIndex(0)
         setHistogramDateIndex(0)
       }
+    })
+  }
+  const selectSlrFamily = (nextSlrScenario: string) => {
+    const next = scenarioOptions.find((item) => item.key === nextSlrScenario)
+    if (!next?.currentCounterpart) return
+    startTransition(() => {
+      setBaseScenario(next.currentCounterpart!)
+      setScenario(nextSlrScenario)
+      setActiveKeys([nextSlrScenario])
+      setHistogramBrush(null)
     })
   }
   const selectDateIndex = (nextDateIndex: number) => {
@@ -553,6 +640,21 @@ export default function ScenarioExplorerPage({
   const chartD1641Data = useMemo<D1641Dataset | null>(() => {
     if (dashboardMode === 'rma-scenarios') return d1641Data
     if (dashboardMode === 'schism-runs') return schismD1641Data
+    if (dashboardMode === 'slr-scenarios') return slrD1641Data
+    if (dashboardMode === 'slr-current') {
+      if (!d1641Data || !slrD1641Data) return null
+      const currentCompliance = d1641Data.scenarios[baseScenario]
+      const slrCompliance = slrD1641Data.scenarios[scenario]
+      if (!currentCompliance || !slrCompliance) return null
+      return {
+        source: `${d1641Data.source}; ${slrD1641Data.source}`,
+        generatedFrom: `${d1641Data.generatedFrom}; ${slrD1641Data.generatedFrom}`,
+        scenarios: {
+          [baseScenario]: currentCompliance,
+          [scenario]: slrCompliance,
+        },
+      }
+    }
     if (dashboardMode !== 'rma-schism' || !d1641Data || !schismD1641Data) return null
     const schismScenarioKey = (
       { baseline: 'run27', reserve: 'run30', tunnel: 'run31' } as Record<string, string>
@@ -569,7 +671,15 @@ export default function ScenarioExplorerPage({
         [scenario]: byModel[selectedModel],
       },
     }
-  }, [baseScenario, d1641Data, dashboardMode, scenario, schismD1641Data, selectedModel])
+  }, [
+    baseScenario,
+    d1641Data,
+    dashboardMode,
+    scenario,
+    schismD1641Data,
+    selectedModel,
+    slrD1641Data,
+  ])
   const mapExtent = useMemo(() => {
     if (!comparisonData || !selectedScenario) return 1
     const stationIndices = comparisonData.stations
@@ -598,8 +708,12 @@ export default function ScenarioExplorerPage({
     const canonicalReference = rawComparisonData.referenceStationValues
     const itemReference = rawSelectedScenario.referenceStationValues ?? canonicalReference
     const baseDeltas =
-      dashboardMode !== 'rma-schism'
+      dashboardMode !== 'rma-schism' && dashboardMode !== 'slr-current'
         ? scenarioOptions.find((item) => item.key === baseScenario)?.stationValues
+        : null
+    const pairedCurrent =
+      dashboardMode === 'slr-current'
+        ? data?.scenarios.find((item) => item.key === rawSelectedScenario.currentCounterpart)
         : null
     const stationIndices = rawComparisonData.stations
       .map((station, index) => (region === 'All regions' || station.region === region ? index : -1))
@@ -612,6 +726,11 @@ export default function ScenarioExplorerPage({
                 ?.stationValues[stationIndex]
             : itemReference?.[stationIndex]?.map((canonical, referenceDateIndex) => {
                 if (canonical == null) return null
+                if (dashboardMode === 'slr-current')
+                  return (
+                    canonical +
+                    (pairedCurrent?.stationValues[stationIndex]?.[referenceDateIndex] ?? 0)
+                  )
                 if (dashboardMode !== 'rma-schism')
                   return canonical + (baseDeltas?.[stationIndex]?.[referenceDateIndex] ?? 0)
                 return baseScenario === 'schism'
@@ -628,7 +747,15 @@ export default function ScenarioExplorerPage({
     return stationMeans.length
       ? stationMeans.reduce((sum, value) => sum + value, 0) / stationMeans.length
       : null
-  }, [baseScenario, dashboardMode, rawComparisonData, rawSelectedScenario, region, scenarioOptions])
+  }, [
+    baseScenario,
+    dashboardMode,
+    data,
+    rawComparisonData,
+    rawSelectedScenario,
+    region,
+    scenarioOptions,
+  ])
   const percentRegionValue =
     rawRegionValue == null || regionalBaseMean == null || regionalBaseMean === 0
       ? null
@@ -697,6 +824,7 @@ export default function ScenarioExplorerPage({
           onModeChange={selectDashboardMode}
           onTutorialOpen={() => setTutorialOpen(true)}
           showSchismRuns={enableDateHighlights}
+          showSlrModes={enableSlrModes}
         />
         <ExplorerTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
@@ -791,6 +919,29 @@ export default function ScenarioExplorerPage({
                         sx={menuItemSx('brand.primaryGreen')}
                       >
                         <ResponsiveScenarioLabel label={item.label} />
+                      </MenuItem>
+                    ))}
+                  </LabeledSelect>
+                </>
+              ) : dashboardMode === 'slr-current' ? (
+                <>
+                  <LabeledSelect
+                    tourId="scenario-controls"
+                    label="Scenario"
+                    value={scenario}
+                    displayValue={scenarioOptions.find((item) => item.key === scenario)?.label}
+                    compactValue={scenarioAbbreviation(
+                      scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario,
+                    )}
+                    onChange={(event) => selectSlrFamily(event.target.value)}
+                  >
+                    {scenarioOptions.map((item) => (
+                      <MenuItem
+                        key={item.key}
+                        value={item.key}
+                        sx={menuItemSx('brand.primaryGreen')}
+                      >
+                        <ResponsiveScenarioLabel label={item.label.replace(/\s*\(SLR\)$/, '')} />
                       </MenuItem>
                     ))}
                   </LabeledSelect>
@@ -1101,7 +1252,9 @@ export default function ScenarioExplorerPage({
                   ? d1641Data
                   : dashboardMode === 'schism-runs'
                     ? schismD1641Data
-                    : null
+                    : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
+                      ? chartD1641Data
+                      : null
               }
               baseScenario={baseScenario}
               scenario={scenario}
@@ -1131,9 +1284,11 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
         flex: '0 0 auto',
         gap: theme.jtSpacing.gap.sm,
         gridTemplateColumns:
-          mode === 'rma-schism'
-            ? 'minmax(0,.8fr) auto minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
-            : 'minmax(0,1fr) auto minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)',
+          mode === 'slr-current'
+            ? 'minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
+            : mode === 'rma-schism'
+              ? 'minmax(0,.8fr) auto minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
+              : 'minmax(0,1fr) auto minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)',
         minWidth: 0,
         overflow: 'hidden',
         p: theme.jtSpacing.component.sm,
@@ -1142,17 +1297,21 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
         },
         [theme.breakpoints.down('xl')]: {
           gridTemplateColumns:
-            mode === 'rma-schism'
-              ? 'minmax(4rem,.7fr) auto minmax(4rem,.7fr) minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
-              : 'minmax(4rem,.75fr) auto minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)',
+            mode === 'slr-current'
+              ? 'minmax(4rem,.9fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
+              : mode === 'rma-schism'
+                ? 'minmax(4rem,.7fr) auto minmax(4rem,.7fr) minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
+                : 'minmax(4rem,.75fr) auto minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)',
         },
         [theme.breakpoints.down('md')]: {
           '& .MuiTypography-caption': { ...theme.typography.captionSmall },
           gap: theme.jtSpacing.gap.xs,
           gridTemplateColumns:
-            mode === 'rma-schism'
-              ? 'minmax(3.5rem,.55fr) auto minmax(3.5rem,.55fr) minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
-              : 'minmax(3.5rem,.6fr) auto minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)',
+            mode === 'slr-current'
+              ? 'minmax(3.5rem,.75fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
+              : mode === 'rma-schism'
+                ? 'minmax(3.5rem,.55fr) auto minmax(3.5rem,.55fr) minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
+                : 'minmax(3.5rem,.6fr) auto minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)',
           p: theme.jtSpacing.component.xs,
         },
         [theme.breakpoints.between('lg', 'xl')]: {

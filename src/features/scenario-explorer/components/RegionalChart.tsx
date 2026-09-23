@@ -97,6 +97,10 @@ const SCENARIO_ABBREVIATIONS: Record<string, string> = {
   'A Tunnel': 'TUN',
   'Eco Machine': 'ECO',
   'New Green Watershed': 'NGW',
+  'Baseline (SLR)': 'BAU',
+  'Bolster & Fortify (SLR)': 'B&F',
+  'Eco Machine (SLR)': 'ECO',
+  'New Green Watershed (SLR)': 'NGW',
   'Business As Usual': 'BAU',
   '+30% Delta outflow': '+30% outflow',
   '-10% Delta outflow': '-10% outflow',
@@ -352,13 +356,13 @@ function ChartSvg({
     return [
       {
         key: 'base',
-        label: 'Base',
+        label: dashboardMode === 'slr-current' ? 'Current' : 'Base',
         color: theme.palette.brand.primaryBlue,
         segments: toSegments(baseScenarioKey),
       },
       {
         key: 'selected',
-        label: 'Selected',
+        label: dashboardMode === 'slr-current' ? 'SLR' : 'Selected',
         color: theme.palette.brand.primaryGreen,
         segments: toSegments(selectedScenarioKey),
       },
@@ -368,6 +372,7 @@ function ChartSvg({
     d1641Data,
     data.dates,
     data.stations,
+    dashboardMode,
     region,
     selectedScenarioKey,
     theme.palette.brand.primaryBlue,
@@ -1188,7 +1193,7 @@ export default function RegionalChart({
                     ) : (
                       <VisibilityOffOutlinedIcon fontSize="small" />
                     )}
-                    {item.label}
+                    {abbreviateScenario(item.label)}
                   </MenuItem>
                 )
               })}

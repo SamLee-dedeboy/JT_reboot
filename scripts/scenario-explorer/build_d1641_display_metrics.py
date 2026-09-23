@@ -29,6 +29,10 @@ ROLLING_DEFINITIONS = [
     ("PPT", "ecosystem_14d", 14),
 ]
 MONTHLY_DEFINITIONS = [("WCI", "agricultural"), ("DMC", "agricultural")]
+DISPLAY_HEADER = [
+    "scenario", "station_id", "objective", "date", "window_days",
+    "metric", "calculated_value_us_cm", "data_status",
+]
 UPDATE_PREFIX = {"reserve": "COR_", "tunnel": "DCP_", "newgreen": "NGW_"}
 
 
@@ -41,37 +45,11 @@ def load_processor(path: Path):
     return module
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--processor", type=Path, required=True)
-    parser.add_argument("--update-dir", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
-    args = parser.parse_args()
-
-    processor = load_processor(args.processor)
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    processor.OUT = args.output_dir
-
-    def overlaid_scenario_files(folder: str):
-        paths = {
-            path.name: path
-            for path in (processor.DATA / folder).glob("*.csv")
-            if "-AVG-AVG" not in path.name
-        }
-        prefix = UPDATE_PREFIX.get(folder)
-        if prefix:
-            paths.update({
-                path.name: path
-                for path in args.update_dir.glob(f"{prefix}*_EC.csv")
-            })
-        return sorted(paths.values(), key=lambda path: path.name)
-
-    processor.scenario_files = overlaid_scenario_files
-    processor.main()
-
+def display_metric_rows(processor, scenario_files) -> list[list]:
+    """All-date rolling and calendar-month metrics for every processor scenario."""
     rows = []
     for scenario, folder in processor.SCENARIOS.items():
-        files = overlaid_scenario_files(folder)
+        files = scenario_files(folder)
         located = processor.locate_columns(files)
         selected = {
             station: candidates[0][:2]
@@ -122,14 +100,42 @@ def main() -> None:
                         scenario, station, objective, day, "calendar_month",
                         "monthly_average", round(metric, 3), "complete",
                     ])
+    return rows
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--processor", type=Path, required=True)
+    parser.add_argument("--update-dir", type=Path, required=True)
+    parser.add_argument("--output-dir", type=Path, required=True)
+    args = parser.parse_args()
+
+    processor = load_processor(args.processor)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    processor.OUT = args.output_dir
+
+    def overlaid_scenario_files(folder: str):
+        paths = {
+            path.name: path
+            for path in (processor.DATA / folder).glob("*.csv")
+            if "-AVG-AVG" not in path.name
+        }
+        prefix = UPDATE_PREFIX.get(folder)
+        if prefix:
+            paths.update({
+                path.name: path
+                for path in args.update_dir.glob(f"{prefix}*_EC.csv")
+            })
+        return sorted(paths.values(), key=lambda path: path.name)
+
+    processor.scenario_files = overlaid_scenario_files
+    processor.main()
+    rows = display_metric_rows(processor, overlaid_scenario_files)
 
     output = args.output_dir / "rma_d1641_display_metrics.csv"
     with output.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle)
-        writer.writerow([
-            "scenario", "station_id", "objective", "date", "window_days",
-            "metric", "calculated_value_us_cm", "data_status",
-        ])
+        writer.writerow(DISPLAY_HEADER)
         writer.writerows(rows)
     print(f"Wrote {output} ({len(rows)} rows)")
 

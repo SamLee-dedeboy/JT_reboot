@@ -1,0 +1,1939 @@
+{
+  "generatedAt": "2026-09-23T14:50:27",
+  "dataset": "d1641_rma_slr.json",
+  "generatedFrom": "RMA/SLR_data/processed/d1641_rma_slr",
+  "analysisInterval": [
+    "2018-10-01",
+    "2020-11-29"
+  ],
+  "intermediates": {
+    "rma_d1641_station_mapping.csv": {
+      "path": "RMA/SLR_data/processed/d1641_rma_slr/rma_d1641_station_mapping.csv",
+      "sha256": "c009f34f9cc2989feb45b05f30eaf26e1b1941dcb0f3f3b42b13845cc9cf911f"
+    },
+    "rma_d1641_daily_coverage.csv": {
+      "path": "RMA/SLR_data/processed/d1641_rma_slr/rma_d1641_daily_coverage.csv",
+      "sha256": "d531a397b30e4238d54341c3b7f3cfa0d17fc345f2d6f0e8f53cede2b4cc6d53"
+    },
+    "rma_d1641_metric_evaluations.csv": {
+      "path": "RMA/SLR_data/processed/d1641_rma_slr/rma_d1641_metric_evaluations.csv",
+      "sha256": "4d33bba8bb5dbaccbd01e1c8fcdf1e3765d05c5e6e244812728ebe10fba8d69b"
+    },
+    "rma_d1641_exceedance_intervals.csv": {
+      "path": "RMA/SLR_data/processed/d1641_rma_slr/rma_d1641_exceedance_intervals.csv",
+      "sha256": "4202c3b1003244cd00ed06f83326e2c3ad460c4a845b1a221bd4aaccaef39e74"
+    },
+    "rma_d1641_scenario_summary.csv": {
+      "path": "RMA/SLR_data/processed/d1641_rma_slr/rma_d1641_scenario_summary.csv",
+      "sha256": "8364840dfb91e4cda506ecd6b62f96eba52ab873dc74028c51a056d6809273ce"
+    },
+    "rma_d1641_display_metrics.csv": {
+      "path": "RMA/SLR_data/processed/d1641_rma_slr/rma_d1641_display_metrics.csv",
+      "sha256": "17fe86254ae4ef1303c3cfd02786fa1bda83adbee529f71ff96e8f3858f58aef"
+    }
+  },
+  "unavailableScenarios": {
+    "reserve-slr": "Requires an RMA rerun; not delivered under SLR.",
+    "tunnel-slr": "Requires an RMA rerun; not delivered under SLR."
+  },
+  "knownLimitations": [
+    "UNI and OLD are not present in any RMA export (current or SLR); their objectives are reported as not_computable_station_not_in_scenario_export.",
+    "The five high-tide marsh objectives (CLL, NSL, BDL, SNC, VOL) require high-tide data and are not computed.",
+    "rma_d1641_scenario_summary.csv lists only scenarios with at least one exceedance (processor behavior); rows present: ['baseline-slr', 'bolster-slr', 'ecomachine-slr', 'newgreen-slr'].",
+    "Partial Nov 2020 monthly WCI/DMC evaluations are dated 2020-11-30 (month end) by the processor and marked insufficient_data."
+  ],
+  "currentVersusSlr": {
+    "baseline": {
+      "current": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 58,
+        "exceedanceIntervals": 3,
+        "exceedanceIntervalDays": 142,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "SJR"
+        ],
+        "judgmentDates": 142,
+        "maxExceedanceRatio": 1.3653,
+        "maxValueToThresholdRatio": 1.3653
+      },
+      "slr": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 270,
+        "exceedanceIntervals": 16,
+        "exceedanceIntervalDays": 636,
+        "stationsWithExceedance": [
+          "BDT",
+          "DMC",
+          "EMM",
+          "JER",
+          "SAL",
+          "SJR",
+          "WCI"
+        ],
+        "judgmentDates": 570,
+        "maxExceedanceRatio": 2.7206,
+        "maxValueToThresholdRatio": 2.7206
+      }
+    },
+    "bolster": {
+      "current": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 59,
+        "exceedanceIntervals": 3,
+        "exceedanceIntervalDays": 142,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "SJR"
+        ],
+        "judgmentDates": 142,
+        "maxExceedanceRatio": 1.3681,
+        "maxValueToThresholdRatio": 1.3681
+      },
+      "slr": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 281,
+        "exceedanceIntervals": 12,
+        "exceedanceIntervalDays": 469,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "JER",
+          "SAL",
+          "SJR"
+        ],
+        "judgmentDates": 403,
+        "maxExceedanceRatio": 2.7291,
+        "maxValueToThresholdRatio": 2.7291
+      }
+    },
+    "ecomachine": {
+      "current": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 44,
+        "exceedanceIntervals": 3,
+        "exceedanceIntervalDays": 115,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "SJR"
+        ],
+        "judgmentDates": 115,
+        "maxExceedanceRatio": 1.0921,
+        "maxValueToThresholdRatio": 1.0921
+      },
+      "slr": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 182,
+        "exceedanceIntervals": 10,
+        "exceedanceIntervalDays": 350,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "JER",
+          "SAL",
+          "SJR"
+        ],
+        "judgmentDates": 302,
+        "maxExceedanceRatio": 2.1178,
+        "maxValueToThresholdRatio": 2.1178
+      }
+    },
+    "newgreen": {
+      "current": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 45,
+        "exceedanceIntervals": 3,
+        "exceedanceIntervalDays": 116,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "SJR"
+        ],
+        "judgmentDates": 116,
+        "maxExceedanceRatio": 1.1188,
+        "maxValueToThresholdRatio": 1.1188
+      },
+      "slr": {
+        "completeStationDays": 7119,
+        "metricEvaluations": 2974,
+        "completeEvaluations": 2914,
+        "exceededEvaluations": 182,
+        "exceedanceIntervals": 9,
+        "exceedanceIntervalDays": 335,
+        "stationsWithExceedance": [
+          "BDT",
+          "EMM",
+          "JER",
+          "SAL",
+          "SJR"
+        ],
+        "judgmentDates": 304,
+        "maxExceedanceRatio": 2.2063,
+        "maxValueToThresholdRatio": 2.2063
+      }
+    }
+  },
+  "checks": {
+    "01_scenarioKeysAndOrder": {
+      "pass": true,
+      "keys": [
+        "baseline-slr",
+        "bolster-slr",
+        "ecomachine-slr",
+        "newgreen-slr"
+      ]
+    },
+    "02_noUnavailableScenarios": {
+      "pass": true,
+      "unavailable": [
+        "reserve-slr",
+        "tunnel-slr"
+      ]
+    },
+    "03_fiveInstantaneousFilesPerScenario": {
+      "pass": true,
+      "files": {
+        "baseline": [
+          "Base_Com_JT_BASE_SLR_EC_EC.csv",
+          "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+          "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+          "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+          "Base_Recr_JT_BASE_SLR_EC_EC.csv"
+        ],
+        "bolster": [
+          "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+          "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+          "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+          "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+          "Bolster_Recr_JT_BOLSTER_SLR_EC_EC.csv"
+        ],
+        "ecomachine": [
+          "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC.csv"
+        ],
+        "newgreen": [
+          "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+          "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+          "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+          "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+          "NGW_Recr_JT_NGW_SLR_EC_EC.csv"
+        ]
+      }
+    },
+    "04_noEcAvgAvgRead": {
+      "pass": true,
+      "filesOpened": 20
+    },
+    "05_inputHashesRecorded": {
+      "pass": true,
+      "inputs": [
+        {
+          "path": "raw/baseline/ec/Base_Com_JT_BASE_SLR_EC_EC.csv",
+          "sha256": "052ca62e259c05fdcb48ba2d05af34cddefae6c27ddcd2b5e2cf1771fc0f52cf"
+        },
+        {
+          "path": "raw/baseline/ec/Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+          "sha256": "abe1b322b70304bedb0f7284090aef0d508298114dc78723d88f121746ec0828"
+        },
+        {
+          "path": "raw/baseline/ec/Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+          "sha256": "fcc5dcc1ce56148cbbcf50f246a1400eca1a25330be04a1f0964f2ab4793493b"
+        },
+        {
+          "path": "raw/baseline/ec/Base_Econo_JT_BASE_SLR_EC_EC.csv",
+          "sha256": "7535756cdf0a8759ee67d1a6ba82c491c1a6336322c7a132ccae4ad19aba8037"
+        },
+        {
+          "path": "raw/baseline/ec/Base_Recr_JT_BASE_SLR_EC_EC.csv",
+          "sha256": "90cabd4309cf6e1dfbf4600551fe8c2e5dd720b76bc822b687298addd5a0fe61"
+        },
+        {
+          "path": "raw/bolster/ec/Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+          "sha256": "c0045f43f4763925aed476ab74d1d4a38e030c849928540a530ef1420cd477a2"
+        },
+        {
+          "path": "raw/bolster/ec/Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+          "sha256": "1f8f7153cd60885d069fa9cc8b712804aa54f887ef883bbb327e18070fce4512"
+        },
+        {
+          "path": "raw/bolster/ec/Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+          "sha256": "8ffe682c6791b20d9d70b1b8bfd4f72378d1176c72814237b0f9ad9be1fe0da8"
+        },
+        {
+          "path": "raw/bolster/ec/Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+          "sha256": "fec5164445788ac47c82ef18678200280c32a85e5516dca743cd3ade911f14ff"
+        },
+        {
+          "path": "raw/bolster/ec/Bolster_Recr_JT_BOLSTER_SLR_EC_EC.csv",
+          "sha256": "c2d4af32c010af3cbf95b9dfc2a0c97abc8ba194530e49fa83e70d2e741a0ed2"
+        },
+        {
+          "path": "raw/ecomachine/ec/EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "sha256": "246468f330a60b8569aa7b610c1d9280004b4e39427603c5fffaada5f564fde0"
+        },
+        {
+          "path": "raw/ecomachine/ec/EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "sha256": "ce637db555ccf04ef02faf2edce5663a513df161a01a9ed910e348dae6835ad7"
+        },
+        {
+          "path": "raw/ecomachine/ec/EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "sha256": "43cee3e8d8a47b71301d78366a22c85b8f556aa6fcd4067cc20c99ae9108cad9"
+        },
+        {
+          "path": "raw/ecomachine/ec/EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "sha256": "7279e6b06c7d08e273ce7ffbc8c2da4af4970e8b070e6eda6d7c622b79a44b4e"
+        },
+        {
+          "path": "raw/ecomachine/ec/EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC.csv",
+          "sha256": "1c61e86fbaf0207960ab598ab54db243a0262ace885ac1e01692f3782220fff9"
+        },
+        {
+          "path": "raw/newgreen/ec/NGW_Com_JT_NGW_SLR_EC_EC.csv",
+          "sha256": "5dcb0946ac4bd67264cb797ce1ffd2b070db5b01f76db2f30f08c1a66b0e5bfa"
+        },
+        {
+          "path": "raw/newgreen/ec/NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+          "sha256": "4a5bdee79d8dd55ba6c46b56c3484c3eb113d1b0cd3c3f3912abcfacbd0dd321"
+        },
+        {
+          "path": "raw/newgreen/ec/NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+          "sha256": "807946fdd21d4be6d9ec1b0417cf7a8922f814b4bdb7caceba4552a1a3e03521"
+        },
+        {
+          "path": "raw/newgreen/ec/NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+          "sha256": "6e00b06498166d44d596f4c58b99323e2257da40706808f4edacaf20bfdd4dc5"
+        },
+        {
+          "path": "raw/newgreen/ec/NGW_Recr_JT_NGW_SLR_EC_EC.csv",
+          "sha256": "cc063870342081a1d115e2c452abcbb98673e53e1938bbb97039935e60406252"
+        }
+      ],
+      "stationMetadata": {
+        "path": "RMA/data/all_point_stations_finalized.csv",
+        "sha256": "3a75ff57ac4ceb2db95b157aa965fd6db54e2a064c8b2eed599e2cef350ae27e"
+      },
+      "processor": {
+        "path": "RMA/scripts/process_rma_d1641.py",
+        "sha256": "5b778e78c69623019d58116bdeae98c6a39e7c685e8b7ee5084c66b4fae978ce"
+      }
+    },
+    "06_stationIdentityMapping": {
+      "pass": true,
+      "notPresentInExports": {
+        "baseline-slr": [
+          "UNI",
+          "OLD"
+        ],
+        "bolster-slr": [
+          "UNI",
+          "OLD"
+        ],
+        "ecomachine-slr": [
+          "UNI",
+          "OLD"
+        ],
+        "newgreen-slr": [
+          "UNI",
+          "OLD"
+        ]
+      }
+    },
+    "07_sourceOccurrencesAndDecisions": {
+      "pass": true,
+      "occurrences": {
+        "baseline-slr": {
+          "STI": {
+            "rmaStationNumber": "138",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_Com_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_Com_JT_BASE_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Base_Recr_JT_BASE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              }
+            ]
+          },
+          "BDT": {
+            "rmaStationNumber": "414",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_Com_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_Com_JT_BASE_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              }
+            ]
+          },
+          "SJR": {
+            "rmaStationNumber": "425",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_Com_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_Com_JT_BASE_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Base_Recr_JT_BASE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              }
+            ]
+          },
+          "SNC": {
+            "rmaStationNumber": "57",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              }
+            ]
+          },
+          "NSL": {
+            "rmaStationNumber": "86",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "Base_Recr_JT_BASE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              }
+            ]
+          },
+          "BDL": {
+            "rmaStationNumber": "78",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "Base_Recr_JT_BASE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              }
+            ]
+          },
+          "EMM": {
+            "rmaStationNumber": "104",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              }
+            ]
+          },
+          "SAL": {
+            "rmaStationNumber": "129",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN ANDREAS LANDING"
+              }
+            ]
+          },
+          "JER": {
+            "rmaStationNumber": "113",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT JERSEY POINT"
+              }
+            ]
+          },
+          "VOL": {
+            "rmaStationNumber": "66",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              },
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              }
+            ]
+          },
+          "DMC": {
+            "rmaStationNumber": "358",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_EJdef_JT_BASE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "TRACY PUMPING PLANT"
+              },
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "TRACY PUMPING PLANT"
+              }
+            ]
+          },
+          "CLL": {
+            "rmaStationNumber": "90",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "COLLINSVILLE"
+              },
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "COLLINSVILLE"
+              }
+            ]
+          },
+          "PPT": {
+            "rmaStationNumber": "307",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_Ecolo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "PRISONERS POINT"
+              },
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "PRISONERS POINT"
+              }
+            ]
+          },
+          "WCI": {
+            "rmaStationNumber": "360",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Base_Econo_JT_BASE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "WEST CANAL NEAR CLIFTON COURT INTAKE"
+              }
+            ]
+          }
+        },
+        "bolster-slr": {
+          "STI": {
+            "rmaStationNumber": "138",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "Bolster_Recr_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              }
+            ]
+          },
+          "BDT": {
+            "rmaStationNumber": "414",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              }
+            ]
+          },
+          "SJR": {
+            "rmaStationNumber": "425",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_Com_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "Bolster_Recr_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              }
+            ]
+          },
+          "SNC": {
+            "rmaStationNumber": "57",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              }
+            ]
+          },
+          "NSL": {
+            "rmaStationNumber": "86",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "Bolster_Recr_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              }
+            ]
+          },
+          "BDL": {
+            "rmaStationNumber": "78",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "Bolster_Recr_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              }
+            ]
+          },
+          "EMM": {
+            "rmaStationNumber": "104",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              }
+            ]
+          },
+          "SAL": {
+            "rmaStationNumber": "129",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN ANDREAS LANDING"
+              }
+            ]
+          },
+          "JER": {
+            "rmaStationNumber": "113",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT JERSEY POINT"
+              }
+            ]
+          },
+          "VOL": {
+            "rmaStationNumber": "66",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              },
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              }
+            ]
+          },
+          "DMC": {
+            "rmaStationNumber": "358",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "TRACY PUMPING PLANT"
+              },
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "TRACY PUMPING PLANT"
+              }
+            ]
+          },
+          "CLL": {
+            "rmaStationNumber": "90",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "COLLINSVILLE"
+              },
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "COLLINSVILLE"
+              }
+            ]
+          },
+          "PPT": {
+            "rmaStationNumber": "307",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "PRISONERS POINT"
+              },
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "PRISONERS POINT"
+              }
+            ]
+          },
+          "WCI": {
+            "rmaStationNumber": "360",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "Bolster_Econo_JT_BOLSTER_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "WEST CANAL NEAR CLIFTON COURT INTAKE"
+              }
+            ]
+          }
+        },
+        "ecomachine-slr": {
+          "STI": {
+            "rmaStationNumber": "138",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              }
+            ]
+          },
+          "BDT": {
+            "rmaStationNumber": "414",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              }
+            ]
+          },
+          "SJR": {
+            "rmaStationNumber": "425",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              }
+            ]
+          },
+          "SNC": {
+            "rmaStationNumber": "57",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              }
+            ]
+          },
+          "NSL": {
+            "rmaStationNumber": "86",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              }
+            ]
+          },
+          "BDL": {
+            "rmaStationNumber": "78",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              }
+            ]
+          },
+          "EMM": {
+            "rmaStationNumber": "104",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              }
+            ]
+          },
+          "SAL": {
+            "rmaStationNumber": "129",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN ANDREAS LANDING"
+              }
+            ]
+          },
+          "JER": {
+            "rmaStationNumber": "113",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT JERSEY POINT"
+              }
+            ]
+          },
+          "VOL": {
+            "rmaStationNumber": "66",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              },
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              }
+            ]
+          },
+          "DMC": {
+            "rmaStationNumber": "358",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "TRACY PUMPING PLANT"
+              },
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "TRACY PUMPING PLANT"
+              }
+            ]
+          },
+          "CLL": {
+            "rmaStationNumber": "90",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "COLLINSVILLE"
+              },
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "COLLINSVILLE"
+              }
+            ]
+          },
+          "PPT": {
+            "rmaStationNumber": "307",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "PRISONERS POINT"
+              },
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "PRISONERS POINT"
+              }
+            ]
+          },
+          "WCI": {
+            "rmaStationNumber": "360",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "WEST CANAL NEAR CLIFTON COURT INTAKE"
+              }
+            ]
+          }
+        },
+        "newgreen-slr": {
+          "STI": {
+            "rmaStationNumber": "138",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              },
+              {
+                "file": "NGW_Recr_JT_NGW_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND"
+              }
+            ]
+          },
+          "BDT": {
+            "rmaStationNumber": "414",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER AT BRANDT BRIDGE"
+              }
+            ]
+          },
+          "SJR": {
+            "rmaStationNumber": "425",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_Com_JT_NGW_SLR_EC_EC.csv",
+                "team": "Com",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              },
+              {
+                "file": "NGW_Recr_JT_NGW_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "SAN JOAQUIN RIVER NEAR VERNALIS"
+              }
+            ]
+          },
+          "SNC": {
+            "rmaStationNumber": "57",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB"
+              }
+            ]
+          },
+          "NSL": {
+            "rmaStationNumber": "86",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              },
+              {
+                "file": "NGW_Recr_JT_NGW_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH AT NATIONAL STEEL"
+              }
+            ]
+          },
+          "BDL": {
+            "rmaStationNumber": "78",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              },
+              {
+                "file": "NGW_Recr_JT_NGW_SLR_EC_EC.csv",
+                "team": "Recr",
+                "column": "MONTEZUMA SLOUGH NEAR BELDONS LANDING"
+              }
+            ]
+          },
+          "EMM": {
+            "rmaStationNumber": "104",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              },
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "SACRAMENTO RIVER AT EMMATON"
+              }
+            ]
+          },
+          "SAL": {
+            "rmaStationNumber": "129",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN ANDREAS LANDING"
+              }
+            ]
+          },
+          "JER": {
+            "rmaStationNumber": "113",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SAN JOAQUIN RIVER AT JERSEY POINT"
+              }
+            ]
+          },
+          "VOL": {
+            "rmaStationNumber": "66",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              },
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH"
+              }
+            ]
+          },
+          "DMC": {
+            "rmaStationNumber": "358",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_EJdef_JT_NGW_SLR_EC_EC.csv",
+                "team": "EJdef",
+                "column": "TRACY PUMPING PLANT"
+              },
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "TRACY PUMPING PLANT"
+              }
+            ]
+          },
+          "CLL": {
+            "rmaStationNumber": "90",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "COLLINSVILLE"
+              },
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "COLLINSVILLE"
+              }
+            ]
+          },
+          "PPT": {
+            "rmaStationNumber": "307",
+            "decision": "identical duplicates; first file by name selected",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_Ecolo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Ecolo",
+                "column": "PRISONERS POINT"
+              },
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "PRISONERS POINT"
+              }
+            ]
+          },
+          "WCI": {
+            "rmaStationNumber": "360",
+            "decision": "single source",
+            "byteIdentical": true,
+            "numericIdentical": true,
+            "selected": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+            "sources": [
+              {
+                "file": "NGW_Econo_JT_NGW_SLR_EC_EC.csv",
+                "team": "Econo",
+                "column": "WEST CANAL NEAR CLIFTON COURT INTAKE"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "08_dailyCoverage96": {
+      "pass": true,
+      "expectedSamplesPerDay": 96,
+      "coverage": {
+        "baseline-slr": {
+          "BDT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "DMC": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "EMM": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "JER": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "PPT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SAL": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SJR": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "STI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "WCI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          }
+        },
+        "bolster-slr": {
+          "BDT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "DMC": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "EMM": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "JER": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "PPT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SAL": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SJR": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "STI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "WCI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          }
+        },
+        "ecomachine-slr": {
+          "BDT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "DMC": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "EMM": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "JER": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "PPT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SAL": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SJR": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "STI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "WCI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          }
+        },
+        "newgreen-slr": {
+          "BDT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "DMC": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "EMM": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "JER": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "PPT": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SAL": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "SJR": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "STI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          },
+          "WCI": {
+            "completeDays": 791,
+            "incompleteDays": 0,
+            "incompleteSpans": []
+          }
+        }
+      }
+    },
+    "09_evaluationDatesInInterval": {
+      "pass": true,
+      "outsideInterval": 8,
+      "note": "Only the partial Nov 2020 calendar-month rows (WCI, DMC) are labelled 2020-11-30 by the authoritative processor; they are insufficient_data and never judged. Behavior preserved from process_rma_d1641.py."
+    },
+    "10_runningWindowsComplete": {
+      "pass": true,
+      "evaluations": 11688,
+      "mismatches": []
+    },
+    "11_monthlyCompleteCalendarMonths": {
+      "pass": true,
+      "evaluations": 208,
+      "mismatches": []
+    },
+    "12_judgmentsExceededCompleteActive": {
+      "pass": true,
+      "judgments": 1579,
+      "failures": []
+    },
+    "13_noNonExceededJudgments": {
+      "pass": true,
+      "failures": []
+    },
+    "14_intervalsMatchEvaluations": {
+      "pass": true,
+      "intervals": 47
+    },
+    "15_highTideNotComputable": {
+      "pass": true,
+      "stations": [
+        "BDL",
+        "CLL",
+        "NSL",
+        "SNC",
+        "VOL"
+      ]
+    },
+    "16_noNanOrInfinity": {
+      "pass": true
+    },
+    "17_stationIdsMatchMap": {
+      "pass": true,
+      "stationIds": [
+        "57",
+        "66",
+        "78",
+        "86",
+        "90",
+        "104",
+        "113",
+        "129",
+        "138",
+        "307",
+        "358",
+        "360",
+        "379",
+        "403",
+        "414",
+        "425"
+      ],
+      "notInMapStations": [
+        "379",
+        "403"
+      ]
+    },
+    "18_seriesPlausibility": {
+      "pass": true,
+      "flags": [],
+      "identicalStationSeries": [
+        {
+          "scenarios": [
+            "baseline-slr",
+            "bolster-slr"
+          ],
+          "identicalStations": [
+            "SJR"
+          ]
+        },
+        {
+          "scenarios": [
+            "baseline-slr",
+            "ecomachine-slr"
+          ],
+          "identicalStations": [
+            "SJR"
+          ]
+        },
+        {
+          "scenarios": [
+            "baseline-slr",
+            "newgreen-slr"
+          ],
+          "identicalStations": [
+            "SJR"
+          ]
+        },
+        {
+          "scenarios": [
+            "bolster-slr",
+            "ecomachine-slr"
+          ],
+          "identicalStations": [
+            "SJR"
+          ]
+        },
+        {
+          "scenarios": [
+            "bolster-slr",
+            "newgreen-slr"
+          ],
+          "identicalStations": [
+            "SJR"
+          ]
+        },
+        {
+          "scenarios": [
+            "ecomachine-slr",
+            "newgreen-slr"
+          ],
+          "identicalStations": [
+            "SJR"
+          ]
+        }
+      ],
+      "explanation": {
+        "SJR": "San Joaquin River near Vernalis is the RMA San Joaquin inflow boundary; its EC is prescribed, so it is unchanged by sea level (current Bolster, Eco Machine and NGW offsets are also zero)."
+      }
+    },
+    "cross_identicalStationMapping": {
+      "pass": true
+    },
+    "cross_identicalObjectiveSchedule": {
+      "pass": true,
+      "evaluationRowsPerScenario": 2974
+    },
+    "cross_identicalAnalysisDates": {
+      "pass": true,
+      "start": "2018-10-01",
+      "end": "2020-11-29"
+    },
+    "cross_identicalHighTideTreatment": {
+      "pass": true
+    },
+    "cross_noCurrentConditionReuse": {
+      "pass": true,
+      "identicalInputFiles": [],
+      "stationsIdenticalToCurrentCounterpart": {
+        "baseline-slr": {
+          "SJR": "762/762 identical"
+        },
+        "bolster-slr": {
+          "SJR": "762/762 identical"
+        },
+        "ecomachine-slr": {
+          "SJR": "762/762 identical"
+        },
+        "newgreen-slr": {
+          "SJR": "762/762 identical"
+        }
+      }
+    },
+    "port_reproducesLiveCurrentJson": {
+      "pass": true,
+      "note": "Python port of build-d1641-data.mjs, byte-for-byte against d1641_rma.json."
+    }
+  }
+}

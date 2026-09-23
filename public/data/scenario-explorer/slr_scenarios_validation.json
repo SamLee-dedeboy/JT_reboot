@@ -1,0 +1,2701 @@
+{
+  "generatedAt": "2026-09-23T11:38:06",
+  "dashboard": "slr_scenarios_dashboard.json",
+  "startDate": "2018-10-01",
+  "inputs": {
+    "baseline-slr": {
+      "files": [
+        "Base_Com_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+        "Base_EJdef_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+        "Base_Ecolo_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+        "Base_Econo_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+        "Base_Recr_JT_BASE_SLR_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 94.69,
+              "meanAbsDailyDifference": 22.43
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "current:baseline": {
+      "files": [
+        "Base_Com_JT_BASE_EC_EC-AVG-AVG.csv",
+        "Base_EJdef_JT_BASE_EC_EC-AVG-AVG.csv",
+        "Base_Ecolo_JT_BASE_EC_EC-AVG-AVG.csv",
+        "Base_Econo_JT_BASE_EC_EC-AVG-AVG.csv",
+        "Base_Recr_JT_BASE_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 138.4,
+              "meanAbsDailyDifference": 35.45
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "bolster-slr": {
+      "files": [
+        "Bolster_Com_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+        "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+        "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+        "Bolster_Econo_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+        "Bolster_Recr_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 94.66,
+              "meanAbsDailyDifference": 22.64
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "current:bolster": {
+      "files": [
+        "Bolster_Com_JT_BOLSTER_EC_EC-AVG-AVG.csv",
+        "Bolster_EJdef_JT_BOLSTER_EC_EC-AVG-AVG.csv",
+        "Bolster_Ecolo_JT_BOLSTER_EC_EC-AVG-AVG.csv",
+        "Bolster_Econo_JT_BOLSTER_EC_EC-AVG-AVG.csv",
+        "Bolster_Recr_JT_BOLSTER_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 138.39,
+              "meanAbsDailyDifference": 35.69
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "ecomachine-slr": {
+      "files": [
+        "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+        "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+        "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+        "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+        "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 94.78,
+              "meanAbsDailyDifference": 23.29
+            }
+          }
+        },
+        {
+          "stationId": "283",
+          "longName": "Franks Tract",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's Franks Tract output diverges in EcoMach/NGW runs; EJdef, Ecolo and Recr agree, and the live dataset uses EJdef.",
+          "differenceFromChosen": {
+            "Ecolo": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            },
+            "Econo": {
+              "maxAbsDailyDifference": 9.46,
+              "meanAbsDailyDifference": 1.77
+            },
+            "Recr": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "current:ecomachine": {
+      "files": [
+        "EcoMach_Com_JT_ECOMACHINE_EC_EC-AVG-AVG.csv",
+        "EcoMach_EJdef_JT_ECOMACHINE_EC_EC-AVG-AVG.csv",
+        "EcoMach_Ecolo_JT_ECOMACHINE_EC_EC-AVG-AVG.csv",
+        "EcoMach_Econo_JT_ECOMACHINE_EC_EC-AVG-AVG.csv",
+        "EcoMach_Recr_JT_ECOMACHINE_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 140.64,
+              "meanAbsDailyDifference": 36.32
+            }
+          }
+        },
+        {
+          "stationId": "283",
+          "longName": "Franks Tract",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's Franks Tract output diverges in EcoMach/NGW runs; EJdef, Ecolo and Recr agree, and the live dataset uses EJdef.",
+          "differenceFromChosen": {
+            "Ecolo": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            },
+            "Econo": {
+              "maxAbsDailyDifference": 6.39,
+              "meanAbsDailyDifference": 0.88
+            },
+            "Recr": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "newgreen-slr": {
+      "files": [
+        "NGW_Com_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+        "NGW_EJdef_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+        "NGW_Ecolo_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+        "NGW_Econo_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+        "NGW_Recr_JT_NGW_SLR_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 94.34,
+              "meanAbsDailyDifference": 23.64
+            }
+          }
+        },
+        {
+          "stationId": "283",
+          "longName": "Franks Tract",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's Franks Tract output diverges in EcoMach/NGW runs; EJdef, Ecolo and Recr agree, and the live dataset uses EJdef.",
+          "differenceFromChosen": {
+            "Ecolo": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            },
+            "Econo": {
+              "maxAbsDailyDifference": 8.99,
+              "meanAbsDailyDifference": 1.75
+            },
+            "Recr": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            }
+          }
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    },
+    "current:newgreen": {
+      "files": [
+        "NGW_Com_JT_NGW_EC_EC-AVG-AVG.csv",
+        "NGW_EJdef_JT_NGW_EC_EC-AVG-AVG.csv",
+        "NGW_Ecolo_JT_NGW_EC_EC-AVG-AVG.csv",
+        "NGW_Econo_JT_NGW_EC_EC-AVG-AVG.csv",
+        "NGW_Recr_JT_NGW_EC_EC-AVG-AVG.csv"
+      ],
+      "matchedStations": 386,
+      "missingStationIds": [],
+      "duplicateStations": 140,
+      "resolvedConflicts": [
+        {
+          "stationId": "54",
+          "longName": "Goodyear Slough at Fleet",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "56",
+          "longName": "Cygnus-Cordelia Slough",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "57",
+          "longName": "Chadbourne Slough at Sunrise Duck Club",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "60",
+          "longName": "Boynton Slough",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "62",
+          "longName": "Grizzly Bay at Head of Montezuma Slough Buoy",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "63",
+          "longName": "Grizzly Bay at Suisun Slough",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "65",
+          "longName": "Hunter Cut at Montezuma Slough",
+          "teams": [
+            "EJdef",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "66",
+          "longName": "Suisun Slough 300' south of Volanti Slough",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "67",
+          "longName": "Grizzly Bay",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "71",
+          "longName": "Hill Slough",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "72",
+          "longName": "Grizzly Bay Buoy",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "75",
+          "longName": "Suisun Bay Cutoff Near Ryer",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "78",
+          "longName": "Montezuma Slough near Beldons Landing",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "79",
+          "longName": "Suisun Bay at Channel Marker 24A Near Bay Point",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "80",
+          "longName": "Honker Bay",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "82",
+          "longName": "Sacramento River at Mallard Island",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "85",
+          "longName": "Pittsburg",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "86",
+          "longName": "Montezuma Slough at National Steel",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "87",
+          "longName": "Montezuma Slough at Roaring River",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "88",
+          "longName": "Suisun Bay At Van Sickle Island",
+          "teams": [
+            "EJdef",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "94",
+          "longName": "Suisun Bay at Channel Marker 5 at Collinsville",
+          "teams": [
+            "EJdef",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "96",
+          "longName": "San Joaquin at Antioch",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "97",
+          "longName": "Suisun Bay at Channel Marker 10 Near Collinsville",
+          "teams": [
+            "EJdef",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "102",
+          "longName": "Sacramento River near Sherman Island",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "104",
+          "longName": "Sacramento River at Emmaton",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "107",
+          "longName": "San Joaquin River at Blind Point",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "111",
+          "longName": "Sacramento River at Threemile Slough",
+          "teams": [
+            "EJdef",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "117",
+          "longName": "Threemile Slough near Rio Vista",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "118",
+          "longName": "Rio Vista",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "120",
+          "longName": "San Joaquin River at Twitchell Island",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "121",
+          "longName": "False River near Oakley",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "122",
+          "longName": "Sacramento River Downstream of Isleton",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "124",
+          "longName": "Fisherman's Cut",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "125",
+          "longName": "Vieras Resort at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "126",
+          "longName": "Isleton at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "127",
+          "longName": "Brannan Marinas at San Joaquin River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "131",
+          "longName": "Georgiana Slough at Mokelumne River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "132",
+          "longName": "Old River at Franks Tract",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "133",
+          "longName": "Mokelumne River at Andrus Island",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "134",
+          "longName": "Brannan Marinas at Mokelumne and San Joaquin River Confluence",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "136",
+          "longName": "Potato Slough at North Venice Island",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "138",
+          "longName": "Mokelumne River (South Fork) @ Staten Island",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "139",
+          "longName": "Little Potato Slough at Terminous",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "144",
+          "longName": "Ulatis Creek Near Elmira",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "148",
+          "longName": "Hass Slough Near Elmira",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "150",
+          "longName": "Cache Slough Near Hastings Tract Near Rio Vista",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "161",
+          "longName": "Cache Slough at Ryer Island",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "162",
+          "longName": "Liberty Cut at Five Points",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "165",
+          "longName": "Toe Drain at Five Points",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "167",
+          "longName": "Cache Slough Above Ryer Island Ferry",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "170",
+          "longName": "Sacramento River Deep Water Ship Channel Near Courtland",
+          "teams": [
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "176",
+          "longName": "Steamboat Slough near Sacramento River",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "179",
+          "longName": "Sacramento River Deep Water Ship Channel Near Clarksburg",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "181",
+          "longName": "Snug Harbor Marina at Steamboat Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "184",
+          "longName": "Steamboat Slough Below Sutter Slough",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "188",
+          "longName": "Sacramento River Deep Water Ship Channel Near Freeport",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "190",
+          "longName": "Steamboat Slough between Sacramento River and Sutter Slough",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "197",
+          "longName": "Courtland at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "202",
+          "longName": "Ryde at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "204",
+          "longName": "Trailer Park at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "209",
+          "longName": "Green's Landing",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "219",
+          "longName": "Clarksburg at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "222",
+          "longName": "Hood at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "224",
+          "longName": "Sacramento River at Hood",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "226",
+          "longName": "Georgiana Slough near Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "227",
+          "longName": "Sacramento River at Walnut Grove",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "228",
+          "longName": "East Courtland",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "231",
+          "longName": "Walnut Grove Cross Channel at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "232",
+          "longName": "Old Walnut Grove at Snodgrass Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "233",
+          "longName": "Locke at Sacramento River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "236",
+          "longName": "North Mokelumne River below Snodgrass Slough",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "237",
+          "longName": "Sacramento River at Freeport",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "242",
+          "longName": "Delta Meadows",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "243",
+          "longName": "Wimpy's Marina at Mokelumne Confluence",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "244",
+          "longName": "South Mokelumne River at New Hope Bridge near Walnut Grove",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "247",
+          "longName": "North Mokelumne River at McCormack Williamson Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's same-named column is station 248 (ECON 61891), which shares this long name but is outside the 386-station set; EJdef carries station 247 (EJ44).",
+          "differenceFromChosen": {
+            "Econo": {
+              "maxAbsDailyDifference": 140.91,
+              "meanAbsDailyDifference": 36.78
+            }
+          }
+        },
+        {
+          "stationId": "256",
+          "longName": "Mokelumne River at Benson's Ferry",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "260",
+          "longName": "Dutch Sl below Jersey Island",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "261",
+          "longName": "Taylor Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "262",
+          "longName": "Dutch Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "264",
+          "longName": "Taylor Slough and Dutch Slough Confluence",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "267",
+          "longName": "Farrar Park",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "271",
+          "longName": "Willow Park Marina at Sand Mound Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "273",
+          "longName": "Summer Lake at Sand Mound Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "274",
+          "longName": "Piper Slough at Bethal Tract",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "275",
+          "longName": "Rock Slough at Delta Road Bridge",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "277",
+          "longName": "Bethel Island at Delta Coves",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "278",
+          "longName": "Orowood at Old River",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "283",
+          "longName": "Franks Tract",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "Econo's Franks Tract output diverges in EcoMach/NGW runs; EJdef, Ecolo and Recr agree, and the live dataset uses EJdef.",
+          "differenceFromChosen": {
+            "Ecolo": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            },
+            "Econo": {
+              "maxAbsDailyDifference": 6.5,
+              "meanAbsDailyDifference": 0.88
+            },
+            "Recr": {
+              "maxAbsDailyDifference": 0.0,
+              "meanAbsDailyDifference": 0.0
+            }
+          }
+        },
+        {
+          "stationId": "286",
+          "longName": "Werner Dredger Cut near Palm Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "289",
+          "longName": "Discovery Bay at Indian Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "293",
+          "longName": "Holland Cut near Bethel Island",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "294",
+          "longName": "Holland Tract",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "298",
+          "longName": "Old River at Bacon Island",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "300",
+          "longName": "Old River at Quimby Island",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "301",
+          "longName": "San Joaquin River at Prisoners Point",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "303",
+          "longName": "Railroad Cut South",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "306",
+          "longName": "Woodward Cut",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "310",
+          "longName": "Old River at Coney Island",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "311",
+          "longName": "Middle River at Middle River",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "316",
+          "longName": "Middle River at Bacon Island",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "318",
+          "longName": "Middle River near Holt",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "322",
+          "longName": "Venice Island",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "323",
+          "longName": "Empire Cut",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "330",
+          "longName": "King Island Marina Trailer Park at White Slough",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "333",
+          "longName": "Turner Cut near Holt",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "338",
+          "longName": "San Joaquin River at Rindge Pump",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "343",
+          "longName": "San Joaquin River near Buckley Cove",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "346",
+          "longName": "Stockton Ship Channel below Burns Cut-off",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "357",
+          "longName": "Old River at Clifton Court",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "358",
+          "longName": "Tracy Pumping Plant",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "365",
+          "longName": "Victoria Canal before Clifton Court Forebay",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "373",
+          "longName": "Old River Flux Station Upstream",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "375",
+          "longName": "Middle River at Tracy Blvd",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "392",
+          "longName": "Old River downstream of Tracy WW Outfall",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "396",
+          "longName": "Middle River at Howard Road Bridge",
+          "teams": [
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "399",
+          "longName": "Tom Paine Slough at Paradise Ave",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "408",
+          "longName": "Tom Paine Slough near Pescadero",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "412",
+          "longName": "San Joaquin River below Garwood Bridge",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "413",
+          "longName": "Old River at Head",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "414",
+          "longName": "San Joaquin River at Brandt Bridge",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "417",
+          "longName": "San Joaquin River above Dos Reis",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "418",
+          "longName": "San Joaquin River below Paradise Dam",
+          "teams": [
+            "EJdef",
+            "Econo"
+          ],
+          "chosenTeam": "EJdef",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "419",
+          "longName": "San Joaquin at Mossdale Bridge",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        },
+        {
+          "stationId": "425",
+          "longName": "San Joaquin River near Vernalis",
+          "teams": [
+            "Com",
+            "EJdef",
+            "Ecolo",
+            "Econo",
+            "Recr"
+          ],
+          "chosenTeam": "Com",
+          "reason": "First file by name (live builder rule)."
+        }
+      ],
+      "unmatchedColumns": [],
+      "repeatedColumnsWithinFile": [],
+      "rows": [
+        80396
+      ],
+      "span": [
+        "2018-08-15 12:45:00",
+        "2020-11-29 23:30:00"
+      ],
+      "blankCells": 0,
+      "nonFiniteCells": 0,
+      "negativeCells": 0,
+      "unorderedTimestamps": 0,
+      "partialDays": [
+        "2020-11-29"
+      ]
+    }
+  },
+  "statistics": {
+    "currentBauAbsolute": {
+      "count": 305326,
+      "min": 66.78,
+      "max": 49904.17,
+      "mean": 5644.99,
+      "p01": 87.7,
+      "p05": 105.49,
+      "p25": 157.68,
+      "p50": 298.78,
+      "p75": 828.45,
+      "p95": 47063.91,
+      "p99": 49430.62
+    },
+    "baseline-slr": {
+      "absolute": {
+        "count": 305326,
+        "min": 66.78,
+        "max": 49900.53,
+        "mean": 5941.52,
+        "p01": 87.7,
+        "p05": 105.89,
+        "p25": 162.2,
+        "p50": 332.9,
+        "p75": 1260.72,
+        "p95": 47199.27,
+        "p99": 49441.98
+      },
+      "offsetFromCurrentBau": {
+        "count": 305326,
+        "min": -2347.58,
+        "max": 4997.36,
+        "mean": 296.53,
+        "p01": -61.82,
+        "p05": -20.92,
+        "p25": -0.18,
+        "p50": 6.84,
+        "p75": 182.79,
+        "p95": 2002.11,
+        "p99": 2559.41
+      },
+      "minusCurrentCounterpart": {
+        "count": 305326,
+        "min": -2347.58,
+        "max": 4997.36,
+        "mean": 296.53,
+        "p01": -61.82,
+        "p05": -20.92,
+        "p25": -0.18,
+        "p50": 6.84,
+        "p75": 182.79,
+        "p95": 2002.11,
+        "p99": 2559.41
+      },
+      "regionOffsetMeans": {
+        "Central Bay": 65.04,
+        "Central Delta": 152.02,
+        "Confluence": 406.21,
+        "North Delta": 0.72,
+        "San Pablo Bay": 904.99,
+        "South Bay": 51.01,
+        "South Delta": 20.11,
+        "Suisun Bay": 1540.5
+      }
+    },
+    "bolster-slr": {
+      "absolute": {
+        "count": 305326,
+        "min": 66.78,
+        "max": 49900.46,
+        "mean": 5942.16,
+        "p01": 87.7,
+        "p05": 105.92,
+        "p25": 162.65,
+        "p50": 336.94,
+        "p75": 1040.24,
+        "p95": 47205.78,
+        "p99": 49442.06
+      },
+      "offsetFromCurrentBau": {
+        "count": 305326,
+        "min": -2680.49,
+        "max": 5110.9,
+        "mean": 297.17,
+        "p01": -61.46,
+        "p05": -20.9,
+        "p25": -0.15,
+        "p50": 7.45,
+        "p75": 153.59,
+        "p95": 2035.6,
+        "p99": 2613.97
+      },
+      "minusCurrentCounterpart": {
+        "count": 305326,
+        "min": -2638.6,
+        "max": 5008.34,
+        "mean": 297.46,
+        "p01": -59.81,
+        "p05": -19.87,
+        "p25": -0.14,
+        "p50": 7.86,
+        "p75": 186.01,
+        "p95": 2011.01,
+        "p99": 2595.2
+      },
+      "regionOffsetMeans": {
+        "Central Bay": 65.86,
+        "Central Delta": 133.68,
+        "Confluence": 428.22,
+        "North Delta": 1.49,
+        "San Pablo Bay": 922.45,
+        "South Bay": 51.06,
+        "South Delta": 9.35,
+        "Suisun Bay": 1569.01
+      }
+    },
+    "ecomachine-slr": {
+      "absolute": {
+        "count": 305326,
+        "min": 66.78,
+        "max": 49899.29,
+        "mean": 5983.98,
+        "p01": 87.7,
+        "p05": 106.02,
+        "p25": 161.16,
+        "p50": 327.21,
+        "p75": 1056.46,
+        "p95": 47138.27,
+        "p99": 49425.42
+      },
+      "offsetFromCurrentBau": {
+        "count": 305326,
+        "min": -856.1,
+        "max": 10430.29,
+        "mean": 338.99,
+        "p01": -64.9,
+        "p05": -24.32,
+        "p25": -0.41,
+        "p50": 4.5,
+        "p75": 119.57,
+        "p95": 2214.58,
+        "p99": 4893.75
+      },
+      "minusCurrentCounterpart": {
+        "count": 305326,
+        "min": -1478.94,
+        "max": 4336.19,
+        "mean": 290.98,
+        "p01": -61.14,
+        "p05": -20.7,
+        "p25": -0.18,
+        "p50": 5.81,
+        "p75": 163.88,
+        "p95": 2029.87,
+        "p99": 2609.89
+      },
+      "regionOffsetMeans": {
+        "Central Bay": 21.75,
+        "Central Delta": 92.63,
+        "Confluence": 296.48,
+        "North Delta": 0.86,
+        "San Pablo Bay": 610.01,
+        "South Bay": 23.05,
+        "South Delta": 6.58,
+        "Suisun Bay": 2332.66
+      }
+    },
+    "newgreen-slr": {
+      "absolute": {
+        "count": 305326,
+        "min": 66.78,
+        "max": 49900.99,
+        "mean": 5990.43,
+        "p01": 87.71,
+        "p05": 106.13,
+        "p25": 161.49,
+        "p50": 328.3,
+        "p75": 1062.26,
+        "p95": 47154.33,
+        "p99": 49432.24
+      },
+      "offsetFromCurrentBau": {
+        "count": 305326,
+        "min": -805.58,
+        "max": 10583.35,
+        "mean": 345.43,
+        "p01": -62.57,
+        "p05": -23.88,
+        "p25": -0.27,
+        "p50": 6.13,
+        "p75": 126.6,
+        "p95": 2250.02,
+        "p99": 4922.65
+      },
+      "minusCurrentCounterpart": {
+        "count": 305326,
+        "min": -1462.72,
+        "max": 4289.45,
+        "mean": 293.34,
+        "p01": -61.03,
+        "p05": -20.36,
+        "p25": -0.16,
+        "p50": 6.24,
+        "p75": 166.58,
+        "p95": 2044.74,
+        "p99": 2623.63
+      },
+      "regionOffsetMeans": {
+        "Central Bay": 30.01,
+        "Central Delta": 96.01,
+        "Confluence": 301.14,
+        "North Delta": 1.28,
+        "San Pablo Bay": 653.03,
+        "South Bay": 30.38,
+        "South Delta": 7.51,
+        "Suisun Bay": 2356.82
+      }
+    }
+  },
+  "checks": {
+    "stationCountAndOrder": {
+      "pass": true,
+      "stations": 386
+    },
+    "regionsAndAssignments": {
+      "pass": true,
+      "regions": [
+        "Central Bay",
+        "Central Delta",
+        "Confluence",
+        "North Delta",
+        "San Pablo Bay",
+        "South Bay",
+        "South Delta",
+        "Suisun Bay"
+      ]
+    },
+    "datesSortedUniqueContiguous": {
+      "pass": true,
+      "first": "2018-10-01",
+      "last": "2020-11-29",
+      "count": 791,
+      "calendarGaps": []
+    },
+    "seriesLengths": {
+      "pass": true
+    },
+    "finiteJson": {
+      "pass": true,
+      "note": "Missing values are JSON null."
+    },
+    "uniqueScenarioKeys": {
+      "pass": true,
+      "keys": [
+        "bolster",
+        "ecomachine",
+        "newgreen",
+        "reserve",
+        "tunnel",
+        "baseline-slr",
+        "bolster-slr",
+        "ecomachine-slr",
+        "newgreen-slr"
+      ]
+    },
+    "fiveTeamFilesPerSlrScenario": {
+      "pass": true,
+      "files": {
+        "baseline-slr": [
+          "Base_Com_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+          "Base_EJdef_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+          "Base_Ecolo_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+          "Base_Econo_JT_BASE_SLR_EC_EC-AVG-AVG.csv",
+          "Base_Recr_JT_BASE_SLR_EC_EC-AVG-AVG.csv"
+        ],
+        "bolster-slr": [
+          "Bolster_Com_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+          "Bolster_EJdef_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+          "Bolster_Ecolo_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+          "Bolster_Econo_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv",
+          "Bolster_Recr_JT_BOLSTER_SLR_EC_EC-AVG-AVG.csv"
+        ],
+        "ecomachine-slr": [
+          "EcoMach_Com_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+          "EcoMach_EJdef_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+          "EcoMach_Ecolo_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+          "EcoMach_Econo_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv",
+          "EcoMach_Recr_JT_ECOMACHINE_SLR_EC_EC-AVG-AVG.csv"
+        ],
+        "newgreen-slr": [
+          "NGW_Com_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+          "NGW_EJdef_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+          "NGW_Ecolo_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+          "NGW_Econo_JT_NGW_SLR_EC_EC-AVG-AVG.csv",
+          "NGW_Recr_JT_NGW_SLR_EC_EC-AVG-AVG.csv"
+        ]
+      }
+    },
+    "slrUnavailableNotEmitted": {
+      "pass": true
+    },
+    "currentOffsetsRetained": {
+      "pass": true
+    },
+    "inputColumns": {
+      "pass": true,
+      "resolvedConflicts": {
+        "baseline-slr": [
+          "247"
+        ],
+        "current:baseline": [
+          "247"
+        ],
+        "bolster-slr": [
+          "247"
+        ],
+        "current:bolster": [
+          "247"
+        ],
+        "ecomachine-slr": [
+          "247",
+          "283"
+        ],
+        "current:ecomachine": [
+          "247",
+          "283"
+        ],
+        "newgreen-slr": [
+          "247",
+          "283"
+        ],
+        "current:newgreen": [
+          "54",
+          "56",
+          "57",
+          "60",
+          "62",
+          "63",
+          "65",
+          "66",
+          "67",
+          "71",
+          "72",
+          "75",
+          "78",
+          "79",
+          "80",
+          "82",
+          "85",
+          "86",
+          "87",
+          "88",
+          "94",
+          "96",
+          "97",
+          "102",
+          "104",
+          "107",
+          "111",
+          "117",
+          "118",
+          "120",
+          "121",
+          "122",
+          "124",
+          "125",
+          "126",
+          "127",
+          "131",
+          "132",
+          "133",
+          "134",
+          "136",
+          "138",
+          "139",
+          "144",
+          "148",
+          "150",
+          "161",
+          "162",
+          "165",
+          "167",
+          "170",
+          "176",
+          "179",
+          "181",
+          "184",
+          "188",
+          "190",
+          "197",
+          "202",
+          "204",
+          "209",
+          "219",
+          "222",
+          "224",
+          "226",
+          "227",
+          "228",
+          "231",
+          "232",
+          "233",
+          "236",
+          "237",
+          "242",
+          "243",
+          "244",
+          "247",
+          "256",
+          "260",
+          "261",
+          "262",
+          "264",
+          "267",
+          "271",
+          "273",
+          "274",
+          "275",
+          "277",
+          "278",
+          "283",
+          "286",
+          "289",
+          "293",
+          "294",
+          "298",
+          "300",
+          "301",
+          "303",
+          "306",
+          "310",
+          "311",
+          "316",
+          "318",
+          "322",
+          "323",
+          "330",
+          "333",
+          "338",
+          "343",
+          "346",
+          "357",
+          "358",
+          "365",
+          "373",
+          "375",
+          "392",
+          "396",
+          "399",
+          "408",
+          "412",
+          "413",
+          "414",
+          "417",
+          "418",
+          "419",
+          "425"
+        ]
+      }
+    },
+    "pairedCoverage": {
+      "pass": true,
+      "coverage": {
+        "baseline-slr": {
+          "Central Bay": {
+            "paired": 12656,
+            "possible": 12656,
+            "fraction": 1.0
+          },
+          "Central Delta": {
+            "paired": 75145,
+            "possible": 75145,
+            "fraction": 1.0
+          },
+          "Confluence": {
+            "paired": 37177,
+            "possible": 37177,
+            "fraction": 1.0
+          },
+          "North Delta": {
+            "paired": 84637,
+            "possible": 84637,
+            "fraction": 1.0
+          },
+          "San Pablo Bay": {
+            "paired": 11865,
+            "possible": 11865,
+            "fraction": 1.0
+          },
+          "South Bay": {
+            "paired": 6328,
+            "possible": 6328,
+            "fraction": 1.0
+          },
+          "South Delta": {
+            "paired": 44296,
+            "possible": 44296,
+            "fraction": 1.0
+          },
+          "Suisun Bay": {
+            "paired": 33222,
+            "possible": 33222,
+            "fraction": 1.0
+          },
+          "_regionDaysMissing": 0
+        },
+        "bolster-slr": {
+          "Central Bay": {
+            "paired": 12656,
+            "possible": 12656,
+            "fraction": 1.0
+          },
+          "Central Delta": {
+            "paired": 75145,
+            "possible": 75145,
+            "fraction": 1.0
+          },
+          "Confluence": {
+            "paired": 37177,
+            "possible": 37177,
+            "fraction": 1.0
+          },
+          "North Delta": {
+            "paired": 84637,
+            "possible": 84637,
+            "fraction": 1.0
+          },
+          "San Pablo Bay": {
+            "paired": 11865,
+            "possible": 11865,
+            "fraction": 1.0
+          },
+          "South Bay": {
+            "paired": 6328,
+            "possible": 6328,
+            "fraction": 1.0
+          },
+          "South Delta": {
+            "paired": 44296,
+            "possible": 44296,
+            "fraction": 1.0
+          },
+          "Suisun Bay": {
+            "paired": 33222,
+            "possible": 33222,
+            "fraction": 1.0
+          },
+          "_regionDaysMissing": 0
+        },
+        "ecomachine-slr": {
+          "Central Bay": {
+            "paired": 12656,
+            "possible": 12656,
+            "fraction": 1.0
+          },
+          "Central Delta": {
+            "paired": 75145,
+            "possible": 75145,
+            "fraction": 1.0
+          },
+          "Confluence": {
+            "paired": 37177,
+            "possible": 37177,
+            "fraction": 1.0
+          },
+          "North Delta": {
+            "paired": 84637,
+            "possible": 84637,
+            "fraction": 1.0
+          },
+          "San Pablo Bay": {
+            "paired": 11865,
+            "possible": 11865,
+            "fraction": 1.0
+          },
+          "South Bay": {
+            "paired": 6328,
+            "possible": 6328,
+            "fraction": 1.0
+          },
+          "South Delta": {
+            "paired": 44296,
+            "possible": 44296,
+            "fraction": 1.0
+          },
+          "Suisun Bay": {
+            "paired": 33222,
+            "possible": 33222,
+            "fraction": 1.0
+          },
+          "_regionDaysMissing": 0
+        },
+        "newgreen-slr": {
+          "Central Bay": {
+            "paired": 12656,
+            "possible": 12656,
+            "fraction": 1.0
+          },
+          "Central Delta": {
+            "paired": 75145,
+            "possible": 75145,
+            "fraction": 1.0
+          },
+          "Confluence": {
+            "paired": 37177,
+            "possible": 37177,
+            "fraction": 1.0
+          },
+          "North Delta": {
+            "paired": 84637,
+            "possible": 84637,
+            "fraction": 1.0
+          },
+          "San Pablo Bay": {
+            "paired": 11865,
+            "possible": 11865,
+            "fraction": 1.0
+          },
+          "South Bay": {
+            "paired": 6328,
+            "possible": 6328,
+            "fraction": 1.0
+          },
+          "South Delta": {
+            "paired": 44296,
+            "possible": 44296,
+            "fraction": 1.0
+          },
+          "Suisun Bay": {
+            "paired": 33222,
+            "possible": 33222,
+            "fraction": 1.0
+          },
+          "_regionDaysMissing": 0
+        }
+      }
+    },
+    "seriesAnomalies": {
+      "pass": true,
+      "flagged": [
+        {
+          "scenario": "baseline-slr",
+          "stationId": "425",
+          "longName": "San Joaquin River near Vernalis",
+          "region": "South Delta",
+          "flags": [
+            "allZeroOffset"
+          ],
+          "absoluteRange": [
+            69.67,
+            1003.81
+          ],
+          "explanation": "San Joaquin River near Vernalis is the RMA San Joaquin inflow boundary; its EC is prescribed, so it is unchanged by sea level (current Bolster, Eco Machine and NGW offsets are also zero)."
+        },
+        {
+          "scenario": "bolster-slr",
+          "stationId": "425",
+          "longName": "San Joaquin River near Vernalis",
+          "region": "South Delta",
+          "flags": [
+            "allZeroOffset"
+          ],
+          "absoluteRange": [
+            69.67,
+            1003.81
+          ],
+          "explanation": "San Joaquin River near Vernalis is the RMA San Joaquin inflow boundary; its EC is prescribed, so it is unchanged by sea level (current Bolster, Eco Machine and NGW offsets are also zero)."
+        },
+        {
+          "scenario": "ecomachine-slr",
+          "stationId": "425",
+          "longName": "San Joaquin River near Vernalis",
+          "region": "South Delta",
+          "flags": [
+            "allZeroOffset"
+          ],
+          "absoluteRange": [
+            69.67,
+            1003.81
+          ],
+          "explanation": "San Joaquin River near Vernalis is the RMA San Joaquin inflow boundary; its EC is prescribed, so it is unchanged by sea level (current Bolster, Eco Machine and NGW offsets are also zero)."
+        },
+        {
+          "scenario": "newgreen-slr",
+          "stationId": "425",
+          "longName": "San Joaquin River near Vernalis",
+          "region": "South Delta",
+          "flags": [
+            "allZeroOffset"
+          ],
+          "absoluteRange": [
+            69.67,
+            1003.81
+          ],
+          "explanation": "San Joaquin River near Vernalis is the RMA San Joaquin inflow boundary; its EC is prescribed, so it is unchanged by sea level (current Bolster, Eco Machine and NGW offsets are also zero)."
+        }
+      ],
+      "unexplained": []
+    },
+    "noDateShift": {
+      "pass": true,
+      "lags": {
+        "baseline-slr": {
+          "Central Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99892
+          },
+          "Central Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.93337
+          },
+          "Confluence": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99496
+          },
+          "North Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98774
+          },
+          "San Pablo Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99776
+          },
+          "South Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99736
+          },
+          "South Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.97951
+          },
+          "Suisun Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99622
+          }
+        },
+        "bolster-slr": {
+          "Central Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99891
+          },
+          "Central Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.9165
+          },
+          "Confluence": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.9946
+          },
+          "North Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98507
+          },
+          "San Pablo Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99775
+          },
+          "South Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99736
+          },
+          "South Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98147
+          },
+          "Suisun Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99613
+          }
+        },
+        "ecomachine-slr": {
+          "Central Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99903
+          },
+          "Central Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.89376
+          },
+          "Confluence": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99363
+          },
+          "North Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98997
+          },
+          "San Pablo Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.9977
+          },
+          "South Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99733
+          },
+          "South Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98221
+          },
+          "Suisun Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99622
+          }
+        },
+        "newgreen-slr": {
+          "Central Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99906
+          },
+          "Central Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.89604
+          },
+          "Confluence": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99385
+          },
+          "North Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98774
+          },
+          "San Pablo Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99777
+          },
+          "South Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.99732
+          },
+          "South Delta": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.98214
+          },
+          "Suisun Bay": {
+            "bestLagDays": 0,
+            "correlationAtZero": 0.9964
+          }
+        }
+      }
+    },
+    "numericIdentities": {
+      "pass": true,
+      "tolerance": 0.0151,
+      "sampledStationDays": 2004,
+      "identities": {
+        "slrOffset=slrAbs-bauAbs": {
+          "samples": 8016,
+          "maxAbsError": 0.004999
+        },
+        "slrBOffset-slrAOffset=slrBAbs-slrAAbs": {
+          "samples": 12024,
+          "maxAbsError": 0.009903
+        },
+        "slrOffset-currentOffset=slrAbs-currentAbs": {
+          "samples": 6012,
+          "maxAbsError": 0.009936
+        }
+      }
+    },
+    "regionMeans": {
+      "pass": true,
+      "maxAbsError": 0.005
+    },
+    "currentOffsetsMatchCurrentData": {
+      "pass": true,
+      "drift": {
+        "bolster": {
+          "compared": 305326,
+          "maxAbsDifference": 0.005,
+          "over0.01": 0
+        },
+        "ecomachine": {
+          "compared": 305326,
+          "maxAbsDifference": 0.005,
+          "over0.01": 0
+        },
+        "newgreen": {
+          "compared": 305326,
+          "maxAbsDifference": 0.005,
+          "over0.01": 0
+        }
+      }
+    }
+  }
+}

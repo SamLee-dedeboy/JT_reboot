@@ -14,6 +14,9 @@ export interface Station {
 export interface Scenario {
   key: string
   label: string
+  scenarioFamily?: string
+  climateCondition?: 'current' | 'slr'
+  currentCounterpart?: string
   stationValues: ValueSeries[]
   regionValues: Record<string, ValueSeries>
   referenceStationValues?: ValueSeries[]
@@ -33,9 +36,16 @@ export interface ScenarioDatasets {
   rmaSchism: ScenarioDataset
   tieredOutflows: ScenarioDataset
   schismRuns: ScenarioDataset
+  slrScenarios: ScenarioDataset
 }
 
-export type DashboardMode = 'rma-scenarios' | 'rma-schism' | 'tiered-outflows' | 'schism-runs'
+export type DashboardMode =
+  | 'rma-scenarios'
+  | 'rma-schism'
+  | 'tiered-outflows'
+  | 'schism-runs'
+  | 'slr-current'
+  | 'slr-scenarios'
 export type ValueMode = 'raw' | 'percent'
 export type ModelKey = 'rma' | 'schism'
 export type RangeMode = 'minmax' | 'p90' | 'iqr'

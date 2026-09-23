@@ -39,7 +39,7 @@ export default function AppRouter() {
       <Route path="/pages/scenario-explorer" element={deferred(<ScenarioExplorerPage />)} />
       <Route
         path="/pages/scenario-explorer/internal"
-        element={deferred(<ScenarioExplorerPage enableDateHighlights />)}
+        element={deferred(<ScenarioExplorerPage enableDateHighlights enableSlrModes />)}
       />
       <Route path="/pages/regional-summary" element={deferred(<RegionalSummaryPage />)} />
       <Route path="/pages/watershed" element={deferred(<Watershed />)} />
