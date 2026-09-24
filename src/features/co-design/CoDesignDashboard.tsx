@@ -225,7 +225,6 @@ export default function CoDesignDashboard() {
             gap: 2,
             px: { xs: 2, md: 4 },
             py: 1,
-            mb: 2,
             bgcolor: theme.coDesign.shell.headerBackground,
             borderBottom: `1px solid ${theme.coDesign.shell.headerBorder}`,
           })}

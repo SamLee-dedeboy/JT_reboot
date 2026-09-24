@@ -254,6 +254,7 @@ export default function InterviewFlow({ block_aggregator }: Props) {
         height: '100%',
         width: '100%',
         px: 2.5,
+        pt: 2,
         pb: 1.25,
         color: theme.coDesign.flow.text,
         bgcolor: theme.coDesign.flow.surface,

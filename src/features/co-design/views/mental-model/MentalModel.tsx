@@ -120,6 +120,7 @@ export default function MentalModel() {
         display: 'flex',
         flexGrow: 1,
         px: { xs: 2, md: 4 },
+        pt: 2,
         pb: 4,
         textAlign: 'center',
       }}

@@ -24,7 +24,7 @@ export default function Linking() {
         position: 'relative',
         display: 'flex',
         flexGrow: 1,
-        pt: 1,
+        pt: 3,
         px: 4,
         pb: 4,
         textAlign: 'center',
