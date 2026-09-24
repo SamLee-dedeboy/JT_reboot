@@ -1,0 +1,11 @@
+/* Ported from JT_dashboard/src/lib/Linking/Linking.svelte <style>. */
+.jtd-Linking.page-container {
+  padding: 0.5rem 2rem 2rem;
+  text-align: center;
+}
+
+.jtd-Linking .bubble-container {
+  outline: 1px solid var(--surface-page);
+  border-radius: 0.1rem;
+  background: var(--surface-page);
+}

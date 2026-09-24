@@ -1,0 +1,30 @@
+/* Ported from JT_dashboard/src/lib/Linking/ScenarioCodes.svelte <style>. */
+.jtd-ScenarioCodes .title-banner {
+  color: var(--jt-secondary);
+}
+
+.jtd-ScenarioCodes.info-panel {
+  color: var(--text-primary);
+}
+.jtd-ScenarioCodes .info-panel-expanded {
+  max-width: 22rem;
+  transform-origin: top right;
+  background-color: color-mix(in srgb, var(--surface-elevated) 92%, transparent);
+  outline: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.jtd-ScenarioCodes .info-toggle {
+  color: var(--text-primary);
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+.jtd-ScenarioCodes .info-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.jtd-ScenarioCodes .select-hint {
+  color: var(--text-primary);
+}
+.jtd-ScenarioCodes.error-message {
+  color: var(--accent-danger);
+}

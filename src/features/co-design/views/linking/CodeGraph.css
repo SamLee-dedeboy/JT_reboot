@@ -1,0 +1,33 @@
+/* Ported from JT_dashboard/src/lib/Linking/CodeGraph.svelte <style>. */
+.jtd-CodeGraph .zoom-controls {
+  background-color: color-mix(in srgb, var(--surface-elevated) 85%, transparent);
+  outline: 1px solid var(--border-subtle);
+  z-index: 5;
+}
+.jtd-CodeGraph .zoom-btn {
+  min-width: 2rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text-primary);
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.jtd-CodeGraph .zoom-btn.reset {
+  font-size: 0.8rem;
+}
+.jtd-CodeGraph .zoom-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+.jtd-CodeGraph .zoom-level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  padding: 0 0.4rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary);
+}
