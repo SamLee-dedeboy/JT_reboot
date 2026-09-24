@@ -1,0 +1,9 @@
+/* Ported from the identical `.slider` rules in JT_dashboard/src/lib/Sunburst/
+   Sunburst.svelte and SunburstGrid.svelte <style>, anchored to .jtd-SliderToggle. */
+.jtd-SliderToggle .slider {
+  background-color: var(--surface-page);
+}
+
+.jtd-SliderToggle input:checked + .slider {
+  background-color: var(--jt-primary);
+}

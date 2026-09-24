@@ -1,0 +1,8 @@
+/* Ported from JT_dashboard/src/lib/Sunburst/Sunburst.svelte <style>, anchored
+   to .jtd-Sunburst. The `.slider` rules live in SliderToggle.css; the
+   scroll-indicator rules styled markup that was disabled (`{#if false}`). */
+.jtd-root .jtd-Sunburst .text-left > h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
