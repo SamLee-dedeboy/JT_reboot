@@ -155,7 +155,8 @@ export default function MentalModel() {
               display: 'flex',
               flexDirection: 'column',
               flexGrow: 1,
-              minHeight: 0,
+              // Stacked below md there is no fixed-height row to fill, so give the chart room.
+              minHeight: { xs: '70vh', md: 0 },
             }}
           >
             <LegendChip type={DRIVER_TYPE} edge="top">
@@ -189,16 +190,17 @@ export default function MentalModel() {
           </Typography>
           <Box ref={setTooltipAnchorEl} sx={{ position: 'relative', mt: 0.5 }}>
             {mergedServerData && selectedCode ? (
-              // Centred on the hovered bubble's y, clamped inside the sidebar.
+              // From md, centred on the hovered bubble's y and clamped inside the
+              // sidebar; stacked below md it simply flows under the heading.
               <Box
                 key={selectedCode}
                 ref={setTooltipEl}
                 style={{ top: tooltipTop }}
                 sx={(theme) => ({
-                  position: 'absolute',
+                  position: { xs: 'static', md: 'absolute' },
                   left: theme.spacing(1),
                   right: theme.spacing(1),
-                  transform: 'translateY(-50%)',
+                  transform: { md: 'translateY(-50%)' },
                   transition: theme.transitions.create('all', {
                     duration: theme.coDesign.mentalModel.tooltip.moveDuration,
                     easing: theme.transitions.easing.easeInOut,
