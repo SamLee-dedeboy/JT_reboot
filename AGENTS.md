@@ -38,7 +38,7 @@ Current route groups:
 - Public home: `/`
 - Scenarios: `/scenarios`, `/scenarios/background-context`, `/scenarios/key-parameters`, and `/scenarios/:scenarioSlug`
 - Repository: `/pages/project-documentation`, `/pages/service-learning`, and `/pages/resources`
-- Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, and `/pages/regional-summary`
+- Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/regional-summary`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
 - Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, and `/design-system`
 
 ## Source Architecture
@@ -51,6 +51,7 @@ The `src` directory is organized by application role and feature:
 - `src/features/repository/`: repository routes, shared repository layout, cards, tabs, timelines, and data.
 - `src/features/scenario-explorer/`: scenario explorer page, charts, controls, types, and feature-local utilities.
 - `src/features/regional-summary/`: regional summary page, tutorials, controls, map UI, and feature-local types.
+- `src/features/co-design/`: the co-design dashboard, migrated from the Svelte JT_dashboard app. `CoDesignDashboard.tsx` is the shell with its own nested routes; each view lives under `views/`. There is no backend: `api.ts` serves static snapshots from `public/data/co-design/`, regenerated with `scripts/co-design/snapshot_api.py`. View tokens live in `src/theme/coDesign/` (`theme.coDesign`).
 - `src/ui/`: reusable site-wide UI primitives, cards, animation components, Navbar, and Footer.
 - `src/map/`: reusable Mapbox infrastructure, map instances, layers, and KelpFusion overlays.
 - `src/internal/`: internal-only tools, visualizations, KelpFusion domain logic, and the in-app Design System.

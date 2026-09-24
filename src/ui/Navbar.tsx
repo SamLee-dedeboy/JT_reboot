@@ -57,7 +57,7 @@ const navItems: NavItem[] = [
     label: 'Co-Designing',
     caption: 'Explore the collaborative process, participant input, and workshop materials.',
     dropdown: [
-      { label: 'Co-Design Dashboard', href: '#', disabled: true },
+      { label: 'Co-Design Dashboard', href: '/pages/co-design-dashboard' },
       { label: 'Participant Responses', href: '#', disabled: true },
       { label: 'Workshop Reports', href: '#', disabled: true },
     ],
