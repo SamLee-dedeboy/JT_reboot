@@ -39,7 +39,7 @@ Current route groups:
 - Scenarios: `/scenarios`, `/scenarios/background-context`, `/scenarios/key-parameters`, and `/scenarios/:scenarioSlug`
 - Repository: `/pages/project-documentation`, `/pages/service-learning`, and `/pages/resources`
 - Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/regional-summary`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
-- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, and `/design-system`
+- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/co-design-timeline`, and `/design-system`
 
 ## Source Architecture
 

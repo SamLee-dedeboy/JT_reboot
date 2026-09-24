@@ -10,6 +10,7 @@ import ScenariosBackgroundPage from '../features/scenarios/ScenariosBackgroundPa
 import ScenariosKeyParametersPage from '../features/scenarios/ScenariosKeyParametersPage'
 import ScenariosLandingPage from '../features/scenarios/ScenariosLandingPage'
 import BaselineExploration from '../internal/BaselineExploration'
+import CoDesignTimelinePage from '../internal/CoDesignTimeline'
 import DesignSystem from '../internal/design-system/DesignSystem'
 import KelpDiagram from '../internal/KelpDiagram'
 import Playground from '../internal/Playground'
@@ -48,6 +49,7 @@ export default function AppRouter() {
       <Route path="/pages/watershed" element={deferred(<Watershed />)} />
       <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
       <Route path="/pages/rank-visualization" element={deferred(<RankVisualization />)} />
+      <Route path="/pages/co-design-timeline" element={<CoDesignTimelinePage />} />
       <Route path="/design-system" element={<DesignSystem />} />
     </Routes>
   )

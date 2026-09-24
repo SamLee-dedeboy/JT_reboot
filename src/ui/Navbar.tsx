@@ -92,6 +92,7 @@ const navItems: NavItem[] = [
       { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
       { label: 'Watershed', href: '/pages/watershed' },
       { label: 'Rank Visualization', href: '/pages/rank-visualization' },
+      { label: 'Co-Design Timeline', href: '/pages/co-design-timeline' },
     ],
   },
 ]
