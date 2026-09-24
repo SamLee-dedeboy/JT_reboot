@@ -56,12 +56,26 @@ const steps: TimelineStep[] = [
   },
 ]
 
-export default function CoDesignTimeline({ sx }: { sx?: SxProps<Theme> }) {
-  const navigate = useNavigate()
-  return <Timeline onSelect={(view) => navigate(coDesignPath(view))} sx={sx} />
+interface CoDesignTimelineProps {
+  // Show only each step's title and subtitle (no description or hint).
+  compact?: boolean
+  sx?: SxProps<Theme>
 }
 
-function Timeline({ onSelect, sx }: { onSelect: (view: string) => void; sx?: SxProps<Theme> }) {
+export default function CoDesignTimeline({ compact = false, sx }: CoDesignTimelineProps) {
+  const navigate = useNavigate()
+  return <Timeline onSelect={(view) => navigate(coDesignPath(view))} compact={compact} sx={sx} />
+}
+
+function Timeline({
+  onSelect,
+  compact,
+  sx,
+}: {
+  onSelect: (view: string) => void
+  compact: boolean
+  sx?: SxProps<Theme>
+}) {
   return (
     <Box
       sx={[
@@ -93,7 +107,13 @@ function Timeline({ onSelect, sx }: { onSelect: (view: string) => void; sx?: SxP
         })}
       />
       {steps.map((step, index) => (
-        <TimelineItem key={step.view} step={step} index={index} onSelect={onSelect} />
+        <TimelineItem
+          key={step.view}
+          step={step}
+          index={index}
+          compact={compact}
+          onSelect={onSelect}
+        />
       ))}
     </Box>
   )
@@ -102,10 +122,12 @@ function Timeline({ onSelect, sx }: { onSelect: (view: string) => void; sx?: SxP
 function TimelineItem({
   step,
   index,
+  compact,
   onSelect,
 }: {
   step: TimelineStep
   index: number
+  compact: boolean
   onSelect: (view: string) => void
 }) {
   const isLeft = step.side === 'left'
@@ -120,8 +142,9 @@ function TimelineItem({
           xs: `${theme.coDesign.shell.timeline.railColumn}px 1fr`,
           md: `1fr ${theme.coDesign.shell.timeline.railColumn}px 1fr`,
         },
-        // Interleave cards so alternating sides sit half a card apart.
-        mt: index === 0 ? 0 : { xs: 3, md: -6 },
+        // Interleave the full cards so alternating sides sit half a card apart;
+        // compact cards are short enough to simply stack.
+        mt: index === 0 ? 0 : compact ? 2 : { xs: 3, md: -6 },
       })}
     >
       <Box
@@ -135,7 +158,7 @@ function TimelineItem({
           pr: { xs: 0, md: isLeft ? 3 : 0 },
         }}
       >
-        <TimelineCard step={step} index={index} onSelect={onSelect} />
+        <TimelineCard step={step} index={index} compact={compact} onSelect={onSelect} />
       </Box>
       <Box
         sx={(theme) => ({
@@ -172,10 +195,12 @@ function TimelineItem({
 function TimelineCard({
   step,
   index,
+  compact,
   onSelect,
 }: {
   step: TimelineStep
   index: number
+  compact: boolean
   onSelect: (view: string) => void
 }) {
   return (
@@ -190,11 +215,13 @@ function TimelineCard({
         return {
           display: 'flex',
           flexDirection: 'column',
-          gap: 1.25,
-          width: '100%',
+          gap: compact ? 1 : 1.25,
+          width: compact
+            ? { xs: '100%', md: theme.coDesign.shell.timeline.compactCardWidth }
+            : '100%',
           maxWidth: { md: theme.coDesign.shell.timeline.cardMaxWidth },
-          px: { xs: 3, md: 4.5 },
-          py: { xs: 3, md: 4 },
+          px: { xs: 3, md: compact ? 4 : 4.5 },
+          py: compact ? 2.5 : { xs: 3, md: 4 },
           textAlign: 'center',
           color: 'common.white',
           bgcolor: card.background,
@@ -232,12 +259,16 @@ function TimelineCard({
           </Box>
         ))}
       </Typography>
-      <Typography variant="cardBody" sx={{ color: 'base.50' }}>
-        {step.body}
-      </Typography>
-      <Typography variant="meta" sx={{ color: 'secondary.main', fontStyle: 'italic' }}>
-        {step.hint}
-      </Typography>
+      {!compact && (
+        <>
+          <Typography variant="cardBody" sx={{ color: 'base.50' }}>
+            {step.body}
+          </Typography>
+          <Typography variant="meta" sx={{ color: 'secondary.main', fontStyle: 'italic' }}>
+            {step.hint}
+          </Typography>
+        </>
+      )}
     </ButtonBase>
   )
 }

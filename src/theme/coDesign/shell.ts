@@ -27,6 +27,7 @@ export const shell = {
     railColumn: 60,
     maxWidth: 1100,
     cardMaxWidth: 440,
+    compactCardWidth: 340,
     card: {
       background: palette.base[700],
       border: `2px solid ${palette.brand.primaryBlue}`,
