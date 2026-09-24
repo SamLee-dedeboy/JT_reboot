@@ -1,23 +1,24 @@
 // "Conceptualizing" view, ported from JT_dashboard/src/lib/MentalModel/MentalModel.svelte.
 // Fetch order matches the original: codebook first, then interview + exhibition
 // mental models; the parent t-SNE loads in parallel.
+import { Box, Typography } from '@mui/material'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import {
   getCodebook,
   getCodebookParentTsne,
   getExhibitionMentalModels,
   getInterviewMentalModels,
 } from '../../api'
+import { readableTextOn } from '../../shared/contrast'
 import AllMMs from './AllMMs'
 import CodeTooltip from './CodeTooltip'
-import { nodeTypeColor, nodeTypeTextColor } from './constants'
+import { colorForNode, DRIVER_TYPE, IMPACT_TYPE } from './constants'
 import type { CodebookEntry } from './constants'
-import './MentalModel.css'
-import LegacyScope from '../../shared/LegacyScope'
 
 type CodeParticipants = Record<string, string[]>
 
-function MentalModelView() {
+export default function MentalModel() {
   const [codebook, setCodebook] = useState<CodebookEntry[]>([])
   const [codeTsne, setCodeTsne] = useState<Record<string, number>>({})
   const [interviewServerData, setInterviewServerData] = useState<CodeParticipants>()
@@ -113,74 +114,159 @@ function MentalModelView() {
   }, [tooltipY, tooltipAnchorEl, sidebarEl, tooltipHeight])
 
   return (
-    <div className="jtd-MentalModel page-container flex grow relative">
-      <div className="flex"></div>
-
-      <div className="flex flex-col lg:flex-row grow gap-6 relative min-h-0">
-        <div className="relative flex flex-col w-full lg:w-[70%] min-h-0 gap-1">
-          <h3 className="uppercase">Collective Mental Model</h3>
-          <div
-            className="axis-label absolute top-[2.5rem] left-2 z-10 px-3 py-1 rounded text-[1rem] font-semibold pointer-events-none"
-            style={{
-              backgroundColor: nodeTypeColor['impacts salinity'],
-              color: nodeTypeTextColor['impacts salinity'],
-            }}
-          >
-            Drivers
-          </div>
-          <div
-            className="axis-label absolute bottom-2 left-2 z-10 px-3 py-1 rounded text-[1rem] font-semibold pointer-events-none"
-            style={{
-              backgroundColor: nodeTypeColor['impacted by salinity'],
-              color: nodeTypeTextColor['impacted by salinity'],
-            }}
-          >
-            Impacts
-          </div>
-          <AllMMs
-            serverData={mergedServerData}
-            codeTsne={codeTsne}
-            codebook={codebook}
-            svgId="mm_svg"
-            onHover={handleHover}
-          />
-        </div>
-        <div
-          ref={setSidebarEl}
-          className="mm-sidebar relative w-full lg:w-[30%] rounded pb-4 text-white overflow-hidden min-h-0"
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+        flexGrow: 1,
+        px: { xs: 2, md: 4 },
+        pb: 4,
+        textAlign: 'center',
+      }}
+    >
+      {/* Chart and descriptions side by side from md, stacked below */}
+      <Box
+        sx={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          flexGrow: 1,
+          gap: 3,
+          minHeight: 0,
+        }}
+      >
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            width: { xs: '100%', md: '70%' },
+            minHeight: 0,
+            gap: 0.5,
+          }}
         >
-          <h3 className="uppercase">Descriptions</h3>
-          <div className="relative mt-1" ref={setTooltipAnchorEl}>
+          <Typography variant="chartTitle" component="h2">
+            Collective Mental Model
+          </Typography>
+          {/* Chart canvas; the legend chips pin to its top and bottom corners */}
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              flexGrow: 1,
+              minHeight: 0,
+            }}
+          >
+            <LegendChip type={DRIVER_TYPE} edge="top">
+              Drivers
+            </LegendChip>
+            <LegendChip type={IMPACT_TYPE} edge="bottom">
+              Impacts
+            </LegendChip>
+            <AllMMs
+              serverData={mergedServerData}
+              codeTsne={codeTsne}
+              codebook={codebook}
+              svgId="mm_svg"
+              onHover={handleHover}
+            />
+          </Box>
+        </Box>
+        <Box
+          ref={setSidebarEl}
+          sx={{
+            position: 'relative',
+            width: { xs: '100%', md: '30%' },
+            minHeight: 0,
+            pb: 2,
+            overflow: 'hidden',
+            color: 'common.white',
+          }}
+        >
+          <Typography variant="chartTitle" component="h2">
+            Descriptions
+          </Typography>
+          <Box ref={setTooltipAnchorEl} sx={{ position: 'relative', mt: 0.5 }}>
             {mergedServerData && selectedCode ? (
-              <div
+              // Centred on the hovered bubble's y, clamped inside the sidebar.
+              <Box
                 key={selectedCode}
                 ref={setTooltipEl}
-                className="absolute top-2 left-2 right-2 -translate-y-1/2 transition-all duration-200"
-                style={{ top: `${tooltipTop}px` }}
+                style={{ top: tooltipTop }}
+                sx={(theme) => ({
+                  position: 'absolute',
+                  left: theme.spacing(1),
+                  right: theme.spacing(1),
+                  transform: 'translateY(-50%)',
+                  transition: theme.transitions.create('all', {
+                    duration: theme.coDesign.mentalModel.tooltip.moveDuration,
+                    easing: theme.transitions.easing.easeInOut,
+                  }),
+                })}
               >
                 <CodeTooltip
                   codebook={codebook}
                   all_code_participants={mergedServerData}
                   selected_code={selectedCode}
                 />
-              </div>
+              </Box>
             ) : (
-              <div className="flex h-full items-center justify-center p-4 text-center italic opacity-70">
+              <Typography
+                variant="meta"
+                component="p"
+                sx={{
+                  display: 'flex',
+                  height: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  p: 2,
+                  textAlign: 'center',
+                  fontStyle: 'italic',
+                  color: 'base.100',
+                }}
+              >
                 Hover over a bubble on the left to see details about that code.
-              </div>
+              </Typography>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   )
 }
 
-// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
-export default function MentalModel() {
+// Drivers / Impacts key, filled with the same colour as that half's bubbles.
+function LegendChip({
+  type,
+  edge,
+  children,
+}: {
+  type: string
+  edge: 'top' | 'bottom'
+  children: ReactNode
+}) {
   return (
-    <LegacyScope>
-      <MentalModelView />
-    </LegacyScope>
+    <Typography
+      variant="chartLabel"
+      sx={(theme) => {
+        const mm = theme.coDesign.mentalModel
+        const fill = colorForNode(type, mm.node)
+        return {
+          position: 'absolute',
+          left: theme.spacing(1),
+          [edge]: theme.spacing(1),
+          zIndex: 1,
+          px: 1.5,
+          py: 0.75,
+          borderRadius: mm.legendRadius,
+          pointerEvents: 'none',
+          bgcolor: fill,
+          color: readableTextOn(fill, mm.text.light, mm.text.dark),
+        }
+      }}
+    >
+      {children}
+    </Typography>
   )
 }

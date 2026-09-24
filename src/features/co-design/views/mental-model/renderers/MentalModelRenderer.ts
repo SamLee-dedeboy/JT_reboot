@@ -1,11 +1,12 @@
 // Ported from JT_dashboard/src/lib/MentalModel/renderers/MentalModelRenderer.ts.
 // Algorithms are unchanged. Added `destroy()` so React (StrictMode) can tear the
 // SVG down and stop every simulation; the never-called drag helpers and
-// highlightSelectBubble() were dropped.
+// highlightSelectBubble() were dropped. Colours and fonts come from the theme
+// via `MentalModelRendererTokens` (built in AllMMs).
 import * as d3 from 'd3'
-import { contrastTextColor } from '../../../shared/colors'
+import { readableTextOn } from '../../../shared/contrast'
 import { colorForNode } from '../constants'
-import type { CodebookEntry } from '../constants'
+import type { CodebookEntry, NodeColors } from '../constants'
 
 const center = 1.6 / 3
 
@@ -18,22 +19,49 @@ export type MMNode = [string, number] &
 
 export type HoverHandler = (node: [string, number] | null, clientY?: number) => void
 
+// Theme values the renderer paints with; see theme.coDesign.mentalModel.
+export type MentalModelRendererTokens = {
+  nodeColors: NodeColors
+  centerFill: string
+  stroke: string
+  hoverStroke: string
+  lightText: string
+  darkText: string
+  link: string
+  linkOpacity: number
+  arrow: string
+  regionTop: string
+  regionBottom: string
+  regionOpacity: number
+  labelFontFamily: string
+  labelFontWeight: string | number
+  centerFontFamily: string
+  centerFontWeight: string | number
+}
+
 export class MentalModelRenderer {
   svgId: string
   width: number = 1000
   height: number = 1000
   dispatchHover: HoverHandler
+  tokens: MentalModelRendererTokens
   simulation: d3.Simulation<MMNode, undefined> | undefined
   // Every update() starts a new simulation without stopping the previous one
   // (as the original did); keep them all so destroy() can stop them.
   private simulations: d3.Simulation<MMNode, undefined>[] = []
 
-  constructor(svgId: string, dispatchHover: HoverHandler) {
+  constructor(svgId: string, dispatchHover: HoverHandler, tokens: MentalModelRendererTokens) {
     this.svgId = svgId
     this.dispatchHover = dispatchHover
+    this.tokens = tokens
+  }
+
+  private textOn(fill: string) {
+    return readableTextOn(fill, this.tokens.lightText, this.tokens.darkText)
   }
 
   init() {
+    const t = this.tokens
     const svg = d3.select<SVGSVGElement, unknown>(`#${this.svgId}`)
     svg
       .append('defs')
@@ -47,7 +75,7 @@ export class MentalModelRenderer {
       .attr('orient', 'auto')
       .append('path')
       .attr('d', 'M0,-5L10,0L0,5')
-      .attr('fill', '#c3c3c3')
+      .attr('fill', t.arrow)
     const regions = svg.append('g').attr('class', 'region')
     svg.append('g').attr('class', 'links_group')
     svg.append('g').attr('class', 'bubble_group')
@@ -63,8 +91,8 @@ export class MentalModelRenderer {
       .attr('y', 0)
       .attr('width', this.width)
       .attr('height', this.height * center)
-      .attr('fill', '#cccccc')
-      .attr('opacity', 0.1)
+      .attr('fill', t.regionTop)
+      .attr('opacity', t.regionOpacity)
     regions
       .append('rect')
       .attr('class', 'bottom_region')
@@ -72,14 +100,14 @@ export class MentalModelRenderer {
       .attr('y', this.height * center)
       .attr('width', this.width)
       .attr('height', this.height * (1 - center))
-      .attr('fill', '#ffffff')
-      .attr('opacity', 0.1)
+      .attr('fill', t.regionBottom)
+      .attr('opacity', t.regionOpacity)
     svg
       .append('circle')
       .attr('class', 'bubble')
       .classed('is_center', true)
-      .attr('fill', 'var(--brand-primary)')
-      .attr('stroke', '#333')
+      .attr('fill', t.centerFill)
+      .attr('stroke', t.stroke)
       .attr('stroke-width', 1.5)
       .attr('cx', this.width / 2)
       .attr('cy', this.height * center)
@@ -87,15 +115,15 @@ export class MentalModelRenderer {
     svg
       .append('text')
       .attr('class', 'bubble_label')
-      .classed('jt-body-3', true)
       .attr('x', this.width / 2)
       .attr('y', this.height * center)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .attr('font-family', "'Hammersmith One', sans-serif")
+      .attr('font-family', t.centerFontFamily)
+      .attr('font-weight', t.centerFontWeight)
       .attr('font-size', Math.max(8, Math.min(16, 65 * 0.3)))
       .attr('pointer-events', 'none')
-      .attr('fill', contrastTextColor('var(--brand-primary)'))
+      .attr('fill', this.textOn(t.centerFill))
       .text('SALINITY')
   }
 
@@ -104,6 +132,7 @@ export class MentalModelRenderer {
     codebook: CodebookEntry[],
     code_tsne: Record<string, number>,
   ) {
+    const t = this.tokens
     const nodes_data = Object.entries(_nodes_data) as MMNode[]
     const node_types = codebook.reduce<Record<string, string>>((acc, item) => {
       acc[item.name] = item.type
@@ -130,20 +159,20 @@ export class MentalModelRenderer {
             .attr('class', 'bubble')
             .classed('is_center', (d) => d[0] === 'Salinity')
             .attr('fill', (d) =>
-              d[0] === 'Salinity' ? 'var(--brand-primary)' : colorForNode(node_types[d[0]]),
+              d[0] === 'Salinity' ? t.centerFill : colorForNode(node_types[d[0]], t.nodeColors),
             )
-            .attr('stroke', '#333')
+            .attr('stroke', t.stroke)
             .attr('stroke-width', 1.5)
             .attr('cursor', 'pointer')
             .on('mouseover', (event: MouseEvent, d) => {
               const target = event.currentTarget as SVGCircleElement
-              d3.select(target).style('stroke', '#fff').style('stroke-width', '3px')
+              d3.select(target).style('stroke', t.hoverStroke).style('stroke-width', '3px')
               const rect = target.getBoundingClientRect()
               this.dispatchHover(d, rect.top + rect.height / 2)
             })
             .on('mouseout', (event: MouseEvent) => {
               d3.select(event.currentTarget as SVGCircleElement)
-                .style('stroke', '#333')
+                .style('stroke', t.stroke)
                 .style('stroke-width', '1.5px')
               this.dispatchHover(null)
             })
@@ -164,7 +193,7 @@ export class MentalModelRenderer {
         (update) =>
           update
             .attr('fill', (d) =>
-              d[0] === 'Salinity' ? 'var(--brand-primary)' : colorForNode(node_types[d[0]]),
+              d[0] === 'Salinity' ? t.centerFill : colorForNode(node_types[d[0]], t.nodeColors),
             )
             .call((sel) =>
               sel
@@ -187,20 +216,20 @@ export class MentalModelRenderer {
       .data(nodes, (d) => d[0])
       .join('text')
       .attr('class', 'bubble_label')
-      .classed('jt-body-2', true)
       .attr('x', (d) => d.x!)
       .attr('y', (d) => d.y!)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .attr('font-family', 'Proxima Nova')
+      .attr('font-family', t.labelFontFamily)
+      .attr('font-weight', t.labelFontWeight)
       .attr('font-size', (d) => {
         const r = d[0] === 'Salinity' ? 55 : radiusScale(d[1])
         return Math.max(8, Math.min(20, r * 0.25)) + 'px'
       })
       .attr('fill', (d) =>
-        d[0] === 'Salinity'
-          ? contrastTextColor('var(--brand-primary)')
-          : contrastTextColor(colorForNode(node_types[d[0]])),
+        this.textOn(
+          d[0] === 'Salinity' ? t.centerFill : colorForNode(node_types[d[0]], t.nodeColors),
+        ),
       )
       .attr('pointer-events', 'none')
       .text((d) => d[0])
@@ -228,8 +257,8 @@ export class MentalModelRenderer {
       .attr('class', 'link')
       .attr('fill', 'none')
       .attr('stroke-width', 1.5)
-      .attr('stroke', '#c3c3c3')
-      .attr('stroke-opacity', 0.5)
+      .attr('stroke', t.link)
+      .attr('stroke-opacity', t.linkOpacity)
       .attr('marker-mid', `url(#mm-arrow-${this.svgId})`)
     const canvasRadiusScale = d3
       .scalePow()

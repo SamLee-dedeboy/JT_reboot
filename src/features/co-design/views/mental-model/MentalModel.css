@@ -1,7 +1,0 @@
-/* Ported from JT_dashboard/src/lib/MentalModel/MentalModel.svelte <style>,
-   anchored to .jtd-MentalModel in place of Svelte's component scoping. The
-   unused .back-button rule (its button was commented out) is dropped. */
-.jtd-MentalModel.page-container {
-  padding: 0rem 2rem 2rem;
-  text-align: center;
-}
