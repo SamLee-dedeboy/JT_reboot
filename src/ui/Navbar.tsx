@@ -91,6 +91,7 @@ const navItems: NavItem[] = [
       { label: 'Baseline Exploration', href: '/pages/baseline-exploration' },
       { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
       { label: 'Watershed', href: '/pages/watershed' },
+      { label: 'Rank Visualization', href: '/pages/rank-visualization' },
     ],
   },
 ]
