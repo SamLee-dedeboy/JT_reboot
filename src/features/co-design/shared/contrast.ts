@@ -1,5 +1,5 @@
-// Pick whichever of two theme text colours reads better on `background`
-// (any CSS colour string). Results are cached per input.
+// Pick whichever of two theme text colours has the higher WCAG contrast
+// ratio against `background` (any CSS colour string). Cached per input.
 const cache = new Map<string, string>()
 
 function luminance(color: string): number | null {
@@ -19,12 +19,19 @@ function luminance(color: string): number | null {
   return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b)
 }
 
+const contrast = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+
 export function readableTextOn(background: string, lightText: string, darkText: string): string {
   const key = `${background}|${lightText}|${darkText}`
   const cached = cache.get(key)
   if (cached) return cached
-  const L = luminance(background)
-  const text = L !== null && L > 0.5 ? darkText : lightText
+  const bg = luminance(background)
+  const light = luminance(lightText)
+  const dark = luminance(darkText)
+  const text =
+    bg !== null && light !== null && dark !== null && contrast(bg, dark) > contrast(bg, light)
+      ? darkText
+      : lightText
   cache.set(key, text)
   return text
 }

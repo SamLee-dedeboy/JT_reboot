@@ -225,7 +225,7 @@ export default function CoDesignDashboard() {
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: isNotHomePage ? 'space-between' : 'flex-end',
+            justifyContent: currentPage ? 'space-between' : 'flex-end',
             gap: 2,
             px: { xs: 2, md: 4 },
             py: 1,
