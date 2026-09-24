@@ -10,6 +10,7 @@ import { BlockAggregator } from './renderers/BlockAggregator'
 import { combination_controller } from './renderers/CombinationController'
 import type { tBlock, tDataset } from './types'
 import './Flow.css'
+import LegacyScope from '../../shared/LegacyScope'
 
 function setParticipantColor(comparison_mode: boolean, leading_blocks: tBlock[]) {
   updateDefaultBaseBlocks(leading_blocks)
@@ -26,7 +27,7 @@ function updateDefaultBaseBlocks(leading_blocks: tBlock[]) {
   ]
 }
 
-export default function Flow() {
+function FlowView() {
   const [loaded, setLoaded] = useState<BlockAggregator | null>(null)
 
   useEffect(() => {
@@ -62,5 +63,14 @@ export default function Flow() {
       <div className="spinner"></div>
       <p>Loading data…</p>
     </div>
+  )
+}
+
+// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
+export default function Flow() {
+  return (
+    <LegacyScope>
+      <FlowView />
+    </LegacyScope>
   )
 }

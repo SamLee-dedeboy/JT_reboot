@@ -36,17 +36,6 @@ const pageInfo: Record<string, PageInfo> = {
   '/sunburst': { title: 'Comparing', subtitle: 'Different Mental Models' },
 }
 
-// Views not yet restyled onto the theme still need the dashboard's scoped
-// stylesheet (styles/*.css). `display: contents` keeps them direct flex
-// children of <main>, as they were in the Svelte app.
-function LegacyScope({ children }: { children: ReactNode }) {
-  return (
-    <Box className="jtd-root" sx={{ display: 'contents' }}>
-      {children}
-    </Box>
-  )
-}
-
 function TutorialBody({ children }: { children: ReactNode }) {
   return <Stack sx={{ gap: 1, color: 'base.50' }}>{children}</Stack>
 }
@@ -285,46 +274,11 @@ export default function CoDesignDashboard() {
         <Suspense fallback={null}>
           <Routes>
             <Route index element={<Home />} />
-            <Route
-              path="flow"
-              element={
-                <LegacyScope>
-                  <Flow />
-                </LegacyScope>
-              }
-            />
-            <Route
-              path="linking"
-              element={
-                <LegacyScope>
-                  <Linking />
-                </LegacyScope>
-              }
-            />
-            <Route
-              path="mental-model"
-              element={
-                <LegacyScope>
-                  <MentalModel />
-                </LegacyScope>
-              }
-            />
-            <Route
-              path="sunburst"
-              element={
-                <LegacyScope>
-                  <Sunburst />
-                </LegacyScope>
-              }
-            />
-            <Route
-              path="sunburst-grid"
-              element={
-                <LegacyScope>
-                  <SunburstGrid />
-                </LegacyScope>
-              }
-            />
+            <Route path="flow" element={<Flow />} />
+            <Route path="linking" element={<Linking />} />
+            <Route path="mental-model" element={<MentalModel />} />
+            <Route path="sunburst" element={<Sunburst />} />
+            <Route path="sunburst-grid" element={<SunburstGrid />} />
           </Routes>
         </Suspense>
       </Box>

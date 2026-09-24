@@ -13,10 +13,11 @@ import CodeTooltip from './CodeTooltip'
 import { nodeTypeColor, nodeTypeTextColor } from './constants'
 import type { CodebookEntry } from './constants'
 import './MentalModel.css'
+import LegacyScope from '../../shared/LegacyScope'
 
 type CodeParticipants = Record<string, string[]>
 
-export default function MentalModel() {
+function MentalModelView() {
   const [codebook, setCodebook] = useState<CodebookEntry[]>([])
   const [codeTsne, setCodeTsne] = useState<Record<string, number>>({})
   const [interviewServerData, setInterviewServerData] = useState<CodeParticipants>()
@@ -172,5 +173,14 @@ export default function MentalModel() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
+export default function MentalModel() {
+  return (
+    <LegacyScope>
+      <MentalModelView />
+    </LegacyScope>
   )
 }

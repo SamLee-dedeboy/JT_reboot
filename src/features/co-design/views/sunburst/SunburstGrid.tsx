@@ -12,6 +12,7 @@ import {
   sortTopLevelAlphabetically,
 } from './sunburstData'
 import type { SunburstData, SunburstDataWithTitle } from './sunburstData'
+import LegacyScope from '../../shared/LegacyScope'
 
 // Each row groups a set of comparable charts. Order within a row is the
 // display order left-to-right.
@@ -74,7 +75,7 @@ async function loadData(): Promise<Record<string, SunburstDataWithTitle>> {
   return next
 }
 
-export default function SunburstGrid() {
+function SunburstGridView() {
   const [datasetsByFile, setDatasetsByFile] = useState<Record<string, SunburstDataWithTitle>>({})
   const [isTop5Mode, setIsTop5Mode] = useState(true)
   // Label style: true = new callout labels, false = old in-ring radial labels.
@@ -180,5 +181,14 @@ export default function SunburstGrid() {
         ))}
       </div>
     </div>
+  )
+}
+
+// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
+export default function SunburstGrid() {
+  return (
+    <LegacyScope>
+      <SunburstGridView />
+    </LegacyScope>
   )
 }

@@ -5,8 +5,9 @@ import ScenarioCodes from './ScenarioCodes'
 import ScenarioOverview from './ScenarioOverview'
 import type { tScenarioData } from './types'
 import './Linking.css'
+import LegacyScope from '../../shared/LegacyScope'
 
-export default function Linking() {
+function LinkingView() {
   const [selectedScenario, setSelectedScenario] = useState<tScenarioData | undefined>(undefined)
   const [selectedCode, setSelectedCode] = useState<GraphNode | undefined>(undefined)
 
@@ -34,5 +35,14 @@ export default function Linking() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
+export default function Linking() {
+  return (
+    <LegacyScope>
+      <LinkingView />
+    </LegacyScope>
   )
 }

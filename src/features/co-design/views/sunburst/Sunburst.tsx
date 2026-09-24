@@ -14,6 +14,7 @@ import {
 } from './sunburstData'
 import type { SunburstData, SunburstDataWithTitle } from './sunburstData'
 import './Sunburst.css'
+import LegacyScope from '../../shared/LegacyScope'
 
 // Display order; files not listed here are left out of the gallery.
 const desiredOrder = [
@@ -65,7 +66,7 @@ async function loadData(): Promise<SunburstDataWithTitle[]> {
     .filter((dataset) => dataset !== undefined)
 }
 
-export default function Sunburst() {
+function SunburstView() {
   const [sunburstDatasets, setSunburstDatasets] = useState<SunburstDataWithTitle[]>([])
   const [loaded, setLoaded] = useState(false)
   const [isTop5Mode, setIsTop5Mode] = useState(true)
@@ -202,5 +203,14 @@ export default function Sunburst() {
         <div className="h-[5rem]"></div>
       </div>
     </div>
+  )
+}
+
+// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
+export default function Sunburst() {
+  return (
+    <LegacyScope>
+      <SunburstView />
+    </LegacyScope>
   )
 }
