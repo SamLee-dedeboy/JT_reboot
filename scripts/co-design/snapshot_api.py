@@ -74,4 +74,9 @@ def main(server_dir):
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         sys.exit(__doc__)
+    # The routers build several responses from Python sets, whose iteration
+    # order (and so the JSON key order that drives the force layouts) changes
+    # with the per-process hash seed. Pin it so snapshots are reproducible.
+    if os.environ.get("PYTHONHASHSEED") != "0":
+        os.execve(sys.executable, [sys.executable, *sys.argv], {**os.environ, "PYTHONHASHSEED": "0"})
     main(sys.argv[1])
