@@ -1,18 +1,15 @@
 // Standalone grid of every sunburst, one row per comparison, ported from
 // JT_dashboard/src/lib/Sunburst/SunburstGrid.svelte.
+import { Box, Stack, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import * as d3 from 'd3'
 import { getSunburstData } from '../../api'
 import SliderToggle from './SliderToggle'
 import SunburstChart from './SunburstChart'
-import {
-  buildGlobalColorMap,
-  colorPalette,
-  generateTitle,
-  sortTopLevelAlphabetically,
-} from './sunburstData'
+import { buildGlobalColorMap, generateTitle, sortTopLevelAlphabetically } from './sunburstData'
 import type { SunburstData, SunburstDataWithTitle } from './sunburstData'
-import LegacyScope from '../../shared/LegacyScope'
 
 // Each row groups a set of comparable charts. Order within a row is the
 // display order left-to-right.
@@ -75,7 +72,38 @@ async function loadData(): Promise<Record<string, SunburstDataWithTitle>> {
   return next
 }
 
-function SunburstGridView() {
+// One labelled switch in the controls panel.
+function ControlRow({
+  children,
+  label,
+  checked,
+  onChange,
+}: {
+  children: ReactNode
+  label: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
+      <Typography variant="controlLabel">{children}</Typography>
+      <SliderToggle checked={checked} onChange={onChange} label={label} />
+    </Stack>
+  )
+}
+
+// Current setting shown after a control's name ("Labels: new").
+function ControlValue({ children }: { children: ReactNode }) {
+  return (
+    <Box component="span" sx={(theme) => ({ color: theme.coDesign.sunburst.textMuted })}>
+      {children}
+    </Box>
+  )
+}
+
+export default function SunburstGrid() {
+  const theme = useTheme()
+  const colorPalette = theme.coDesign.sunburst.categoryPalette
   const [datasetsByFile, setDatasetsByFile] = useState<Record<string, SunburstDataWithTitle>>({})
   const [isTop5Mode, setIsTop5Mode] = useState(true)
   // Label style: true = new callout labels, false = old in-ring radial labels.
@@ -106,8 +134,9 @@ function SunburstGridView() {
     () =>
       buildGlobalColorMap(
         processedRows.flatMap((r) => r.charts).map((c) => sortTopLevelAlphabetically(c.data)),
+        colorPalette,
       ),
-    [processedRows],
+    [processedRows, colorPalette],
   )
 
   useEffect(() => {
@@ -121,48 +150,70 @@ function SunburstGridView() {
   }, [])
 
   return (
-    <div className="jtd-SunburstGrid min-h-screen bg-[var(--surface-elevated)] font-body overflow-y-auto relative text-white px-6 py-6">
+    <Box
+      sx={(theme) => ({
+        position: 'relative',
+        // Fill the space under the dashboard header and scroll inside it.
+        flex: '1 1 0',
+        minHeight: 0,
+        overflowY: 'auto',
+        p: 3,
+        color: theme.coDesign.sunburst.text,
+        bgcolor: theme.coDesign.sunburst.surface,
+      })}
+    >
       {/* Controls */}
-      <div
-        className="absolute top-2 right-3 z-50 rounded-lg shadow-md px-3 py-2 flex flex-col gap-2"
-        style={{ background: 'var(--surface-elevated)' }}
+      <Stack
+        sx={(theme) => ({
+          position: 'absolute',
+          top: theme.spacing(1),
+          right: theme.spacing(1.5),
+          zIndex: 50,
+          gap: 1,
+          px: 1.5,
+          py: 1,
+          bgcolor: theme.coDesign.sunburst.controls.background,
+          border: theme.coDesign.sunburst.controls.border,
+          borderRadius: theme.coDesign.sunburst.controls.radius,
+          boxShadow: theme.coDesign.sunburst.controls.shadow,
+        })}
       >
         {/* Label style: new callouts vs. old in-ring */}
-        <div className="flex items-center justify-between gap-3 text-white">
-          <span className="text-sm">
-            Labels: <span className="opacity-70">{useCallouts ? 'new' : 'old'}</span>
-          </span>
-          <SliderToggle checked={useCallouts} onChange={setUseCallouts} />
-        </div>
+        <ControlRow label="Callout labels" checked={useCallouts} onChange={setUseCallouts}>
+          Labels: <ControlValue>{useCallouts ? 'new' : 'old'}</ControlValue>
+        </ControlRow>
 
         {/* Slice order: size vs alphabetical */}
-        <div className="flex items-center justify-between gap-3 text-white">
-          <span className="text-sm">
-            Order: <span className="opacity-70">{orderBySize ? 'by size' : 'A–Z'}</span>
-          </span>
-          <SliderToggle checked={orderBySize} onChange={setOrderBySize} />
-        </div>
+        <ControlRow label="Order slices by size" checked={orderBySize} onChange={setOrderBySize}>
+          Order: <ControlValue>{orderBySize ? 'by size' : 'A–Z'}</ControlValue>
+        </ControlRow>
 
         {/* Top-5 toggle */}
-        <div className="flex items-center justify-between gap-3 text-white">
-          <span className="text-sm">Top 5 only (themes + codes):</span>
-          <SliderToggle checked={isTop5Mode} onChange={setIsTop5Mode} />
-        </div>
-      </div>
+        <ControlRow label="Top 5 only" checked={isTop5Mode} onChange={setIsTop5Mode}>
+          Top 5 only (themes + codes):
+        </ControlRow>
+      </Stack>
 
       {/* Rows: ages, years, team vs interviewee, residency */}
-      <div className="flex flex-col gap-6 mt-8">
+      <Stack sx={{ gap: 3, mt: 4 }}>
         {processedRows.map((row, rowIndex) => (
-          <div
+          <Stack
             key={rowIndex}
-            className={`flex gap-4 bg-[var(--surface-page)] rounded-lg py-4 overflow-x-auto ${
-              useCallouts && row.charts.length > 2 ? 'justify-start' : 'justify-center'
-            }`}
+            direction="row"
+            sx={(theme) => ({
+              justifyContent: useCallouts && row.charts.length > 2 ? 'flex-start' : 'center',
+              gap: 2,
+              py: 2,
+              overflowX: 'auto',
+              bgcolor: theme.coDesign.sunburst.row.background,
+              border: theme.coDesign.sunburst.row.border,
+              borderRadius: theme.coDesign.sunburst.row.radius,
+            })}
           >
             {row.charts.map((item, col) => (
-              <div
+              <Box
                 key={col}
-                className={`flex-1 relative ${useCallouts ? 'min-w-[44rem]' : 'min-w-[24rem]'}`}
+                sx={{ position: 'relative', flex: 1, minWidth: useCallouts ? '44rem' : '24rem' }}
               >
                 <SunburstChart
                   data={item.data}
@@ -175,20 +226,11 @@ function SunburstGridView() {
                   colorPalette={colorPalette}
                   globalColorMap={globalColorMap}
                 />
-              </div>
+              </Box>
             ))}
-          </div>
+          </Stack>
         ))}
-      </div>
-    </div>
-  )
-}
-
-// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
-export default function SunburstGrid() {
-  return (
-    <LegacyScope>
-      <SunburstGridView />
-    </LegacyScope>
+      </Stack>
+    </Box>
   )
 }

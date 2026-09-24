@@ -2,18 +2,16 @@
 // only variant the dashboard used). Returns a cleanup function so the React
 // effect that enables it can remove every listener again.
 
-const SCROLLABLE_SELECTOR = '.overflow-y-auto, [style*="overflow-y: auto"]'
-
 /**
- * Enables drag-to-scroll functionality for all elements with overflow-y-auto
- * inside `scope` (the original queried the whole document; the dashboard's
- * DOM now lives inside `.jtd-root`). Uses mouse events to implement smooth
+ * Enables drag-to-scroll on the given vertically scrollable elements (the
+ * original found them by their `overflow-y-auto` class; the view now passes
+ * its scroll container directly). Uses mouse events to implement smooth
  * scrolling interaction.
  */
-export function enableDragToScroll(scope: ParentNode = document): () => void {
+export function enableDragToScroll(...elements: HTMLElement[]): () => void {
   const cleanups: (() => void)[] = []
 
-  scope.querySelectorAll<HTMLElement>(SCROLLABLE_SELECTOR).forEach((htmlElement) => {
+  elements.forEach((htmlElement) => {
     let isMouseDown = false
     let startY = 0
     let scrollTop = 0

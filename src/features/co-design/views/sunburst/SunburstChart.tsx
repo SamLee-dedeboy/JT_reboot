@@ -1,9 +1,12 @@
 // One sunburst wheel with drill-down zoom and a hover panel of code
 // definitions, ported from JT_dashboard/src/lib/Sunburst/SunburstChart.svelte.
 // D3 computes the layout (sunburstLayout.ts); React renders the SVG.
+import { Box, ButtonBase, Stack, Typography } from '@mui/material'
+import { keyframes, useTheme } from '@mui/material/styles'
 import { useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import type { ReactNode } from 'react'
 import { getSunburstCode } from '../../api'
-import type { SunburstData } from './sunburstData'
+import type { CategoryPalette, SunburstData } from './sunburstData'
 import {
   computeSunburstLayout,
   createTextMeasurer,
@@ -11,8 +14,7 @@ import {
   getHierarchicalColor,
   sunburstViewBox,
 } from './sunburstLayout'
-import type { SunburstNode, ZoomTarget } from './sunburstLayout'
-import './SunburstChart.css'
+import type { LabelColors, LabelFont, SunburstNode, ZoomTarget } from './sunburstLayout'
 
 interface CodeData {
   name: string
@@ -27,7 +29,7 @@ interface SunburstChartProps {
   data: SunburstData
   title: string
   index: number
-  colorPalette: string[]
+  colorPalette: CategoryPalette
   globalColorMap: Map<string, string>
   // Optional override for which side the hover tooltip opens on. When unset,
   // falls back to the alternating even/odd heuristic below.
@@ -45,8 +47,9 @@ interface SunburstChartProps {
   sortBySize?: boolean
 }
 
-// Label wrapping measures text, so re-run the layout once web fonts finish
-// loading (the Svelte version measured whatever font was active at render).
+// Label wrapping measures text in the site body font, so re-run the layout
+// once web fonts finish loading (the Svelte version measured whatever font was
+// active at render).
 let fontsVersion = 0
 function subscribeFonts(onChange: () => void) {
   const handler = () => {
@@ -82,6 +85,19 @@ export default function SunburstChart({
   outerCallouts = false,
   sortBySize = false,
 }: SunburstChartProps) {
+  const theme = useTheme()
+  const tokens = theme.coDesign.sunburst
+  // SVG labels use the chart-label family at regular weight; sizes stay
+  // data-driven (computed per slice in sunburstLayout.ts).
+  const labelFont: LabelFont = useMemo(
+    () => ({
+      family: theme.typography.chartAxis.fontFamily ?? theme.typography.fontFamily ?? '',
+      weight: theme.typography.fontWeightRegular ?? 'normal',
+    }),
+    [theme],
+  )
+  const labelColors: LabelColors = tokens.wheel
+
   // Zoom state (Svelte kept `zoomedParent` + `isZoomed`, always in sync)
   const [zoomedParent, setZoomedParent] = useState<ZoomTarget | null>(null)
   const isZoomed = zoomedParent !== null
@@ -95,7 +111,7 @@ export default function SunburstChart({
   const hoveredCode = useRef<string | null>(null)
   // Color of the currently hovered segment; used to tint the tooltip so it
   // reads as belonging to that slice.
-  const [hoveredColor, setHoveredColor] = useState('var(--brand-primary)')
+  const [hoveredColor, setHoveredColor] = useState<string>(tokens.tooltip.headerFallback)
   // Arc under the pointer (d3 set opacity/stroke-width on it imperatively;
   // re-rendering the wheel on zoom dropped that highlight).
   const [hoveredArc, setHoveredArc] = useState<string | null>(null)
@@ -127,13 +143,15 @@ export default function SunburstChart({
   const fontsReady = useSyncExternalStore(subscribeFonts, getFontsVersion)
   const layout = useMemo(() => {
     void fontsReady
-    const measurer = svgSize && createTextMeasurer(viewBox, svgSize.width, svgSize.height)
+    const measurer =
+      svgSize && createTextMeasurer(viewBox, svgSize.width, svgSize.height, labelFont)
     try {
       return computeSunburstLayout(
         {
           data,
           zoomed: zoomedParent,
           colorPalette,
+          labelColors,
           globalColorMap,
           showAllLabels,
           outerCallouts,
@@ -150,6 +168,8 @@ export default function SunburstChart({
     data,
     zoomedParent,
     colorPalette,
+    labelColors,
+    labelFont,
     globalColorMap,
     showAllLabels,
     outerCallouts,
@@ -223,33 +243,71 @@ export default function SunburstChart({
     }
   }
 
+  const headerText = getContrastColor(hoveredColor, tokens.wheel.labelLight, tokens.wheel.labelDark)
+
   return (
-    <div
-      className="jtd-SunburstChart sunburst-container rounded-lg px-4 pb-4 pt-2 flex-1 flex flex-col items-center justify-center relative"
-      style={showModal ? { zIndex: 9999 } : undefined}
+    <Box
+      sx={(theme) => ({
+        position: 'relative',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        px: 2,
+        pt: 1,
+        pb: 2,
+        [theme.breakpoints.down('md')]: { maxWidth: '100%' },
+        ...(showModal ? { zIndex: 9999 } : null),
+      })}
     >
-      <div className="sunburst-title text-lg mb-4 text-center flex items-center gap-3">
+      {/* Chart title; while zoomed it names the theme and offers a way back */}
+      <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, mb: 2, textAlign: 'center' }}>
         {isZoomed && (
-          <button
-            type="button"
-            className="back-button flex items-center gap-1 rounded px-2 py-0.5 text-sm"
+          <ButtonBase
             aria-label="Back to overview"
             onClick={() => zoomTo(null)}
+            sx={(theme) => ({
+              typography: 'meta',
+              px: 1,
+              py: 0.25,
+              gap: 0.5,
+              color: tokens.backButton.text,
+              bgcolor: tokens.backButton.background,
+              outline: tokens.backButton.outline,
+              borderRadius: 1,
+              cursor: 'pointer',
+              transition: theme.transitions.create('filter', { duration: 150 }),
+              '&:hover': { filter: 'brightness(1.15)' },
+              '&.Mui-focusVisible': {
+                outline: `2px solid ${tokens.backButton.focusRing}`,
+                outlineOffset: 2,
+              },
+            })}
           >
             ← Back
-          </button>
+          </ButtonBase>
         )}
-        <span>{isZoomed ? `${title} - ${zoomedParent?.name || ''}` : title}</span>
-      </div>
+        <Typography variant="chartTitle" component="h3">
+          {isZoomed ? `${title} - ${zoomedParent?.name || ''}` : title}
+        </Typography>
+      </Stack>
 
-      <svg ref={svgRef} overflow="visible" viewBox={layout.viewBox}>
+      <svg
+        ref={svgRef}
+        overflow="visible"
+        viewBox={layout.viewBox}
+        fontFamily={labelFont.family}
+        fontWeight={labelFont.weight}
+        style={{ display: 'block', verticalAlign: 'middle' }}
+      >
         <g transform={layout.translate}>
           {layout.arcs.map((item, i) => (
             <path
               key={`arc-${i}`}
               d={item.d}
               fill={item.fill}
-              stroke="white"
+              stroke={tokens.wheel.arcStroke}
               strokeWidth={1.5}
               style={{
                 cursor: item.cursor,
@@ -264,10 +322,9 @@ export default function SunburstChart({
           {layout.outerArcs.map((item, i) => (
             <path
               key={`outer-${i}`}
-              className="outer-arc"
               d={item.d}
               fill={item.fill}
-              stroke="white"
+              stroke={tokens.wheel.arcStroke}
               strokeWidth={1}
               style={{ opacity: 0.7, display: item.display }}
             />
@@ -275,11 +332,10 @@ export default function SunburstChart({
           {layout.labels.map((label, i) => (
             <text
               key={`label-${i}`}
-              className="arc-text"
               transform={label.transform}
               dy="0.35em"
+              fontSize={label.textSize}
               style={{
-                fontSize: label.fontSize,
                 fill: label.fill,
                 ...(label.halo
                   ? {
@@ -322,9 +378,9 @@ export default function SunburstChart({
               x={callout.x}
               y={callout.y}
               dy="0.32em"
+              fontSize={tokens.wheel.calloutFontSize}
               style={{
-                fontSize: '11px',
-                fill: '#e6ebf0',
+                fill: tokens.wheel.calloutText,
                 textAnchor: callout.anchor,
                 pointerEvents: 'none',
               }}
@@ -337,55 +393,105 @@ export default function SunburstChart({
 
       {/* Hover tooltip for code definitions; offset to the side with more space */}
       {showModal && (
-        <div
-          className={`hover-tooltip absolute top-1/2 -translate-y-1/2 z-50 pointer-events-none ${
-            isLeftChart ? 'tooltip-right' : 'tooltip-left'
-          }`}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 50,
+            pointerEvents: 'none',
+            ...(isLeftChart ? { left: '100%', ml: 1.5 } : { right: '100%', mr: 1.5 }),
+          }}
         >
-          <div className="bg-[var(--surface-elevated)] rounded-lg shadow-xl w-[22rem] max-h-[32rem] overflow-hidden flex flex-col">
-            <div
-              className="p-4"
-              style={{ backgroundColor: hoveredColor, color: getContrastColor(hoveredColor) }}
-            >
-              <h4 className="text-lg">{modalCodeData?.name || 'Loading...'}</h4>
-            </div>
-            <div className="p-4 overflow-y-auto text-white space-y-3">
+          <Box
+            sx={(theme) => ({
+              display: 'flex',
+              flexDirection: 'column',
+              width: tokens.tooltip.width,
+              maxHeight: tokens.tooltip.maxHeight,
+              overflow: 'hidden',
+              color: theme.chart.tooltip.text,
+              bgcolor: theme.chart.tooltip.background,
+              border: `1px solid ${theme.chart.tooltip.border}`,
+              borderRadius: tokens.tooltip.radius,
+              boxShadow: tokens.tooltip.shadow,
+            })}
+          >
+            <Box sx={{ p: 2, bgcolor: hoveredColor, color: headerText }}>
+              <Typography variant="cardTitle" component="h4">
+                {modalCodeData?.name || 'Loading...'}
+              </Typography>
+            </Box>
+            <Stack sx={{ p: 2, gap: 1.5, overflowY: 'auto' }}>
               {isLoadingCode ? (
-                <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                  <span className="ml-2 text-gray-300 text-sm">Loading…</span>
-                </div>
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: 'center', justifyContent: 'center', py: 2 }}
+                >
+                  <Box
+                    sx={{
+                      width: tokens.tooltip.spinnerSize,
+                      height: tokens.tooltip.spinnerSize,
+                      borderRadius: '50%',
+                      borderBottom: `2px solid ${tokens.tooltip.spinner}`,
+                      animation: `${spin} 1s linear infinite`,
+                    }}
+                  />
+                  <Typography variant="meta" sx={{ ml: 1, color: tokens.textMuted }}>
+                    Loading…
+                  </Typography>
+                </Stack>
               ) : modalCodeData?.error ? (
-                <div className="text-red-400">
-                  <p className="font-semibold">Error: {modalCodeData.error}</p>
-                  {modalCodeData.details && <p className="text-sm mt-2">{modalCodeData.details}</p>}
-                </div>
+                <Box sx={{ color: tokens.tooltip.error }}>
+                  <Typography variant="cardTitle" component="p">
+                    Error: {modalCodeData.error}
+                  </Typography>
+                  {modalCodeData.details && (
+                    <Typography variant="meta" component="p" sx={{ mt: 1 }}>
+                      {modalCodeData.details}
+                    </Typography>
+                  )}
+                </Box>
               ) : modalCodeData ? (
                 <>
                   {modalCodeData.description && (
-                    <div>
-                      <h4 className="mb-1 text-sm font-semibold opacity-80">Description</h4>
-                      <p>{modalCodeData.description}</p>
-                    </div>
+                    <CodeSection label="Description">{modalCodeData.description}</CodeSection>
                   )}
                   {modalCodeData.definition && (
-                    <div>
-                      <h4 className="mb-1 text-sm font-semibold opacity-80">Definition</h4>
-                      <p>{modalCodeData.definition}</p>
-                    </div>
+                    <CodeSection label="Definition">{modalCodeData.definition}</CodeSection>
                   )}
                   {modalCodeData.parent && (
-                    <div>
-                      <h4 className="mb-1 text-sm font-semibold opacity-80">Parent</h4>
-                      <p>{modalCodeData.parent}</p>
-                    </div>
+                    <CodeSection label="Parent">{modalCodeData.parent}</CodeSection>
                   )}
                 </>
               ) : null}
-            </div>
-          </div>
-        </div>
+            </Stack>
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
+  )
+}
+
+// Matches the original Tailwind `animate-spin` (one turn per second, linear).
+const spin = keyframes`
+  to { transform: rotate(360deg); }
+`
+
+// One labelled field (description / definition / parent) of the code tooltip.
+function CodeSection({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <Box>
+      <Typography
+        variant="chartColumnHead"
+        component="h4"
+        sx={(theme) => ({ mb: 0.5, color: theme.coDesign.sunburst.tooltip.sectionLabel })}
+      >
+        {label}
+      </Typography>
+      <Typography variant="cardBody" component="p">
+        {children}
+      </Typography>
+    </Box>
   )
 }

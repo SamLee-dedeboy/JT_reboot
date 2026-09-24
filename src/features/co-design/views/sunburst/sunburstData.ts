@@ -15,19 +15,9 @@ export interface SunburstDataWithTitle {
   filename: string
 }
 
-// Color palette (shared across all charts for consistent category colors)
-export const colorPalette = [
-  '#637CEF',
-  '#E3008C',
-  '#2AA0A4',
-  '#9373C0',
-  '#13A10E',
-  '#3A96DD',
-  '#CA5010',
-  '#57811B',
-  '#B146C2',
-  '#AE8C00',
-]
+// Category colours come from theme.coDesign.sunburst.categoryPalette (shared
+// across all charts for consistent category colors).
+export type CategoryPalette = readonly string[]
 
 // Helper function to generate titles from filenames. `includeAll` covers the
 // extra "all" case that only the gallery (Sunburst.svelte) had.
@@ -56,7 +46,7 @@ export function generateTitle(filename: string, includeAll = false): string {
 // their parent's color.
 export function getConsistentColor(
   colorMap: Map<string, string>,
-  palette: string[],
+  palette: CategoryPalette,
   name: string,
   depth = 0,
   parentColor: string | null = null,
@@ -97,6 +87,7 @@ export function sortTopLevelAlphabetically(data: SunburstData): SunburstData {
 
 function collectCategoryNames(
   colorMap: Map<string, string>,
+  colorPalette: CategoryPalette,
   node: SunburstData,
   depth = 0,
   parentColor: string | null = null,
@@ -104,15 +95,20 @@ function collectCategoryNames(
   if (node.name) {
     const color = getConsistentColor(colorMap, colorPalette, node.name, depth, parentColor)
     if (node.children) {
-      node.children.forEach((child) => collectCategoryNames(colorMap, child, depth + 1, color))
+      node.children.forEach((child) =>
+        collectCategoryNames(colorMap, colorPalette, child, depth + 1, color),
+      )
     }
   }
 }
 
 // Rebuild the shared color map so the same category keeps the same color
 // across every chart. Replaces the Svelte `globalColorMap.clear()` + refill.
-export function buildGlobalColorMap(datasets: SunburstData[]): Map<string, string> {
+export function buildGlobalColorMap(
+  datasets: SunburstData[],
+  colorPalette: CategoryPalette,
+): Map<string, string> {
   const colorMap = new Map<string, string>()
-  datasets.forEach((data) => collectCategoryNames(colorMap, data))
+  datasets.forEach((data) => collectCategoryNames(colorMap, colorPalette, data))
   return colorMap
 }

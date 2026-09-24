@@ -3,8 +3,9 @@
 // partition, arcs, label transforms, word-wrapped label lines and callout
 // positions; SunburstChart.tsx renders the result declaratively.
 import * as d3 from 'd3'
+import { rgb as parseColor } from 'd3'
 import { getConsistentColor } from './sunburstData'
-import type { SunburstData } from './sunburstData'
+import type { CategoryPalette, SunburstData } from './sunburstData'
 
 export type SunburstNode = d3.HierarchyRectangularNode<SunburstData>
 
@@ -42,7 +43,8 @@ export interface LabelLine {
 
 export interface LabelItem {
   transform: string
-  fontSize: string
+  // CSS font size, computed from the slice's angular width.
+  textSize: string
   fill: string
   halo: string | null
   display: 'block' | 'none'
@@ -67,28 +69,50 @@ export interface SunburstLayout {
   callouts: CalloutItem[]
 }
 
+// Theme colours for text drawn on slices (theme.coDesign.sunburst.wheel).
+export interface LabelColors {
+  labelLight: string
+  labelDark: string
+  haloLight: string
+  haloDark: string
+}
+
+// Font the labels are rendered (and therefore measured) in.
+export interface LabelFont {
+  family: string
+  weight: string | number
+}
+
 export interface LayoutOptions {
   data: SunburstData
   zoomed: ZoomTarget | null
-  colorPalette: string[]
+  colorPalette: CategoryPalette
+  labelColors: LabelColors
   globalColorMap: Map<string, string>
   showAllLabels: boolean
   outerCallouts: boolean
   sortBySize: boolean
 }
 
-type MeasureText = (text: string, fontSize: string) => number
+type MeasureText = (text: string, textSize: string) => number
 
-export function getContrastColor(backgroundColor: string) {
-  const rgb = d3.rgb(backgroundColor)
-  const luminance = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255
-  return luminance > 0.5 ? '#000000' : '#ffffff'
+// Perceived-luma test from the original dashboard: dark text above 0.5,
+// light text below. Kept (rather than the shared WCAG-luminance helper) because
+// it picks the higher-contrast text colour on the mid-tone category shades.
+export function isLightColor(backgroundColor: string) {
+  const { r, g, b } = parseColor(backgroundColor)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.5
+}
+
+export function getContrastColor(backgroundColor: string, lightText: string, darkText: string) {
+  return isLightColor(backgroundColor) ? darkText : lightText
 }
 
 export function getHierarchicalColor(
   d: SunburstNode,
   globalColorMap: Map<string, string>,
-  colorPalette: string[],
+  colorPalette: CategoryPalette,
 ) {
   let parentColor: string | null = null
   if (d.parent && d.parent.data.name) {
@@ -102,18 +126,20 @@ export function getHierarchicalColor(
 export const sunburstViewBox = (outerCallouts: boolean, isZoomed: boolean) =>
   outerCallouts && !isZoomed ? '-190 -30 780 460' : '0 0 400 400'
 
-// Measures SVG text with a throwaway <svg> inside the dashboard root that has
-// the chart's viewBox and on-screen size: Chrome lays text out at its screen
-// scale, so this matches the Svelte version measuring the label's own <tspan>
-// with getComputedTextLength.
+// Measures SVG text with a throwaway <svg> that has the chart's viewBox,
+// on-screen size and label font: Chrome lays text out at its screen scale, so
+// this matches the Svelte version measuring the label's own <tspan> with
+// getComputedTextLength.
 export function createTextMeasurer(
   viewBox: string,
   width: number,
   height: number,
+  font: LabelFont,
 ): { measure: MeasureText; dispose: () => void } {
-  const host = document.querySelector('.jtd-root') ?? document.body
+  const host = document.body
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-  svg.setAttribute('class', 'font-body')
+  svg.setAttribute('font-family', font.family)
+  svg.setAttribute('font-weight', String(font.weight))
   svg.setAttribute('aria-hidden', 'true')
   svg.setAttribute('viewBox', viewBox)
   svg.style.position = 'absolute'
@@ -129,8 +155,8 @@ export function createTextMeasurer(
   svg.appendChild(text)
   host.appendChild(svg)
   return {
-    measure: (value, fontSize) => {
-      text.style.fontSize = fontSize
+    measure: (value, textSize) => {
+      text.style.fontSize = textSize
       tspan.textContent = value
       return tspan.getComputedTextLength()
     },
@@ -140,7 +166,7 @@ export function createTextMeasurer(
 
 // Port of the d3 `wrap(text, width)` helper for transformed (rotated) labels:
 // greedy word wrap, 1.1em line height, first line shifted up to centre the block.
-function wrap(label: string, width: number, fontSize: string, measure: MeasureText): LabelLine[] {
+function wrap(label: string, width: number, textSize: string, measure: MeasureText): LabelLine[] {
   const lineHeight = 1.1 // ems
   const dy = 0
   const words = label.split(/\s+/).reverse()
@@ -149,7 +175,7 @@ function wrap(label: string, width: number, fontSize: string, measure: MeasureTe
   let word: string | undefined
   while ((word = words.pop())) {
     line.push(word)
-    if (measure(line.join(' '), fontSize) > width && line.length > 1) {
+    if (measure(line.join(' '), textSize) > width && line.length > 1) {
       line.pop()
       lines.push(line.join(' '))
       line = [word]
@@ -171,6 +197,7 @@ export function computeSunburstLayout(
     data,
     zoomed,
     colorPalette,
+    labelColors,
     globalColorMap,
     showAllLabels,
     outerCallouts,
@@ -383,7 +410,7 @@ export function computeSunburstLayout(
   // Halo colour: opposite of the text fill, so labels stay legible even when
   // they overrun their slice onto a neighbour.
   const haloFor = (d: SunburstNode) =>
-    getContrastColor(colorOf(d)) === '#ffffff' ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.9)'
+    isLightColor(colorOf(d)) ? labelColors.haloLight : labelColors.haloDark
 
   const makeLabel = (
     d: SunburstNode,
@@ -391,14 +418,14 @@ export function computeSunburstLayout(
     withHalo: boolean,
     measureText: MeasureText,
   ): LabelItem => {
-    const fontSize = inRingFontSize(d)
+    const textSize = inRingFontSize(d)
     return {
       transform: inRingTransform(d),
-      fontSize,
-      fill: getContrastColor(colorOf(d)),
+      textSize,
+      fill: getContrastColor(colorOf(d), labelColors.labelLight, labelColors.labelDark),
       halo: withHalo ? haloFor(d) : null,
       display: displayOf(d),
-      lines: wrap(d.data.name, wrapWidth, fontSize, measureText),
+      lines: wrap(d.data.name, wrapWidth, textSize, measureText),
     }
   }
 

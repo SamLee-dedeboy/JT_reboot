@@ -1,20 +1,16 @@
 // "Comparing" view: sunburst gallery of mental-model themes by population,
 // ported from JT_dashboard/src/lib/Sunburst/Sunburst.svelte.
-import { useEffect, useMemo, useState } from 'react'
+import { Box, Stack, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import * as d3 from 'd3'
 import { getSunburstData } from '../../api'
 import { enableDragToScroll } from './dragToScroll'
 import SliderToggle from './SliderToggle'
 import SunburstChart from './SunburstChart'
-import {
-  buildGlobalColorMap,
-  colorPalette,
-  generateTitle,
-  sortTopLevelAlphabetically,
-} from './sunburstData'
+import { buildGlobalColorMap, generateTitle, sortTopLevelAlphabetically } from './sunburstData'
 import type { SunburstData, SunburstDataWithTitle } from './sunburstData'
-import './Sunburst.css'
-import LegacyScope from '../../shared/LegacyScope'
 
 // Display order; files not listed here are left out of the gallery.
 const desiredOrder = [
@@ -66,7 +62,37 @@ async function loadData(): Promise<SunburstDataWithTitle[]> {
     .filter((dataset) => dataset !== undefined)
 }
 
-function SunburstView() {
+// Underlined key phrase in a row's descriptive copy.
+function Underline({ children }: { children: ReactNode }) {
+  return (
+    <Box
+      component="span"
+      sx={(theme) => ({
+        textDecoration: 'underline',
+        textDecorationColor: theme.coDesign.sunburst.textPanel.underline,
+        textUnderlineOffset: '0.15em',
+      })}
+    >
+      {children}
+    </Box>
+  )
+}
+
+// Heading + copy for one comparison row.
+function RowText({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <>
+      <Typography variant="h4" component="h2" sx={{ mb: 1 }}>
+        {title}
+      </Typography>
+      {children}
+    </>
+  )
+}
+
+export default function Sunburst() {
+  const theme = useTheme()
+  const colorPalette = theme.coDesign.sunburst.categoryPalette
   const [sunburstDatasets, setSunburstDatasets] = useState<SunburstDataWithTitle[]>([])
   const [loaded, setLoaded] = useState(false)
   const [isTop5Mode, setIsTop5Mode] = useState(true)
@@ -82,8 +108,12 @@ function SunburstView() {
 
   // Same category → same color across every chart (rebuilt with the data).
   const globalColorMap = useMemo(
-    () => buildGlobalColorMap(processedDatasets.map((item) => item.data)),
-    [processedDatasets],
+    () =>
+      buildGlobalColorMap(
+        processedDatasets.map((item) => item.data),
+        colorPalette,
+      ),
+    [processedDatasets, colorPalette],
   )
 
   useEffect(() => {
@@ -98,94 +128,150 @@ function SunburstView() {
     }
   }, [])
 
-  // Drag-to-scroll is enabled once the data has loaded, as in the original.
+  // Drag-to-scroll on the view's scroll container, enabled once the data has
+  // loaded, as in the original.
+  const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!loaded) return
-    return enableDragToScroll(document.querySelector('.jtd-root') ?? document)
+    if (!loaded || !scrollRef.current) return
+    return enableDragToScroll(scrollRef.current)
   }, [loaded])
 
   const rows = Array.from({ length: Math.ceil(processedDatasets.length / 2) }, (_, i) =>
     processedDatasets.slice(i * 2, i * 2 + 2),
   )
 
+  const copy = (children: ReactNode) => (
+    <Typography variant="cardBody" component="p">
+      {children}
+    </Typography>
+  )
+
   return (
-    <div className="jtd-Sunburst min-h-screen bg-[var(--surface-elevated)] font-body overflow-y-auto relative flex px-4 text-white">
-      <div className="px-5 py-5 grow">
-        <div
-          className="absolute top-0 right-2 z-50 rounded-lg shadow-md px-3 py-2 color-white"
-          style={{ background: 'var(--surface-elevated)' }}
+    <Box
+      ref={scrollRef}
+      sx={(theme) => ({
+        position: 'relative',
+        display: 'flex',
+        // Fill the space under the dashboard header and scroll inside it.
+        flex: '1 1 0',
+        minHeight: 0,
+        overflowY: 'auto',
+        px: 2,
+        color: theme.coDesign.sunburst.text,
+        bgcolor: theme.coDesign.sunburst.surface,
+      })}
+    >
+      <Box sx={{ flexGrow: 1, p: 2.5 }}>
+        {/* Top-5 filter, pinned to the top-right corner */}
+        <Stack
+          direction="row"
+          sx={(theme) => ({
+            position: 'absolute',
+            top: 0,
+            right: theme.spacing(1),
+            zIndex: 50,
+            alignItems: 'center',
+            gap: 1.5,
+            px: 1.5,
+            py: 1,
+            bgcolor: theme.coDesign.sunburst.controls.background,
+            border: theme.coDesign.sunburst.controls.border,
+            borderRadius: theme.coDesign.sunburst.controls.radius,
+            boxShadow: theme.coDesign.sunburst.controls.shadow,
+          })}
         >
-          <div className="flex items-center gap-3 text-white">
-            <span className="text-sm">Show Top 5 Only:</span>
-            <SliderToggle checked={isTop5Mode} onChange={setIsTop5Mode} />
-          </div>
-        </div>
+          <Typography variant="controlLabel">Show Top 5 Only:</Typography>
+          <SliderToggle checked={isTop5Mode} onChange={setIsTop5Mode} label="Show top 5 only" />
+        </Stack>
 
         {/* Gallery */}
-        <div className="flex flex-col gap-8 mb-8 mt-6">
+        <Stack sx={{ gap: 4, mb: 4, mt: 3 }}>
           {rows.map((rowData, rowIndex) => (
-            <div key={rowIndex} className="flex flex-col gap-4">
-              {/* Row of two sunbursts */}
-              <div className="flex justify-center gap-8 bg-[var(--surface-page)] rounded">
-                {/* Descriptive text for this row */}
-                <div className="max-w-4xl flex-1 mx-auto flex flex-col gap-4">
-                  <div className="p-4 rounded-lg shadow-md bg-(--surface-elevated) ml-3 mt-3">
-                    <div className="text-left">
-                      {rowIndex === 0 ? (
-                        <>
-                          <h2>Age Group</h2>
-                          <p className="text">
+            <Stack key={rowIndex} sx={{ gap: 2 }}>
+              {/* Row: descriptive text, then two sunbursts */}
+              <Stack
+                direction="row"
+                sx={(theme) => ({
+                  justifyContent: 'center',
+                  gap: 4,
+                  bgcolor: theme.coDesign.sunburst.row.background,
+                  border: theme.coDesign.sunburst.row.border,
+                  borderRadius: theme.coDesign.sunburst.row.radius,
+                })}
+              >
+                <Stack sx={{ flex: 1, maxWidth: '56rem', mx: 'auto', gap: 2 }}>
+                  <Box
+                    sx={(theme) => ({
+                      p: 2,
+                      ml: 1.5,
+                      mt: 1.5,
+                      textAlign: 'left',
+                      color: theme.coDesign.sunburst.textPanel.text,
+                      bgcolor: theme.coDesign.sunburst.textPanel.background,
+                      border: theme.coDesign.sunburst.textPanel.border,
+                      borderRadius: theme.coDesign.sunburst.textPanel.radius,
+                      boxShadow: theme.coDesign.sunburst.textPanel.shadow,
+                      '& h2': { color: theme.coDesign.sunburst.text },
+                    })}
+                  >
+                    {rowIndex === 0 ? (
+                      <RowText title="Age Group">
+                        {copy(
+                          <>
                             Compare mental model themes between{' '}
-                            <span className="underline">{rowData[0]?.title || ''}</span> and{' '}
-                            <span className="underline">{rowData[1]?.title || ''}</span>.
-                            Participants aged 18-35 had on average less subthemes than the 36-64 age
-                            group and 65 years and older group.{' '}
-                            <span className="underline">
+                            <Underline>{rowData[0]?.title || ''}</Underline> and{' '}
+                            <Underline>{rowData[1]?.title || ''}</Underline>. Participants aged
+                            18-35 had on average less subthemes than the 36-64 age group and 65
+                            years and older group.{' '}
+                            <Underline>
                               This suggests that mental models become more detailed or developed
                               with increasing age.{' '}
-                            </span>
+                            </Underline>
                             The most mentioned theme in the mental models is human impacts.
-                          </p>
-                        </>
-                      ) : rowIndex === 1 ? (
-                        <>
-                          <h2>Experience of Engagement</h2>
-                          <p className="text">
+                          </>,
+                        )}
+                      </RowText>
+                    ) : rowIndex === 1 ? (
+                      <RowText title="Experience of Engagement">
+                        {copy(
+                          <>
                             Here you can see how years of engagement in the Delta can affect mental
-                            model composition.{' '}
-                            <span className="underline">{rowData[0]?.title || ''}</span> versus{' '}
-                            <span className="underline">{rowData[1]?.title || ''}</span> influence
-                            themes people focus on.{' '}
-                            <span className="underline">
+                            model composition. <Underline>{rowData[0]?.title || ''}</Underline>{' '}
+                            versus <Underline>{rowData[1]?.title || ''}</Underline> influence themes
+                            people focus on.{' '}
+                            <Underline>
                               This suggests that as engagement in the delta increases, individuals
                               learn more about the system and their conceptualizations of salinity
                               become deeper and broader as well.
-                            </span>
-                          </p>
-                        </>
-                      ) : rowIndex === 2 ? (
-                        <>
-                          <h2>Team vs Interviewee</h2>
-                          <p className="text">
+                            </Underline>
+                          </>,
+                        )}
+                      </RowText>
+                    ) : rowIndex === 2 ? (
+                      <RowText title="Team vs Interviewee">
+                        {copy(
+                          <>
                             On average team members had 12 subthemes in their mental models, in
                             comparison interviewees had 20 subthemes on average. The top drivers of
                             salinity in the delta for both groups were flow and policy and
                             regulation. In contrast, climate change appears as the most identified
                             theme in only the team mental models.
-                          </p>
-                          <span className="underline">
+                          </>,
+                        )}
+                        <Typography variant="cardBody" component="span">
+                          <Underline>
                             This suggests that interviewees’ mental models had greater breadth than
                             research team members. While interviewees focused more on human impact
                             influences, researchers focused more on climate change and physical
                             infrastructure influences.
-                          </span>
-                        </>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
+                          </Underline>
+                        </Typography>
+                      </RowText>
+                    ) : null}
+                  </Box>
+                </Stack>
                 {rowData.map((item, index) => (
-                  <div key={index} className="min-w-[30rem] relative">
+                  <Box key={index} sx={{ position: 'relative', minWidth: '30rem' }}>
                     <SunburstChart
                       data={item.data}
                       title={item.title}
@@ -193,24 +279,15 @@ function SunburstView() {
                       colorPalette={colorPalette}
                       globalColorMap={globalColorMap}
                     />
-                  </div>
+                  </Box>
                 ))}
-              </div>
-            </div>
+              </Stack>
+            </Stack>
           ))}
-        </div>
+        </Stack>
 
-        <div className="h-[5rem]"></div>
-      </div>
-    </div>
-  )
-}
-
-// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
-export default function Sunburst() {
-  return (
-    <LegacyScope>
-      <SunburstView />
-    </LegacyScope>
+        <Box sx={(theme) => ({ height: theme.spacing(10) })} />
+      </Box>
+    </Box>
   )
 }
