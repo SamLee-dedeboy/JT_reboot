@@ -1,0 +1,15 @@
+/* Ported from JT_dashboard/src/lib/Flow/components/sections/Block.svelte <style>
+   (only the rules Svelte emitted). */
+@reference "tailwindcss";
+
+.jtd-Block .icon-container {
+  @apply flex h-4 w-4 items-center justify-center p-0.5 hover:bg-gray-300;
+}
+.jtd-Block.clicked {
+  @apply rounded shadow-[0px_0px_2px_2px_gray];
+  outline: 4px solid var(--jt-secondary);
+  color: var(--jt-secondary) !important;
+}
+.jtd-Block.leading {
+  @apply max-w-[12rem];
+}

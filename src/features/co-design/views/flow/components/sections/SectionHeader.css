@@ -1,0 +1,19 @@
+/* Ported from JT_dashboard/src/lib/Flow/components/sections/SectionHeader.svelte <style>
+   (only the rules Svelte emitted). */
+@reference "tailwindcss";
+
+.jtd-SectionHeader.section-header {
+  @apply relative mb-0 w-full flex select-none items-center justify-center px-1 text-center;
+  @apply shadow-[0px_0px_1px_rgba(0,0,0,0.3)];
+  background-color: var(--jt-primary);
+}
+.jtd-SectionHeader .section-title {
+  color: black;
+  height: 4.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+}

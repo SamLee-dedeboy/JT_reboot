@@ -1,0 +1,4 @@
+/* Ported from JT_dashboard/src/lib/Flow/components/sections/ColumnHeader.svelte <style>. */
+.jtd-ColumnHeader.question-header {
+  color: white;
+}
