@@ -1,14 +1,10 @@
 // Co-design dashboard, migrated from the JT_dashboard Svelte app (App.svelte).
-// The shell is styled with the site theme (theme.coDesign.shell); views still
-// load the dashboard's scoped stylesheet until each is restyled.
+// Styled with the site theme; dashboard-specific tokens live in theme.coDesign.
 import { Box, Stack, Typography } from '@mui/material'
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link as RouterLink, Route, Routes, useParams } from 'react-router-dom'
 import Logo from '../../ui/Logo'
-import './styles/preflight.css'
-import './styles/base.css'
-import './styles/tailwind.css'
 import CoDesignDialog from './shared/CoDesignDialog'
 import InfoButton from './shared/InfoButton'
 import { coDesignPath } from './shared/paths'

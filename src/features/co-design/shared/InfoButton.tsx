@@ -6,20 +6,13 @@ import type { SxProps, Theme } from '@mui/material/styles'
 interface InfoButtonProps {
   onClick: () => void
   label?: string
-  className?: string
   sx?: SxProps<Theme>
 }
 
-export default function InfoButton({
-  onClick,
-  label = 'Toggle info panel',
-  className,
-  sx,
-}: InfoButtonProps) {
+export default function InfoButton({ onClick, label = 'Toggle info panel', sx }: InfoButtonProps) {
   return (
     <IconButton
       aria-label={label}
-      className={className}
       onClick={onClick}
       sx={[
         (theme) => ({
