@@ -1,6 +1,7 @@
 // Ported from JT_dashboard/src/lib/Flow/components/sections/Column.svelte.
 // `bind:column` is dropped: nothing inside the column can change it (the
 // header's hide toggle is commented out in the original).
+import { Box } from '@mui/material'
 import { useFlowState } from '../../flowStore'
 import type { tBlock, tColumnMetadata } from '../../types'
 import Block from './Block'
@@ -61,11 +62,28 @@ export default function Column({
   const sorted_blocks = _sorted_blocks(column, blocks, leading_column, base_blocks)
 
   return (
-    <div className="question-container flex h-full w-fit flex-col items-center justify-start">
+    <Box
+      sx={{
+        display: 'flex',
+        height: '100%',
+        width: 'fit-content',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+      }}
+    >
       {show_column_header && <ColumnHeader title={column.title} />}
-      <div
-        className="mt-1 flex grow flex-col items-center justify-around gap-y-2 px-1"
-        style={column.hidden ? { display: 'none' } : undefined}
+      <Box
+        sx={{
+          mt: 0.5,
+          display: column.hidden ? 'none' : 'flex',
+          flexGrow: 1,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          rowGap: 1,
+          px: 0.5,
+        }}
       >
         {sorted_blocks.map((block) => (
           <Block
@@ -75,7 +93,7 @@ export default function Column({
             base_space={95}
           />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

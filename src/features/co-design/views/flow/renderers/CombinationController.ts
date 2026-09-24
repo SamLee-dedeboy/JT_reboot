@@ -2,23 +2,6 @@
 import { participantState, combinationState } from '../flowStore'
 import type { tBlock } from '../types'
 
-const colors = [
-  '#e6194b', // red
-  '#f58231', // orange
-  '#ffe119', // yellow
-  '#bfef45', // lime
-  '#3cb44b', // green
-  '#42d4f4', // cyan
-  '#4363d8', // blue
-  '#911eb4', // purple
-  '#f032e6', // magenta
-  '#fabed4', // pink
-  '#469990', // teal
-  '#dcbeff', // lavender
-  '#9a6324', // brown
-  '#aaffc3', // mint
-  '#ffd8b1', // apricot
-]
 export const combination_controller = {
   generateCombinations(target_blocks: tBlock[]) {
     const block_id_to_title_dict = target_blocks.reduce(
@@ -70,7 +53,12 @@ export const combination_controller = {
     participantState.participant_combinations = local_participant_combinations
     participantState.mentioned_participants = Object.keys(local_participant_combinations)
   },
-  setParticipantColor(combinations: string[], participant_combinations: { [key: string]: string }) {
+  // `colors` is the data-only combination palette (theme.coDesign.flow.combinationPalette).
+  setParticipantColor(
+    combinations: string[],
+    participant_combinations: { [key: string]: string },
+    colors: readonly string[],
+  ) {
     const combination_to_participants = Object.entries(participant_combinations).reduce(
       (acc, [participant, combination]) => {
         if (!acc[combination]) acc[combination] = []

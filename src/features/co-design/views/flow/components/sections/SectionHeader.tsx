@@ -3,9 +3,9 @@
 // curation code (add/remove/submit to POST /curate/category/, which has no
 // backend) had no markup calling it and is dropped, along with the unused
 // `options` / `category_metadata` props and the getContext("fetchData") lookup.
+import { Box } from '@mui/material'
 import { useEffect, useRef } from 'react'
 import type { tSectionMetadata } from '../../types'
-import './SectionHeader.css'
 
 function titleFontSize(title: string) {
   const len = title.replace(/<[^>]+>/g, '').length
@@ -37,11 +37,41 @@ export default function SectionHeader({ section }: { section: tSectionMetadata }
   }, [section.title, title_font_size])
 
   return (
-    <div className="jtd-SectionHeader header-container section-header pointer-events-auto relative flex text-lg">
+    <Box
+      sx={(theme) => ({
+        position: 'relative',
+        display: 'flex',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        mb: 0,
+        px: 0.5,
+        textAlign: 'center',
+        userSelect: 'none',
+        pointerEvents: 'auto',
+        bgcolor: theme.coDesign.flow.sectionHeader.background,
+        boxShadow: theme.coDesign.flow.sectionHeader.shadow,
+      })}
+    >
       {/* The titles are plain text constants ({@html} in the original). */}
-      <div className="section-title relative w-full" ref={titleRef}>
+      {/* Font size is fitted to the band by the effect above. */}
+      <Box
+        ref={titleRef}
+        sx={(theme) => ({
+          typography: 'meta',
+          position: 'relative',
+          width: '100%',
+          height: theme.coDesign.flow.sectionHeader.titleHeight,
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          mx: 1.6,
+          color: theme.coDesign.flow.sectionHeader.text,
+        })}
+      >
         {section.title}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

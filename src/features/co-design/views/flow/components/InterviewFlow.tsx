@@ -4,6 +4,8 @@
 // highlighting that nothing triggers, the audio/recorder locals and the no-op
 // click listener on .flow-container. The `data` / `category_metadata` props only
 // fed the unused section-curation code and are no longer passed down.
+import { Box, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import * as d3 from 'd3'
 import { useCallback, useEffect, useRef } from 'react'
 import * as Constants from '../constants'
@@ -20,7 +22,6 @@ import * as Utils from '../renderers/FlowRenderUtils'
 import type { tBlock, tColumnMetadata, tPathData, tSectionMetadata } from '../types'
 import Combinations from './Combinations'
 import SectionWrapper from './SectionWrapper'
-import './InterviewFlow.css'
 
 interface Props {
   block_aggregator: BlockAggregator
@@ -81,6 +82,7 @@ function normal_mode_paths(
   passthrough_blocks: tBlock[],
   block_participants: { [key: string]: string[] },
   block_aggregator: BlockAggregator,
+  combination_palette: readonly string[],
 ) {
   const participant_combinations = participantState.participant_combinations
   const showed_column_ids = filtered_column_orders.map((c) => c.id)
@@ -146,12 +148,15 @@ function normal_mode_paths(
   combination_controller.setParticipantColor(
     combinationState.rendered_combinations,
     participant_combinations,
+    combination_palette,
   )
   return sankey_paths
 }
 
 export default function InterviewFlow({ block_aggregator }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const theme = useTheme()
+  const { combinationPalette, path: pathTokens } = theme.coDesign.flow
   const sections = useFlowState((s) => s.sections)
   const render_paths_request = useFlowState((s) => s.render_paths_request)
 
@@ -178,6 +183,7 @@ export default function InterviewFlow({ block_aggregator }: Props) {
       clicked_normal_blocks,
       block_participants,
       block_aggregator,
+      combinationPalette,
     )
     const combination_colors = combinationState.combination_colors
     svg
@@ -190,7 +196,7 @@ export default function InterviewFlow({ block_aggregator }: Props) {
       .classed('sankey', true)
       .attr('d', (d) => d.path.toString())
       .attr('fill', (d) => combination_colors[d.id])
-      .attr('opacity', 0.7)
+      .attr('opacity', pathTokens.opacity)
       .raise()
       .on('click', function (e: MouseEvent, d) {
         e.preventDefault()
@@ -204,7 +210,7 @@ export default function InterviewFlow({ block_aggregator }: Props) {
     if (highlighted_participants.length > 0) {
       highlight_paths_by_clicked_blocks(highlighted_participants, clicked_normal_blocks)
     }
-  }, [block_aggregator])
+  }, [block_aggregator, combinationPalette, pathTokens.opacity])
 
   // onMount: reset the selection, draw, then reveal the remaining sections
   // one by one.
@@ -240,11 +246,25 @@ export default function InterviewFlow({ block_aggregator }: Props) {
   }
 
   return (
-    <div className="jtd-InterviewFlow upper-page main-content flex gap-5 h-full w-full">
-      <div className="flex flex-col gap-2">
-        <h4 className="!font-[500]">Interview Questions and Responses</h4>
-        <div className="flex flex-1 h-ful w-full">
-          <div ref={containerRef} className="flow-container relative flex grow">
+    // Interview flow (sections + sankey) at left, combinations panel at right
+    <Box
+      sx={(theme) => ({
+        display: 'flex',
+        gap: 2.5,
+        height: '100%',
+        width: '100%',
+        px: 2.5,
+        pb: 1.25,
+        color: theme.coDesign.flow.text,
+        bgcolor: theme.coDesign.flow.surface,
+      })}
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <Typography variant="chartTitle" component="h2">
+          Interview Questions and Responses
+        </Typography>
+        <Box sx={{ display: 'flex', flex: 1, width: '100%' }}>
+          <Box ref={containerRef} sx={{ position: 'relative', display: 'flex', flexGrow: 1 }}>
             {sections.map(
               (section, index) =>
                 section.revealed && (
@@ -259,21 +279,50 @@ export default function InterviewFlow({ block_aggregator }: Props) {
                   />
                 ),
             )}
-            <svg id="sankey-svg" className="sankey-svg"></svg>
-          </div>
-        </div>
-      </div>
-      <div className="control-panel flex w-[20rem] md:w-[18rem] lg:w-[22rem] xl:w-[28rem] flex-col gap-2.5 pb-2">
-        <h4 className="!font-[500]">Shared Values and Concerns</h4>
-        <div
-          className="statistics-panel flex h-1 grow flex-col outline-2"
-          style={{ outlineColor: 'var(--border-accent)' }}
+            {/* d3 draws the sankey paths into this overlay; sized to the container so
+                the viewBox set on each redraw maps 1:1 to screen pixels */}
+            <Box
+              component="svg"
+              id="sankey-svg"
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                display: 'block',
+                width: '100%',
+                height: '100%',
+              }}
+            />
+          </Box>
+        </Box>
+      </Box>
+      <Box
+        sx={(theme) => ({
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1.25,
+          pb: 1,
+          width: theme.coDesign.flow.controlPanel.width,
+        })}
+      >
+        <Typography variant="chartTitle" component="h2">
+          Shared Values and Concerns
+        </Typography>
+        <Box
+          sx={(theme) => ({
+            display: 'flex',
+            flexDirection: 'column',
+            flexGrow: 1,
+            height: 4,
+            outline: theme.coDesign.flow.controlPanel.outline,
+            borderRadius: theme.coDesign.flow.controlPanel.radius,
+            bgcolor: theme.coDesign.flow.controlPanel.background,
+          })}
         >
-          <div className="flex grow flex-col gap-8 pb-4">
+          <Box sx={{ display: 'flex', flexGrow: 1, flexDirection: 'column', gap: 4, pb: 2 }}>
             <Combinations />
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Box>
+    </Box>
   )
 }

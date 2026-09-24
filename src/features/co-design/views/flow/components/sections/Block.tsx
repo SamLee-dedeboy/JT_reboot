@@ -2,13 +2,12 @@
 // The BlockContent popup (and its handleNavigate) was commented out in the
 // original, so BlockContent.svelte is not ported; the hidden expand icon is
 // kept and still toggles `showing-content`.
+import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
-import type { CSSProperties } from 'react'
 import { assetUrl } from '../../../../../../utils/baseUrl'
 import * as Constants from '../../constants'
 import { blockState, useFlowState } from '../../flowStore'
 import type { tBlock } from '../../types'
-import './Block.css'
 
 interface Props {
   block: tBlock
@@ -52,10 +51,9 @@ export default function Block({
     (block.participants && block.participants.length > 0
       ? (base_space * block.participants.length) / total_participants
       : 0) + '%'
-  const missing_style: CSSProperties =
-    block_combinations.length > 0
-      ? {}
-      : { opacity: 0.2, height: '5%', flexGrow: 0, pointerEvents: 'none' }
+  // Categories nobody mentioned collapse to a faded, non-interactive stub.
+  const missing = block_combinations.length === 0
+  const dense = block.participants.length > 5
 
   const data_json = JSON.stringify({
     column: block.column_id,
@@ -63,20 +61,38 @@ export default function Block({
     participants: block.participants,
   })
 
+  // `block-container` / `leading` are DOM hooks for highlight_blocks_by_participants.
   const className = [
-    'jtd-Block block-container pointer-events-auto relative flex w-32 justify-center text-[0.9rem] outline-1',
-    grow ? 'grow' : 'flex-none',
+    'block-container',
     show_content ? 'showing-content' : '',
     clicked ? 'clicked' : '',
     leading ? 'leading' : '',
-  ]
+  ].join(' ')
 
   return (
-    <div
+    <Box
       role="button"
       tabIndex={0}
-      className={className.join(' ')}
-      style={{ height, ...missing_style, outlineColor: 'var(--jt-blue-dark)' }}
+      className={className}
+      sx={(theme) => {
+        const tokens = theme.coDesign.flow.block
+        return {
+          position: 'relative',
+          display: 'flex',
+          justifyContent: 'center',
+          width: 128,
+          flex: grow ? '1 1 auto' : 'none',
+          pointerEvents: 'auto',
+          color: clicked ? tokens.clickedText : undefined,
+          outline: clicked ? tokens.clickedOutline : tokens.outline,
+          borderRadius: clicked ? tokens.radius : 0,
+          boxShadow: clicked ? tokens.clickedShadow : 'none',
+          '&:focus-visible': { outline: tokens.focusOutline },
+          ...(leading && { maxWidth: '12rem' }),
+          ...(missing && { opacity: 0.2, flexGrow: 0, pointerEvents: 'none' }),
+        }
+      }}
+      style={{ height: missing ? '5%' : height }}
       onClick={(e) => {
         if (!e.defaultPrevented) {
           e.preventDefault()
@@ -86,12 +102,21 @@ export default function Block({
       data-json={data_json}
     >
       {view_mode && show_icon_list && (
-        <div className="icon-list absolute right-0 top-0 z-10 hidden">
-          <div className="flex">
-            <div
+        // Expand toggle; hidden in the original too.
+        <Box sx={{ position: 'absolute', top: 0, right: 0, zIndex: 10, display: 'none' }}>
+          <Box sx={{ display: 'flex' }}>
+            <Box
               role="button"
               tabIndex={0}
-              className="icon-container"
+              sx={(theme) => ({
+                display: 'flex',
+                width: 16,
+                height: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                p: 0.25,
+                '&:hover': { bgcolor: theme.coDesign.flow.block.iconHoverBackground },
+              })}
               onClick={(e) => {
                 e.preventDefault()
                 if (block.content) setShowContent((v) => !v)
@@ -99,31 +124,39 @@ export default function Block({
             >
               {/* maximize.svg does not exist in the original's public/ either. */}
               <img src={assetUrl('images/co-design/maximize.svg')} alt="[]" />
-            </div>
-          </div>
-        </div>
+            </Box>
+          </Box>
+        </Box>
       )}
-      <div
+      <Box
         id={block.id}
-        className="block-element relative flex w-full flex-col items-center justify-center p-1 text-center text-white"
-        style={{ backgroundColor: '#506a74' }}
+        sx={(theme) => ({
+          position: 'relative',
+          display: 'flex',
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          p: 0.5,
+          textAlign: 'center',
+          color: theme.coDesign.flow.block.text,
+          bgcolor: theme.coDesign.flow.block.background,
+        })}
         data-json={data_json}
       >
-        <div
-          className="w-full select-none"
-          style={{
-            fontSize: block.participants.length > 5 ? '0.9rem' : '0.7rem',
-            lineHeight: block.participants.length > 5 ? '1.2' : '1',
-          }}
+        <Typography
+          variant={dense ? 'controlLabel' : 'chartAxis'}
+          component="div"
+          sx={{ width: '100%', userSelect: 'none', color: 'inherit' }}
         >
           {block.title}{' '}
           {block.column_id !== Constants.fairness_column_id && (
-            <div className="opacity-70 text-[0.75em] leading-tight">
+            <Typography variant="chartAxis" component="div" sx={{ opacity: 0.7, color: 'inherit' }}>
               ({block.participants.length})
-            </div>
+            </Typography>
           )}
-        </div>
-      </div>
-    </div>
+        </Typography>
+      </Box>
+    </Box>
   )
 }

@@ -1,8 +1,10 @@
 // Ported from JT_dashboard/src/lib/Flow/components/sections/DecisionMaking.svelte.
 // handleMoveColumnLeft/Right had no callers and are dropped.
+import { Box } from '@mui/material'
 import type { BlockAggregator } from '../../renderers/BlockAggregator'
 import type { tSectionMetadata } from '../../types'
 import Column from './Column'
+import SectionContent from './SectionContent'
 
 interface Props {
   section: tSectionMetadata
@@ -11,8 +13,10 @@ interface Props {
 
 export default function DecisionMaking({ section, block_aggregator }: Props) {
   return (
-    <div className="section-content">
-      <div className="nodes-container flex h-full justify-center gap-x-4 rounded py-1 pl-[0rem] text-sm">
+    <SectionContent>
+      <Box
+        sx={{ display: 'flex', height: '100%', justifyContent: 'center', columnGap: 2, py: 0.5 }}
+      >
         {section.columns.map((column) => (
           <Column
             key={column.id}
@@ -22,7 +26,7 @@ export default function DecisionMaking({ section, block_aggregator }: Props) {
             total_participants={block_aggregator.max_participants}
           />
         ))}
-      </div>
-    </div>
+      </Box>
+    </SectionContent>
   )
 }

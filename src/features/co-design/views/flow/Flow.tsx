@@ -1,6 +1,8 @@
 // Listening view, ported from JT_dashboard/src/lib/Flow/Flow.svelte.
 // Dropped: the unused `transcripts` / `category_metadata` locals and the
 // debug console.log calls.
+import { Box, Typography } from '@mui/material'
+import { keyframes } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
 import { getFlowData } from '../../api'
 import InterviewFlow from './components/InterviewFlow'
@@ -9,8 +11,12 @@ import { blockState, participantState, sectionState } from './flowStore'
 import { BlockAggregator } from './renderers/BlockAggregator'
 import { combination_controller } from './renderers/CombinationController'
 import type { tBlock, tDataset } from './types'
-import './Flow.css'
-import LegacyScope from '../../shared/LegacyScope'
+
+const spin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`
 
 function setParticipantColor(comparison_mode: boolean, leading_blocks: tBlock[]) {
   updateDefaultBaseBlocks(leading_blocks)
@@ -27,7 +33,7 @@ function updateDefaultBaseBlocks(leading_blocks: tBlock[]) {
   ]
 }
 
-function FlowView() {
+export default function Flow() {
   const [loaded, setLoaded] = useState<BlockAggregator | null>(null)
 
   useEffect(() => {
@@ -59,18 +65,29 @@ function FlowView() {
     return <InterviewFlow block_aggregator={loaded} />
   }
   return (
-    <div className="jtd-Flow loading-container">
-      <div className="spinner"></div>
-      <p>Loading data…</p>
-    </div>
-  )
-}
-
-// Temporary: keeps the legacy dashboard stylesheet applied until this view is restyled.
-export default function Flow() {
-  return (
-    <LegacyScope>
-      <FlowView />
-    </LegacyScope>
+    <Box
+      sx={{
+        display: 'flex',
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 2,
+      }}
+    >
+      <Box
+        sx={(theme) => ({
+          width: theme.coDesign.flow.loading.size,
+          height: theme.coDesign.flow.loading.size,
+          border: `${theme.coDesign.flow.loading.thickness}px solid ${theme.coDesign.flow.loading.track}`,
+          borderTopColor: theme.coDesign.flow.loading.indicator,
+          borderRadius: '50%',
+          animation: `${spin} 0.8s linear infinite`,
+        })}
+      />
+      <Typography variant="meta" sx={(theme) => ({ color: theme.coDesign.flow.loading.text })}>
+        Loading data…
+      </Typography>
+    </Box>
   )
 }

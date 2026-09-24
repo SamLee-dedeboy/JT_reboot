@@ -1,12 +1,30 @@
 // Ported from JT_dashboard/src/lib/Flow/components/sections/ColumnHeader.svelte.
 // Only rendered for multi-column sections (none in the current store). The
 // icon and hide toggle were commented out in the original.
-import './ColumnHeader.css'
+import { Typography } from '@mui/material'
 
 export default function ColumnHeader({ title }: { title: string }) {
   return (
-    <span className="jtd-ColumnHeader question-header pointer-events-auto relative mb-1 inline-flex select-none items-center justify-center whitespace-nowrap rounded px-1 text-center text-[1rem] shadow-[0px_0px_1px_rgba(0,0,0,0.2)]">
+    <Typography
+      variant="cardBody"
+      component="span"
+      sx={(theme) => ({
+        position: 'relative',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        mb: 0.5,
+        px: 0.5,
+        pointerEvents: 'auto',
+        userSelect: 'none',
+        whiteSpace: 'nowrap',
+        textAlign: 'center',
+        color: theme.coDesign.flow.columnHeader.text,
+        borderRadius: theme.coDesign.flow.columnHeader.radius,
+        boxShadow: theme.coDesign.flow.columnHeader.shadow,
+      })}
+    >
       {title}
-    </span>
+    </Typography>
   )
 }

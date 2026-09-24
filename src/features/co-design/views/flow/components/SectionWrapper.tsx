@@ -1,5 +1,7 @@
 // Ported from JT_dashboard/src/lib/Flow/components/SectionWrapper.svelte.
 // `bind:section` becomes section + onSectionChange.
+import { Box } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { motion } from 'framer-motion'
 import { assetUrl } from '../../../../../utils/baseUrl'
 import type { BlockAggregator } from '../renderers/BlockAggregator'
@@ -7,6 +9,13 @@ import type { tSectionMetadata } from '../types'
 import Section from './Section'
 
 const cubicOut = (t: number) => (t - 1) ** 3 + 1
+
+// Sections let clicks through to the sankey; blocks and headers opt back in.
+const SectionContainer = styled(motion.div)({
+  display: 'flex',
+  flexDirection: 'column',
+  pointerEvents: 'none',
+})
 
 interface Props {
   total_sections: number
@@ -27,11 +36,18 @@ export default function SectionWrapper({
 }: Props) {
   if (section?.hidden) {
     return (
-      <div
+      <Box
         role="button"
         tabIndex={0}
-        className="show-icon-container pointer-events-auto relative h-[1.5rem] w-[1.5rem] cursor-pointer hover:bg-gray-300"
-        style={{ zIndex: 10 * total_sections - index }}
+        sx={(theme) => ({
+          position: 'relative',
+          width: theme.coDesign.flow.hiddenSectionToggle.size,
+          height: theme.coDesign.flow.hiddenSectionToggle.size,
+          pointerEvents: 'auto',
+          cursor: 'pointer',
+          zIndex: 10 * total_sections - index,
+          '&:hover': { bgcolor: theme.coDesign.flow.hiddenSectionToggle.hoverBackground },
+        })}
         onClick={(e) => {
           e.preventDefault()
           onSectionChange({ ...section, hidden: false })
@@ -39,14 +55,16 @@ export default function SectionWrapper({
       >
         {/* folder-plus.svg does not exist in the original's public/ either. */}
         <img src={assetUrl('images/co-design/folder-plus.svg')} alt="show" />
-        <span className="hidden-section-title hidden w-max"> {section.title}</span>
-      </div>
+        <Box component="span" sx={{ display: 'none', width: 'max-content' }}>
+          {' '}
+          {section.title}
+        </Box>
+      </Box>
     )
   }
   return (
     // in:fly|global={{ x: 40, duration: 500 }}
-    <motion.div
-      className="section-container pointer-events-none flex flex-col"
+    <SectionContainer
       style={{
         width: `${(100 * section.columns.length) / total_columns}%`,
         zIndex: 10 * (total_sections - index),
@@ -56,6 +74,6 @@ export default function SectionWrapper({
       transition={{ duration: 0.5, ease: cubicOut }}
     >
       <Section section={section} block_aggregator={block_aggregator} />
-    </motion.div>
+    </SectionContainer>
   )
 }

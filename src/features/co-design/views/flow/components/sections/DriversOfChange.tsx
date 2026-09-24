@@ -2,6 +2,7 @@
 import type { BlockAggregator } from '../../renderers/BlockAggregator'
 import type { tSectionMetadata } from '../../types'
 import Column from './Column'
+import SectionContent from './SectionContent'
 
 interface Props {
   section: tSectionMetadata
@@ -10,7 +11,7 @@ interface Props {
 
 export default function DriversOfChange({ section, block_aggregator }: Props) {
   return (
-    <div className="section-content  items-center justify-center">
+    <SectionContent centered>
       {section.columns.map((column) => (
         <Column
           key={column.id}
@@ -19,6 +20,6 @@ export default function DriversOfChange({ section, block_aggregator }: Props) {
           total_participants={block_aggregator.max_participants}
         />
       ))}
-    </div>
+    </SectionContent>
   )
 }

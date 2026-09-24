@@ -1,16 +1,71 @@
 // Ported from JT_dashboard/src/lib/Flow/components/Combinations.svelte.
 // Dropped: the unused leading_section_title / block_aggregator props, the
 // commented-out base-block pickers and the per-row participant chips.
+import CloseIcon from '@mui/icons-material/Close'
+import { Box, ButtonBase, IconButton, Typography } from '@mui/material'
+import { styled, useTheme } from '@mui/material/styles'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import InfoButton from '../../../shared/InfoButton'
 import { useFlowState } from '../flowStore'
-import './Combinations.css'
 
 const cubicOut = (t: number) => (t - 1) ** 3 + 1
 // Svelte plays an outro by running the intro easing backwards in time, which
 // for cubicOut is cubicIn when expressed as a forward (framer-motion) ease.
 const cubicIn = (t: number) => t ** 3
+
+// Rows are 1.5rem apart in the strategy-label staircase; circles are 1.3rem.
+const OPTION_STEP_REM = 1.5
+const CIRCLE_SIZE = '1.3rem'
+
+// Transparent layer over the panel that closes the help popover on click.
+const HelpOverlay = styled(motion.div)(({ theme }) => ({
+  position: 'absolute',
+  top: theme.spacing(0.5),
+  right: theme.spacing(4),
+  bottom: 0,
+  left: 0,
+  zIndex: 60,
+}))
+
+const HelpContent = styled(motion.div)(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: theme.spacing(0.5),
+  width: `calc(100% - ${theme.spacing(2)})`,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1),
+  padding: theme.spacing(2),
+  paddingRight: theme.spacing(3),
+  color: theme.coDesign.flow.helpPopover.text,
+  backgroundColor: theme.coDesign.flow.helpPopover.background,
+  border: theme.coDesign.flow.helpPopover.border,
+  borderRadius: theme.coDesign.flow.helpPopover.radius,
+  boxShadow: theme.coDesign.flow.helpPopover.shadow,
+}))
+
+function LegendSwatch({ selected }: { selected: boolean }) {
+  return (
+    <Box
+      component="span"
+      sx={(theme) => {
+        const tokens = theme.coDesign.flow.helpPopover
+        return {
+          display: 'inline-block',
+          width: tokens.swatchSize,
+          height: tokens.swatchSize,
+          borderRadius: '50%',
+          verticalAlign: '-0.25rem',
+          mx: 0.25,
+          bgcolor: tokens.swatchFill,
+          border: `2px solid ${selected ? tokens.swatchBorderSelected : tokens.swatchBorderUnselected}`,
+          opacity: selected ? 1 : 0.5,
+        }
+      }}
+    />
+  )
+}
 
 function aggregate_combinations(
   participant_combinations: { [key: string]: string },
@@ -43,6 +98,7 @@ export default function Combinations() {
   const clicked_normal_blocks = useFlowState((s) => s.clicked_normal_blocks)
 
   const [show_help_modal, setShowHelpModal] = useState(false)
+  const rowTokens = useTheme().coDesign.flow.combinations
 
   // The original sorted `options` in place, so both share this order.
   const sorted_options = leading_blocks.map((b) => b.title).sort((a, b) => b.length - a.length)
@@ -60,68 +116,128 @@ export default function Combinations() {
   )
 
   return (
-    <div className="jtd-Combinations combinations-container relative flex w-full grow flex-col gap-y-1 pl-2 pt-2">
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+        width: '100%',
+        flexGrow: 1,
+        flexDirection: 'column',
+        rowGap: 0.5,
+        pl: 1,
+        pt: 1,
+      }}
+    >
       <InfoButton
-        className="absolute right-2 top-2 z-50"
         label="How to read this chart"
         onClick={() => setShowHelpModal(true)}
+        sx={{ position: 'absolute', top: 8, right: 8, zIndex: 50 }}
       />
-      <div className="flex mb-2">
-        <span className="px-1 text-[0.925rem] mr-8">
+      <Box sx={{ display: 'flex', mb: 1 }}>
+        <Typography variant="meta" component="p" sx={{ px: 0.5, mr: 8, color: 'base.50' }}>
           See how participants priorities align across the different salinity management strategies.
-        </span>
-      </div>
-      <div className="flex grow flex-col">
-        <div style={{ color: 'var(--text-subtitle)' }}>Salinity Management Strategies</div>
-        <div
-          className="column-headers relative z-[40] mt-6 flex max-w-full select-none justify-between overflow-x-visible"
-          style={{
-            paddingLeft: '0.875rem',
-            paddingRight: '11.625rem',
-            height: `${sorted_options.length * 1.5}rem`,
+        </Typography>
+      </Box>
+      <Box sx={{ display: 'flex', flexGrow: 1, flexDirection: 'column' }}>
+        <Typography
+          variant="controlLabel"
+          component="h3"
+          sx={(theme) => ({ color: theme.coDesign.flow.combinations.subtitle })}
+        >
+          Salinity Management Strategies
+        </Typography>
+        {/* Staircase of strategy labels with dotted leaders down to the circle columns */}
+        <Box
+          sx={{
+            position: 'relative',
+            zIndex: 40,
+            mt: 3,
+            display: 'flex',
+            maxWidth: '100%',
+            userSelect: 'none',
+            justifyContent: 'space-between',
+            overflowX: 'visible',
+            pl: 1.75,
+            pr: 23.25,
+            height: `${sorted_options.length * OPTION_STEP_REM}rem`,
           }}
         >
           {sorted_options.map((option, index) => {
             const option_clicked = clicked_options.includes(option)
-            const label_bottom = (sorted_options.length - index) * 1.5
+            const label_bottom = (sorted_options.length - index) * OPTION_STEP_REM
             return (
-              <div key={option} className="column-anchor relative w-[1.3rem] mr-1 flex-none">
-                <span
-                  className="absolute whitespace-nowrap text-sm"
-                  style={{
+              <Box
+                key={option}
+                sx={{ position: 'relative', width: CIRCLE_SIZE, mr: 0.5, flex: 'none' }}
+              >
+                <Typography
+                  variant="controlLabel"
+                  sx={(theme) => ({
+                    position: 'absolute',
+                    whiteSpace: 'nowrap',
                     bottom: `${label_bottom + 0.25}rem`,
                     left: 0,
-                    color: option_clicked ? 'white' : 'darkgray',
-                  }}
+                    color: option_clicked
+                      ? theme.coDesign.flow.combinations.optionLabelActive
+                      : theme.coDesign.flow.combinations.optionLabel,
+                  })}
                 >
                   {option}
-                </span>
-                <div
-                  className="connecting-line"
-                  style={{ bottom: 0, left: '50%', height: `${label_bottom + 0.25}rem` }}
-                ></div>
-              </div>
+                </Typography>
+                <Box
+                  sx={(theme) => ({
+                    position: 'absolute',
+                    bottom: 0,
+                    left: '50%',
+                    width: 2,
+                    height: `${label_bottom + 0.25}rem`,
+                    borderLeft: theme.coDesign.flow.combinations.connector,
+                    zIndex: 30,
+                    pointerEvents: 'none',
+                  })}
+                />
+              </Box>
             )
           })}
-        </div>
-        <div
-          className="combinations-list flex h-1 grow flex-col gap-y-2 overflow-auto pl-2 pr-46 text-sm"
-          style={{ scrollbarGutter: 'stable' }}
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            height: 4,
+            flexGrow: 1,
+            flexDirection: 'column',
+            rowGap: 1,
+            overflow: 'auto',
+            pl: 1,
+            pr: 23,
+            scrollbarGutter: 'stable',
+          }}
         >
           {sorted_combinations.map((combination, index) => {
             const combination_titles = combination_content[combination].map((b) => b.title)
             const circle_filled = sorted_options.map((o) => combination_titles.includes(o))
-            const classes = [
-              'combination-container relative flex justify-between px-1.5 py-1 opacity-15 outline-0 outline-black transition-opacity hover:shadow-md hover:brightness-90',
-              rendered_combinations.includes(combination) ? 'rendered' : '',
-              highlighted_combinations.includes(combination) ? 'highlighted' : '',
-            ]
+            const rendered = rendered_combinations.includes(combination)
+            const highlighted = highlighted_combinations.includes(combination)
             return (
-              <div
+              <Box
                 key={combination}
                 role="button"
                 tabIndex={index}
-                className={classes.join(' ')}
+                sx={(theme) => ({
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  px: 0.75,
+                  py: 0.5,
+                  opacity: rendered ? 1 : 0.15,
+                  outline: highlighted ? theme.coDesign.flow.combinations.rowHighlightOutline : 0,
+                  transition: 'opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  '&:hover': {
+                    boxShadow: theme.coDesign.flow.combinations.rowHoverShadow,
+                    filter: 'brightness(0.9)',
+                  },
+                  '&:focus-visible': { outline: theme.coDesign.flow.combinations.rowFocusOutline },
+                })}
                 style={{ backgroundColor: combination_colors[combination] }}
                 onClick={(e) => {
                   e.preventDefault()
@@ -129,31 +245,54 @@ export default function Combinations() {
                 }}
               >
                 {sorted_options.map((option, i) => (
-                  <svg key={option} className="h-[1.3rem] w-[1.3rem]" viewBox="0 0 100 110">
+                  <Box
+                    component="svg"
+                    key={option}
+                    viewBox="0 0 100 110"
+                    sx={{ width: CIRCLE_SIZE, height: CIRCLE_SIZE }}
+                  >
                     <circle
                       cx="50"
                       cy="55"
                       r="50"
-                      fill="white"
-                      opacity={circle_filled[i] ? 1 : 0.2}
                       strokeWidth="8"
-                      stroke={circle_filled[i] ? '#444444' : 'lightgray'}
-                    ></circle>
-                  </svg>
+                      fill={rowTokens.circleFill}
+                      opacity={circle_filled[i] ? 1 : 0.2}
+                      stroke={
+                        circle_filled[i]
+                          ? rowTokens.circleStrokeSelected
+                          : rowTokens.circleStrokeUnselected
+                      }
+                    />
+                  </Box>
                 ))}
-                <div className="participant-chips absolute bottom-0 left-[101%] right-0 top-0 flex items-center gap-1 px-1">
+                <Typography
+                  variant="meta"
+                  sx={(theme) => ({
+                    position: 'absolute',
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: '101%',
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    px: 0.5,
+                    color: theme.coDesign.flow.combinations.count,
+                  })}
+                >
                   {combination_participants[combination].length}
-                </div>
-              </div>
+                </Typography>
+              </Box>
             )
           })}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       <AnimatePresence>
         {show_help_modal && (
-          <motion.div
-            className="help-modal-overlay absolute left-0 right-8 top-1 inset-0 z-60"
+          <HelpOverlay
             role="dialog"
             aria-modal="true"
             aria-label="How to read this chart"
@@ -162,43 +301,54 @@ export default function Combinations() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: 'linear' }}
           >
-            <button
-              type="button"
-              className="modal-backdrop absolute inset-0"
+            <ButtonBase
               aria-label="Close modal"
+              disableRipple
               onClick={() => setShowHelpModal(false)}
-            ></button>
-            <motion.div
-              className="help-modal-content absolute left-1 right-0 top-0 flex w-full flex-col gap-2 rounded p-4 pr-6 text-base"
-              style={{ width: 'calc(100% - 1rem)' }}
+              sx={{ position: 'absolute', inset: 0 }}
+            />
+            <HelpContent
               initial={{ y: -8, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -8, opacity: 0, transition: { duration: 0.2, ease: cubicIn } }}
               transition={{ duration: 0.2, ease: cubicOut }}
             >
-              <button
-                type="button"
-                className="modal-close absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded text-sm"
+              <IconButton
                 aria-label="Close"
+                size="small"
                 onClick={() => setShowHelpModal(false)}
+                sx={(theme) => ({
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  color: theme.coDesign.flow.helpPopover.close,
+                  '&:hover, &:focus-visible': { color: theme.coDesign.flow.helpPopover.closeHover },
+                })}
               >
-                ×
-              </button>
-              <div className="font-semibold">How to read this chart</div>
-              <div>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+              <Typography variant="h5" component="h3" sx={{ pr: 3 }}>
+                How to read this chart
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'base.50' }}>
                 Each row represents participants who supports the same set of
-                <span className="underline"> salinity management strategies</span>.
-              </div>
-              <div>
-                <span className="legend-swatch-filled"></span> A filled circle means the group
-                picked that strategy; <span className="legend-swatch-empty"></span> an empty circle
-                means they did not.
-              </div>
-              <div>The initials on the right show which participants share that combination.</div>
-            </motion.div>
-          </motion.div>
+                <Box component="span" sx={{ textDecoration: 'underline' }}>
+                  {' '}
+                  salinity management strategies
+                </Box>
+                .
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'base.50' }}>
+                <LegendSwatch selected /> A filled circle means the group picked that strategy;{' '}
+                <LegendSwatch selected={false} /> an empty circle means they did not.
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'base.50' }}>
+                The initials on the right show which participants share that combination.
+              </Typography>
+            </HelpContent>
+          </HelpOverlay>
         )}
       </AnimatePresence>
-    </div>
+    </Box>
   )
 }
