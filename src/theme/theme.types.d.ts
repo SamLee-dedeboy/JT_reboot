@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { chart } from './chart'
+import type { coDesign } from './coDesign'
 import type { map } from './map'
 import type { palette } from './palette'
 import type { jtSpacing } from './spacing'
@@ -65,6 +66,7 @@ declare module '@mui/material/styles' {
     logoWordmark: typeof logoWordmark
     map: typeof map
     chart: typeof chart
+    coDesign: typeof coDesign
   }
   interface ThemeOptions {
     jtSpacing?: typeof jtSpacing
@@ -74,6 +76,7 @@ declare module '@mui/material/styles' {
     logoWordmark?: typeof logoWordmark
     map?: typeof map
     chart?: typeof chart
+    coDesign?: typeof coDesign
   }
 }
 

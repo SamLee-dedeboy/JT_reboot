@@ -17,7 +17,12 @@ const violations = []
 
 function inspectFile(file) {
   const normalizedFile = file.replaceAll('\\', '/')
-  if (!/\.(ts|tsx)$/.test(normalizedFile) || ignored.has(normalizedFile)) return
+  if (
+    !/\.(ts|tsx)$/.test(normalizedFile) ||
+    ignored.has(normalizedFile) ||
+    normalizedFile.startsWith('src/theme/coDesign/')
+  )
+    return
 
   const source = fs.readFileSync(normalizedFile, 'utf8')
   const checks = [

@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material/styles'
 import { chart } from './chart'
+import { coDesign } from './coDesign'
 import { components } from './components'
 import { map } from './map'
 import { palette } from './palette'
@@ -89,6 +90,7 @@ const theme = createTheme({
   logoWordmark,
   map,
   chart,
+  coDesign,
 })
 
 export default theme

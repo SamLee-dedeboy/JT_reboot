@@ -1,38 +1,42 @@
-import './InfoButton.css'
+// Round "about this section" toggle shared by the dashboard shell and views.
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { IconButton } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material/styles'
 
 interface InfoButtonProps {
   onClick: () => void
   label?: string
   className?: string
+  sx?: SxProps<Theme>
 }
 
 export default function InfoButton({
   onClick,
   label = 'Toggle info panel',
-  className = '',
+  className,
+  sx,
 }: InfoButtonProps) {
   return (
-    <button
-      type="button"
-      className={`jtd-info-button ${className}`}
+    <IconButton
       aria-label={label}
+      className={className}
       onClick={onClick}
+      sx={[
+        (theme) => ({
+          width: theme.coDesign.shell.infoButton.size,
+          height: theme.coDesign.shell.infoButton.size,
+          flexShrink: 0,
+          p: 0,
+          color: 'common.white',
+          bgcolor: theme.coDesign.shell.infoButton.background,
+          border: theme.coDesign.shell.infoButton.border,
+          boxShadow: theme.coDesign.shell.infoButton.shadow,
+          '&:hover': { bgcolor: 'translucent.primaryBlue' },
+        }),
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M12 16v-4" />
-        <path d="M12 8h.01" />
-      </svg>
-    </button>
+      <InfoOutlinedIcon fontSize="small" />
+    </IconButton>
   )
 }

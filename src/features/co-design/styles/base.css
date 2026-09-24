@@ -250,10 +250,6 @@
 }
 
 .jtd-root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
   background-color: var(--surface-page);
   color: var(--text-primary);
   font-size: 1rem;
