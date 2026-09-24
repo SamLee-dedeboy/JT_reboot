@@ -1,0 +1,193 @@
+/* TEMPORARY (migration phase 1): Tailwind v4 preflight, generated from
+   node_modules/tailwindcss/preflight.css and scoped to .jtd-root with
+   :where() so it keeps element-level specificity, as in the original
+   JT_dashboard. */
+
+:where(.jtd-root, .jtd-root *),
+:where(.jtd-root, .jtd-root *)::after,
+:where(.jtd-root, .jtd-root *)::before,
+:where(.jtd-root, .jtd-root *)::backdrop,
+:where(.jtd-root, .jtd-root *)::file-selector-button {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+}
+:where(.jtd-root) {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  tab-size: 4;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans', Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  -webkit-tap-highlight-color: transparent;
+}
+:where(.jtd-root) hr {
+  height: 0;
+  color: inherit;
+  border-top-width: 1px;
+}
+:where(.jtd-root) abbr:where([title]) {
+  -webkit-text-decoration: underline dotted;
+  text-decoration: underline dotted;
+}
+:where(.jtd-root) h1,
+:where(.jtd-root) h2,
+:where(.jtd-root) h3,
+:where(.jtd-root) h4,
+:where(.jtd-root) h5,
+:where(.jtd-root) h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+:where(.jtd-root) a {
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+:where(.jtd-root) b,
+:where(.jtd-root) strong {
+  font-weight: bolder;
+}
+:where(.jtd-root) code,
+:where(.jtd-root) kbd,
+:where(.jtd-root) samp,
+:where(.jtd-root) pre {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  font-size: 1em;
+}
+:where(.jtd-root) small {
+  font-size: 80%;
+}
+:where(.jtd-root) sub,
+:where(.jtd-root) sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+:where(.jtd-root) sub {
+  bottom: -0.25em;
+}
+:where(.jtd-root) sup {
+  top: -0.5em;
+}
+:where(.jtd-root) table {
+  text-indent: 0;
+  border-color: inherit;
+  border-collapse: collapse;
+}
+:where(.jtd-root) :-moz-focusring:where(:not(iframe)) {
+  outline: auto;
+}
+:where(.jtd-root) progress {
+  vertical-align: baseline;
+}
+:where(.jtd-root) summary {
+  display: list-item;
+}
+:where(.jtd-root) ol,
+:where(.jtd-root) ul,
+:where(.jtd-root) menu {
+  list-style: none;
+}
+:where(.jtd-root) img,
+:where(.jtd-root) svg,
+:where(.jtd-root) video,
+:where(.jtd-root) canvas,
+:where(.jtd-root) audio,
+:where(.jtd-root) iframe,
+:where(.jtd-root) embed,
+:where(.jtd-root) object {
+  display: block;
+  vertical-align: middle;
+}
+:where(.jtd-root) img,
+:where(.jtd-root) video {
+  max-width: 100%;
+  height: auto;
+}
+:where(.jtd-root) button,
+:where(.jtd-root) input,
+:where(.jtd-root) select,
+:where(.jtd-root) optgroup,
+:where(.jtd-root) textarea,
+:where(.jtd-root, .jtd-root *)::file-selector-button {
+  font: inherit;
+  font-feature-settings: inherit;
+  font-variation-settings: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  border-radius: 0;
+  background-color: transparent;
+  opacity: 1;
+}
+:where(.jtd-root) :where(select:is([multiple], :where(.jtd-root) [size])) optgroup {
+  font-weight: bolder;
+}
+:where(.jtd-root) :where(select:is([multiple], :where(.jtd-root) [size])) optgroup option {
+  padding-inline-start: 20px;
+}
+:where(.jtd-root, .jtd-root *)::file-selector-button {
+  margin-inline-end: 4px;
+}
+:where(.jtd-root, .jtd-root *)::placeholder {
+  opacity: 1;
+}
+@supports (not (-webkit-appearance: -apple-pay-button)) or (contain-intrinsic-size: 1px) {
+  :where(.jtd-root, .jtd-root *)::placeholder {
+    color: color-mix(in oklab, currentcolor 50%, transparent);
+  }
+}
+:where(.jtd-root) textarea {
+  resize: vertical;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-date-and-time-value {
+  min-height: 1lh;
+  text-align: inherit;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit {
+  display: inline-flex;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-year-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-month-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-day-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-hour-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-minute-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-second-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-millisecond-field,
+:where(.jtd-root, .jtd-root *)::-webkit-datetime-edit-meridiem-field {
+  padding-block: 0;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-calendar-picker-indicator {
+  line-height: 1;
+}
+:where(.jtd-root) :-moz-ui-invalid {
+  box-shadow: none;
+}
+:where(.jtd-root) button,
+:where(.jtd-root)
+  input:where([type='button'], :where(.jtd-root) [type='reset'], :where(.jtd-root) [type='submit']),
+:where(.jtd-root, .jtd-root *)::file-selector-button {
+  appearance: button;
+}
+:where(.jtd-root, .jtd-root *)::-webkit-inner-spin-button,
+:where(.jtd-root, .jtd-root *)::-webkit-outer-spin-button {
+  height: auto;
+}
+:where(.jtd-root) [hidden]:where(:not([hidden='until-found'])) {
+  display: none !important;
+}

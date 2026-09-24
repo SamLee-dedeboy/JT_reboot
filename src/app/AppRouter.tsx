@@ -20,6 +20,7 @@ const ScenarioExplorerPage = lazy(
 const RegionalSummaryPage = lazy(() => import('../features/regional-summary/RegionalSummaryPage'))
 const Watershed = lazy(() => import('../internal/Watershed'))
 const RankVisualization = lazy(() => import('../internal/rank-visualization/RankVisualization'))
+const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
 
@@ -43,6 +44,7 @@ export default function AppRouter() {
         element={deferred(<ScenarioExplorerPage enableDateHighlights enableSlrModes />)}
       />
       <Route path="/pages/regional-summary" element={deferred(<RegionalSummaryPage />)} />
+      <Route path="/pages/co-design-dashboard/*" element={deferred(<CoDesignDashboard />)} />
       <Route path="/pages/watershed" element={deferred(<Watershed />)} />
       <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
       <Route path="/pages/rank-visualization" element={deferred(<RankVisualization />)} />
