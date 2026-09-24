@@ -1,11 +1,13 @@
 // Code detail panel (participant count + summary) for the hovered graph node,
 // ported from JT_dashboard/src/lib/Linking/GraphNodeTooltip.svelte.
+import { Box, Button, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
 import { summarizeCode } from '../../api'
-import { bubble_color, contrastTextColor } from './constants'
+import { readableTextOn } from '../../shared/contrast'
+import { categoryColorScale } from './constants'
 import type { GraphNode } from './renderers/CodeGraphRenderer'
 import SlideIn from './SlideIn'
-import './GraphNodeTooltip.css'
 
 interface GraphNodeTooltipProps {
   code: GraphNode
@@ -24,6 +26,8 @@ function fetchSummarization(code: GraphNode): Promise<string> {
 }
 
 export default function GraphNodeTooltip({ code, handleExpand }: GraphNodeTooltipProps) {
+  const theme = useTheme()
+  const { linking } = theme.coDesign
   // {#await fetchSummarization()}: pending until the summary for *this* code
   // resolves; a new code shows the pending branch again.
   const [result, setResult] = useState<{ code: GraphNode; summarization: string } | null>(null)
@@ -39,51 +43,78 @@ export default function GraphNodeTooltip({ code, handleExpand }: GraphNodeToolti
   const summarization = result?.code === code ? result.summarization : undefined
 
   const category = code.id.split('\\').at(0)!
-  const color = bubble_color(category)
+  const color = categoryColorScale(linking.category)(category)
 
   return (
-    <div className="jtd-GraphNodeTooltip modal-content flex flex-col grow text-left text-white pb-4 relative">
-      <div
-        className="text-center font-(--font-body) font-semibold p-2"
-        style={{
-          backgroundColor: `color-mix(in srgb, ${color} 90%, transparent)`,
-          color: contrastTextColor(color),
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+        height: '100%',
+        minHeight: 0,
+        pb: 2,
+        textAlign: 'left',
+        color: theme.chart.tooltip.text,
+      }}
+    >
+      {/* Code name on its category colour */}
+      <Typography
+        variant="cardTitle"
+        component="div"
+        sx={{
+          p: 1,
+          textAlign: 'center',
+          bgcolor: `color-mix(in srgb, ${color} 90%, transparent)`,
+          color: readableTextOn(color, linking.onColor.light, linking.onColor.dark),
         }}
       >
         {code.depth <= 1 ? code.id.split('\\').at(-1)?.toUpperCase() : code.id.split('\\').at(-1)}
-      </div>
+      </Typography>
 
-      <div className="scrollable mb-4 px-4 flex flex-col absolute top-0 bottom-0">
-        <p className="">
-          <span className="underline">{code.participantCount}</span> participants mentioned this in
-          their interview.
-        </p>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: '1 1 0',
+          minHeight: 0,
+          overflowY: 'auto',
+          mb: 2,
+          px: 2,
+        }}
+      >
+        <Typography variant="cardBody" component="p" sx={{ mt: 1 }}>
+          <Box component="span" sx={{ textDecoration: 'underline' }}>
+            {code.participantCount}
+          </Box>{' '}
+          participants mentioned this in their interview.
+        </Typography>
         {handleExpand && (
-          <div className="mt-4">
-            <button
-              className="expand-button px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors shadow-md"
-              onClick={() => handleExpand(code)}
-            >
+          <Typography variant="cardBody" component="div" sx={{ mt: 2 }}>
+            <Button variant="contained" color="secondary" onClick={() => handleExpand(code)}>
               Expand
-            </button>{' '}
+            </Button>{' '}
             to see its children.
-          </div>
+          </Typography>
         )}
 
-        <div className="">
+        <Box>
           {summarization === undefined ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="text-gray-500">Loading summary...</div>
-            </div>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 4 }}>
+              <Typography variant="meta" sx={{ color: 'base.200' }}>
+                Loading summary...
+              </Typography>
+            </Box>
           ) : (
-            <SlideIn key={code.id} className="py-4 rounded-lg text-left">
-              <p className="leading-relaxed whitespace-pre-wrap">
+            <SlideIn key={code.id} sx={{ py: 2, textAlign: 'left' }}>
+              <Typography variant="cardBody" component="p" sx={{ whiteSpace: 'pre-wrap' }}>
                 {summarization || 'No summary available.'}
-              </p>
+              </Typography>
             </SlideIn>
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   )
 }

@@ -1,5 +1,10 @@
 // "Public ideas & values" panel: info overlay + code graph for the selected
 // scenario, ported from JT_dashboard/src/lib/Linking/ScenarioCodes.svelte.
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import RemoveIcon from '@mui/icons-material/Remove'
+import { Box, IconButton, Typography } from '@mui/material'
+import type { TypographyProps } from '@mui/material'
+import { styled } from '@mui/material/styles'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { getScenarioCodes } from '../../api'
@@ -8,7 +13,6 @@ import CodeGraph from './CodeGraph'
 import type { GraphNode, tCode } from './renderers/CodeGraphRenderer'
 import { cubicOut } from './transitions'
 import type { tScenarioData } from './types'
-import './ScenarioCodes.css'
 
 // transition:scale={{ start: 0.85, duration: 200, easing: cubicOut }}
 const scaleTransition = {
@@ -16,6 +20,35 @@ const scaleTransition = {
   animate: { scale: 1, opacity: 1 },
   exit: { scale: 0.85, opacity: 0 },
   transition: { duration: 0.2, ease: cubicOut },
+}
+
+// Expanded info card; scales from its top-right corner like the original.
+const ExpandedInfo = styled(motion.div)(({ theme }) => {
+  const panel = theme.coDesign.linking.graph.infoPanel
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(1),
+    maxWidth: panel.maxWidth,
+    padding: theme.spacing(1.5),
+    transformOrigin: 'top right',
+    color: theme.chart.tooltip.text,
+    backgroundColor: panel.background,
+    border: panel.border,
+    borderRadius: panel.radius,
+    boxShadow: panel.shadow,
+  }
+})
+
+function InfoText({ sx, ...props }: TypographyProps) {
+  return (
+    <Typography
+      variant="meta"
+      component="p"
+      sx={[{ m: 0, fontStyle: 'italic' }, ...(Array.isArray(sx) ? sx : [sx])]}
+      {...props}
+    />
+  )
 }
 
 interface ScenarioCodesProps {
@@ -67,87 +100,78 @@ function ScenarioCodesBody({
 
   return (
     <>
-      <div className="jtd-ScenarioCodes info-panel absolute right-9 top-13 z-20 italic">
+      {/* Info overlay pinned to the graph panel's top-right corner */}
+      <Box sx={{ position: 'absolute', top: 1, right: 1, zIndex: 20, textAlign: 'left' }}>
         <AnimatePresence initial={false}>
           {infoOpen ? (
-            <motion.div
-              key="expanded"
-              className="info-panel-expanded flex flex-col gap-2 rounded-md p-3 text-sm text-left"
-              {...scaleTransition}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <span className="title-banner uppercase not-italic font-normal text-xl">
-                  PUBLIC IDEAS & VLAUES
-                </span>
-                <button
-                  type="button"
-                  className="info-toggle shrink-0 rounded px-1.5 leading-none flex items-center justify-center"
+            <ExpandedInfo key="expanded" {...scaleTransition}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: 1,
+                }}
+              >
+                <Typography
+                  variant="chartTitle"
+                  component="h3"
+                  sx={{ m: 0, color: 'secondary.main' }}
+                >
+                  Public ideas &amp; values
+                </Typography>
+                <IconButton
+                  size="small"
                   aria-label="Collapse info panel"
                   onClick={() => setInfoOpen(false)}
+                  sx={(theme) => ({
+                    flexShrink: 0,
+                    p: 0.25,
+                    color: 'common.white',
+                    '&:hover': { bgcolor: theme.coDesign.linking.graph.zoomControls.hover },
+                  })}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="lucide lucide-minus-icon lucide-minus"
-                  >
-                    <path d="M5 12h14" />
-                  </svg>
-                </button>
-              </div>
-              <span className="inline-flex items-start gap-2 font-normal">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="mt-0.5 h-5 w-5 shrink-0"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4" />
-                  <path d="M12 8h.01" />
-                </svg>
-                <span>
+                  <RemoveIcon fontSize="small" />
+                </IconButton>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                <InfoOutlinedIcon fontSize="small" sx={{ flexShrink: 0, mt: 0.125 }} />
+                <InfoText>
                   This chart shows the participant ideas and values that we aligned to this
                   scenario.
-                </span>
-              </span>
-              <div className="ml-7 font-normal">
+                </InfoText>
+              </Box>
+              <InfoText sx={{ ml: 3.5 }}>
                 Each bubble is a category of opinion. Bigger bubbles = more participants mentioned
                 this category.
-              </div>
-              <div className="ml-7 font-normal">Hover any bubble to see more details.</div>
-            </motion.div>
+              </InfoText>
+              <InfoText sx={{ ml: 3.5 }}>Hover any bubble to see more details.</InfoText>
+            </ExpandedInfo>
           ) : (
             <motion.div key="collapsed" {...scaleTransition}>
               <InfoButton onClick={() => setInfoOpen(true)} label="Expand info panel" />
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
+      </Box>
       {selectedScenario ? (
         request.status === 'resolved' ? (
           <CodeGraph codes={request.codes} onSelectCode={onSelectCode} />
         ) : request.status === 'error' ? (
-          <p className="jtd-ScenarioCodes error-message">error {request.error.message}</p>
+          <Typography
+            variant="body2"
+            component="p"
+            sx={(theme) => ({ color: theme.coDesign.linking.error })}
+          >
+            error {request.error.message}
+          </Typography>
         ) : null
       ) : (
-        <div className="jtd-ScenarioCodes flex-1 items-center justify-center flex text-3xl italic">
-          <span className="select-hint p-5 rounded">
+        <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Typography variant="body1" sx={{ p: 2.5, color: 'common.white', fontStyle: 'italic' }}>
             Select a scenario on the left to see public opinion.
-          </span>
-        </div>
+          </Typography>
+        </Box>
       )}
     </>
   )

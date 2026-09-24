@@ -2,7 +2,6 @@
 // The renderer draws into an <svg> element handed over by CodeGraph.tsx and
 // gains a destroy() so React effects can tear it down (StrictMode remounts).
 import * as d3 from 'd3'
-import { bubble_color, contrastTextColor } from '../constants'
 
 export type tCode = {
   name: string
@@ -30,8 +29,27 @@ type GraphLink = d3.SimulationLinkDatum<GraphNode> & {
 
 type RootAnchor = { region: [number, number]; outward: [number, number]; angle: number }
 
+// Theme-derived colours and type for the SVG marks (built in CodeGraph.tsx
+// from theme.coDesign.linking and theme.typography).
+export type CodeGraphTokens = {
+  categoryColor: (category: string) => string
+  // Readable label colour for text drawn on a bubble of the given colour.
+  labelColorOn: (background: string) => string
+  centerFill: string
+  centerStroke: string
+  centerText: string
+  link: string
+  nodeStroke: string
+  nodeHoverStroke: string
+  labelFontFamily: string
+  centerFontFamily: string
+  centerFontSize: string
+  centerFontWeight: string | number
+}
+
 export class CodeGraphRenderer {
   svgElement: SVGSVGElement
+  tokens: CodeGraphTokens
   width: number = 600
   height: number = 600
   dispatchHover: (node: GraphNode | null) => void = () => {}
@@ -45,8 +63,13 @@ export class CodeGraphRenderer {
   // and the radial angle from the viewport center to both anchors.
   private anchorByRoot: Map<string, RootAnchor> = new Map()
 
-  constructor(svgElement: SVGSVGElement, dispatchHover: (node: GraphNode | null) => void) {
+  constructor(
+    svgElement: SVGSVGElement,
+    tokens: CodeGraphTokens,
+    dispatchHover: (node: GraphNode | null) => void,
+  ) {
     this.svgElement = svgElement
+    this.tokens = tokens
     this.dispatchHover = dispatchHover
   }
 
@@ -306,7 +329,7 @@ export class CodeGraphRenderer {
           hasChildren: code.scenario_children.length > 0,
           x: baseX,
           y: baseY,
-          color: bubble_color(code.name.split('\\')[0]),
+          color: this.tokens.categoryColor(code.name.split('\\')[0]),
         }
       })
 
@@ -348,6 +371,7 @@ export class CodeGraphRenderer {
     })
 
     const anchorByRoot = this.anchorByRoot
+    const tokens = this.tokens
 
     // Set up D3 force simulation with visible nodes
     this.simulation?.stop()
@@ -438,8 +462,8 @@ export class CodeGraphRenderer {
       .attr('cx', cx)
       .attr('cy', cy)
       .attr('r', centerR)
-      .attr('fill', '#a3d977')
-      .attr('stroke', '#333')
+      .attr('fill', tokens.centerFill)
+      .attr('stroke', tokens.centerStroke)
       .attr('stroke-width', 3)
 
     centerGroup
@@ -451,10 +475,10 @@ export class CodeGraphRenderer {
       .attr('y', cy)
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .attr('font-family', "'Hammersmith One', sans-serif")
-      .attr('font-weight', '700')
-      .attr('font-size', '16px')
-      .attr('fill', '#111')
+      .style('font-family', tokens.centerFontFamily)
+      .style('font-weight', tokens.centerFontWeight)
+      .style('font-size', tokens.centerFontSize)
+      .attr('fill', tokens.centerText)
       .attr('pointer-events', 'none')
       .text('SALINITY')
 
@@ -463,7 +487,7 @@ export class CodeGraphRenderer {
       .data(topNodes, (d) => d.id)
       .join('line')
       .attr('class', 'center-arrow')
-      .attr('stroke', '#999')
+      .attr('stroke', tokens.link)
       .attr('stroke-opacity', 0.6)
       .attr('stroke-width', 1.5)
 
@@ -502,7 +526,7 @@ export class CodeGraphRenderer {
       .selectAll<SVGLineElement, GraphLink>('line')
       .data(visibleLinks)
       .join('line')
-      .attr('stroke', '#999')
+      .attr('stroke', tokens.link)
       .attr('stroke-opacity', 0.6)
       .attr('stroke-width', 2)
 
@@ -519,18 +543,18 @@ export class CodeGraphRenderer {
             .attr('cy', (d) => (d.y = d.y!))
             .attr('r', (d) => d.radius)
             .attr('fill', (d) => d.color)
-            .attr('stroke', '#333')
+            .attr('stroke', tokens.nodeStroke)
             .attr('stroke-width', 1.5)
             .style('cursor', 'pointer')
             .on('mouseover', (event, d) => {
               d3.select(event.currentTarget as SVGCircleElement)
-                .attr('stroke', '#fff')
+                .attr('stroke', tokens.nodeHoverStroke)
                 .attr('stroke-width', 3)
               this.dispatchHover(d)
             })
             .on('mouseleave', (event) => {
               d3.select(event.currentTarget as SVGCircleElement)
-                .attr('stroke', '#333')
+                .attr('stroke', tokens.nodeStroke)
                 .attr('stroke-width', 1.5)
             }),
         (update) => update.attr('cx', (d) => (d.x = d.x!)).attr('cy', (d) => (d.y = d.y!)),
@@ -548,11 +572,11 @@ export class CodeGraphRenderer {
       .join('text')
       .text((d) => (d.depth <= 1 ? d.name.toUpperCase() : d.name))
       .attr('font-size', (d) => Math.max(6, Math.min(14, d.radius * 0.35)) + 'px')
-      .attr('font-family', "'Hammersmith One', sans-serif")
+      .attr('font-family', tokens.labelFontFamily)
       .attr('text-anchor', 'middle')
       .attr('dy', '.35em')
       .style('pointer-events', 'none')
-      .style('fill', (d) => contrastTextColor(d.color))
+      .style('fill', (d) => tokens.labelColorOn(d.color))
       .call(wrap)
 
     // Add drag behavior

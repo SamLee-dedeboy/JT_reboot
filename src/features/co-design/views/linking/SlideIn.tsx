@@ -2,10 +2,12 @@
 // ScenarioOverview and GraphNodeTooltip. Like Svelte, it measures the element's
 // computed height, vertical padding/margin/border on mount and animates each
 // from 0, with `overflow: hidden; min-height: 0` while running, then hands the
-// element back to its stylesheet.
+// element back to its sx styles.
+import { Box } from '@mui/material'
+import type { SxProps, Theme } from '@mui/material/styles'
 import { animate } from 'framer-motion'
 import { useLayoutEffect, useRef, useState } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cubicOut } from './transitions'
 
 const DURATION = 0.4
@@ -27,12 +29,11 @@ interface SlideInProps {
   // Evaluated on mount only: false renders without an intro (Svelte's local
   // transitions don't play when an ancestor block is created).
   play?: boolean
-  className?: string
-  style?: CSSProperties
+  sx?: SxProps<Theme>
   children: ReactNode
 }
 
-export default function SlideIn({ play = true, className, style, children }: SlideInProps) {
+export default function SlideIn({ play = true, sx, children }: SlideInProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [playOnMount] = useState(play)
 
@@ -77,8 +78,8 @@ export default function SlideIn({ play = true, className, style, children }: Sli
   }, [playOnMount])
 
   return (
-    <div ref={ref} className={className} style={style}>
+    <Box ref={ref} sx={sx}>
       {children}
-    </div>
+    </Box>
   )
 }
