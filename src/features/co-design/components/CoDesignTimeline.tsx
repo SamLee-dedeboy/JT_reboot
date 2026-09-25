@@ -1,6 +1,7 @@
 // The co-design timeline (Listening → Designing → Conceptualizing → Comparing),
 // shown on the dashboard landing page and the internal timeline page. Steps
-// with a `view` open that dashboard view; others are plain cards.
+// with a `view` open that dashboard view; others are plain cards. Steps can be
+// grouped (one heading per run of steps) and toned to set their emphasis.
 import { Box, ButtonBase, Typography } from '@mui/material'
 import { keyframes } from '@mui/material/styles'
 import type { SxProps, Theme } from '@mui/material/styles'
@@ -8,7 +9,7 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { coDesignPath } from '../shared/paths'
 import { dashboardSteps } from './timelineSteps'
-import type { TimelineStep } from './timelineSteps'
+import type { TimelineStep, TimelineTone } from './timelineSteps'
 
 interface TimelineProps {
   steps?: TimelineStep[]
@@ -20,6 +21,22 @@ interface CoDesignTimelineProps extends TimelineProps {
   compact?: boolean
 }
 
+type StepRun = { group?: string; tone: TimelineTone; start: number; end: number }
+
+// Split steps into runs of consecutive steps that share a group.
+function groupRuns(steps: TimelineStep[]): StepRun[] {
+  const runs: StepRun[] = []
+  steps.forEach((step, index) => {
+    const last = runs[runs.length - 1]
+    if (last && last.group === step.group) last.end = index
+    else runs.push({ group: step.group, tone: step.tone ?? 'default', start: index, end: index })
+  })
+  return runs
+}
+
+const toneOf = (theme: Theme, tone: TimelineTone = 'default') =>
+  theme.coDesign.shell.timeline.tones[tone]
+
 // Vertical timeline: cards alternate sides of a centred rail from md, and sit
 // to the right of a left-hand rail below md.
 export default function CoDesignTimeline({
@@ -28,6 +45,7 @@ export default function CoDesignTimeline({
   sx,
 }: CoDesignTimelineProps) {
   const onSelect = useSelectView()
+  const runs = groupRuns(steps)
 
   return (
     <Box
@@ -59,14 +77,22 @@ export default function CoDesignTimeline({
           zIndex: 1,
         })}
       />
-      {steps.map((step, index) => (
-        <VerticalItem
-          key={step.title}
-          step={step}
-          index={index}
-          compact={compact}
-          onSelect={onSelect}
-        />
+      {runs.map((run, runIndex) => (
+        <Box key={run.start} sx={{ display: 'contents' }}>
+          {run.group && (
+            <VerticalGroupHeading label={run.group} tone={run.tone} first={runIndex === 0} />
+          )}
+          {steps.slice(run.start, run.end + 1).map((step, offset) => (
+            <VerticalItem
+              key={step.title}
+              step={step}
+              index={run.start + offset}
+              first={offset === 0}
+              compact={compact}
+              onSelect={onSelect}
+            />
+          ))}
+        </Box>
       ))}
     </Box>
   )
@@ -75,10 +101,12 @@ export default function CoDesignTimeline({
 // Horizontal compact timeline: dots along one rail, cards alternating above
 // and below it. Cards span `horizontalCardSpan` (< 2) step columns, so
 // same-side neighbours never touch; the outer padding keeps the first and last
-// cards inside the container.
+// cards inside the container. Group headings sit above their steps, and a tick
+// on the rail marks each group boundary.
 export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: TimelineProps) {
   const onSelect = useSelectView()
   const columns = steps.length
+  const runs = groupRuns(steps)
 
   return (
     <Box
@@ -95,19 +123,60 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
         sx={{
           display: 'grid',
           gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-          gridTemplateRows: 'auto auto auto',
+          // Group headings, top cards, rail, bottom cards.
+          gridTemplateRows: 'auto auto auto auto',
         }}
       >
-        {/* Rail across every step column */}
-        <Box
-          sx={(theme) => ({
-            gridRow: 2,
-            gridColumn: '1 / -1',
-            alignSelf: 'center',
-            height: theme.coDesign.shell.timeline.railWidth,
-            bgcolor: theme.coDesign.shell.timeline.rail,
-          })}
-        />
+        {runs.map((run) => (
+          <Box key={run.start} sx={{ display: 'contents' }}>
+            {run.group && (
+              <Box
+                sx={(theme) => ({
+                  gridRow: 1,
+                  gridColumn: `${run.start + 1} / ${run.end + 2}`,
+                  mx: 1,
+                  mb: 5,
+                  pb: 1,
+                  textAlign: 'center',
+                  borderBottom: `2px solid ${toneOf(theme, run.tone).rail}`,
+                })}
+              >
+                <Typography
+                  variant="eyebrow"
+                  component="h2"
+                  sx={(theme) => ({ color: toneOf(theme, run.tone).label })}
+                >
+                  {run.group}
+                </Typography>
+              </Box>
+            )}
+            {/* Rail segment in the group's tone */}
+            <Box
+              sx={(theme) => ({
+                gridRow: 3,
+                gridColumn: `${run.start + 1} / ${run.end + 2}`,
+                alignSelf: 'center',
+                height: theme.coDesign.shell.timeline.railWidth,
+                bgcolor: toneOf(theme, run.tone).rail,
+              })}
+            />
+            {/* Boundary tick between this group and the previous one */}
+            {run.start > 0 && (
+              <Box
+                sx={(theme) => ({
+                  gridRow: 3,
+                  gridColumn: run.start + 1,
+                  justifySelf: 'start',
+                  alignSelf: 'center',
+                  width: theme.coDesign.shell.timeline.railWidth,
+                  height: theme.coDesign.shell.timeline.dividerHeight,
+                  bgcolor: toneOf(theme, run.tone).rail,
+                  transform: 'translateX(-50%)',
+                })}
+              />
+            )}
+          </Box>
+        ))}
         {steps.map((step, index) => (
           <HorizontalItem key={step.title} step={step} index={index} onSelect={onSelect} />
         ))}
@@ -121,14 +190,55 @@ function useSelectView() {
   return (view: string) => navigate(coDesignPath(view))
 }
 
+// Group label pill laid over the vertical rail, breaking it between groups.
+function VerticalGroupHeading({
+  label,
+  tone,
+  first,
+}: {
+  label: string
+  tone: TimelineTone
+  first: boolean
+}) {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        zIndex: 2,
+        display: 'flex',
+        justifyContent: { xs: 'flex-start', md: 'center' },
+        mt: first ? 0 : 6,
+        mb: 3,
+      }}
+    >
+      <Typography
+        variant="eyebrow"
+        component="h2"
+        sx={(theme) => ({
+          px: 2,
+          py: 0.75,
+          color: toneOf(theme, tone).label,
+          bgcolor: theme.coDesign.shell.pageBackground,
+          border: `2px solid ${toneOf(theme, tone).rail}`,
+          borderRadius: theme.coDesign.shell.timeline.card.radius,
+        })}
+      >
+        {label}
+      </Typography>
+    </Box>
+  )
+}
+
 function VerticalItem({
   step,
   index,
+  first,
   compact,
   onSelect,
 }: {
   step: TimelineStep
   index: number
+  first: boolean
   compact: boolean
   onSelect: (view: string) => void
 }) {
@@ -146,7 +256,7 @@ function VerticalItem({
         },
         // Interleave the full cards so alternating sides sit half a card apart;
         // compact cards are short enough to simply stack.
-        mt: index === 0 ? 0 : compact ? 2 : { xs: 3, md: -6 },
+        mt: first ? 0 : compact ? 2 : { xs: 3, md: -6 },
       })}
     >
       <Box
@@ -173,22 +283,26 @@ function VerticalItem({
           })}
         >
           {/* Below md the date moves into the card */}
-          <Typography variant="numberArticle" sx={{ display: { md: 'none' } }}>
+          <Typography
+            variant="numberArticle"
+            sx={(theme) => ({ display: { md: 'none' }, color: toneOf(theme, step.tone).date })}
+          >
             {step.date}
           </Typography>
         </TimelineCard>
       </Box>
-      <Dot sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}>
+      <Dot tone={step.tone} sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}>
         <Typography
           variant="numberArticle"
-          sx={{
+          sx={(theme) => ({
             display: { xs: 'none', md: 'block' },
             position: 'absolute',
             top: '50%',
             transform: 'translateY(-50%)',
             whiteSpace: 'nowrap',
+            color: toneOf(theme, step.tone).date,
             ...(isLeft ? { left: 'calc(100% + 10px)' } : { right: 'calc(100% + 10px)' }),
-          }}
+          })}
         >
           {step.date}
         </Typography>
@@ -213,17 +327,17 @@ function HorizontalItem({
         alignSelf: 'center',
         width: theme.coDesign.shell.timeline.stemWidth,
         height: theme.coDesign.shell.timeline.stemHeight,
-        bgcolor: theme.coDesign.shell.timeline.rail,
+        bgcolor: toneOf(theme, step.tone).rail,
       })}
     />
   )
 
   return (
     <>
-      {/* Card with its stem, centred on the step column and two columns wide */}
+      {/* Card with its stem, centred on the step column */}
       <Box
         sx={(theme) => ({
-          gridRow: isTop ? 1 : 3,
+          gridRow: isTop ? 2 : 4,
           gridColumn: index + 1,
           alignSelf: isTop ? 'end' : 'start',
           justifySelf: 'center',
@@ -236,16 +350,17 @@ function HorizontalItem({
         {stem}
       </Box>
       {/* Dot on the rail, with the date on the side away from the card */}
-      <Dot sx={{ gridRow: 2, gridColumn: index + 1 }}>
+      <Dot tone={step.tone} sx={{ gridRow: 3, gridColumn: index + 1 }}>
         <Typography
           variant="numberArticle"
-          sx={{
+          sx={(theme) => ({
             position: 'absolute',
             left: '50%',
             transform: 'translateX(-50%)',
             whiteSpace: 'nowrap',
+            color: toneOf(theme, step.tone).date,
             ...(isTop ? { top: 'calc(100% + 8px)' } : { bottom: 'calc(100% + 8px)' }),
-          }}
+          })}
         >
           {step.date}
         </Typography>
@@ -254,7 +369,15 @@ function HorizontalItem({
   )
 }
 
-function Dot({ children, sx }: { children: ReactNode; sx?: SxProps<Theme> }) {
+function Dot({
+  tone,
+  children,
+  sx,
+}: {
+  tone?: TimelineTone
+  children: ReactNode
+  sx?: SxProps<Theme>
+}) {
   return (
     <Box
       sx={[
@@ -265,7 +388,7 @@ function Dot({ children, sx }: { children: ReactNode; sx?: SxProps<Theme> }) {
           width: theme.coDesign.shell.timeline.dotSize,
           height: theme.coDesign.shell.timeline.dotSize,
           borderRadius: '50%',
-          bgcolor: theme.coDesign.shell.timeline.dot,
+          bgcolor: toneOf(theme, tone).dot,
           zIndex: 2,
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
@@ -292,17 +415,22 @@ function TimelineCard({
   children?: ReactNode
 }) {
   const view = step.view
+  const tone = step.tone ?? 'default'
   const content = (
     <>
       {children}
-      <Typography variant={compact ? 'chartTitle' : 'h4'} component="h3">
+      <Typography
+        variant={compact ? 'chartTitle' : 'h4'}
+        component="h3"
+        sx={(theme) => ({ color: toneOf(theme, tone).title })}
+      >
         {step.title}
       </Typography>
       {/* Full cards keep the authored line breaks; compact cards wrap to fit */}
       <Typography
         variant={compact ? 'controlLabel' : 'eyebrow'}
         component="p"
-        sx={compact ? { color: 'primary.main' } : undefined}
+        sx={compact ? (theme) => ({ color: toneOf(theme, tone).subtitle }) : undefined}
       >
         {compact
           ? step.subtitle.join(' ')
@@ -329,14 +457,14 @@ function TimelineCard({
   const extraSx = Array.isArray(sx) ? sx : [sx]
   // Steps without a dashboard view are informational: no link, pulse or hover.
   if (!view) {
-    return <Box sx={[cardBaseSx(compact), ...extraSx]}>{content}</Box>
+    return <Box sx={[cardBaseSx(compact, tone), ...extraSx]}>{content}</Box>
   }
 
   return (
     <ButtonBase
       onClick={() => onSelect(view)}
       sx={[
-        cardBaseSx(compact),
+        cardBaseSx(compact, tone),
         (theme) => {
           const card = theme.coDesign.shell.timeline.card
           const pulse = keyframes`
@@ -345,9 +473,12 @@ function TimelineCard({
           `
           return {
             transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-            // Stagger the pulse so the cards don't breathe in unison.
-            animation: `${pulse} 3s ease-in-out infinite`,
-            animationDelay: `${index * 0.75}s`,
+            // Stagger the pulse so the cards don't breathe in unison; muted
+            // steps stay still so they don't compete for attention.
+            ...(tone !== 'muted' && {
+              animation: `${pulse} 3s ease-in-out infinite`,
+              animationDelay: `${index * 0.75}s`,
+            }),
             '&:hover': {
               transform: 'translateY(-2px)',
               borderColor: card.hoverBorder,
@@ -368,7 +499,7 @@ function TimelineCard({
   )
 }
 
-function cardBaseSx(compact: boolean) {
+function cardBaseSx(compact: boolean, tone: TimelineTone) {
   return (theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -379,8 +510,8 @@ function cardBaseSx(compact: boolean) {
     textAlign: 'center',
     color: 'common.white',
     bgcolor: theme.coDesign.shell.timeline.card.background,
-    border: theme.coDesign.shell.timeline.card.border,
+    border: toneOf(theme, tone).border,
     borderRadius: theme.coDesign.shell.timeline.card.radius,
-    boxShadow: theme.coDesign.shell.timeline.card.shadow,
+    boxShadow: toneOf(theme, tone).shadow,
   })
 }

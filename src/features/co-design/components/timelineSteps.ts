@@ -9,7 +9,12 @@ export type TimelineStep = {
   hint?: string
   // Dashboard view the card opens (e.g. '/flow').
   view?: string
+  // Consecutive steps with the same group get one heading.
+  group?: string
+  tone?: TimelineTone
 }
+
+export type TimelineTone = 'default' | 'muted' | 'highlight'
 
 export const dashboardSteps: TimelineStep[] = [
   {

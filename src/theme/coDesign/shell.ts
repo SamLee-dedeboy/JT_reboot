@@ -1,5 +1,6 @@
 // Co-design dashboard shell (header, tutorial dialogs, info button) and the
 // landing timeline. Built from the site palette; see src/features/co-design.
+import { alpha } from '@mui/material/styles'
 import { palette } from '../palette'
 
 export const shell = {
@@ -34,6 +35,42 @@ export const shell = {
     // Horizontal card width in step columns; under 2 leaves a gap between
     // same-side neighbours.
     horizontalCardSpan: 1.5,
+    // Tick marking the boundary between step groups on the horizontal rail.
+    dividerHeight: 40,
+    // Per-group emphasis: `muted` for background steps, `highlight` for the
+    // steps the audience should focus on; `default` is the landing-page look.
+    tones: {
+      default: {
+        rail: palette.brand.primaryBlue,
+        dot: palette.common.white,
+        date: palette.brand.primaryGreen,
+        border: `2px solid ${palette.brand.primaryBlue}`,
+        shadow: `0 2px 10px ${palette.translucent.primaryBlueStrong}`,
+        title: palette.common.white,
+        subtitle: palette.brand.primaryGreen,
+        label: palette.brand.primaryBlue,
+      },
+      muted: {
+        rail: palette.base[400],
+        dot: palette.base[300],
+        date: palette.base[200],
+        border: `2px solid ${palette.base[400]}`,
+        shadow: 'none',
+        title: palette.base[100],
+        subtitle: palette.base[200],
+        label: palette.base[200],
+      },
+      highlight: {
+        rail: palette.brand.primaryGreen,
+        dot: palette.brand.primaryGreen,
+        date: palette.brand.primaryGreen,
+        border: `2px solid ${palette.brand.primaryGreen}`,
+        shadow: `0 2px 16px ${alpha(palette.brand.primaryGreen, 0.35)}`,
+        title: palette.common.white,
+        subtitle: palette.brand.primaryGreen,
+        label: palette.brand.primaryGreen,
+      },
+    },
     card: {
       background: palette.base[700],
       border: `2px solid ${palette.brand.primaryBlue}`,

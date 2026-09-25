@@ -9,6 +9,8 @@ interface PageLayoutProps {
   children: React.ReactNode
   fullWidthContent?: boolean
   hideTitle?: boolean
+  /** Skip the legacy descendant rules (h2/p/a/.card) for self-styled content. */
+  plainContent?: boolean
 }
 
 export default function PageLayout({
@@ -16,6 +18,7 @@ export default function PageLayout({
   children,
   fullWidthContent = false,
   hideTitle = false,
+  plainContent = false,
 }: PageLayoutProps) {
   return (
     <>
@@ -42,9 +45,9 @@ export default function PageLayout({
         )}
 
         {fullWidthContent ? (
-          <Box sx={(theme) => contentSx(theme)}>{children}</Box>
+          <Box sx={(theme) => contentSx(theme, plainContent)}>{children}</Box>
         ) : (
-          <Container sx={(theme) => contentSx(theme)}>{children}</Container>
+          <Container sx={(theme) => contentSx(theme, plainContent)}>{children}</Container>
         )}
       </Box>
       <Footer />
@@ -55,7 +58,8 @@ export default function PageLayout({
 // Shared content styling (replaces the old PageLayout.css descendant rules).
 // Spacing/colours come from the MUI theme; classNames like `.card-grid`/`.card`
 // remain as structural hooks styled centrally here rather than in a CSS file.
-function contentSx(theme: import('@mui/material').Theme) {
+function contentSx(theme: import('@mui/material').Theme, plain: boolean) {
+  if (plain) return { py: theme.jtSpacing.section.xs }
   return {
     py: theme.jtSpacing.section.xs,
     '& h2': {
