@@ -38,18 +38,23 @@ const laterSteps: TimelineStep[] = [
   },
 ]
 
-// With the new work shown, the co-design steps recede so the new ones stand
-// out; on their own they keep the dashboard's regular look.
-const stepsWithNewWork: TimelineStep[] = [
+// The co-design steps recede (muted) so the new work stands out (highlight).
+// Hiding the new work keeps every co-design step exactly where it was.
+const buildSteps = (showNewWork: boolean): TimelineStep[] => [
   ...dashboardSteps.map((step) => ({ ...step, group: EARLIER_GROUP, tone: 'muted' as const })),
-  ...laterSteps.map((step) => ({ ...step, group: LATER_GROUP, tone: 'highlight' as const })),
+  ...laterSteps.map((step) => ({
+    ...step,
+    group: LATER_GROUP,
+    tone: 'highlight' as const,
+    hidden: !showNewWork,
+  })),
 ]
 
 export default function CoDesignTimelinePage() {
   const theme = useTheme()
   const isHorizontal = useMediaQuery(theme.breakpoints.up('lg'))
   const [showNewWork, setShowNewWork] = useState(true)
-  const steps = showNewWork ? stepsWithNewWork : dashboardSteps
+  const steps = buildSteps(showNewWork)
 
   return (
     <PageLayout title="Co-Design Timeline" plainContent>

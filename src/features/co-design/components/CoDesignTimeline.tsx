@@ -21,15 +21,26 @@ interface CoDesignTimelineProps extends TimelineProps {
   compact?: boolean
 }
 
-type StepRun = { group?: string; tone: TimelineTone; start: number; end: number }
+type StepRun = { group?: string; tone: TimelineTone; start: number; end: number; hidden: boolean }
 
 // Split steps into runs of consecutive steps that share a group.
 function groupRuns(steps: TimelineStep[]): StepRun[] {
   const runs: StepRun[] = []
   steps.forEach((step, index) => {
     const last = runs[runs.length - 1]
-    if (last && last.group === step.group) last.end = index
-    else runs.push({ group: step.group, tone: step.tone ?? 'default', start: index, end: index })
+    const hidden = step.hidden ?? false
+    if (last && last.group === step.group) {
+      last.end = index
+      last.hidden &&= hidden
+    } else {
+      runs.push({
+        group: step.group,
+        tone: step.tone ?? 'default',
+        start: index,
+        end: index,
+        hidden,
+      })
+    }
   })
   return runs
 }
@@ -40,11 +51,12 @@ const toneOf = (theme: Theme, tone: TimelineTone = 'default') =>
 // Vertical timeline: cards alternate sides of a centred rail from md, and sit
 // to the right of a left-hand rail below md.
 export default function CoDesignTimeline({
-  steps = dashboardSteps,
+  steps: allSteps = dashboardSteps,
   compact = false,
   sx,
 }: CoDesignTimelineProps) {
   const onSelect = useSelectView()
+  const steps = allSteps.filter((step) => !step.hidden)
   const runs = groupRuns(steps)
 
   return (
@@ -139,6 +151,7 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
                   pb: 1,
                   textAlign: 'center',
                   borderBottom: `2px solid ${toneOf(theme, run.tone).rail}`,
+                  visibility: run.hidden ? 'hidden' : 'visible',
                 })}
               >
                 <Typography
@@ -158,6 +171,7 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
                 alignSelf: 'center',
                 height: theme.coDesign.shell.timeline.railWidth,
                 bgcolor: toneOf(theme, run.tone).rail,
+                visibility: run.hidden ? 'hidden' : 'visible',
               })}
             />
             {/* Boundary tick between this group and the previous one */}
@@ -172,6 +186,8 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
                   height: theme.coDesign.shell.timeline.dividerHeight,
                   bgcolor: toneOf(theme, run.tone).rail,
                   transform: 'translateX(-50%)',
+                  // Hidden, not removed: it sets the rail row's height.
+                  visibility: run.hidden ? 'hidden' : 'visible',
                 })}
               />
             )}
@@ -344,13 +360,17 @@ function HorizontalItem({
           width: `${theme.coDesign.shell.timeline.horizontalCardSpan * 100}%`,
           display: 'flex',
           flexDirection: isTop ? 'column' : 'column-reverse',
+          visibility: step.hidden ? 'hidden' : 'visible',
         })}
       >
         <TimelineCard step={step} index={index} compact onSelect={onSelect} sx={{ flexGrow: 1 }} />
         {stem}
       </Box>
       {/* Dot on the rail, with the date on the side away from the card */}
-      <Dot tone={step.tone} sx={{ gridRow: 3, gridColumn: index + 1 }}>
+      <Dot
+        tone={step.tone}
+        sx={{ gridRow: 3, gridColumn: index + 1, visibility: step.hidden ? 'hidden' : 'visible' }}
+      >
         <Typography
           variant="numberArticle"
           sx={(theme) => ({

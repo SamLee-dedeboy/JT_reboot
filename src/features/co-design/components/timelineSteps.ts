@@ -12,6 +12,9 @@ export type TimelineStep = {
   // Consecutive steps with the same group get one heading.
   group?: string
   tone?: TimelineTone
+  // Hidden steps keep their place in the horizontal layout (so the visible
+  // steps don't move) and are left out of the vertical one.
+  hidden?: boolean
 }
 
 export type TimelineTone = 'default' | 'muted' | 'highlight'
