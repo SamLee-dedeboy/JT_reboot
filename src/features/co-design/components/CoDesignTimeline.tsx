@@ -45,6 +45,12 @@ function groupRuns(steps: TimelineStep[]): StepRun[] {
   return runs
 }
 
+// Ring that grows out of an in-progress step's dot and fades away.
+const ripple = (scale: number) => keyframes`
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(${scale}); opacity: 0; }
+`
+
 const toneOf = (theme: Theme, tone: TimelineTone = 'default') =>
   theme.coDesign.shell.timeline.tones[tone]
 
@@ -307,7 +313,11 @@ function VerticalItem({
           </Typography>
         </TimelineCard>
       </Box>
-      <Dot tone={step.tone} sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}>
+      <Dot
+        tone={step.tone}
+        ongoing={step.ongoing}
+        sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}
+      >
         <Typography
           variant="numberArticle"
           sx={(theme) => ({
@@ -369,6 +379,7 @@ function HorizontalItem({
       {/* Dot on the rail, with the date on the side away from the card */}
       <Dot
         tone={step.tone}
+        ongoing={step.ongoing}
         sx={{ gridRow: 3, gridColumn: index + 1, visibility: step.hidden ? 'hidden' : 'visible' }}
       >
         <Typography
@@ -391,10 +402,12 @@ function HorizontalItem({
 
 function Dot({
   tone,
+  ongoing = false,
   children,
   sx,
 }: {
   tone?: TimelineTone
+  ongoing?: boolean
   children: ReactNode
   sx?: SxProps<Theme>
 }) {
@@ -410,6 +423,17 @@ function Dot({
           borderRadius: '50%',
           bgcolor: toneOf(theme, tone).dot,
           zIndex: 2,
+          ...(ongoing && {
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              inset: 0,
+              borderRadius: '50%',
+              border: `2px solid ${toneOf(theme, tone).dot}`,
+              animation: `${ripple(theme.coDesign.shell.timeline.ongoing.rippleScale)} ${theme.coDesign.shell.timeline.ongoing.rippleDuration} ease-out infinite`,
+              '@media (prefers-reduced-motion: reduce)': { animation: 'none', opacity: 0 },
+            },
+          }),
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
@@ -438,6 +462,7 @@ function TimelineCard({
   const tone = step.tone ?? 'default'
   const content = (
     <>
+      {step.ongoing && <OngoingTag tone={tone} />}
       {children}
       <Typography
         variant={compact ? 'chartTitle' : 'h4'}
@@ -477,14 +502,14 @@ function TimelineCard({
   const extraSx = Array.isArray(sx) ? sx : [sx]
   // Steps without a dashboard view are informational: no link, pulse or hover.
   if (!view) {
-    return <Box sx={[cardBaseSx(compact, tone), ...extraSx]}>{content}</Box>
+    return <Box sx={[cardBaseSx(compact, tone, step.ongoing ?? false), ...extraSx]}>{content}</Box>
   }
 
   return (
     <ButtonBase
       onClick={() => onSelect(view)}
       sx={[
-        cardBaseSx(compact, tone),
+        cardBaseSx(compact, tone, step.ongoing ?? false),
         (theme) => {
           const card = theme.coDesign.shell.timeline.card
           const pulse = keyframes`
@@ -519,8 +544,9 @@ function TimelineCard({
   )
 }
 
-function cardBaseSx(compact: boolean, tone: TimelineTone) {
+function cardBaseSx(compact: boolean, tone: TimelineTone, ongoing: boolean) {
   return (theme: Theme) => ({
+    position: 'relative',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -531,7 +557,33 @@ function cardBaseSx(compact: boolean, tone: TimelineTone) {
     color: 'common.white',
     bgcolor: theme.coDesign.shell.timeline.card.background,
     border: toneOf(theme, tone).border,
+    ...(ongoing && { borderStyle: theme.coDesign.shell.timeline.ongoing.cardBorderStyle }),
     borderRadius: theme.coDesign.shell.timeline.card.radius,
     boxShadow: toneOf(theme, tone).shadow,
   })
+}
+
+// "Ongoing" tag sitting on the card's top edge.
+function OngoingTag({ tone }: { tone: TimelineTone }) {
+  return (
+    <Typography
+      variant="chartLabel"
+      component="span"
+      sx={(theme) => ({
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        px: 1,
+        py: 0.25,
+        whiteSpace: 'nowrap',
+        color: toneOf(theme, tone).date,
+        bgcolor: theme.coDesign.shell.timeline.card.background,
+        border: `1px solid ${toneOf(theme, tone).rail}`,
+        borderRadius: theme.coDesign.shell.timeline.card.radius,
+      })}
+    >
+      Ongoing
+    </Typography>
+  )
 }

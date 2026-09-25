@@ -29,11 +29,13 @@ const laterSteps: TimelineStep[] = [
   {
     date: 'April 2026',
     title: 'Communicating',
+    ongoing: true,
     subtitle: ['A public website from', 'early sub-team insights'],
   },
   {
     date: 'Summer 2026',
     title: 'Sharing',
+    ongoing: true,
     subtitle: ['BDSC artwork and tools', 'for external experts'],
   },
 ]

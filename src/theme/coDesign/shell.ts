@@ -35,6 +35,13 @@ export const shell = {
     // Horizontal card width in step columns; under 2 leaves a gap between
     // same-side neighbours.
     horizontalCardSpan: 1.5,
+    // In-progress steps: a ring pulses out from the dot and the card border is
+    // dashed.
+    ongoing: {
+      cardBorderStyle: 'dashed',
+      rippleScale: 2.6,
+      rippleDuration: '2.4s',
+    },
     // Tick marking the boundary between step groups on the horizontal rail.
     dividerHeight: 40,
     // Per-group emphasis: `muted` for background steps, `highlight` for the
