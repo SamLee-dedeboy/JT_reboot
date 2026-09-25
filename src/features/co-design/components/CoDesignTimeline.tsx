@@ -73,8 +73,9 @@ export default function CoDesignTimeline({
 }
 
 // Horizontal compact timeline: dots along one rail, cards alternating above
-// and below it. Each card spans two step columns, so same-side neighbours
-// never overlap; the outer padding keeps the first and last cards inside.
+// and below it. Cards span `horizontalCardSpan` (< 2) step columns, so
+// same-side neighbours never touch; the outer padding keeps the first and last
+// cards inside the container.
 export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: TimelineProps) {
   const onSelect = useSelectView()
   const columns = steps.length
@@ -82,7 +83,11 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
   return (
     <Box
       sx={[
-        { width: '100%', px: `calc(100% / ${2 * (columns + 1)})` },
+        (theme) => {
+          // Edge cards overhang their column by (span - 1) / 2 columns.
+          const span = theme.coDesign.shell.timeline.horizontalCardSpan
+          return { width: '100%', px: `calc(100% * ${(span - 1) / (2 * (columns + span - 1))})` }
+        },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
@@ -222,7 +227,7 @@ function HorizontalItem({
           gridColumn: index + 1,
           alignSelf: isTop ? 'end' : 'start',
           justifySelf: 'center',
-          width: `calc(200% - ${theme.spacing(2)})`,
+          width: `${theme.coDesign.shell.timeline.horizontalCardSpan * 100}%`,
           display: 'flex',
           flexDirection: isTop ? 'column' : 'column-reverse',
         })}
@@ -294,7 +299,11 @@ function TimelineCard({
         {step.title}
       </Typography>
       {/* Full cards keep the authored line breaks; compact cards wrap to fit */}
-      <Typography variant="eyebrow" component="p">
+      <Typography
+        variant={compact ? 'controlLabel' : 'eyebrow'}
+        component="p"
+        sx={compact ? { color: 'primary.main' } : undefined}
+      >
         {compact
           ? step.subtitle.join(' ')
           : step.subtitle.map((line, i) => (

@@ -29,8 +29,11 @@ export const shell = {
     cardMaxWidth: 440,
     compactCardWidth: 340,
     // Horizontal layout: stem joining each card to its dot (room for the date label).
-    stemHeight: 36,
+    stemHeight: 44,
     stemWidth: 2,
+    // Horizontal card width in step columns; under 2 leaves a gap between
+    // same-side neighbours.
+    horizontalCardSpan: 1.5,
     card: {
       background: palette.base[700],
       border: `2px solid ${palette.brand.primaryBlue}`,
