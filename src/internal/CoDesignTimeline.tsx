@@ -2,7 +2,8 @@
 // muted as background, then the modeling-data and communication work that
 // followed, highlighted as the focus. Horizontal from lg; below that the steps
 // stack vertically. Dashboard steps still open their views.
-import { Box, useMediaQuery, useTheme } from '@mui/material'
+import { Box, FormControlLabel, Switch, Typography, useMediaQuery, useTheme } from '@mui/material'
+import { useState } from 'react'
 import CoDesignTimeline, {
   HorizontalCoDesignTimeline,
 } from '../features/co-design/components/CoDesignTimeline'
@@ -37,7 +38,9 @@ const laterSteps: TimelineStep[] = [
   },
 ]
 
-const steps: TimelineStep[] = [
+// With the new work shown, the co-design steps recede so the new ones stand
+// out; on their own they keep the dashboard's regular look.
+const stepsWithNewWork: TimelineStep[] = [
   ...dashboardSteps.map((step) => ({ ...step, group: EARLIER_GROUP, tone: 'muted' as const })),
   ...laterSteps.map((step) => ({ ...step, group: LATER_GROUP, tone: 'highlight' as const })),
 ]
@@ -45,9 +48,25 @@ const steps: TimelineStep[] = [
 export default function CoDesignTimelinePage() {
   const theme = useTheme()
   const isHorizontal = useMediaQuery(theme.breakpoints.up('lg'))
+  const [showNewWork, setShowNewWork] = useState(true)
+  const steps = showNewWork ? stepsWithNewWork : dashboardSteps
 
   return (
     <PageLayout title="Co-Design Timeline" plainContent>
+      {/* Reveal / hide the post-co-design steps, e.g. while presenting */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <FormControlLabel
+          labelPlacement="start"
+          control={
+            <Switch
+              checked={showNewWork}
+              onChange={(event) => setShowNewWork(event.target.checked)}
+            />
+          }
+          label={<Typography variant="controlLabel">Show new work</Typography>}
+          sx={{ m: 0, gap: 1 }}
+        />
+      </Box>
       <Box
         sx={(theme) => ({
           display: 'flex',

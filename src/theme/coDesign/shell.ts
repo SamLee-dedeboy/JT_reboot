@@ -1,6 +1,6 @@
 // Co-design dashboard shell (header, tutorial dialogs, info button) and the
 // landing timeline. Built from the site palette; see src/features/co-design.
-import { alpha } from '@mui/material/styles'
+import { alpha, darken } from '@mui/material/styles'
 import { palette } from '../palette'
 
 export const shell = {
@@ -60,15 +60,17 @@ export const shell = {
         subtitle: palette.base[200],
         label: palette.base[200],
       },
+      // Brand green, dimmed over the dark page so the focus steps stand out
+      // without glaring.
       highlight: {
-        rail: palette.brand.primaryGreen,
-        dot: palette.brand.primaryGreen,
-        date: palette.brand.primaryGreen,
-        border: `2px solid ${palette.brand.primaryGreen}`,
-        shadow: `0 2px 16px ${alpha(palette.brand.primaryGreen, 0.35)}`,
+        rail: alpha(palette.brand.primaryGreen, 0.55),
+        dot: darken(palette.brand.primaryGreen, 0.25),
+        date: alpha(palette.brand.primaryGreen, 0.8),
+        border: `2px solid ${alpha(palette.brand.primaryGreen, 0.5)}`,
+        shadow: `0 2px 12px ${alpha(palette.brand.primaryGreen, 0.15)}`,
         title: palette.common.white,
-        subtitle: palette.brand.primaryGreen,
-        label: palette.brand.primaryGreen,
+        subtitle: alpha(palette.brand.primaryGreen, 0.85),
+        label: alpha(palette.brand.primaryGreen, 0.85),
       },
     },
     card: {
