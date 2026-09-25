@@ -34,7 +34,7 @@ export const shell = {
     stemWidth: 2,
     // Horizontal card width in step columns; under 2 leaves a gap between
     // same-side neighbours.
-    horizontalCardSpan: 1.5,
+    horizontalCardSpan: 1.65,
     // Steps with a status (ongoing / upcoming) get a dashed card border.
     statusBorderStyle: 'dashed',
     // Tick marking the boundary between step groups on the horizontal rail.

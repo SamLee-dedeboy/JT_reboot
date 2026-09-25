@@ -541,7 +541,7 @@ function cardBaseSx(compact: boolean, tone: TimelineTone, dashed: boolean) {
     flexDirection: 'column',
     justifyContent: 'center',
     gap: compact ? 1 : 1.25,
-    px: { xs: 3, md: compact ? 3 : 4.5 },
+    px: { xs: 3, md: compact ? 2 : 4.5 },
     py: compact ? 2.5 : { xs: 3, md: 4 },
     textAlign: 'center',
     color: 'common.white',
