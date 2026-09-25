@@ -15,11 +15,13 @@ export type TimelineStep = {
   // Hidden steps keep their place in the horizontal layout (so the visible
   // steps don't move) and are left out of the vertical one.
   hidden?: boolean
-  // Work still in progress: pulsing dot, dashed card border and an "Ongoing" tag.
-  ongoing?: boolean
+  // In-progress or planned work: dashed card border and a status tag.
+  status?: TimelineStatus
 }
 
-export type TimelineTone = 'default' | 'muted' | 'highlight'
+export type TimelineStatus = 'ongoing' | 'upcoming'
+
+export type TimelineTone = 'default' | 'muted' | 'highlight' | 'future'
 
 export const dashboardSteps: TimelineStep[] = [
   {

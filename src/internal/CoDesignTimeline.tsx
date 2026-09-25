@@ -29,14 +29,24 @@ const laterSteps: TimelineStep[] = [
   {
     date: 'April 2026',
     title: 'Communicating',
-    ongoing: true,
+    status: 'ongoing',
     subtitle: ['A public website from', 'early sub-team insights'],
   },
   {
     date: 'Summer 2026',
     title: 'Sharing',
-    ongoing: true,
+    status: 'ongoing',
     subtitle: ['BDSC artwork and tools', 'for external experts'],
+  },
+]
+
+// Planned work, styled apart from what's already under way. Draft name.
+const upcomingSteps: TimelineStep[] = [
+  {
+    date: 'Oct 2026',
+    title: 'Convening',
+    status: 'upcoming',
+    subtitle: ['Public workshop'],
   },
 ]
 
@@ -50,6 +60,7 @@ const buildSteps = (showNewWork: boolean): TimelineStep[] => [
     tone: 'highlight' as const,
     hidden: !showNewWork,
   })),
+  ...upcomingSteps.map((step) => ({ ...step, tone: 'future' as const, hidden: !showNewWork })),
 ]
 
 export default function CoDesignTimelinePage() {

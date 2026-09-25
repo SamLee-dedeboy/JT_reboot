@@ -9,7 +9,7 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { coDesignPath } from '../shared/paths'
 import { dashboardSteps } from './timelineSteps'
-import type { TimelineStep, TimelineTone } from './timelineSteps'
+import type { TimelineStatus, TimelineStep, TimelineTone } from './timelineSteps'
 
 interface TimelineProps {
   steps?: TimelineStep[]
@@ -44,12 +44,6 @@ function groupRuns(steps: TimelineStep[]): StepRun[] {
   })
   return runs
 }
-
-// Ring that grows out of an in-progress step's dot and fades away.
-const ripple = (scale: number) => keyframes`
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(${scale}); opacity: 0; }
-`
 
 const toneOf = (theme: Theme, tone: TimelineTone = 'default') =>
   theme.coDesign.shell.timeline.tones[tone]
@@ -176,12 +170,17 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
                 gridColumn: `${run.start + 1} / ${run.end + 2}`,
                 alignSelf: 'center',
                 height: theme.coDesign.shell.timeline.railWidth,
-                bgcolor: toneOf(theme, run.tone).rail,
+                ...(toneOf(theme, run.tone).dashedRail
+                  ? {
+                      backgroundImage: `repeating-linear-gradient(90deg, ${toneOf(theme, run.tone).rail} 0 8px, transparent 8px 14px)`,
+                    }
+                  : { bgcolor: toneOf(theme, run.tone).rail }),
                 visibility: run.hidden ? 'hidden' : 'visible',
               })}
             />
             {/* Boundary tick between this group and the previous one */}
-            {run.start > 0 && (
+            {/* Only labelled groups get a boundary tick */}
+            {run.start > 0 && run.group && (
               <Box
                 sx={(theme) => ({
                   gridRow: 3,
@@ -313,11 +312,7 @@ function VerticalItem({
           </Typography>
         </TimelineCard>
       </Box>
-      <Dot
-        tone={step.tone}
-        ongoing={step.ongoing}
-        sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}
-      >
+      <Dot tone={step.tone} sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}>
         <Typography
           variant="numberArticle"
           sx={(theme) => ({
@@ -379,7 +374,6 @@ function HorizontalItem({
       {/* Dot on the rail, with the date on the side away from the card */}
       <Dot
         tone={step.tone}
-        ongoing={step.ongoing}
         sx={{ gridRow: 3, gridColumn: index + 1, visibility: step.hidden ? 'hidden' : 'visible' }}
       >
         <Typography
@@ -402,12 +396,10 @@ function HorizontalItem({
 
 function Dot({
   tone,
-  ongoing = false,
   children,
   sx,
 }: {
   tone?: TimelineTone
-  ongoing?: boolean
   children: ReactNode
   sx?: SxProps<Theme>
 }) {
@@ -421,19 +413,15 @@ function Dot({
           width: theme.coDesign.shell.timeline.dotSize,
           height: theme.coDesign.shell.timeline.dotSize,
           borderRadius: '50%',
-          bgcolor: toneOf(theme, tone).dot,
           zIndex: 2,
-          ...(ongoing && {
-            '&::after': {
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              border: `2px solid ${toneOf(theme, tone).dot}`,
-              animation: `${ripple(theme.coDesign.shell.timeline.ongoing.rippleScale)} ${theme.coDesign.shell.timeline.ongoing.rippleDuration} ease-out infinite`,
-              '@media (prefers-reduced-motion: reduce)': { animation: 'none', opacity: 0 },
-            },
-          }),
+          // Hollow dots (planned steps) show the page through a ring.
+          ...(toneOf(theme, tone).hollowDot
+            ? {
+                bgcolor: theme.coDesign.shell.pageBackground,
+                border: `2px solid ${toneOf(theme, tone).dot}`,
+                boxSizing: 'border-box',
+              }
+            : { bgcolor: toneOf(theme, tone).dot }),
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
@@ -462,7 +450,7 @@ function TimelineCard({
   const tone = step.tone ?? 'default'
   const content = (
     <>
-      {step.ongoing && <OngoingTag tone={tone} />}
+      {step.status && <StatusTag status={step.status} tone={tone} />}
       {children}
       <Typography
         variant={compact ? 'chartTitle' : 'h4'}
@@ -502,14 +490,16 @@ function TimelineCard({
   const extraSx = Array.isArray(sx) ? sx : [sx]
   // Steps without a dashboard view are informational: no link, pulse or hover.
   if (!view) {
-    return <Box sx={[cardBaseSx(compact, tone, step.ongoing ?? false), ...extraSx]}>{content}</Box>
+    return (
+      <Box sx={[cardBaseSx(compact, tone, step.status !== undefined), ...extraSx]}>{content}</Box>
+    )
   }
 
   return (
     <ButtonBase
       onClick={() => onSelect(view)}
       sx={[
-        cardBaseSx(compact, tone, step.ongoing ?? false),
+        cardBaseSx(compact, tone, step.status !== undefined),
         (theme) => {
           const card = theme.coDesign.shell.timeline.card
           const pulse = keyframes`
@@ -544,7 +534,7 @@ function TimelineCard({
   )
 }
 
-function cardBaseSx(compact: boolean, tone: TimelineTone, ongoing: boolean) {
+function cardBaseSx(compact: boolean, tone: TimelineTone, dashed: boolean) {
   return (theme: Theme) => ({
     position: 'relative',
     display: 'flex',
@@ -555,35 +545,44 @@ function cardBaseSx(compact: boolean, tone: TimelineTone, ongoing: boolean) {
     py: compact ? 2.5 : { xs: 3, md: 4 },
     textAlign: 'center',
     color: 'common.white',
-    bgcolor: theme.coDesign.shell.timeline.card.background,
+    bgcolor: toneOf(theme, tone).cardBackground,
     border: toneOf(theme, tone).border,
-    ...(ongoing && { borderStyle: theme.coDesign.shell.timeline.ongoing.cardBorderStyle }),
+    ...(dashed && { borderStyle: theme.coDesign.shell.timeline.statusBorderStyle }),
     borderRadius: theme.coDesign.shell.timeline.card.radius,
     boxShadow: toneOf(theme, tone).shadow,
   })
 }
 
-// "Ongoing" tag sitting on the card's top edge.
-function OngoingTag({ tone }: { tone: TimelineTone }) {
+const statusLabels: Record<TimelineStatus, string> = { ongoing: 'Ongoing', upcoming: 'Upcoming' }
+
+// Status tag sitting on the card's top edge.
+function StatusTag({ status, tone }: { status: TimelineStatus; tone: TimelineTone }) {
   return (
     <Typography
       variant="chartLabel"
       component="span"
-      sx={(theme) => ({
-        position: 'absolute',
-        top: 0,
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        px: 1,
-        py: 0.25,
-        whiteSpace: 'nowrap',
-        color: toneOf(theme, tone).date,
-        bgcolor: theme.coDesign.shell.timeline.card.background,
-        border: `1px solid ${toneOf(theme, tone).rail}`,
-        borderRadius: theme.coDesign.shell.timeline.card.radius,
-      })}
+      sx={(theme) => {
+        const toneTokens = toneOf(theme, tone)
+        return {
+          position: 'absolute',
+          top: 0,
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          px: 1,
+          py: 0.25,
+          whiteSpace: 'nowrap',
+          color: toneTokens.date,
+          // See-through cards show the page behind the tag instead.
+          bgcolor:
+            toneTokens.cardBackground === 'transparent'
+              ? theme.coDesign.shell.pageBackground
+              : toneTokens.cardBackground,
+          border: `1px solid ${toneTokens.rail}`,
+          borderRadius: theme.coDesign.shell.timeline.card.radius,
+        }
+      }}
     >
-      Ongoing
+      {statusLabels[status]}
     </Typography>
   )
 }

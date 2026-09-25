@@ -35,13 +35,8 @@ export const shell = {
     // Horizontal card width in step columns; under 2 leaves a gap between
     // same-side neighbours.
     horizontalCardSpan: 1.5,
-    // In-progress steps: a ring pulses out from the dot and the card border is
-    // dashed.
-    ongoing: {
-      cardBorderStyle: 'dashed',
-      rippleScale: 2.6,
-      rippleDuration: '2.4s',
-    },
+    // Steps with a status (ongoing / upcoming) get a dashed card border.
+    statusBorderStyle: 'dashed',
     // Tick marking the boundary between step groups on the horizontal rail.
     dividerHeight: 40,
     // Per-group emphasis: `muted` for background steps, `highlight` for the
@@ -56,6 +51,9 @@ export const shell = {
         title: palette.common.white,
         subtitle: palette.brand.primaryGreen,
         label: palette.brand.primaryBlue,
+        cardBackground: palette.base[700],
+        hollowDot: false,
+        dashedRail: false,
       },
       muted: {
         rail: palette.base[400],
@@ -66,6 +64,9 @@ export const shell = {
         title: palette.base[100],
         subtitle: palette.base[200],
         label: palette.base[200],
+        cardBackground: palette.base[700],
+        hollowDot: false,
+        dashedRail: false,
       },
       // Brand green, dimmed over the dark page so the focus steps stand out
       // without glaring.
@@ -78,6 +79,23 @@ export const shell = {
         title: palette.common.white,
         subtitle: alpha(palette.brand.primaryGreen, 0.85),
         label: alpha(palette.brand.primaryGreen, 0.85),
+        cardBackground: palette.base[700],
+        hollowDot: false,
+        dashedRail: false,
+      },
+      // Planned work: an outline of a step, with a hollow dot on a dashed rail.
+      future: {
+        rail: palette.base[300],
+        dot: palette.base[100],
+        date: palette.base[100],
+        border: `2px solid ${palette.base[300]}`,
+        shadow: 'none',
+        title: palette.base[50],
+        subtitle: palette.base[100],
+        label: palette.base[100],
+        cardBackground: 'transparent',
+        hollowDot: true,
+        dashedRail: true,
       },
     },
     card: {
