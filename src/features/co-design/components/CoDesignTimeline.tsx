@@ -490,16 +490,14 @@ function TimelineCard({
   const extraSx = Array.isArray(sx) ? sx : [sx]
   // Steps without a dashboard view are informational: no link, pulse or hover.
   if (!view) {
-    return (
-      <Box sx={[cardBaseSx(compact, tone, step.status !== undefined), ...extraSx]}>{content}</Box>
-    )
+    return <Box sx={[cardBaseSx(compact, tone), ...extraSx]}>{content}</Box>
   }
 
   return (
     <ButtonBase
       onClick={() => onSelect(view)}
       sx={[
-        cardBaseSx(compact, tone, step.status !== undefined),
+        cardBaseSx(compact, tone),
         (theme) => {
           const card = theme.coDesign.shell.timeline.card
           const pulse = keyframes`
@@ -534,7 +532,7 @@ function TimelineCard({
   )
 }
 
-function cardBaseSx(compact: boolean, tone: TimelineTone, dashed: boolean) {
+function cardBaseSx(compact: boolean, tone: TimelineTone) {
   return (theme: Theme) => ({
     position: 'relative',
     display: 'flex',
@@ -547,7 +545,6 @@ function cardBaseSx(compact: boolean, tone: TimelineTone, dashed: boolean) {
     color: 'common.white',
     bgcolor: toneOf(theme, tone).cardBackground,
     border: toneOf(theme, tone).border,
-    ...(dashed && { borderStyle: theme.coDesign.shell.timeline.statusBorderStyle }),
     borderRadius: theme.coDesign.shell.timeline.card.radius,
     boxShadow: toneOf(theme, tone).shadow,
   })

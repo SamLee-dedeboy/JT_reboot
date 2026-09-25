@@ -15,7 +15,7 @@ export type TimelineStep = {
   // Hidden steps keep their place in the horizontal layout (so the visible
   // steps don't move) and are left out of the vertical one.
   hidden?: boolean
-  // In-progress or planned work: dashed card border and a status tag.
+  // In-progress or planned work: adds a status tag to the card.
   status?: TimelineStatus
 }
 

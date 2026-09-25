@@ -35,8 +35,6 @@ export const shell = {
     // Horizontal card width in step columns; under 2 leaves a gap between
     // same-side neighbours.
     horizontalCardSpan: 1.65,
-    // Steps with a status (ongoing / upcoming) get a dashed card border.
-    statusBorderStyle: 'dashed',
     // Tick marking the boundary between step groups on the horizontal rail.
     dividerHeight: 40,
     // Per-group emphasis: `muted` for background steps, `highlight` for the
@@ -83,16 +81,17 @@ export const shell = {
         hollowDot: false,
         dashedRail: false,
       },
-      // Planned work: an outline of a step, with a hollow dot on a dashed rail.
+      // Planned work: the highlight green as an outline — dashed card border,
+      // see-through card, hollow dot on a dashed rail.
       future: {
-        rail: palette.base[300],
-        dot: palette.base[100],
-        date: palette.base[100],
-        border: `2px solid ${palette.base[300]}`,
+        rail: alpha(palette.brand.primaryGreen, 0.55),
+        dot: alpha(palette.brand.primaryGreen, 0.8),
+        date: alpha(palette.brand.primaryGreen, 0.8),
+        border: `2px dashed ${alpha(palette.brand.primaryGreen, 0.5)}`,
         shadow: 'none',
-        title: palette.base[50],
-        subtitle: palette.base[100],
-        label: palette.base[100],
+        title: palette.common.white,
+        subtitle: alpha(palette.brand.primaryGreen, 0.85),
+        label: alpha(palette.brand.primaryGreen, 0.85),
         cardBackground: 'transparent',
         hollowDot: true,
         dashedRail: true,
