@@ -28,6 +28,9 @@ export const shell = {
     maxWidth: 1100,
     cardMaxWidth: 440,
     compactCardWidth: 340,
+    // Horizontal layout: stem joining each card to its dot (room for the date label).
+    stemHeight: 36,
+    stemWidth: 2,
     card: {
       background: palette.base[700],
       border: `2px solid ${palette.brand.primaryBlue}`,
