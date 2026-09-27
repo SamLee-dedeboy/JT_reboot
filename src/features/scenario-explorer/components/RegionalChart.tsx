@@ -59,6 +59,7 @@ interface ChartSvgProps {
   timeframeFocus: TimeframeFocus
   onTimeframeFocusChange: (value: TimeframeFocus) => void
   enableDateHighlights: boolean
+  showTimeframeSelector: boolean
 }
 
 interface RangeDatum {
@@ -126,6 +127,7 @@ function ChartSvg({
   timeframeFocus,
   onTimeframeFocusChange,
   enableDateHighlights,
+  showTimeframeSelector,
   units,
 }: ChartSvgProps) {
   const theme = useTheme()
@@ -469,7 +471,7 @@ function ChartSvg({
             >
               Date
             </Typography>
-            {enableDateHighlights ? (
+            {enableDateHighlights && showTimeframeSelector ? (
               <Select
                 aria-label="Highlighted domain-specific timeframe"
                 size="small"
@@ -535,7 +537,10 @@ function ChartSvg({
                   width: 24,
                 }}
               />
-              Average across all stations
+              Average across{' '}
+              <Box component="strong" sx={{ fontWeight: 800 }}>
+                all stations
+              </Box>
             </Box>
             <Box
               component="span"
@@ -957,6 +962,9 @@ interface RegionalChartProps {
   onExpandedChange: (expanded: boolean) => void
   d1641Data: D1641Dataset | null
   enableDateHighlights?: boolean
+  useFullScenarioNames?: boolean
+  disableTunnelScenario?: boolean
+  showTimeframeSelector?: boolean
 }
 
 export default function RegionalChart({
@@ -980,6 +988,9 @@ export default function RegionalChart({
   expanded,
   onExpandedChange,
   enableDateHighlights = false,
+  useFullScenarioNames = false,
+  disableTunnelScenario = false,
+  showTimeframeSelector = true,
 }: RegionalChartProps) {
   const [bandInfoAnchor, setBandInfoAnchor] = useState<HTMLButtonElement | null>(null)
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null)
@@ -1070,7 +1081,9 @@ export default function RegionalChart({
                 },
               }}
             >
-              <ToggleButton value="minmax">All stations</ToggleButton>
+              <ToggleButton value="minmax" sx={{ fontWeight: 800 }}>
+                All stations
+              </ToggleButton>
               <ToggleButton value="p90">Central 90%</ToggleButton>
               <ToggleButton value="iqr">Central 50%</ToggleButton>
             </ToggleButtonGroup>
@@ -1172,10 +1185,12 @@ export default function RegionalChart({
               .map((item) => {
                 const active = activeKeys.includes(item.key)
                 const primary = item.key === selectedScenario.key
+                const unavailable =
+                  disableTunnelScenario && item.label.trim().toLowerCase() === 'a tunnel'
                 return (
                   <MenuItem
                     key={item.key}
-                    disabled={primary}
+                    disabled={primary || unavailable}
                     onClick={() => {
                       onActiveKeysChange(
                         active
@@ -1193,7 +1208,7 @@ export default function RegionalChart({
                     ) : (
                       <VisibilityOffOutlinedIcon fontSize="small" />
                     )}
-                    {abbreviateScenario(item.label)}
+                    {useFullScenarioNames ? item.label : abbreviateScenario(item.label)}
                   </MenuItem>
                 )
               })}
@@ -1213,12 +1228,15 @@ export default function RegionalChart({
                 const active = activeKeys.includes(scenario.key)
                 const primary = scenario.key === selectedScenario.key
                 const visible = primary || active
+                const unavailable =
+                  disableTunnelScenario && scenario.label.trim().toLowerCase() === 'a tunnel'
                 return (
                   <Tooltip key={scenario.key} title={scenario.label}>
                     <span>
                       <ToggleButton
                         aria-label={`${visible ? 'Hide' : 'Show'} ${scenario.label}`}
                         selected={visible}
+                        disabled={unavailable}
                         size="small"
                         value={scenario.key}
                         onChange={() => {
@@ -1251,7 +1269,9 @@ export default function RegionalChart({
                         ) : (
                           <VisibilityOffOutlinedIcon fontSize="small" />
                         )}
-                        {abbreviateScenario(scenario.label)}
+                        {useFullScenarioNames
+                          ? scenario.label
+                          : abbreviateScenario(scenario.label)}
                       </ToggleButton>
                     </span>
                   </Tooltip>
@@ -1572,6 +1592,7 @@ export default function RegionalChart({
         timeframeFocus={enableDateHighlights ? timeframeFocus : 'all'}
         onTimeframeFocusChange={setTimeframeFocus}
         enableDateHighlights={enableDateHighlights}
+        showTimeframeSelector={showTimeframeSelector}
         units={units}
       />
     </Paper>
