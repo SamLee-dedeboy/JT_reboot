@@ -43,7 +43,7 @@ const laterSteps: TimelineStep[] = [
 // Planned work, styled apart from what's already under way. Draft name.
 const upcomingSteps: TimelineStep[] = [
   {
-    date: 'Oct 2026',
+    date: 'Nov 2026',
     title: 'Convening',
     status: 'upcoming',
     subtitle: ['Public workshop'],
