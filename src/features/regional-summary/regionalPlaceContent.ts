@@ -98,6 +98,57 @@ export function sortRegionalPlaces(scenarioSlug: string, places: RegionalPlace[]
     .map(({ place }) => place)
 }
 
+function generatedKeyTakeaway(
+  scenarioSlug: string,
+  place: RegionalPlace,
+): RegionalTextSegment[] | undefined {
+  const directions = new Set(
+    place.patterns
+      .map((pattern) => pattern.direction)
+      .filter((direction): direction is 'saltier' | 'fresher' => Boolean(direction)),
+  )
+  if (directions.size === 0) return undefined
+
+  const dates = place.patterns.flatMap((pattern) =>
+    [pattern.startDate, pattern.endDate].filter((date): date is string => Boolean(date)),
+  )
+  const start = dates.sort()[0]
+  const end = dates.sort().at(-1)
+  const timing = start && end ? ` from ${start} through ${end}` : ''
+
+  const strategyLabel =
+    scenarioSlug === 'calling-on-reserves'
+      ? 'Shasta Dam release timing.'
+      : scenarioSlug === 'alternative-delta-outflows'
+        ? 'changes in Delta outflow.'
+        : scenarioSlug === 'eco-machine'
+          ? 'tidal landscape restoration.'
+          : scenarioSlug === 'new-green-watershed'
+            ? 'watershed restoration.'
+            : scenarioSlug === 'a-tunnel'
+              ? 'Delta conveyance changes.'
+              : 'this scenario’s water-management strategy.'
+
+  const directionSegments: RegionalTextSegment[] =
+    directions.size > 1
+      ? [
+          { text: 'Generally ' },
+          { text: 'saltier', highlight: 'saltier', strong: true },
+          { text: ' and ' },
+          { text: 'fresher', highlight: 'fresher', strong: true },
+        ]
+      : [
+          { text: 'Generally ' },
+          { text: [...directions][0], highlight: [...directions][0], strong: true },
+        ]
+
+  return [
+    ...directionSegments,
+    { text: `${timing}, affected by ` },
+    { text: strategyLabel, highlight: 'primary', strong: true },
+  ]
+}
+
 const scenarioContextFallback: Record<string, string> = {
   'eco-machine':
     'This place shows where restored tidal landscapes could influence nearby waterways, habitat, and communities as part of the Delta’s water-management system.',
@@ -120,6 +171,9 @@ export function getRegionalPlaceContent(scenarioSlug: string, place: RegionalPla
       content?.whyThisPlace ??
       scenarioContextFallback[scenarioSlug] ??
       'This place connects the scenario’s adaptation strategy to potential effects on nearby waterways and communities.',
-    keyTakeaway: content?.keyTakeaway,
+    keyTakeaway:
+      scenarioSlug === 'bolster-and-fortify'
+        ? content?.keyTakeaway
+        : (generatedKeyTakeaway(scenarioSlug, place) ?? content?.keyTakeaway),
   }
 }

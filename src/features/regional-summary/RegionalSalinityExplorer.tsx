@@ -2,7 +2,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import CloseIcon from '@mui/icons-material/Close'
 import HelpIcon from '@mui/icons-material/Help'
-import { Box, Button, IconButton, Typography } from '@mui/material'
+import { Box, Button, IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { Geometry, Position } from 'geojson'
@@ -83,6 +83,10 @@ function scenarioOverviewBounds(places: RegionalPlace[]): Bounds | null {
     [Math.min(...longitudes), Math.min(...latitudes)],
     [Math.max(...longitudes), Math.max(...latitudes)],
   ]
+}
+
+function mapLayerId(regionId: string) {
+  return regionId.replace(/[^a-zA-Z0-9_-]/g, '-')
 }
 
 interface BolsterStrategyLayer {
@@ -217,7 +221,29 @@ export default function RegionalSalinityExplorer({
 }: RegionalSalinityExplorerProps) {
   const theme = useTheme()
   const reduceMotion = useReducedMotion()
-  const { places: sourcePlaces } = useRegionalPlaces(scenario.slug)
+  const isOutflowScenario = scenario.slug === 'alternative-delta-outflows'
+  const isCallingOnReserves = scenario.slug === 'calling-on-reserves'
+  const [outflowVariant, setOutflowVariant] = useState<'plus30' | 'minus10'>('plus30')
+  const [releaseView, setReleaseView] = useState<'all' | 'before' | 'during-after'>('all')
+  const outflowScenarioKey =
+    outflowVariant === 'plus30'
+      ? 'schism_run16_plus30pct_outflow'
+      : 'schism_run17_minus10pct_outflow'
+  const { places: sourcePlaces } = useRegionalPlaces(
+    scenario.slug,
+    isOutflowScenario ? outflowScenarioKey : undefined,
+  )
+  const activeScenario = useMemo(
+    () =>
+      isOutflowScenario
+        ? {
+            ...scenario,
+            title:
+              outflowVariant === 'plus30' ? 'Increasing Delta Outflow' : 'Decreasing Delta Outflow',
+          }
+        : scenario,
+    [isOutflowScenario, outflowVariant, scenario],
+  )
   const places = useMemo(
     () =>
       sortRegionalPlaces(
@@ -241,6 +267,29 @@ export default function RegionalSalinityExplorer({
       ),
     [scenario.slug, sourcePlaces],
   )
+  const mapPlaces = useMemo(() => {
+    if (!isCallingOnReserves || releaseView === 'all') return places
+
+    return places
+      .map((place) => {
+        const patterns = place.patterns.filter((pattern) => {
+          const timing = pattern.reviewNote.toLowerCase()
+          return releaseView === 'before'
+            ? timing.includes('before') || timing.includes('between potential releases')
+            : timing.includes('during') || timing.includes('after')
+        })
+        const directions = new Set(
+          patterns.flatMap((pattern) => (pattern.direction ? [pattern.direction] : [])),
+        )
+        const [onlyDirection] = directions
+        return {
+          ...place,
+          patterns,
+          trend: directions.size > 1 ? ('flipping' as const) : (onlyDirection ?? place.trend),
+        }
+      })
+      .filter((place) => place.patterns.length > 0)
+  }, [isCallingOnReserves, places, releaseView])
   const [selectedRegion, setSelectedRegion] = useState<RegionalPlace | null>(null)
   const [patternsOpen, setPatternsOpen] = useState(false)
   const [patternsReady, setPatternsReady] = useState(false)
@@ -303,11 +352,11 @@ export default function RegionalSalinityExplorer({
 
   const regionalInteractiveLayerIds = useMemo(
     () =>
-      places.flatMap((_, index) => [
-        `regional-fill-${index}`,
-        ...(patternsReady ? [`regional-pattern-${index}`] : []),
+      mapPlaces.flatMap((place) => [
+        `regional-fill-${mapLayerId(place.id)}`,
+        ...(patternsReady ? [`regional-pattern-${mapLayerId(place.id)}`] : []),
       ]),
-    [patternsReady, places],
+    [mapPlaces, patternsReady],
   )
 
   const moveToStrategy = useCallback(
@@ -361,6 +410,12 @@ export default function RegionalSalinityExplorer({
     [overviewBounds],
   )
 
+  const closeStrategyGuide = useCallback(() => {
+    setStrategyGuideOpen(false)
+    setStrategyGuideStarted(false)
+    moveToOverview(reduceMotion ? 0 : 900)
+  }, [moveToOverview, reduceMotion])
+
   const moveToStrategyWelcome = useCallback(
     (duration: number) => {
       const map = mapRef.current
@@ -401,12 +456,6 @@ export default function RegionalSalinityExplorer({
     [overviewBounds, scenario.slug],
   )
 
-  const closeStrategyGuide = useCallback(() => {
-    setStrategyGuideOpen(false)
-    setStrategyGuideStarted(false)
-    moveToOverview(reduceMotion ? 0 : 900)
-  }, [moveToOverview, reduceMotion])
-
   const showStrategyWelcome = useCallback(() => {
     setStrategyGuideStarted(false)
     moveToStrategyWelcome(reduceMotion ? 0 : 900)
@@ -417,6 +466,20 @@ export default function RegionalSalinityExplorer({
     setStrategyGuideOpen(true)
     showStrategyWelcome()
   }, [showStrategyWelcome])
+
+  useEffect(() => {
+    if (!isOutflowScenario || !mapRef.current || places.length === 0) return
+    if (strategyGuideOpen) moveToStrategyWelcome(reduceMotion ? 0 : 700)
+    else moveToOverview(reduceMotion ? 0 : 700)
+  }, [
+    isOutflowScenario,
+    moveToOverview,
+    moveToStrategyWelcome,
+    outflowVariant,
+    places.length,
+    reduceMotion,
+    strategyGuideOpen,
+  ])
 
   const trendColor = (trend: RegionalPlace['trend']) => {
     if (trend === 'saltier') return theme.palette.salinity.pink
@@ -449,7 +512,7 @@ export default function RegionalSalinityExplorer({
           }}
         >
           <RegionalPatternsPage
-            scenario={scenario}
+            scenario={activeScenario}
             place={selectedRegion}
             places={places}
             onPlaceChange={setSelectedRegion}
@@ -513,7 +576,7 @@ export default function RegionalSalinityExplorer({
                     mb: 0.75,
                   }}
                 >
-                  {scenario.title}
+                  {activeScenario.title}
                 </Typography>
                 <Typography
                   component="h1"
@@ -594,6 +657,77 @@ export default function RegionalSalinityExplorer({
                 },
               }}
             >
+              {isOutflowScenario || isCallingOnReserves ? (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    inset: '0 0 auto 0',
+                    zIndex: 7,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: regionalSummarySizing.compactTouchTarget,
+                    bgcolor: 'base.900',
+                    borderBottom: 1,
+                    borderColor: 'base.500',
+                  }}
+                >
+                  <ToggleButtonGroup
+                    exclusive
+                    value={isOutflowScenario ? outflowVariant : releaseView}
+                    onChange={(_, value: string | null) => {
+                      if (!value) return
+                      if (isOutflowScenario) {
+                        if (value === outflowVariant) return
+                        setOutflowVariant(value as 'plus30' | 'minus10')
+                      } else {
+                        if (value === releaseView) return
+                        setReleaseView(value as 'all' | 'before' | 'during-after')
+                      }
+                      setSelectedRegion(null)
+                      setPatternsOpen(false)
+                    }}
+                    aria-label={
+                      isOutflowScenario
+                        ? 'Delta outflow comparison'
+                        : 'Calling on Reserves release timing'
+                    }
+                  >
+                    {(isOutflowScenario
+                      ? [
+                          ['plus30', '+30% Delta outflow'],
+                          ['minus10', '−10% Delta outflow'],
+                        ]
+                      : [
+                          ['all', 'View all'],
+                          ['before', 'Before release'],
+                          ['during-after', 'During and after release'],
+                        ]
+                    ).map(([value, label]) => (
+                      <ToggleButton
+                        key={value}
+                        value={value}
+                        sx={{
+                          ...regionalSummaryTypography.action,
+                          minHeight: regionalSummarySizing.compactTouchTarget,
+                          px: 2.5,
+                          color: 'base.100',
+                          borderColor: 'base.500',
+                          borderTop: 0,
+                          borderBottom: 0,
+                          '&.Mui-selected': {
+                            color: 'base.900',
+                            bgcolor: 'primary.main',
+                            '&:hover': { bgcolor: 'primary.main' },
+                          },
+                        }}
+                      >
+                        {label}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+                </Box>
+              ) : null}
               <BaseMap
                 mapStyle={offlineMapStyle}
                 mapStyleUrl="mapbox://styles/justtransition/cmreic454000z01sle8uh6v7n"
@@ -627,7 +761,7 @@ export default function RegionalSalinityExplorer({
                   else moveToOverview(0)
                 }}
               >
-                {places.map((region, index) => {
+                {mapPlaces.map((region) => {
                   if (!region.geometry) return null
                   const selected = selectedRegion?.id === region.id
                   const color = trendColor(region.trend)
@@ -637,8 +771,9 @@ export default function RegionalSalinityExplorer({
                     properties: { id: region.id, trend: region.trend },
                     geometry: region.geometry,
                   }
+                  const stableId = mapLayerId(region.id)
                   const fillLayer: LayerProps = {
-                    id: `regional-fill-${index}`,
+                    id: `regional-fill-${stableId}`,
                     type: 'fill',
                     paint: {
                       'fill-color': polygonColor,
@@ -646,7 +781,7 @@ export default function RegionalSalinityExplorer({
                     },
                   }
                   const patternLayer: LayerProps = {
-                    id: `regional-pattern-${index}`,
+                    id: `regional-pattern-${stableId}`,
                     type: 'fill',
                     paint: {
                       'fill-pattern': regionalPatternIds[region.trend],
@@ -654,7 +789,7 @@ export default function RegionalSalinityExplorer({
                     },
                   }
                   const lineLayer: LayerProps = {
-                    id: `regional-line-${index}`,
+                    id: `regional-line-${stableId}`,
                     type: 'line',
                     paint: {
                       'line-color': color,
@@ -667,7 +802,7 @@ export default function RegionalSalinityExplorer({
                   return (
                     <Source
                       key={`geometry-${region.id}`}
-                      id={`regional-source-${index}`}
+                      id={`regional-source-${stableId}`}
                       type="geojson"
                       data={feature}
                     >
@@ -677,8 +812,10 @@ export default function RegionalSalinityExplorer({
                     </Source>
                   )
                 })}
-                {places.map((region, index) => {
+                {mapPlaces.map((region, index) => {
                   const selected = selectedRegion?.id === region.id
+                  const detailRegion =
+                    places.find((candidate) => candidate.id === region.id) ?? region
                   return (
                     <Marker
                       key={region.id}
@@ -695,7 +832,7 @@ export default function RegionalSalinityExplorer({
                         index={index}
                         name={region.name}
                         selected={selected}
-                        onSelect={() => setSelectedRegion(region)}
+                        onSelect={() => setSelectedRegion(detailRegion)}
                       />
                     </Marker>
                   )
@@ -900,11 +1037,193 @@ export default function RegionalSalinityExplorer({
                       )
                     })
                   : null}
+                {scenario.slug === 'eco-machine' && strategyGuideOpen && strategyGuideStarted ? (
+                  <Source
+                    id="eco-strategy-regions"
+                    type="geojson"
+                    data={assetUrl('/data/regional-summary/region-of-interest.geojson')}
+                  >
+                    <Layer
+                      id="eco-strategy-fill"
+                      type="fill"
+                      filter={[
+                        '==',
+                        ['get', 'region_id'],
+                        strategyGuideStep === 0 ? 'suisun_marsh' : 'franks_tract',
+                      ]}
+                      paint={{
+                        'fill-color': theme.palette.primary.main,
+                        'fill-opacity': 0.78,
+                      }}
+                    />
+                    <Layer
+                      id="eco-strategy-line"
+                      type="line"
+                      filter={[
+                        '==',
+                        ['get', 'region_id'],
+                        strategyGuideStep === 0 ? 'suisun_marsh' : 'franks_tract',
+                      ]}
+                      paint={{
+                        'line-blur': 1.5,
+                        'line-color': theme.palette.primary.main,
+                        'line-opacity': 1,
+                        'line-width': 4,
+                      }}
+                    />
+                  </Source>
+                ) : null}
+                {scenario.slug === 'calling-on-reserves' &&
+                strategyGuideOpen &&
+                strategyGuideStarted &&
+                strategyGuideStep === 1 ? (
+                  <Source
+                    id="cor-strategy-sacramento-mainstem"
+                    type="geojson"
+                    data={assetUrl('/data/regional-summary/gis/sacramento-river-mainstem.geojson')}
+                  >
+                    <Layer
+                      id="cor-strategy-sacramento-mainstem-line"
+                      type="line"
+                      paint={{
+                        'line-blur': 1.5,
+                        'line-color': theme.palette.primary.main,
+                        'line-opacity': 1,
+                        'line-width': 8,
+                      }}
+                    />
+                  </Source>
+                ) : null}
+                {scenario.slug === 'new-green-watershed' &&
+                strategyGuideOpen &&
+                strategyGuideStarted &&
+                strategyGuideStep < 2 ? (
+                  <Source
+                    id="ngw-strategy-habitats"
+                    type="geojson"
+                    data={assetUrl('/data/regional-summary/gis/ngw-habitats.geojson')}
+                  >
+                    <Layer
+                      id="ngw-strategy-habitat-fill"
+                      type="fill"
+                      filter={
+                        strategyGuideStep === 0 ? ['==', ['get', 'type'], 'soil'] : ['has', 'type']
+                      }
+                      paint={{
+                        'fill-color': theme.palette.primary.main,
+                        'fill-opacity': 0.68,
+                      }}
+                    />
+                    <Layer
+                      id="ngw-strategy-habitat-line"
+                      type="line"
+                      filter={
+                        strategyGuideStep === 0 ? ['==', ['get', 'type'], 'soil'] : ['has', 'type']
+                      }
+                      paint={{
+                        'line-color': theme.palette.primary.main,
+                        'line-opacity': 1,
+                        'line-width': 3,
+                      }}
+                    />
+                  </Source>
+                ) : null}
+                {scenario.slug === 'new-green-watershed' &&
+                strategyGuideOpen &&
+                strategyGuideStarted &&
+                strategyGuideStep === 2 ? (
+                  <>
+                    <Source
+                      id="ngw-strategy-watersheds"
+                      type="geojson"
+                      data={assetUrl('/data/regional-summary/gis/watershed-region.geojson')}
+                    >
+                      <Layer
+                        id="ngw-strategy-watershed-line"
+                        type="line"
+                        paint={{
+                          'line-color': theme.palette.primary.main,
+                          'line-opacity': 1,
+                          'line-width': 3,
+                        }}
+                      />
+                    </Source>
+                    <Source
+                      id="ngw-strategy-watershed-labels"
+                      type="geojson"
+                      data={assetUrl('/data/regional-summary/gis/watershed-region-labels.geojson')}
+                    >
+                      <Layer
+                        id="ngw-strategy-watershed-label"
+                        type="symbol"
+                        layout={{
+                          'text-field': ['get', 'name'],
+                          'text-font': ['Proxima Nova Semibold'],
+                          'text-size': 18,
+                          'text-allow-overlap': true,
+                          'text-ignore-placement': true,
+                        }}
+                        paint={{
+                          'text-color': theme.palette.primary.main,
+                          'text-halo-color': theme.palette.base[900],
+                          'text-halo-width': 2,
+                        }}
+                      />
+                    </Source>
+                  </>
+                ) : null}
+                {scenario.slug === 'a-tunnel' && strategyGuideOpen && strategyGuideStarted ? (
+                  <>
+                    <Source
+                      id="tunnel-strategy-sites"
+                      type="geojson"
+                      data={assetUrl('/data/regional-summary/gis/delta-tunnel-sites.geojson')}
+                    >
+                      {strategyGuideStep === 0 ? (
+                        <Layer
+                          id="tunnel-strategy-site-fill"
+                          type="fill"
+                          paint={{
+                            'fill-color': theme.palette.primary.main,
+                            'fill-opacity': 0.82,
+                          }}
+                        />
+                      ) : null}
+                      <Layer
+                        id="tunnel-strategy-site-line"
+                        type="line"
+                        paint={{
+                          'line-color': theme.palette.primary.main,
+                          'line-opacity': strategyGuideStep === 0 ? 1 : 0.7,
+                          'line-width': strategyGuideStep === 0 ? 4 : 2,
+                        }}
+                      />
+                    </Source>
+                    {strategyGuideStep === 1 ? (
+                      <Source
+                        id="tunnel-strategy-route"
+                        type="geojson"
+                        data={assetUrl('/data/regional-summary/gis/delta-tunnel.geojson')}
+                      >
+                        <Layer
+                          id="tunnel-strategy-route-line"
+                          type="line"
+                          paint={{
+                            'line-blur': 1.5,
+                            'line-color': theme.palette.primary.main,
+                            'line-opacity': 1,
+                            'line-width': 8,
+                          }}
+                        />
+                      </Source>
+                    ) : null}
+                  </>
+                ) : null}
               </BaseMap>
 
               {strategyGuideOpen ? (
                 <ScenarioStrategyGuide
-                  scenario={scenario}
+                  scenario={activeScenario}
                   onClose={closeStrategyGuide}
                   onWelcome={showStrategyWelcome}
                   onStepChange={moveToStrategy}

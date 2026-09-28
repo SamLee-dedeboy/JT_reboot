@@ -62,7 +62,7 @@ const scenarioKeyBySlug: Record<string, string> = {
   'alternative-delta-outflows': 'schism_run16_plus30pct_outflow',
 }
 
-export function useRegionalPlaces(scenarioSlug: string) {
+export function useRegionalPlaces(scenarioSlug: string, scenarioKeyOverride?: string) {
   const [result, setResult] = useState<{
     scenarioSlug: string | null
     places: RegionalPlace[]
@@ -80,10 +80,14 @@ export function useRegionalPlaces(scenarioSlug: string) {
         return response.json() as Promise<RegionalSummaryDataset>
       })
       .then((dataset) => {
-        const scenarioKey = scenarioKeyBySlug[scenarioSlug]
+        const scenarioKey = scenarioKeyOverride ?? scenarioKeyBySlug[scenarioSlug]
+        const scenarioPlaces = scenarioKey ? (dataset.scenarios[scenarioKey]?.places ?? []) : []
         setResult({
           scenarioSlug,
-          places: scenarioKey ? (dataset.scenarios[scenarioKey]?.places ?? []) : [],
+          places:
+            scenarioSlug === 'alternative-delta-outflows'
+              ? scenarioPlaces.filter((place) => place.id !== 'montezuma_slough')
+              : scenarioPlaces,
           error: null,
         })
       })
@@ -97,7 +101,7 @@ export function useRegionalPlaces(scenarioSlug: string) {
       })
 
     return () => controller.abort()
-  }, [scenarioSlug])
+  }, [scenarioKeyOverride, scenarioSlug])
 
   const loading = result.scenarioSlug !== scenarioSlug
   return {

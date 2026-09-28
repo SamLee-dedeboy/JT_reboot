@@ -8,6 +8,13 @@ const ledgerPath = path.join(
   'internal/analysis/bdsc-preparation/approved_patterns.csv',
 )
 const polygonDir = path.join(researchRoot, 'inputs/waterway_regions')
+const updatedLabelLocationsPath = path.join(
+  researchRoot,
+  'inputs/regional_label_locations_updated.geojson',
+)
+const labelLocationsPath = fs.existsSync(updatedLabelLocationsPath)
+  ? updatedLabelLocationsPath
+  : path.join(researchRoot, 'inputs/regional_label_locations.geojson')
 const patternPath = path.join(repoRoot, 'public/data/regional-summary/pattern-list.json')
 const roiPath = path.join(repoRoot, 'public/data/regional-summary/region-of-interest.geojson')
 
@@ -102,9 +109,33 @@ const regionConfig = {
     coordinates: [-121.99, 38.12],
   },
   suisun_bay: { name: 'Suisun Bay', polygon: 'suisun_bay.geojson', coordinates: [-122.05, 38.06] },
-  confluence_zone: { name: 'Confluence Zone', coordinates: [-121.84, 38.04] },
-  lindsey_cache_slough: { name: 'Lindsey–Cache Slough', coordinates: [-121.68, 38.23] },
-  southern_delta: { name: 'Southern Delta', coordinates: [-121.56, 37.78] },
+  confluence_zone: {
+    name: 'Confluence Zone',
+    polygon: 'confluence_zone.geojson',
+    coordinates: [-121.84, 38.04],
+  },
+  lindsey_cache_slough: {
+    name: 'Lindsey–Cache Slough',
+    polygon: 'lindsey_cache_slough.geojson',
+    coordinates: [-121.68, 38.23],
+  },
+  southern_delta: {
+    name: 'Southern Delta',
+    polygon: 'south_delta.geojson',
+    coordinates: [-121.56, 37.78],
+  },
+}
+
+if (fs.existsSync(labelLocationsPath)) {
+  const labelLocations = JSON.parse(fs.readFileSync(labelLocationsPath, 'utf8'))
+  for (const feature of labelLocations.features ?? []) {
+    const regionId = feature.properties?.region_id
+    const coordinates = feature.geometry?.type === 'Point' ? feature.geometry.coordinates : null
+    if (!regionId || !Array.isArray(coordinates) || coordinates.length < 2) continue
+    regionConfig[regionId] ??= { name: feature.properties?.region_name ?? regionId }
+    regionConfig[regionId].coordinates = [Number(coordinates[0]), Number(coordinates[1])]
+  }
+  console.log(`Using regional label locations from ${labelLocationsPath}`)
 }
 
 function unwrapGeometry(geojson) {
@@ -228,6 +259,15 @@ for (const [key, rows] of grouped) {
   place.patterns = rows.map((row) => makePattern(row, patternId(row, existingIds)))
   const directions = new Set(place.patterns.map((pattern) => pattern.direction).filter(Boolean))
   place.trend = directions.size > 1 ? 'flipping' : (directions.values().next().value ?? 'unclear')
+}
+
+// Apply edited label coordinates to every existing scenario, including runtime
+// scenarios whose patterns are maintained outside approved_patterns.csv.
+for (const scenario of Object.values(dataset.scenarios)) {
+  for (const place of scenario.places) {
+    const configured = regionConfig[place.id]
+    if (configured?.coordinates) place.coordinates = configured.coordinates
+  }
 }
 
 dataset.generatedAt = new Date().toISOString()
@@ -387,6 +427,17 @@ for (const [scenarioKey, scenario] of Object.entries(dataset.scenarios)) {
   }
 }
 evidence.generatedAt = dataset.generatedAt
+const activePatternIds = new Set(
+  Object.values(dataset.scenarios).flatMap((scenario) =>
+    scenario.places.flatMap((place) => place.patterns.map((pattern) => pattern.id)),
+  ),
+)
+for (const patternId of Object.keys(evidence.patterns)) {
+  if (!activePatternIds.has(patternId)) delete evidence.patterns[patternId]
+}
+for (const patternId of Object.keys(series)) {
+  if (!activePatternIds.has(patternId)) delete series[patternId]
+}
 fs.writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 fs.writeFileSync(seriesPath, `${JSON.stringify(series)}\n`)
 

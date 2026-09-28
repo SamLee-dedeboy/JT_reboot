@@ -15,7 +15,6 @@ import {
   type PatternEvidence,
   type PatternStationEvidence,
   usePatternEvidence,
-  useSurroundingStationEvidence,
 } from './regionalPatternEvidence'
 import { regionalPatternIds, registerRegionalPolygonPatterns } from './regionalPolygonPatterns'
 import { getRegionalTimelineContextPeriods } from './regionalTimelineContext'
@@ -48,11 +47,8 @@ interface EventSeries {
 
 type EventSeriesDataset = Record<string, EventSeries>
 
-const simulationStart = Date.parse('2018-10-01T00:00:00Z')
-const simulationEnd = Date.parse('2020-11-29T00:00:00Z')
-const simulationDuration = simulationEnd - simulationStart
 const valueFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
-const quarterTicks = [
+const defaultQuarterTicks = [
   ['2018-10-01', 'Oct 2018'],
   ['2019-01-01', 'Jan 2019'],
   ['2019-04-01', 'Apr 2019'],
@@ -63,6 +59,33 @@ const quarterTicks = [
   ['2020-07-01', 'Jul 2020'],
   ['2020-10-01', 'Oct 2020'],
 ] as const
+
+const outflowQuarterTicks = [
+  ['2020-08-01', 'Aug 2020'],
+  ['2020-10-01', 'Oct 2020'],
+  ['2021-01-01', 'Jan 2021'],
+  ['2021-04-01', 'Apr 2021'],
+  ['2021-07-01', 'Jul 2021'],
+  ['2021-10-01', 'Oct 2021'],
+  ['2022-01-01', 'Jan 2022'],
+] as const
+
+interface TimelineDomain {
+  start: number
+  end: number
+  ticks: readonly (readonly [string, string])[]
+  isOutflowComparison: boolean
+}
+
+function timelineDomain(scenarioSlug: string): TimelineDomain {
+  const isOutflowComparison = scenarioSlug === 'alternative-delta-outflows'
+  return {
+    start: Date.parse(isOutflowComparison ? '2020-08-01T00:00:00Z' : '2018-10-01T00:00:00Z'),
+    end: Date.parse(isOutflowComparison ? '2022-01-01T00:00:00Z' : '2020-11-29T00:00:00Z'),
+    ticks: isOutflowComparison ? outflowQuarterTicks : defaultQuarterTicks,
+    isOutflowComparison,
+  }
+}
 
 function datedEvents(place: RegionalPlace) {
   return place.patterns
@@ -76,14 +99,17 @@ function datedEvents(place: RegionalPlace) {
     .toSorted((left, right) => (left.startDate ?? '').localeCompare(right.startDate ?? ''))
 }
 
-function datePosition(date: string) {
+function datePosition(date: string, domain: TimelineDomain) {
   const value = Date.parse(`${date}T00:00:00Z`)
-  return Math.min(100, Math.max(0, ((value - simulationStart) / simulationDuration) * 100))
+  return Math.min(100, Math.max(0, ((value - domain.start) / (domain.end - domain.start)) * 100))
 }
 
-function eventPlacement(pattern: RegionalPattern) {
-  const left = datePosition(pattern.startDate as string)
-  return { left, width: Math.max(0.7, datePosition(pattern.endDate as string) - left) }
+function eventPlacement(pattern: RegionalPattern, domain: TimelineDomain) {
+  const left = datePosition(pattern.startDate as string, domain)
+  return {
+    left,
+    width: Math.max(0.7, datePosition(pattern.endDate as string, domain) - left),
+  }
 }
 
 function dateLabel(date: string) {
@@ -115,12 +141,14 @@ export default function RegionalPatternsPage({
   onBack,
 }: Props) {
   const evidence = usePatternEvidence()
-  const surroundingEvidence = useSurroundingStationEvidence()
   const [eventSeries, setEventSeries] = useState<EventSeriesDataset>({})
-  const [activePlace, setActivePlace] = useState(place)
+  const activePlace = place
   const [selectedPattern, setSelectedPattern] = useState<RegionalPattern | null>(null)
+  const [selectedPatternPlaceId, setSelectedPatternPlaceId] = useState<string | null>(null)
+  const [highlightedStationId, setHighlightedStationId] = useState<number | null>(null)
   const [tutorialOpen, setTutorialOpen] = useState(true)
   const events = useMemo(() => datedEvents(activePlace), [activePlace])
+  const activePattern = selectedPatternPlaceId === activePlace.id ? selectedPattern : null
 
   useEffect(() => {
     const controller = new AbortController()
@@ -133,8 +161,8 @@ export default function RegionalPatternsPage({
     return () => controller.abort()
   }, [])
 
-  const selectedEvidence = selectedPattern ? evidence?.patterns[selectedPattern.id] : undefined
-  const selectedSeries = selectedPattern ? eventSeries[selectedPattern.id] : undefined
+  const selectedEvidence = activePattern ? evidence?.patterns[activePattern.id] : undefined
+  const selectedSeries = activePattern ? eventSeries[activePattern.id] : undefined
   const defaultMapStations = useMemo(
     () =>
       events
@@ -145,36 +173,6 @@ export default function RegionalPatternsPage({
   const mapStations = selectedEvidence?.stationEvidence.stations.length
     ? selectedEvidence.stationEvidence.stations
     : defaultMapStations
-  const surroundingStations = useMemo(() => {
-    if (!evidence) return []
-    if (selectedPattern) {
-      const selectedStationIds = new Set(mapStations.map((station) => station.stationId))
-      return (surroundingEvidence?.patterns[selectedPattern.id] ?? []).filter(
-        (station) => !selectedStationIds.has(station.stationId),
-      )
-    }
-    const scenarioKey =
-      selectedEvidence?.scenarioKey ??
-      events.map((event) => evidence.patterns[event.id]?.scenarioKey).find(Boolean)
-    if (!scenarioKey) return []
-
-    const selectedStationIds = new Set(mapStations.map((station) => station.stationId))
-    const stationsById = new Map<number, PatternStationEvidence>()
-    Object.values(evidence.patterns)
-      .filter((pattern) => pattern.scenarioKey === scenarioKey)
-      .flatMap((pattern) => pattern.stationEvidence.stations)
-      .forEach((station) => {
-        if (!selectedStationIds.has(station.stationId)) stationsById.set(station.stationId, station)
-      })
-    return [...stationsById.values()]
-  }, [
-    events,
-    evidence,
-    mapStations,
-    selectedEvidence?.scenarioKey,
-    selectedPattern,
-    surroundingEvidence,
-  ])
 
   return (
     <Box
@@ -265,45 +263,52 @@ export default function RegionalPatternsPage({
             <Timeline
               scenarioSlug={scenario.slug}
               events={events}
-              selectedPattern={selectedPattern}
-              onSelect={setSelectedPattern}
+              selectedPattern={activePattern}
+              onSelect={(pattern) => {
+                setSelectedPattern(pattern)
+                setSelectedPatternPlaceId(activePlace.id)
+              }}
             />
           </Box>
         </Box>
 
         <Box sx={regionalSummaryDetailGrid.workspace}>
           <Box data-tour="regional-pattern-map" sx={regionalSummaryDetailGrid.map}>
-            <EvidencePanel title="Stations within the region">
+            <EvidencePanel title="Stations within the Region">
               <StationMap
+                key={activePlace.id}
                 place={activePlace}
                 stations={mapStations}
-                surroundingStations={surroundingStations}
-                selectedDirection={selectedPattern?.direction ?? null}
+                selectedDirection={activePattern?.direction ?? null}
+                highlightedStationId={highlightedStationId}
+                onHighlightStation={setHighlightedStationId}
               />
             </EvidencePanel>
           </Box>
 
           <Box data-tour="regional-pattern-details" sx={regionalSummaryDetailGrid.patternDetails}>
-            {selectedPattern ? (
+            {activePattern ? (
               <>
                 <Box sx={regionalSummaryDetailGrid.charts}>
-                  <EvidencePanel title="Regional EC Change Over Time">
+                  <EvidencePanel title="Regional Salinity Change Over Time">
                     {selectedSeries ? (
                       <RegionalEcChart
-                        key={selectedPattern.id}
-                        pattern={selectedPattern}
+                        key={activePattern.id}
+                        pattern={activePattern}
                         series={selectedSeries}
                       />
                     ) : (
                       <EmptyEvidence text="Regional EC series unavailable." />
                     )}
                   </EvidencePanel>
-                  <EvidencePanel title="EC Deviation across Stations">
+                  <EvidencePanel title="Salinity Deviation across Stations">
                     {selectedEvidence?.stationEvidence.stations.length ? (
                       <StationDistribution
-                        key={selectedPattern.id}
+                        key={activePattern.id}
                         stations={selectedEvidence.stationEvidence.stations}
-                        direction={selectedPattern.direction}
+                        direction={activePattern.direction}
+                        highlightedStationId={highlightedStationId}
+                        onHighlightStation={setHighlightedStationId}
                       />
                     ) : (
                       <EmptyEvidence text="Station evidence unavailable." />
@@ -312,10 +317,10 @@ export default function RegionalPatternsPage({
                 </Box>
                 <Box sx={regionalSummaryDetailGrid.interpretation}>
                   <InterpretationCard
-                    key={selectedPattern.id}
+                    key={activePattern.id}
                     scenarioTitle={scenario.title}
                     placeName={activePlace.name}
-                    pattern={selectedPattern}
+                    pattern={activePattern}
                     evidence={selectedEvidence}
                   />
                 </Box>
@@ -340,20 +345,22 @@ export default function RegionalPatternsPage({
 
         <Box data-tour="regional-pattern-regions" sx={regionalSummaryDetailGrid.regions}>
           <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
-            Other regions to explore
+            Explore Other Regions
           </Typography>
           <Box sx={{ display: 'grid', gap: 0.25 }}>
             {places.map((candidate) => (
               <ComparisonRow
                 key={candidate.id}
+                scenarioSlug={scenario.slug}
                 place={candidate}
                 active={candidate.id === activePlace.id}
                 onSelect={() => {
                   if (candidate.id !== activePlace.id) {
-                    setActivePlace(candidate)
                     onPlaceChange(candidate)
                   }
                   setSelectedPattern(null)
+                  setSelectedPatternPlaceId(null)
+                  setHighlightedStationId(null)
                 }}
               />
             ))}
@@ -400,15 +407,37 @@ function EmptyEvidence({ text }: { text: string }) {
 
 function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series: EventSeries }) {
   const theme = useTheme()
-  const reduceMotion = useReducedMotion()
-  const values = [...series.baseline, ...series.scenario].filter(
+  const eventStart = pattern.startDate ? Date.parse(`${pattern.startDate}T00:00:00Z`) : -Infinity
+  const eventEnd = pattern.endDate ? Date.parse(`${pattern.endDate}T23:59:59Z`) : Infinity
+  const eventIndexes = series.dates.reduce<number[]>((indexes, date, index) => {
+    const timestamp = Date.parse(`${date}T00:00:00Z`)
+    if (timestamp >= eventStart && timestamp <= eventEnd) indexes.push(index)
+    return indexes
+  }, [])
+  const windowIndexes = eventIndexes.length ? eventIndexes : series.dates.map((_, index) => index)
+  const firstPopulated = windowIndexes.findIndex(
+    (index) => series.baseline[index] != null && series.scenario[index] != null,
+  )
+  const lastPopulatedFromEnd = [...windowIndexes]
+    .reverse()
+    .findIndex((index) => series.baseline[index] != null && series.scenario[index] != null)
+  const indexes =
+    firstPopulated >= 0
+      ? windowIndexes.slice(firstPopulated, windowIndexes.length - lastPopulatedFromEnd)
+      : windowIndexes
+  const eventSeries = {
+    dates: indexes.map((index) => series.dates[index]),
+    baseline: indexes.map((index) => series.baseline[index]),
+    scenario: indexes.map((index) => series.scenario[index]),
+  }
+  const values = [...eventSeries.baseline, ...eventSeries.scenario].filter(
     (value): value is number => value != null,
   )
   if (!values.length) return null
-  const plot = { left: 72, right: 720, top: 28, bottom: 260 }
+  const plot = { left: 108, right: 730, top: 28, bottom: 260 }
   const max = Math.max(1, ...values) * 1.08
   const x = (index: number) =>
-    plot.left + (index / Math.max(1, series.dates.length - 1)) * (plot.right - plot.left)
+    plot.left + (index / Math.max(1, eventSeries.dates.length - 1)) * (plot.right - plot.left)
   const y = (value: number) => plot.bottom - (value / max) * (plot.bottom - plot.top)
   const path = (data: Array<number | null>) =>
     data
@@ -422,7 +451,11 @@ function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series
   const color =
     pattern.direction === 'fresher' ? theme.palette.salinity.teal : theme.palette.salinity.pink
   const ticks = [0, max / 2, max]
-  const dateIndexes = [0, Math.floor((series.dates.length - 1) / 2), series.dates.length - 1]
+  const dateIndexes = [
+    0,
+    Math.floor((eventSeries.dates.length - 1) / 2),
+    eventSeries.dates.length - 1,
+  ]
   return (
     <Box sx={{ minHeight: 0, position: 'relative' }}>
       <Box sx={{ position: 'absolute', right: 1, top: 0, display: 'flex', gap: 2, zIndex: 1 }}>
@@ -472,7 +505,7 @@ function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series
             fontSize={regionalSummarySizing.chartAxisFontSize}
             textAnchor="middle"
           >
-            {dateLabel(series.dates[index])}
+            {dateLabel(eventSeries.dates[index])}
           </text>
         ))}
         <line
@@ -492,34 +525,28 @@ function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series
           strokeWidth="1.5"
         />
         <text
-          x="18"
+          x="24"
           y="150"
           fill="white"
           fontSize={regionalSummarySizing.chartAxisFontSize}
           textAnchor="middle"
-          transform="rotate(-90 18 150)"
+          transform="rotate(-90 24 150)"
         >
           EC (µS/cm)
         </text>
-        <motion.path
-          d={path(series.baseline)}
+        <path
+          d={path(eventSeries.baseline)}
           fill="none"
           stroke="white"
           strokeWidth="2.5"
           vectorEffect="non-scaling-stroke"
-          initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: reduceMotion ? 0 : 0.8, ease: 'easeOut' }}
         />
-        <motion.path
-          d={path(series.scenario)}
+        <path
+          d={path(eventSeries.scenario)}
           fill="none"
           stroke={color}
           strokeWidth="3.5"
           vectorEffect="non-scaling-stroke"
-          initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: reduceMotion ? 0 : 0.9, delay: reduceMotion ? 0 : 0.12 }}
         />
       </svg>
     </Box>
@@ -529,9 +556,13 @@ function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series
 function StationDistribution({
   stations,
   direction,
+  highlightedStationId,
+  onHighlightStation,
 }: {
   stations: PatternStationEvidence[]
   direction: RegionalPattern['direction']
+  highlightedStationId: number | null
+  onHighlightStation: (stationId: number | null) => void
 }) {
   const theme = useTheme()
   const reduceMotion = useReducedMotion()
@@ -587,10 +618,22 @@ function StationDistribution({
           key={station.stationId}
           cx={x}
           cy={pointY}
-          r="7"
+          r={highlightedStationId === station.stationId ? 10 : 7}
           fill={stationValueColor(station, stations, direction, theme)}
           stroke="white"
-          strokeWidth="2"
+          strokeWidth={highlightedStationId === station.stationId ? 3 : 2}
+          role="button"
+          tabIndex={0}
+          aria-label={`${station.shortName || station.name}: ${valueFormat.format(station.differencePct ?? 0)}% from baseline`}
+          onMouseEnter={() => onHighlightStation(station.stationId)}
+          onMouseLeave={() => onHighlightStation(null)}
+          onFocus={() => onHighlightStation(station.stationId)}
+          onBlur={() => onHighlightStation(null)}
+          onClick={() =>
+            onHighlightStation(
+              highlightedStationId === station.stationId ? null : station.stationId,
+            )
+          }
           vectorEffect="non-scaling-stroke"
           initial={reduceMotion ? false : { opacity: 0, scale: 0.25 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -627,13 +670,15 @@ function StationDistribution({
 function StationMap({
   place,
   stations,
-  surroundingStations,
   selectedDirection,
+  highlightedStationId,
+  onHighlightStation,
 }: {
   place: RegionalPlace
   stations: PatternStationEvidence[]
-  surroundingStations: PatternStationEvidence[]
   selectedDirection: RegionalPattern['direction'] | null
+  highlightedStationId: number | null
+  onHighlightStation: (stationId: number | null) => void
 }) {
   const theme = useTheme()
   const mapRef = useRef<MapboxMap | null>(null)
@@ -684,7 +729,7 @@ function StationMap({
     if (mapRef.current) fitMapToRegion(mapRef.current)
   }, [fitMapToRegion, place.id])
 
-  const colorScaleStations = [...stations, ...surroundingStations]
+  const colorScaleStations = stations
   return (
     <Box sx={{ width: '100%', height: '100%', minHeight: 0, overflow: 'hidden' }}>
       <BaseMap
@@ -722,29 +767,6 @@ function StationMap({
             {patternReady ? <Layer {...patternLayer} /> : null}
           </Source>
         ) : null}
-        {surroundingStations.map((station) => (
-          <Marker
-            key={`surrounding-${station.stationId}`}
-            longitude={station.longitude}
-            latitude={station.latitude}
-            anchor="center"
-          >
-            <Box
-              title={`${station.shortName || station.name}: ${station.differenceEc > 0 ? '+' : ''}${valueFormat.format(station.differenceEc)} µS/cm from baseline`}
-              sx={{
-                width: regionalSummarySizing.surroundingStationPointSize,
-                height: regionalSummarySizing.surroundingStationPointSize,
-                borderRadius: '50%',
-                bgcolor: selectedDirection
-                  ? stationValueColor(station, colorScaleStations, station.direction, theme)
-                  : 'base.300',
-                border: 2,
-                borderColor: 'base.700',
-                opacity: selectedDirection ? 1 : 0.72,
-              }}
-            />
-          </Marker>
-        ))}
         {stations.map((station) => (
           <Marker
             key={station.stationId}
@@ -754,15 +776,38 @@ function StationMap({
           >
             <Box
               title={`${station.shortName || station.name}: ${valueFormat.format(station.differenceEc)} µS/cm`}
+              role="button"
+              tabIndex={0}
+              aria-label={`${station.shortName || station.name}: ${valueFormat.format(station.differenceEc)} µS/cm from baseline`}
+              onMouseEnter={() => onHighlightStation(station.stationId)}
+              onMouseLeave={() => onHighlightStation(null)}
+              onFocus={() => onHighlightStation(station.stationId)}
+              onBlur={() => onHighlightStation(null)}
+              onClick={() =>
+                onHighlightStation(
+                  highlightedStationId === station.stationId ? null : station.stationId,
+                )
+              }
               sx={{
-                width: regionalSummarySizing.stationPointSize,
-                height: regionalSummarySizing.stationPointSize,
+                width:
+                  highlightedStationId === station.stationId
+                    ? regionalSummarySizing.stationPointSize * 1.55
+                    : regionalSummarySizing.stationPointSize,
+                height:
+                  highlightedStationId === station.stationId
+                    ? regionalSummarySizing.stationPointSize * 1.55
+                    : regionalSummarySizing.stationPointSize,
                 borderRadius: '50%',
                 bgcolor: selectedDirection
                   ? stationValueColor(station, colorScaleStations, station.direction, theme)
                   : 'common.white',
                 border: 2,
                 borderColor: 'base.700',
+                boxShadow:
+                  highlightedStationId === station.stationId
+                    ? `0 0 0 4px ${theme.palette.common.white}`
+                    : 'none',
+                cursor: 'pointer',
               }}
             />
           </Marker>
@@ -786,6 +831,7 @@ function Timeline({
   const theme = useTheme()
   const reduceMotion = useReducedMotion()
   const contextPeriods = getRegionalTimelineContextPeriods(scenarioSlug)
+  const domain = timelineDomain(scenarioSlug)
   return (
     <Box
       sx={{
@@ -803,52 +849,86 @@ function Timeline({
         transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.3 }}
         sx={{ position: 'absolute', left: 0, right: 0, top: 132, height: 36, display: 'flex' }}
       >
-        <Box
-          sx={{
-            width: `${datePosition('2019-10-01')}%`,
-            bgcolor: alpha(theme.palette.primary.main, 0.1),
-            borderLeft: 4,
-            borderColor: 'primary.main',
-            px: 1,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Typography sx={regionalSummaryDetailTypography.timelineLabel}>Wet year</Typography>
-        </Box>
-        <Box
-          sx={{
-            width: `${datePosition('2020-10-01') - datePosition('2019-10-01')}%`,
-            bgcolor: alpha(theme.palette.salinity.pink, 0.16),
-            borderLeft: 4,
-            borderColor: 'salinity.pink',
-            px: 1,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Typography sx={regionalSummaryDetailTypography.timelineLabel}>Dry year</Typography>
-        </Box>
-        <Box
-          sx={{
-            flex: 1,
-            bgcolor: alpha(theme.palette.salinity.pink, 0.22),
-            borderLeft: 4,
-            borderRight: 4,
-            borderColor: 'salinity.pink',
-            px: 1,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Typography sx={regionalSummaryDetailTypography.timelineLabel}>
-            Critical dry year
-          </Typography>
-        </Box>
+        {domain.isOutflowComparison ? (
+          <>
+            {[
+              ['2020-08-01', '2020-10-01', 'Dry year'],
+              ['2020-10-01', '2021-10-01', 'Critical dry year'],
+              ['2021-10-01', '2022-01-01', 'Critical dry year'],
+            ].map(([startDate, endDate, label], index) => {
+              const left = datePosition(startDate, domain)
+              const width = datePosition(endDate, domain) - left
+              return (
+                <Box
+                  key={startDate}
+                  sx={{
+                    width: `${width}%`,
+                    bgcolor: alpha(theme.palette.salinity.pink, index === 0 ? 0.14 : 0.22),
+                    borderLeft: 4,
+                    borderRight: index === 2 ? 4 : 0,
+                    borderColor: 'salinity.pink',
+                    px: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography sx={regionalSummaryDetailTypography.timelineLabel}>
+                    {label}
+                  </Typography>
+                </Box>
+              )
+            })}
+          </>
+        ) : (
+          <>
+            <Box
+              sx={{
+                width: `${datePosition('2019-10-01', domain)}%`,
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                borderLeft: 4,
+                borderColor: 'primary.main',
+                px: 1,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Typography sx={regionalSummaryDetailTypography.timelineLabel}>Wet year</Typography>
+            </Box>
+            <Box
+              sx={{
+                width: `${datePosition('2020-10-01', domain) - datePosition('2019-10-01', domain)}%`,
+                bgcolor: alpha(theme.palette.salinity.pink, 0.16),
+                borderLeft: 4,
+                borderColor: 'salinity.pink',
+                px: 1,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Typography sx={regionalSummaryDetailTypography.timelineLabel}>Dry year</Typography>
+            </Box>
+            <Box
+              sx={{
+                flex: 1,
+                bgcolor: alpha(theme.palette.salinity.pink, 0.22),
+                borderLeft: 4,
+                borderRight: 4,
+                borderColor: 'salinity.pink',
+                px: 1,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <Typography sx={regionalSummaryDetailTypography.timelineLabel}>
+                Critical dry year
+              </Typography>
+            </Box>
+          </>
+        )}
       </Box>
       {contextPeriods.map((action) => {
-        const left = datePosition(action.startDate)
-        const width = datePosition(action.endDate) - left
+        const left = datePosition(action.startDate, domain)
+        const width = datePosition(action.endDate, domain) - left
         return (
           <Box
             component={motion.div}
@@ -884,7 +964,7 @@ function Timeline({
           bgcolor: 'common.white',
         }}
       />
-      {quarterTicks.map(([date, label], index) => (
+      {domain.ticks.map(([date, label], index) => (
         <Box
           component={motion.div}
           key={date}
@@ -896,7 +976,7 @@ function Timeline({
           }}
           sx={{
             position: 'absolute',
-            left: `${datePosition(date)}%`,
+            left: `${datePosition(date, domain)}%`,
             top: 36,
             transform: index === 0 ? 'none' : 'translateX(-50%)',
             textAlign: index === 0 ? 'left' : 'center',
@@ -923,7 +1003,7 @@ function Timeline({
         </Box>
       ))}
       {events.map((pattern) => {
-        const placement = eventPlacement(pattern)
+        const placement = eventPlacement(pattern, domain)
         const color = pattern.direction === 'fresher' ? 'salinity.teal' : 'salinity.pink'
         const glowColor =
           pattern.direction === 'fresher'
@@ -1053,15 +1133,18 @@ function InterpretationCard({
 }
 
 function ComparisonRow({
+  scenarioSlug,
   place,
   active,
   onSelect,
 }: {
+  scenarioSlug: string
   place: RegionalPlace
   active: boolean
   onSelect: () => void
 }) {
   const events = datedEvents(place)
+  const domain = timelineDomain(scenarioSlug)
   return (
     <Box
       component="button"
@@ -1097,7 +1180,7 @@ function ComparisonRow({
       </Typography>
       <Box sx={{ position: 'relative', height: 18, borderBottom: 1, borderColor: 'base.500' }}>
         {events.map((pattern) => {
-          const placement = eventPlacement(pattern)
+          const placement = eventPlacement(pattern, domain)
           const color = pattern.direction === 'fresher' ? 'salinity.teal' : 'salinity.pink'
           return (
             <Box
