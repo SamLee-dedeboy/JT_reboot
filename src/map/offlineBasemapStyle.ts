@@ -286,6 +286,25 @@ export function createOfflineBasemapStyle(): StyleSpecification {
         },
       },
       {
+        // Large named lakes such as Shasta Lake, placed inside their polygons.
+        id: 'offline-lake-label',
+        type: 'symbol',
+        source: 'offline-reference',
+        minzoom: 7.5,
+        filter: ['all', ['==', ['get', 'kind'], 'lake'], ['has', 'name']],
+        layout: {
+          'text-field': ['get', 'name'],
+          'text-font': ['Proxima Nova Semibold'],
+          'text-size': ['interpolate', ['linear'], ['zoom'], 8, 11, 13, 12, 18, 18],
+          'text-letter-spacing': 0.01,
+          'text-max-width': 7,
+        },
+        paint: {
+          'text-color': tokens.waterLabel,
+          'text-halo-color': tokens.waterLabelHalo,
+        },
+      },
+      {
         id: 'offline-waterway-label',
         type: 'symbol',
         source: 'offline-reference',

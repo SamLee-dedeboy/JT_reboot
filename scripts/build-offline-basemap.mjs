@@ -35,8 +35,16 @@ const LANDUSE_SIMPLIFY_TOLERANCE = 0.00008
 // Mapbox Streets omits small landuse polygons at exhibit zooms (its sizerank filter).
 const LANDUSE_MIN_AREA_SQ_DEGREES = 2e-6
 
-// Landuse is fetched in tiles because the full area exceeds Overpass limits.
-const LANDUSE_BOUNDS = { south: 37.6, west: -123.0, north: 38.6, east: -121.0 }
+// Landuse is fetched in tiles because the full areas exceed Overpass limits. It is
+// only needed where visitors zoom in: the Delta and Bay, and Shasta Dam.
+const LANDUSE_AREAS = [
+  { south: 37.6, west: -123.0, north: 38.6, east: -121.0 },
+  { south: 40.35, west: -122.75, north: 41.1, east: -121.75 },
+]
+// Regional lakes smaller than ~0.2 km² are omitted; Mapbox hides them at these zooms.
+const REGIONAL_LAKE_MIN_AREA_SQ_DEGREES = 2e-5
+// Named lakes at least this large (~20 km²) are labelled, e.g. Shasta Lake.
+const LABELLED_LAKE_MIN_AREA_SQ_DEGREES = 0.002
 const LANDUSE_TILE_DEGREES = 0.25
 
 /** OSM tag values grouped into the Mapbox Streets landuse classes the online style fills. */
@@ -313,7 +321,15 @@ function buildReferenceFeatures(elements) {
 
   const lakes = buildLanduseFeatures(
     elements.filter((element) => element.tags?.natural === 'water'),
-  ).map((feature) => ({ ...feature, properties: { kind: 'lake' } }))
+    { detailedWater: false, minArea: REGIONAL_LAKE_MIN_AREA_SQ_DEGREES },
+  ).map((feature) => {
+    const area = Math.max(...feature.geometry.coordinates.map(([outer]) => ringArea(outer)))
+    const labelled = feature.properties.name && area >= LABELLED_LAKE_MIN_AREA_SQ_DEGREES
+    return {
+      ...feature,
+      properties: labelled ? { kind: 'lake', name: feature.properties.name } : { kind: 'lake' },
+    }
+  })
 
   return { roads, places, bays, rivers, lakes, ...buildOceanFeatures(elements) }
 }
@@ -361,7 +377,14 @@ function landuseClass(tags = {}) {
   return null
 }
 
-function buildLanduseFeatures(elements) {
+/**
+ * `detailedWater` keeps water at road-level detail for the Delta channels; regional
+ * lakes, only seen at overview zooms, use landuse detail and skip small ponds.
+ */
+function buildLanduseFeatures(
+  elements,
+  { detailedWater = true, minArea = LANDUSE_MIN_AREA_SQ_DEGREES } = {},
+) {
   const seen = new Set()
   const features = []
 
@@ -371,7 +394,7 @@ function buildLanduseFeatures(elements) {
     if (!featureClass || seen.has(id)) continue
     seen.add(id)
     // Water carries the Delta channels, so it keeps road-level detail.
-    const isWater = featureClass === 'water'
+    const isWater = detailedWater && featureClass === 'water'
     const round = roundTo(isWater ? ROAD_PRECISION : LANDUSE_PRECISION)
     const tolerance = isWater ? ROAD_SIMPLIFY_TOLERANCE : LANDUSE_SIMPLIFY_TOLERANCE
 
@@ -393,8 +416,8 @@ function buildLanduseFeatures(elements) {
 
     const outers =
       element.type === 'way'
-        ? toRings([toLine(element.geometry ?? [])], LANDUSE_MIN_AREA_SQ_DEGREES)
-        : memberRings('outer', LANDUSE_MIN_AREA_SQ_DEGREES)
+        ? toRings([toLine(element.geometry ?? [])], minArea)
+        : memberRings('outer', minArea)
     if (outers.length === 0) continue
 
     // Inner rings are holes, e.g. the farmed islands between Delta channels.
@@ -407,7 +430,7 @@ function buildLanduseFeatures(elements) {
 
     features.push({
       type: 'Feature',
-      properties: { class: featureClass },
+      properties: { class: featureClass, name: element.tags.name },
       geometry: { type: 'MultiPolygon', coordinates: polygons },
     })
   }
@@ -434,31 +457,36 @@ console.log(
 if (referenceOnly) process.exit(0)
 
 const landuseElements = []
-const { south, west, north, east } = LANDUSE_BOUNDS
-for (let tileSouth = south; tileSouth < north; tileSouth += LANDUSE_TILE_DEGREES) {
-  for (let tileWest = west; tileWest < east; tileWest += LANDUSE_TILE_DEGREES) {
-    const bbox = [
-      tileSouth,
-      tileWest,
-      Math.min(tileSouth + LANDUSE_TILE_DEGREES, north),
-      Math.min(tileWest + LANDUSE_TILE_DEGREES, east),
-    ].map((value) => Number(value.toFixed(2)))
-    const ways = await overpass(
-      landuseQuery('way', bbox.join(',')),
-      `landuse_${bbox[0]}_${bbox[1]}.json`,
-    )
-    const relations = await overpass(
-      landuseQuery('rel', bbox.join(',')),
-      `landuse_rel_${bbox[0]}_${bbox[1]}.json`,
-    )
-    // Relations come only from the relation query, which includes their members.
-    landuseElements.push(
-      ...ways.elements.filter((element) => element.type === 'way'),
-      ...relations.elements,
-    )
+for (const { south, west, north, east } of LANDUSE_AREAS) {
+  for (let tileSouth = south; tileSouth < north; tileSouth += LANDUSE_TILE_DEGREES) {
+    for (let tileWest = west; tileWest < east; tileWest += LANDUSE_TILE_DEGREES) {
+      const bbox = [
+        tileSouth,
+        tileWest,
+        Math.min(tileSouth + LANDUSE_TILE_DEGREES, north),
+        Math.min(tileWest + LANDUSE_TILE_DEGREES, east),
+      ].map((value) => Number(value.toFixed(2)))
+      const ways = await overpass(
+        landuseQuery('way', bbox.join(',')),
+        `landuse_${bbox[0]}_${bbox[1]}.json`,
+      )
+      const relations = await overpass(
+        landuseQuery('rel', bbox.join(',')),
+        `landuse_rel_${bbox[0]}_${bbox[1]}.json`,
+      )
+      // Relations come only from the relation query, which includes their members.
+      landuseElements.push(
+        ...ways.elements.filter((element) => element.type === 'way'),
+        ...relations.elements,
+      )
+    }
   }
 }
-const landuse = buildLanduseFeatures(landuseElements)
+// Names are only used for lake labels in offline-basemap.geojson.
+const landuse = buildLanduseFeatures(landuseElements).map(({ properties, ...feature }) => ({
+  ...feature,
+  properties: { class: properties.class },
+}))
 await writeFile(
   path.join(outputDir, 'offline-landuse.geojson'),
   JSON.stringify({ type: 'FeatureCollection', features: landuse }),
