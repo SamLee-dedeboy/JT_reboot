@@ -7,6 +7,7 @@ import type { highlighter, logoWordmark, navigation, numbering } from './theme'
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
+    bodyLarge: CSSProperties
     captionSmall: CSSProperties
     eyebrow: CSSProperties
     logo: CSSProperties
@@ -79,6 +80,7 @@ declare module '@mui/material/styles' {
 
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
+    bodyLarge: true
     captionSmall: true
     eyebrow: true
     logo: true

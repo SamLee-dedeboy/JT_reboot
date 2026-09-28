@@ -64,7 +64,7 @@ export default function HomeImagePanel({
       >
         <ScrollReveal>
           <Typography
-            variant="body1"
+            variant="bodyLarge"
             component="p"
             sx={{
               maxWidth: textWidth,

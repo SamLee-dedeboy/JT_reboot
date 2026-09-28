@@ -1,23 +1,34 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import HelpIcon from '@mui/icons-material/Help'
 import { Box, Button, Typography } from '@mui/material'
-import { alpha, useTheme } from '@mui/material/styles'
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { alpha, lighten, useTheme, type Theme } from '@mui/material/styles'
+import { motion, useReducedMotion } from 'framer-motion'
+import type { Map as MapboxMap } from 'mapbox-gl'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Layer, Marker, Source, type LayerProps } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
 import { assetUrl } from '../../utils/baseUrl'
 import type { ScenarioContent } from '../scenarios/content/scenarioContent'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
+import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import {
   type PatternEvidence,
   type PatternStationEvidence,
   usePatternEvidence,
+  useSurroundingStationEvidence,
 } from './regionalPatternEvidence'
+import { regionalPatternIds, registerRegionalPolygonPatterns } from './regionalPolygonPatterns'
+import { getRegionalTimelineContextPeriods } from './regionalTimelineContext'
+import { excludedRegionalPatternIds } from './regionalPlaceContent'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
 import {
   regionalSummaryControlStyles,
+  regionalSummaryDetailGrid,
+  regionalSummaryDetailTypography,
   regionalSummarySizing,
-  regionalSummaryTypography,
+  regionalSummaryTimelineStyles,
 } from './regionalSummaryStyles'
+import RegionalPatternsTutorial from './RegionalPatternsTutorial'
 
 interface Props {
   scenario: ScenarioContent
@@ -53,17 +64,14 @@ const quarterTicks = [
   ['2020-10-01', 'Oct 2020'],
 ] as const
 
-const illustrativeActions = [
-  { id: 'action-2018', startDate: '2018-10-17', endDate: '2018-12-15', label: 'Gates closed' },
-  { id: 'action-2019', startDate: '2019-01-01', endDate: '2019-03-01', label: 'Gates closed' },
-  { id: 'action-2020', startDate: '2020-09-30', endDate: '2020-11-28', label: 'Gates closed' },
-]
-
 function datedEvents(place: RegionalPlace) {
   return place.patterns
     .filter(
       (pattern) =>
-        pattern.startDate && pattern.endDate && pattern.candidateType !== 'threshold_consequence',
+        pattern.startDate &&
+        pattern.endDate &&
+        pattern.candidateType !== 'threshold_consequence' &&
+        !excludedRegionalPatternIds.has(pattern.id),
     )
     .toSorted((left, right) => (left.startDate ?? '').localeCompare(right.startDate ?? ''))
 }
@@ -86,6 +94,19 @@ function dateLabel(date: string) {
   }).format(new Date(`${date}T00:00:00Z`))
 }
 
+function stationValueColor(
+  station: PatternStationEvidence,
+  stations: PatternStationEvidence[],
+  direction: RegionalPattern['direction'],
+  theme: Theme,
+) {
+  const values = stations.map((candidate) => Math.abs(candidate.differencePct ?? 0))
+  const maximum = Math.max(...values, 1)
+  const intensity = Math.min(1, Math.abs(station.differencePct ?? 0) / maximum)
+  const target = direction === 'fresher' ? theme.palette.salinity.teal : theme.palette.salinity.pink
+  return lighten(target, 1 - intensity)
+}
+
 export default function RegionalPatternsPage({
   scenario,
   place,
@@ -94,9 +115,11 @@ export default function RegionalPatternsPage({
   onBack,
 }: Props) {
   const evidence = usePatternEvidence()
+  const surroundingEvidence = useSurroundingStationEvidence()
   const [eventSeries, setEventSeries] = useState<EventSeriesDataset>({})
   const [activePlace, setActivePlace] = useState(place)
   const [selectedPattern, setSelectedPattern] = useState<RegionalPattern | null>(null)
+  const [tutorialOpen, setTutorialOpen] = useState(true)
   const events = useMemo(() => datedEvents(activePlace), [activePlace])
 
   useEffect(() => {
@@ -112,18 +135,60 @@ export default function RegionalPatternsPage({
 
   const selectedEvidence = selectedPattern ? evidence?.patterns[selectedPattern.id] : undefined
   const selectedSeries = selectedPattern ? eventSeries[selectedPattern.id] : undefined
+  const defaultMapStations = useMemo(
+    () =>
+      events
+        .map((event) => evidence?.patterns[event.id]?.stationEvidence.stations)
+        .find((stations) => stations?.length) ?? [],
+    [events, evidence],
+  )
+  const mapStations = selectedEvidence?.stationEvidence.stations.length
+    ? selectedEvidence.stationEvidence.stations
+    : defaultMapStations
+  const surroundingStations = useMemo(() => {
+    if (!evidence) return []
+    if (selectedPattern) {
+      const selectedStationIds = new Set(mapStations.map((station) => station.stationId))
+      return (surroundingEvidence?.patterns[selectedPattern.id] ?? []).filter(
+        (station) => !selectedStationIds.has(station.stationId),
+      )
+    }
+    const scenarioKey =
+      selectedEvidence?.scenarioKey ??
+      events.map((event) => evidence.patterns[event.id]?.scenarioKey).find(Boolean)
+    if (!scenarioKey) return []
+
+    const selectedStationIds = new Set(mapStations.map((station) => station.stationId))
+    const stationsById = new Map<number, PatternStationEvidence>()
+    Object.values(evidence.patterns)
+      .filter((pattern) => pattern.scenarioKey === scenarioKey)
+      .flatMap((pattern) => pattern.stationEvidence.stations)
+      .forEach((station) => {
+        if (!selectedStationIds.has(station.stationId)) stationsById.set(station.stationId, station)
+      })
+    return [...stationsById.values()]
+  }, [
+    events,
+    evidence,
+    mapStations,
+    selectedEvidence?.scenarioKey,
+    selectedPattern,
+    surroundingEvidence,
+  ])
 
   return (
-    <Box sx={{ height: '100dvh', bgcolor: 'base.900', color: 'common.white', overflow: 'hidden' }}>
+    <Box
+      sx={{
+        ...regionalSummaryDetailGrid.page,
+        bgcolor: 'base.900',
+        color: 'common.white',
+      }}
+    >
       <Box
         component="header"
         sx={{
-          height: regionalSummarySizing.headerHeight,
+          ...regionalSummaryDetailGrid.header,
           px: regionalSummarySizing.pageInset,
-          display: 'grid',
-          gridTemplateColumns: 'auto minmax(0, 1fr) auto',
-          alignItems: 'center',
-          gap: regionalSummarySizing.sectionGap,
           borderBottom: 1,
           borderColor: 'translucent.primaryGreen',
         }}
@@ -138,115 +203,144 @@ export default function RegionalPatternsPage({
             borderColor: 'primary.main',
           }}
         >
-          Map
+          Back to Map
         </Button>
-        <Box>
-          <Typography sx={{ ...regionalSummaryTypography.scenarioNumber, color: 'primary.main' }}>
+        <Box data-tour="regional-pattern-header" sx={{ minWidth: 0 }}>
+          <Typography sx={{ ...regionalSummaryDetailTypography.eyebrow, color: 'primary.main' }}>
             {scenario.title}
           </Typography>
           <Typography
             component="h1"
             sx={{
-              ...regionalSummaryTypography.regionTitle,
+              ...regionalSummaryDetailTypography.title,
               mt: 0.5,
             }}
           >
             {activePlace.name}
           </Typography>
-        </Box>
-        <Box sx={{ textAlign: 'right', display: { xs: 'none', md: 'block' } }}>
-          <Typography sx={regionalSummaryTypography.pagePrompt}>
-            Regional pattern evidence
+          <Typography sx={{ ...regionalSummaryDetailTypography.lead, color: 'base.100' }}>
+            <Box component="span" sx={{ color: 'primary.main', fontWeight: 800 }}>
+              Tap
+            </Box>{' '}
+            an event to inspect its evidence.{' '}
+            <Box component="span" sx={{ color: 'primary.main', fontWeight: 800 }}>
+              Tap
+            </Box>{' '}
+            another region to explore its patterns. For deeper analysis, visit the Salinity
+            Difference Explorer on the nearby screens.
           </Typography>
-          <Typography sx={{ ...regionalSummaryTypography.instruction, color: 'base.100' }}>
-            Tap an event or comparison row to inspect it
-          </Typography>
         </Box>
+        <Button
+          variant="outlined"
+          startIcon={<HelpIcon />}
+          onClick={() => setTutorialOpen(true)}
+          sx={{
+            ...regionalSummaryControlStyles.primaryTouchButton,
+            color: 'common.white',
+            borderColor: 'primary.main',
+            justifySelf: 'end',
+          }}
+        >
+          Tutorial
+        </Button>
       </Box>
+
+      <RegionalPatternsTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
       <Box
         component="main"
         sx={{
-          height: regionalSummarySizing.contentHeight,
+          ...regionalSummaryDetailGrid.detail,
           width: '90dvw',
           mx: 'auto',
           overflow: 'hidden',
           py: '1.5dvh',
-          display: 'grid',
-          gridTemplateRows: '35dvh 8dvh 19dvh minmax(0, 1fr)',
-          gap: '1dvh',
         }}
       >
-        <Box
-          sx={{
-            height: '100%',
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              md: 'minmax(0, 2fr) minmax(250px, 0.9fr) minmax(250px, 0.9fr)',
-            },
-            gap: 2,
-          }}
-        >
-          <EvidencePanel title="Regional EC during selected event">
-            {selectedPattern && selectedSeries ? (
-              <RegionalEcChart pattern={selectedPattern} series={selectedSeries} />
-            ) : (
-              <EmptyEvidence text="Select a dated event to display its regional EC response." />
-            )}
-          </EvidencePanel>
-          <EvidencePanel title="EC deviation across stations">
-            {selectedEvidence?.stationEvidence.stations.length ? (
-              <StationDistribution stations={selectedEvidence.stationEvidence.stations} />
-            ) : (
-              <EmptyEvidence text="Station evidence is not available for this event yet." />
-            )}
-          </EvidencePanel>
-          <EvidencePanel title="Stations within the region">
-            {selectedEvidence?.stationEvidence.stations.length ? (
+        <Box data-tour="regional-pattern-timeline" sx={regionalSummaryDetailGrid.timeline}>
+          <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
+            Salinity Pattern Timeline
+          </Typography>
+          <Box sx={{ minHeight: 0 }}>
+            <Timeline
+              scenarioSlug={scenario.slug}
+              events={events}
+              selectedPattern={selectedPattern}
+              onSelect={setSelectedPattern}
+            />
+          </Box>
+        </Box>
+
+        <Box sx={regionalSummaryDetailGrid.workspace}>
+          <Box data-tour="regional-pattern-map" sx={regionalSummaryDetailGrid.map}>
+            <EvidencePanel title="Stations within the region">
               <StationMap
                 place={activePlace}
-                stations={selectedEvidence.stationEvidence.stations}
+                stations={mapStations}
+                surroundingStations={surroundingStations}
+                selectedDirection={selectedPattern?.direction ?? null}
               />
+            </EvidencePanel>
+          </Box>
+
+          <Box data-tour="regional-pattern-details" sx={regionalSummaryDetailGrid.patternDetails}>
+            {selectedPattern ? (
+              <>
+                <Box sx={regionalSummaryDetailGrid.charts}>
+                  <EvidencePanel title="Regional EC Change Over Time">
+                    {selectedSeries ? (
+                      <RegionalEcChart
+                        key={selectedPattern.id}
+                        pattern={selectedPattern}
+                        series={selectedSeries}
+                      />
+                    ) : (
+                      <EmptyEvidence text="Regional EC series unavailable." />
+                    )}
+                  </EvidencePanel>
+                  <EvidencePanel title="EC Deviation across Stations">
+                    {selectedEvidence?.stationEvidence.stations.length ? (
+                      <StationDistribution
+                        key={selectedPattern.id}
+                        stations={selectedEvidence.stationEvidence.stations}
+                        direction={selectedPattern.direction}
+                      />
+                    ) : (
+                      <EmptyEvidence text="Station evidence unavailable." />
+                    )}
+                  </EvidencePanel>
+                </Box>
+                <Box sx={regionalSummaryDetailGrid.interpretation}>
+                  <InterpretationCard
+                    key={selectedPattern.id}
+                    scenarioTitle={scenario.title}
+                    placeName={activePlace.name}
+                    pattern={selectedPattern}
+                    evidence={selectedEvidence}
+                  />
+                </Box>
+              </>
             ) : (
-              <EmptyEvidence text="Station locations are not available for this event yet." />
+              <Box
+                sx={{
+                  gridRow: '1 / -1',
+                  display: 'grid',
+                  placeItems: 'center',
+                  bgcolor: 'base.800',
+                  px: regionalSummarySizing.surfacePadding,
+                }}
+              >
+                <Typography sx={{ ...regionalSummaryDetailTypography.lead, color: 'base.200' }}>
+                  Select a pattern to see its details
+                </Typography>
+              </Box>
             )}
-          </EvidencePanel>
+          </Box>
         </Box>
 
-        <Box sx={{ minHeight: 0 }}>
-          {selectedPattern ? (
-            <InterpretationCard pattern={selectedPattern} evidence={selectedEvidence} />
-          ) : (
-            <Box
-              sx={{
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                borderLeft: 4,
-                borderColor: 'base.600',
-                bgcolor: 'base.800',
-                px: 2,
-              }}
-            >
-              <Typography sx={{ ...regionalSummaryTypography.instruction, color: 'base.200' }}>
-                Tap an event on the timeline to see its interpretation.
-              </Typography>
-            </Box>
-          )}
-        </Box>
-
-        <Box sx={{ minHeight: 0 }}>
-          <Timeline
-            events={events}
-            selectedPattern={selectedPattern}
-            onSelect={setSelectedPattern}
-          />
-        </Box>
-
-        <Box sx={{ minHeight: 0, overflow: 'hidden' }}>
-          <Typography sx={{ ...regionalSummaryTypography.pagePrompt, mb: 0.5 }}>
-            Compare regions
+        <Box data-tour="regional-pattern-regions" sx={regionalSummaryDetailGrid.regions}>
+          <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
+            Other regions to explore
           </Typography>
           <Box sx={{ display: 'grid', gap: 0.25 }}>
             {places.map((candidate) => (
@@ -274,17 +368,19 @@ function EvidencePanel({ title, children }: { title: string; children: ReactNode
   return (
     <Box
       sx={{
+        width: '100%',
+        height: '100%',
         minWidth: 0,
         minHeight: 0,
         overflow: 'hidden',
         display: 'grid',
         gridTemplateRows: 'auto minmax(0, 1fr)',
-        borderTop: 1,
-        borderColor: 'base.700',
         pt: 1.25,
       }}
     >
-      <Typography sx={{ ...regionalSummaryTypography.pagePrompt, color: 'common.white', mb: 1 }}>
+      <Typography
+        sx={{ ...regionalSummaryDetailTypography.sectionTitle, color: 'common.white', mb: 1 }}
+      >
         {title}
       </Typography>
       {children}
@@ -297,13 +393,14 @@ function EmptyEvidence({ text }: { text: string }) {
     <Box
       sx={{ display: 'grid', placeItems: 'center', color: 'base.200', px: 3, textAlign: 'center' }}
     >
-      <Typography sx={regionalSummaryTypography.instruction}>{text}</Typography>
+      <Typography sx={regionalSummaryDetailTypography.body}>{text}</Typography>
     </Box>
   )
 }
 
 function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series: EventSeries }) {
   const theme = useTheme()
+  const reduceMotion = useReducedMotion()
   const values = [...series.baseline, ...series.scenario].filter(
     (value): value is number => value != null,
   )
@@ -329,13 +426,16 @@ function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series
   return (
     <Box sx={{ minHeight: 0, position: 'relative' }}>
       <Box sx={{ position: 'absolute', right: 1, top: 0, display: 'flex', gap: 2, zIndex: 1 }}>
-        <Typography sx={{ ...regionalSummaryTypography.instruction, color: 'common.white' }}>
+        <Typography
+          sx={{ ...regionalSummaryDetailTypography.timelineLabel, color: 'common.white' }}
+        >
           — Baseline
         </Typography>
-        <Typography sx={{ ...regionalSummaryTypography.instruction, color }}>— Scenario</Typography>
+        <Typography sx={{ ...regionalSummaryDetailTypography.timelineLabel, color }}>
+          — Scenario
+        </Typography>
       </Box>
       <svg
-        role="img"
         aria-label="Regional baseline and scenario electrical conductivity"
         viewBox="0 0 760 310"
         width="100%"
@@ -401,27 +501,40 @@ function RegionalEcChart({ pattern, series }: { pattern: RegionalPattern; series
         >
           EC (µS/cm)
         </text>
-        <path
+        <motion.path
           d={path(series.baseline)}
           fill="none"
           stroke="white"
           strokeWidth="2.5"
           vectorEffect="non-scaling-stroke"
+          initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: reduceMotion ? 0 : 0.8, ease: 'easeOut' }}
         />
-        <path
+        <motion.path
           d={path(series.scenario)}
           fill="none"
           stroke={color}
           strokeWidth="3.5"
           vectorEffect="non-scaling-stroke"
+          initial={reduceMotion ? false : { pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: reduceMotion ? 0 : 0.9, delay: reduceMotion ? 0 : 0.12 }}
         />
       </svg>
     </Box>
   )
 }
 
-function StationDistribution({ stations }: { stations: PatternStationEvidence[] }) {
+function StationDistribution({
+  stations,
+  direction,
+}: {
+  stations: PatternStationEvidence[]
+  direction: RegionalPattern['direction']
+}) {
   const theme = useTheme()
+  const reduceMotion = useReducedMotion()
   const values = stations.map((station) => station.differencePct ?? 0)
   const minimum = Math.min(...values, 0)
   const maximum = Math.max(...values, 0)
@@ -452,35 +565,43 @@ function StationDistribution({ stations }: { stations: PatternStationEvidence[] 
     >
       <line x1="112" x2="218" y1={y(0)} y2={y(0)} stroke="white" strokeWidth="2" />
       <text
-        x="104"
+        x="230"
         y={y(0) - 7}
         fill="white"
         fontSize={regionalSummarySizing.chartAxisFontSize}
-        textAnchor="end"
+        textAnchor="start"
       >
         Business
       </text>
       <text
-        x="104"
+        x="230"
         y={y(0) + 9}
         fill="white"
         fontSize={regionalSummarySizing.chartAxisFontSize}
-        textAnchor="end"
+        textAnchor="start"
       >
         as usual
       </text>
-      {placed.map(({ station, x, y: pointY }) => (
-        <circle
+      {placed.map(({ station, x, y: pointY }, index) => (
+        <motion.circle
           key={station.stationId}
           cx={x}
           cy={pointY}
-          r="5"
-          fill={
-            station.differenceEc < 0 ? theme.palette.salinity.teal : theme.palette.salinity.pink
-          }
+          r="7"
+          fill={stationValueColor(station, stations, direction, theme)}
+          stroke="white"
+          strokeWidth="2"
+          vectorEffect="non-scaling-stroke"
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.25 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.32,
+            delay: reduceMotion ? 0 : index * 0.035,
+          }}
+          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
         />
       ))}
-      {[maximum, 0, minimum].map((label) => (
+      {[maximum, minimum].map((label) => (
         <text
           key={label}
           x="96"
@@ -506,24 +627,68 @@ function StationDistribution({ stations }: { stations: PatternStationEvidence[] 
 function StationMap({
   place,
   stations,
+  surroundingStations,
+  selectedDirection,
 }: {
   place: RegionalPlace
   stations: PatternStationEvidence[]
+  surroundingStations: PatternStationEvidence[]
+  selectedDirection: RegionalPattern['direction'] | null
 }) {
   const theme = useTheme()
+  const mapRef = useRef<MapboxMap | null>(null)
+  const [patternReady, setPatternReady] = useState(false)
+  const offlineMapStyle = useMemo(
+    () => (isOfflineMapEnabled() ? createOfflineBasemapStyle() : undefined),
+    [],
+  )
+  const regionColor =
+    place.trend === 'fresher'
+      ? theme.palette.salinity.teal
+      : place.trend === 'saltier'
+        ? theme.palette.salinity.pink
+        : place.trend === 'flipping'
+          ? theme.palette.base[900]
+          : theme.palette.base[100]
   const fillLayer: LayerProps = {
     id: `evidence-fill-${place.id}`,
     type: 'fill',
-    paint: { 'fill-color': theme.palette.primary.main, 'fill-opacity': 0.12 },
+    paint: { 'fill-color': regionColor, 'fill-opacity': 0.4 },
   }
-  const lineLayer: LayerProps = {
-    id: `evidence-line-${place.id}`,
-    type: 'line',
-    paint: { 'line-color': theme.palette.primary.main, 'line-width': 2 },
+  const patternLayer: LayerProps = {
+    id: `evidence-pattern-${place.id}`,
+    type: 'fill',
+    paint: {
+      'fill-pattern': regionalPatternIds[place.trend],
+      'fill-opacity': 0.76,
+    },
   }
+  const fitMapToRegion = useCallback(
+    (map: MapboxMap) => {
+      if (!stations.length) return
+      const longitudes = stations.map((station) => station.longitude)
+      const latitudes = stations.map((station) => station.latitude)
+      map.fitBounds(
+        [
+          [Math.min(...longitudes), Math.min(...latitudes)],
+          [Math.max(...longitudes), Math.max(...latitudes)],
+        ],
+        { padding: 34, maxZoom: 12, duration: 0 },
+      )
+      map.setZoom(Math.max(7.5, map.getZoom() - 0.8))
+    },
+    [stations],
+  )
+
+  useEffect(() => {
+    if (mapRef.current) fitMapToRegion(mapRef.current)
+  }, [fitMapToRegion, place.id])
+
+  const colorScaleStations = [...stations, ...surroundingStations]
   return (
-    <Box sx={{ minHeight: 0, overflow: 'hidden' }}>
+    <Box sx={{ width: '100%', height: '100%', minHeight: 0, overflow: 'hidden' }}>
       <BaseMap
+        mapStyle={offlineMapStyle}
         mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
         initialViewState={{
           longitude: place.coordinates[0],
@@ -536,15 +701,15 @@ function StationMap({
         touchZoomRotate={false}
         attributionControl={false}
         onMapReady={(map) => {
-          const longitudes = stations.map((station) => station.longitude)
-          const latitudes = stations.map((station) => station.latitude)
-          map.fitBounds(
-            [
-              [Math.min(...longitudes), Math.min(...latitudes)],
-              [Math.max(...longitudes), Math.max(...latitudes)],
-            ],
-            { padding: 34, maxZoom: 12, duration: 0 },
-          )
+          mapRef.current = map
+          registerRegionalPolygonPatterns(map, {
+            saltier: theme.palette.salinity.pink,
+            fresher: theme.palette.salinity.teal,
+            flipping: theme.palette.accent.yellow,
+            unclear: theme.palette.base[100],
+          })
+          setPatternReady(true)
+          fitMapToRegion(map)
         }}
       >
         {place.geometry ? (
@@ -554,9 +719,32 @@ function StationMap({
             data={{ type: 'Feature', properties: {}, geometry: place.geometry }}
           >
             <Layer {...fillLayer} />
-            <Layer {...lineLayer} />
+            {patternReady ? <Layer {...patternLayer} /> : null}
           </Source>
         ) : null}
+        {surroundingStations.map((station) => (
+          <Marker
+            key={`surrounding-${station.stationId}`}
+            longitude={station.longitude}
+            latitude={station.latitude}
+            anchor="center"
+          >
+            <Box
+              title={`${station.shortName || station.name}: ${station.differenceEc > 0 ? '+' : ''}${valueFormat.format(station.differenceEc)} µS/cm from baseline`}
+              sx={{
+                width: regionalSummarySizing.surroundingStationPointSize,
+                height: regionalSummarySizing.surroundingStationPointSize,
+                borderRadius: '50%',
+                bgcolor: selectedDirection
+                  ? stationValueColor(station, colorScaleStations, station.direction, theme)
+                  : 'base.300',
+                border: 2,
+                borderColor: 'base.700',
+                opacity: selectedDirection ? 1 : 0.72,
+              }}
+            />
+          </Marker>
+        ))}
         {stations.map((station) => (
           <Marker
             key={station.stationId}
@@ -567,12 +755,14 @@ function StationMap({
             <Box
               title={`${station.shortName || station.name}: ${valueFormat.format(station.differenceEc)} µS/cm`}
               sx={{
-                width: 13,
-                height: 13,
+                width: regionalSummarySizing.stationPointSize,
+                height: regionalSummarySizing.stationPointSize,
                 borderRadius: '50%',
-                bgcolor: station.differenceEc < 0 ? 'salinity.teal' : 'salinity.pink',
+                bgcolor: selectedDirection
+                  ? stationValueColor(station, colorScaleStations, station.direction, theme)
+                  : 'common.white',
                 border: 2,
-                borderColor: 'common.white',
+                borderColor: 'base.700',
               }}
             />
           </Marker>
@@ -583,83 +773,103 @@ function StationMap({
 }
 
 function Timeline({
+  scenarioSlug,
   events,
   selectedPattern,
   onSelect,
 }: {
+  scenarioSlug: string
   events: RegionalPattern[]
   selectedPattern: RegionalPattern | null
   onSelect: (pattern: RegionalPattern) => void
 }) {
   const theme = useTheme()
+  const reduceMotion = useReducedMotion()
+  const contextPeriods = getRegionalTimelineContextPeriods(scenarioSlug)
   return (
-    <Box sx={{ position: 'relative', height: '100%', minHeight: 0 }}>
-      <Box sx={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 28, display: 'flex' }}>
+    <Box
+      sx={{
+        position: 'relative',
+        height: 184,
+        minHeight: 0,
+        display: 'grid',
+        direction: 'column',
+      }}
+    >
+      <Box
+        component={motion.div}
+        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 0.3 }}
+        sx={{ position: 'absolute', left: 0, right: 0, top: 132, height: 36, display: 'flex' }}
+      >
         <Box
           sx={{
             width: `${datePosition('2019-10-01')}%`,
             bgcolor: alpha(theme.palette.primary.main, 0.1),
-            borderLeft: 2,
+            borderLeft: 4,
             borderColor: 'primary.main',
             px: 1,
             display: 'flex',
             alignItems: 'center',
           }}
         >
-          <Typography sx={regionalSummaryTypography.timelineLabel}>Wet year</Typography>
+          <Typography sx={regionalSummaryDetailTypography.timelineLabel}>Wet year</Typography>
         </Box>
         <Box
           sx={{
             width: `${datePosition('2020-10-01') - datePosition('2019-10-01')}%`,
             bgcolor: alpha(theme.palette.salinity.pink, 0.16),
-            borderLeft: 2,
+            borderLeft: 4,
             borderColor: 'salinity.pink',
             px: 1,
             display: 'flex',
             alignItems: 'center',
           }}
         >
-          <Typography sx={regionalSummaryTypography.timelineLabel}>Dry year</Typography>
+          <Typography sx={regionalSummaryDetailTypography.timelineLabel}>Dry year</Typography>
         </Box>
         <Box
           sx={{
             flex: 1,
             bgcolor: alpha(theme.palette.salinity.pink, 0.22),
-            borderLeft: 2,
-            borderRight: 2,
+            borderLeft: 4,
+            borderRight: 4,
             borderColor: 'salinity.pink',
             px: 1,
             display: 'flex',
             alignItems: 'center',
           }}
         >
-          <Typography sx={regionalSummaryTypography.timelineLabel}>Critical dry year</Typography>
+          <Typography sx={regionalSummaryDetailTypography.timelineLabel}>
+            Critical dry year
+          </Typography>
         </Box>
       </Box>
-      {illustrativeActions.map((action) => {
+      {contextPeriods.map((action) => {
         const left = datePosition(action.startDate)
         const width = datePosition(action.endDate) - left
         return (
           <Box
+            component={motion.div}
             key={action.id}
+            initial={reduceMotion ? false : { opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: reduceMotion ? 0 : 0.55, ease: 'easeOut' }}
             sx={{
-              position: 'absolute',
+              ...regionalSummaryTimelineStyles.contextBar,
               left: `${left}%`,
               width: `${width}%`,
-              minWidth: 76,
-              top: 68,
-              height: 18,
-              px: 0.75,
-              display: 'flex',
-              alignItems: 'center',
-              bgcolor: 'brand.primaryBlue',
-              color: 'base.900',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
+              transformOrigin: left > 75 ? 'right center' : 'left center',
             }}
           >
-            <Typography sx={{ ...regionalSummaryTypography.timelineLabel, fontWeight: 800 }}>
-              Illustrative: {action.label}
+            <Typography
+              sx={{
+                ...regionalSummaryTimelineStyles.contextLabel,
+                ...(left > 75 ? { right: 4 } : { left: 4 }),
+              }}
+            >
+              {action.label}
             </Typography>
           </Box>
         )
@@ -669,27 +879,40 @@ function Timeline({
           position: 'absolute',
           left: 0,
           right: 0,
-          top: 14,
+          top: 44,
           height: 3,
           bgcolor: 'common.white',
         }}
       />
-      {quarterTicks.map(([date, label]) => (
+      {quarterTicks.map(([date, label], index) => (
         <Box
+          component={motion.div}
           key={date}
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.38,
+            delay: reduceMotion ? 0 : 0.05 + index * 0.045,
+          }}
           sx={{
             position: 'absolute',
             left: `${datePosition(date)}%`,
-            top: 6,
-            transform: 'translateX(-50%)',
-            textAlign: 'center',
+            top: 36,
+            transform: index === 0 ? 'none' : 'translateX(-50%)',
+            textAlign: index === 0 ? 'left' : 'center',
           }}
         >
-          <Box sx={{ width: 2, height: 16, bgcolor: 'common.white', mx: 'auto' }} />
+          <Box
+            sx={{
+              width: 2,
+              height: 16,
+              bgcolor: 'common.white',
+              mx: index === 0 ? 0 : 'auto',
+            }}
+          />
           <Typography
             sx={{
-              ...regionalSummaryTypography.instruction,
-              ...regionalSummaryTypography.timelineLabel,
+              ...regionalSummaryDetailTypography.timelineLabel,
               color: 'base.100',
               mt: 0.5,
               whiteSpace: 'nowrap',
@@ -699,7 +922,7 @@ function Timeline({
           </Typography>
         </Box>
       ))}
-      {events.map((pattern, index) => {
+      {events.map((pattern) => {
         const placement = eventPlacement(pattern)
         const color = pattern.direction === 'fresher' ? 'salinity.teal' : 'salinity.pink'
         const glowColor =
@@ -708,19 +931,24 @@ function Timeline({
             : theme.palette.salinity.pink
         return (
           <Button
+            component={motion.button}
             key={pattern.id}
             onClick={() => onSelect(pattern)}
             aria-pressed={selectedPattern?.id === pattern.id}
+            initial={reduceMotion ? false : { opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: reduceMotion ? 0 : 0.62, ease: 'easeOut' }}
             sx={{
               position: 'absolute',
               left: `${placement.left}%`,
               width: `${placement.width}%`,
-              minWidth: 8,
-              top: 10 + index * 7,
-              height: 8,
+              minWidth: 18,
+              top: 2,
+              height: 30,
               p: 0,
               borderRadius: 0,
               bgcolor: color,
+              transformOrigin: 'left center',
               boxShadow:
                 selectedPattern?.id === pattern.id
                   ? `0 0 12px 4px ${alpha(glowColor, 0.72)}`
@@ -733,86 +961,92 @@ function Timeline({
           />
         )
       })}
-      {selectedPattern ? (
-        <Typography
-          sx={{
-            ...regionalSummaryTypography.instruction,
-            position: 'absolute',
-            left: `${eventPlacement(selectedPattern).left}%`,
-            top: 43,
-            pl: 0.75,
-            borderLeft: 2,
-            borderColor:
-              selectedPattern.direction === 'fresher' ? 'salinity.teal' : 'salinity.pink',
-            color: 'common.white',
-            ...regionalSummaryTypography.timelineLabel,
-            fontWeight: 700,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {selectedPattern.durationDays ?? 'Detected'} days ·{' '}
-          {selectedPattern.direction === 'fresher' ? 'fresher' : 'saltier'} ·{' '}
-          {selectedPattern.differencePct == null
-            ? 'change under review'
-            : `${selectedPattern.differencePct > 0 ? '+' : ''}${valueFormat.format(selectedPattern.differencePct)}% from baseline`}
-        </Typography>
-      ) : null}
     </Box>
   )
 }
 
 function InterpretationCard({
+  scenarioTitle,
+  placeName,
   pattern,
   evidence,
 }: {
+  scenarioTitle: string
+  placeName: string
   pattern: RegionalPattern
   evidence?: PatternEvidence
 }) {
+  const reduceMotion = useReducedMotion()
   const color = pattern.direction === 'fresher' ? 'salinity.teal' : 'salinity.pink'
+  const directionLabel = pattern.direction ?? 'different'
+  const differenceLabel =
+    pattern.differenceEc == null
+      ? 'an unavailable EC change'
+      : `${pattern.differenceEc > 0 ? '+' : ''}${valueFormat.format(pattern.differenceEc)} µS/cm`
+  const percentageLabel =
+    pattern.differencePct == null
+      ? null
+      : `${pattern.differencePct > 0 ? '+' : ''}${valueFormat.format(pattern.differencePct)}%`
+  const qualifyingDays = pattern.qualifyingDays ?? pattern.durationDays
+  const baselineLabel =
+    pattern.baselineEc == null ? 'Baseline unavailable' : valueFormat.format(pattern.baselineEc)
+  const scenarioLabel =
+    pattern.scenarioEc == null ? 'scenario unavailable' : valueFormat.format(pattern.scenarioEc)
   return (
     <Box
+      component={motion.div}
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.42, ease: 'easeOut' }}
       sx={{
         mt: 0,
         height: '100%',
         boxSizing: 'border-box',
-        overflow: 'hidden',
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: 'minmax(240px, 0.6fr) minmax(0, 1.4fr)' },
+        gridTemplateColumns: 'minmax(0, 1fr)',
         gap: 2,
         borderLeft: 4,
         borderColor: color,
         bgcolor: 'base.800',
         px: 2,
-        py: 1,
+        py: 2,
       }}
     >
       <Box>
-        <Typography sx={{ ...regionalSummaryTypography.scenarioNumber, color }}>
-          Event interpretation
+        <Typography sx={{ ...regionalSummaryDetailTypography.eyebrow, color }}>
+          Event details
         </Typography>
-        <Typography sx={{ ...regionalSummaryTypography.pagePrompt, mt: 0.25 }}>
-          {evidence?.narrative.headline ??
-            `${pattern.durationDays ?? 'Detected'} day salinity event`}
+        <Typography sx={{ ...regionalSummaryDetailTypography.body, color: 'common.white' }}>
+          In{' '}
+          <Box component="span" sx={{ color: 'primary.main', fontWeight: 800 }}>
+            {scenarioTitle}
+          </Box>
+          , {placeName} was{' '}
+          <Box component="span" sx={{ color, fontWeight: 800 }}>
+            {directionLabel}
+          </Box>{' '}
+          than Business as Usual:{' '}
+          <Box component="span" sx={{ fontWeight: 800 }}>
+            {differenceLabel}
+          </Box>{' '}
+          on average
+          {percentageLabel ? (
+            <>
+              {' ('}
+              <Box component="span" sx={{ fontWeight: 800 }}>
+                {percentageLabel}
+              </Box>
+              )
+            </>
+          ) : null}
+          {qualifyingDays == null ? '.' : `, sustained for ${qualifyingDays} qualifying days.`}
         </Typography>
-      </Box>
-      <Box>
-        <Typography sx={{ ...regionalSummaryTypography.instruction, color: 'common.white' }}>
-          {evidence?.narrative.description ?? pattern.reviewNote}
+        <Typography
+          sx={{ ...regionalSummaryDetailTypography.supporting, color: 'base.200', mt: 0.4 }}
+        >
+          {pattern.startDate} to {pattern.endDate} · {baselineLabel} → {scenarioLabel} µS/cm ·{' '}
+          {evidence?.stationEvidence.stationCount ?? pattern.stationCount ?? '—'} stations
         </Typography>
-        <Typography sx={{ ...regionalSummaryTypography.instruction, color: 'base.200', mt: 0.4 }}>
-          {dateLabel(pattern.startDate as string)}–{dateLabel(pattern.endDate as string)} ·{' '}
-          {pattern.differenceEc == null
-            ? 'Change pending'
-            : `${pattern.differenceEc > 0 ? '+' : ''}${valueFormat.format(pattern.differenceEc)} µS/cm`}{' '}
-          · {evidence?.stationEvidence.stationCount ?? pattern.stationCount ?? '—'} stations
-        </Typography>
-        {evidence?.narrative.reviewStatus === 'needs-review' ? (
-          <Typography
-            sx={{ ...regionalSummaryTypography.instruction, color: 'primary.main', mt: 0.25 }}
-          >
-            Generated interpretation — ready for editorial review
-          </Typography>
-        ) : null}
       </Box>
     </Box>
   )
@@ -855,7 +1089,7 @@ function ComparisonRow({
     >
       <Typography
         sx={{
-          ...regionalSummaryTypography.action,
+          ...regionalSummaryDetailTypography.action,
           color: active ? 'primary.main' : 'common.white',
         }}
       >

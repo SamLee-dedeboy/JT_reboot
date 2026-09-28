@@ -1,5 +1,6 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import TouchAppIcon from '@mui/icons-material/TouchApp'
 import { Box, Button, Typography } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
@@ -13,14 +14,15 @@ import {
   regionalSummaryTypography,
 } from './regionalSummaryStyles'
 import RegionalSalinityExplorer from './RegionalSalinityExplorer'
+import RegionalProjectIntroduction from './RegionalProjectIntroduction'
 
 const alternativeDeltaOutflows: ScenarioContent = {
   slug: 'alternative-delta-outflows',
-  number: '00',
-  title: 'Alternative Delta Outflows',
+  number: '01',
+  title: 'Increasing Delta Outflow',
   image: '/images/scenarios/outflow.jpg',
   summary:
-    'Explore how alternative Delta outflow levels change salinity patterns relative to current operations.',
+    'How does increasing or decreasing how much water flows through the Delta change salinity relative to current operations?',
   story: [],
   mapFeatures: [],
 }
@@ -33,11 +35,29 @@ const adaptationScenarioOrder = [
   'a-tunnel',
 ] as const
 
+const regionalScenarioIntroductions: Record<string, string> = {
+  'eco-machine':
+    'Where can tidal restoration be implemented in the Delta to strategically reduce salinity, while also creating ecological, eco-cultural, recreational, and community benefits?',
+  'new-green-watershed':
+    'In addition to tidal restoration, what if the Delta and larger watershed were holistically restored to reduce systemic risks to the Delta’s water infrastructure, transition to a more regenerative and sustainable economy, and advance Indigenous sovereignty?',
+  'bolster-and-fortify':
+    'What if reinforced levees combined with operable gates created a more resilient freshwater corridor through the Delta?',
+  'calling-on-reserves':
+    'What if the state’s major dams and reservoirs were operated differently—mainly by changing when and how water is stored and released—to improve drought resilience, manage salinity, and better support aquatic ecosystems?',
+  'a-tunnel':
+    'What if a large tunnel—the Delta Conveyance Project, or DCP—were constructed to divert freshwater from the Sacramento River during high storm flows and convey that water underground to export pumps in the South Delta?',
+}
+
 const adaptationScenarios = [
   alternativeDeltaOutflows,
-  ...adaptationScenarioOrder.map(
-    (slug) => scenarios.find((scenario) => scenario.slug === slug) as ScenarioContent,
-  ),
+  ...adaptationScenarioOrder.map((slug, index) => {
+    const scenario = scenarios.find((candidate) => candidate.slug === slug) as ScenarioContent
+    return {
+      ...scenario,
+      number: String(index + 2).padStart(2, '0'),
+      summary: regionalScenarioIntroductions[slug],
+    }
+  }),
 ]
 
 export default function RegionalSummaryPage() {
@@ -47,6 +67,7 @@ export default function RegionalSummaryPage() {
   const [pendingScenario, setPendingScenario] = useState<ScenarioContent | null>(null)
   const [detailsVisible, setDetailsVisible] = useState(false)
   const [isExploring, setIsExploring] = useState(false)
+  const [projectIntroductionOpen, setProjectIntroductionOpen] = useState(false)
 
   const selectScenario = (scenario: ScenarioContent) => {
     if (!selectedScenario) {
@@ -127,9 +148,12 @@ export default function RegionalSummaryPage() {
                   minHeight: { xs: 112, md: 120 },
                   px: regionalSummarySizing.pageInset,
                   py: 'clamp(16px, 1.25vw, 48px)',
-                  display: 'flex',
+                  display: 'grid',
+                  gridTemplateColumns: {
+                    xs: 'minmax(0, 1fr) auto',
+                    xl: 'minmax(0, 1fr) auto auto',
+                  },
                   alignItems: 'center',
-                  justifyContent: 'space-between',
                   gap: regionalSummarySizing.sectionGap,
                   borderBottom: 1,
                   borderColor: 'translucent.primaryGreen',
@@ -155,15 +179,36 @@ export default function RegionalSummaryPage() {
                     to explore salinity patterns across the Delta
                   </Typography>
                 </Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<InfoOutlinedIcon />}
+                  onClick={() => setProjectIntroductionOpen(true)}
+                  sx={{
+                    ...regionalSummaryControlStyles.compactTouchButton,
+                    color: 'common.white',
+                    borderColor: 'primary.main',
+                    borderWidth: '4px',
+                    whiteSpace: 'nowrap',
+                    '&:hover': { borderWidth: '4px' },
+                    '& [data-testid="InfoOutlinedIcon"]': {
+                      fontSize: `${regionalSummarySizing.prominentIconSize} !important`,
+                    },
+                  }}
+                >
+                  What is Just Transitions in the Delta?
+                </Button>
                 <Box
                   sx={{
-                    display: { xs: 'none', sm: 'flex' },
+                    display: { xs: 'none', xl: 'flex' },
                     alignItems: 'center',
                     gap: 1,
                     color: 'base.100',
                   }}
                 >
-                  <TouchAppIcon aria-hidden="true" />
+                  <TouchAppIcon
+                    aria-hidden="true"
+                    sx={{ fontSize: regionalSummarySizing.controlIconSize }}
+                  />
                   <Typography sx={regionalSummaryTypography.instruction}>
                     Tap a scenario to learn more
                   </Typography>
@@ -183,7 +228,7 @@ export default function RegionalSummaryPage() {
                   overflow: { xs: 'auto', md: 'hidden' },
                 }}
               >
-                {adaptationScenarios.map((scenario, index) => {
+                {adaptationScenarios.map((scenario) => {
                   const isSelected = selectedScenario?.slug === scenario.slug
                   const anotherScenarioSelected = selectedScenario !== null && !isSelected
 
@@ -279,7 +324,7 @@ export default function RegionalSummaryPage() {
                             mb: 1.5,
                           }}
                         >
-                          {String(index).padStart(2, '0')}
+                          {scenario.number}
                         </Typography>
                         <Typography
                           component="h2"
@@ -360,6 +405,17 @@ export default function RegionalSummaryPage() {
                                   All scenarios
                                 </Button>
                               </Box>
+                              {scenario.title === 'A Tunnel' ? (
+                                <Typography
+                                  sx={{
+                                    ...regionalSummaryTypography.instruction,
+                                    color: 'base.100',
+                                    mt: 1.5,
+                                  }}
+                                >
+                                  Modeling results are coming soon.
+                                </Typography>
+                              ) : null}
                             </motion.div>
                           )}
                         </AnimatePresence>
@@ -372,6 +428,10 @@ export default function RegionalSummaryPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <RegionalProjectIntroduction
+        open={projectIntroductionOpen}
+        onClose={() => setProjectIntroductionOpen(false)}
+      />
     </Box>
   )
 }

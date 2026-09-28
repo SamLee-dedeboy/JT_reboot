@@ -1,7 +1,8 @@
 import { palette } from './palette'
 
 export const fontHeading = '"Hammersmith One", sans-serif'
-export const fontBody = '"proxima-nova", "Nunito Sans", "Helvetica Neue", Arial, sans-serif'
+export const fontBody =
+  '"proxima-nova", "Nunito Sans Variable", "Nunito Sans", "Helvetica Neue", Arial, sans-serif'
 
 export const typography = {
   fontFamily: fontBody,
@@ -49,6 +50,10 @@ export const typography = {
     textTransform: 'uppercase',
   },
   body1: { fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)', lineHeight: 1.3 },
+  bodyLarge: {
+    fontSize: 'clamp(1.1875rem, 0.95rem + 0.5vw, 1.875rem)',
+    lineHeight: 1.3,
+  },
   body2: {
     fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
     lineHeight: 1.25,

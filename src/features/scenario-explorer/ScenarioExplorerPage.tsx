@@ -93,11 +93,7 @@ const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') =>
     '&&:hover': { color: 'text.primary' },
   }) as const
 
-function UnavailableSlrOptions({
-  color,
-}: {
-  color: 'brand.primaryBlue' | 'brand.primaryGreen'
-}) {
+function UnavailableSlrOptions({ color }: { color: 'brand.primaryBlue' | 'brand.primaryGreen' }) {
   return (
     <>
       <MenuItem disabled value="calling-on-reserves-coming-soon" sx={menuItemSx(color)}>
@@ -110,7 +106,13 @@ function UnavailableSlrOptions({
   )
 }
 
-function ResponsiveScenarioLabel({ fullName = false, label }: { fullName?: boolean; label: string }) {
+function ResponsiveScenarioLabel({
+  fullName = false,
+  label,
+}: {
+  fullName?: boolean
+  label: string
+}) {
   if (fullName) return label
 
   return (
@@ -260,7 +262,9 @@ function filterDatasetToStations(dataset: ScenarioDataset, stationIds: Set<strin
             const values = indices
               .map((index) => stationValues[index]?.[dateIndex])
               .filter((value): value is number => value != null && Number.isFinite(value))
-            return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null
+            return values.length
+              ? values.reduce((sum, value) => sum + value, 0) / values.length
+              : null
           }),
         ]
       }),
@@ -1046,9 +1050,7 @@ export default function ScenarioExplorerPage({
                         />
                       </MenuItem>
                     ))}
-                    {publicModesOnly && (
-                      <UnavailableSlrOptions color="brand.primaryGreen" />
-                    )}
+                    {publicModesOnly && <UnavailableSlrOptions color="brand.primaryGreen" />}
                   </LabeledSelect>
                 </>
               ) : dashboardMode === 'tiered-outflows' || dashboardMode === 'schism-runs' ? (
@@ -1067,8 +1069,7 @@ export default function ScenarioExplorerPage({
                     {scenarioOptions.map((item) => (
                       <MenuItem
                         disabled={
-                          item.key === scenario ||
-                          (publicModesOnly && isTunnelScenario(item.label))
+                          item.key === scenario || (publicModesOnly && isTunnelScenario(item.label))
                         }
                         key={item.key}
                         value={item.key}
@@ -1368,7 +1369,7 @@ export default function ScenarioExplorerPage({
             </Box>
           </Box>
           {!isChartExpanded && (
-              <DeltaMap
+            <DeltaMap
               key={`${dashboardMode}-map`}
               data={comparisonData}
               d1641Data={
@@ -1385,9 +1386,9 @@ export default function ScenarioExplorerPage({
               dateIndex={dateIndex}
               region={region}
               mapExtent={mapExtent}
-                histogramBrush={histogramBrush}
-                showBrushStationLabels={!publicModesOnly}
-                emphasizeD1641Stations={d1641StationsOnly}
+              histogramBrush={histogramBrush}
+              showBrushStationLabels={!publicModesOnly}
+              emphasizeD1641Stations={d1641StationsOnly}
             />
           )}
         </Box>

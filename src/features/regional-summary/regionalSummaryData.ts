@@ -26,6 +26,9 @@ export interface RegionalPattern {
   reviewNote: string
   proposedDisplayRegion: string
   broaderStoryGroup: string
+  releaseTimingLabel?: string
+  relatedReleaseIds?: string[]
+  analysisProvenance?: string
 }
 
 export interface RegionalPlace {
@@ -56,6 +59,7 @@ const scenarioKeyBySlug: Record<string, string> = {
   'eco-machine': 'ecomachine',
   'new-green-watershed': 'newgreen',
   'calling-on-reserves': 'reserve',
+  'alternative-delta-outflows': 'schism_run16_plus30pct_outflow',
 }
 
 export function useRegionalPlaces(scenarioSlug: string) {

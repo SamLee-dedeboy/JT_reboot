@@ -1,0 +1,112 @@
+{
+  "_comment": "Configuration for the Bolster & Fortify three-closure pattern and station-sensitivity analysis (D:/projects/JT_reboot/src/features/regional-summary/bf-pattern-sensitivity-prompt.md). Every threshold/window/duration rule is read from this file and is copied verbatim from the reviewed internal/analysis/methodology_pilot/pilot_config.json in the sibling JT_exploration project - see bf_data.py / bf_sensitivity.py for the reuse mechanism (cross-project import, both are local sibling directories).",
+  "inputs": {
+    "salinity_dashboard": "public/data/scenario-explorer/salinity_dashboard.json"
+  },
+  "scenario": {
+    "key": "bolster",
+    "label": "Bolster & Fortify",
+    "baseline_label": "Business as Usual"
+  },
+  "closures": {
+    "closure_1": {
+      "label": "Closure 1 (long closure)",
+      "start_date": "2018-10-01",
+      "end_date": "2019-01-13",
+      "provisional": false,
+      "provenance": "internal/analysis/bf_gate_event_scan/gate_event_assumptions.json (JT_exploration): E1_closure_start=2018-10-01 (simulation start, not shiftable), E1_reopen=2019-01-14 (last closed day ~2019-01-13). Inferred by visual inspection of the plotted gate-operation variable; +/-2 days uncertainty, but the closure-start transition is NOT shiftable (it coincides with simulation start, so there is no pre-closure comparison period).",
+      "shiftable_start": false,
+      "shiftable_end": true
+    },
+    "closure_2": {
+      "label": "Closure 2 (short closure)",
+      "start_date": "2019-11-26",
+      "end_date": "2019-12-10",
+      "provisional": false,
+      "provenance": "internal/analysis/bf_gate_event_scan/gate_event_assumptions.json (JT_exploration): E2_closure_start=2019-11-26 (plot shows ~2019-11-26/27), E2_reopen=2019-12-11 (last closed day ~2019-12-10). Inferred by visual inspection; +/-2 days uncertainty on both transitions.",
+      "shiftable_start": true,
+      "shiftable_end": true
+    },
+    "closure_3": {
+      "label": "Closure 3 (provisional)",
+      "start_date": "2020-07-15",
+      "end_date": "2020-11-29",
+      "provisional": true,
+      "provenance": "Visually inferred from the supplied gate-operation plot per the analysis prompt. No exact operational gate time series was found in either JT_reboot or JT_exploration (searched both projects for gate/closure CSV or JSON sources) - treated as provisional with the same +/-2 days uncertainty convention as closures 1 and 2, tested explicitly below.",
+      "shiftable_start": true,
+      "shiftable_end": true
+    }
+  },
+  "date_sensitivity_shift_days": 2,
+  "regions": {
+    "franks_tract": {
+      "region_name": "Franks Tract",
+      "core_always_station_ids": [263, 265, 270, 274, 276, 281, 282, 283, 285],
+      "sensitivity_groups": { "station_291": [291], "station_292": [292] },
+      "_note": "Preserve the 9-station core as the current presentation reference (matches raw/franks-tract-sensitivity.csv's core_9 and the curated franks_tract_bf_2018_core9 pattern). Station 132 is NOT tested here (it belongs to Freshwater Corridor in this prompt, unlike the older franks-tract-sensitivity.csv which also tested a core_plus_132 variant)."
+    },
+    "north_franks_tract": {
+      "region_name": "North Franks Tract",
+      "core_always_station_ids": [
+        111, 115, 116, 117, 119, 120, 124, 127, 129, 133, 134, 265, 266, 301, 307, 309
+      ],
+      "sensitivity_groups": {},
+      "_note": "Complete 16-station reviewed set, no station-membership search authorized - report station-level agreement and flag recurring dissenters only."
+    },
+    "freshwater_corridor": {
+      "region_name": "Freshwater Corridor",
+      "core_always_station_ids": [
+        132, 291, 292, 293, 294, 295, 296, 297, 298, 299, 302, 303, 304, 306, 356
+      ],
+      "sensitivity_groups": { "station_355": [355], "station_357": [357] },
+      "_note": "The 4 authorized variants (core-only / core+355 / core+357 / complete) fall out directly from this 2-single-station-group setup."
+    },
+    "clifton_court_forebay": {
+      "region_name": "Clifton Court Forebay",
+      "core_always_station_ids": [359, 360],
+      "sensitivity_groups": {
+        "group_A": [284, 288],
+        "group_B": [355, 357],
+        "group_C": [358, 362, 363]
+      },
+      "_note": "2^3=8 group-level combinations and the 7 individual-station leave-one-out tests are both produced by the full 2^7=128 combinatorial sweep over the 7 grouped stations."
+    }
+  },
+  "units": "uS/cm",
+  "coverage": { "default_min_fraction": 0.7, "region_overrides_min_fraction": {} },
+  "difference_screening": {
+    "absolute_difference_threshold_uS_cm": 50,
+    "percent_difference_threshold_pct": 10,
+    "operator": "OR",
+    "percent_denominator_floor_options_uS_cm": [0, 100],
+    "min_station_directional_agreement_fraction": 0.6,
+    "min_paired_station_coverage_fraction": 0.7,
+    "station_agreement_required_for_maximum": false
+  },
+  "require_median_direction_consistency": true,
+  "smoothing": { "windows_days": [1, 7, 14, 30], "min_valid_fraction_in_window": 0.7 },
+  "representative_configuration": {
+    "smoothing_window_days": 7,
+    "min_duration_days": 7,
+    "interruption_days": 1
+  },
+  "water_year": { "start_month": 10 },
+  "d1641_thresholds_applied": false,
+  "pattern_classification": {
+    "persistent_condition_min_fraction_of_valid_days": 0.75,
+    "persistent_condition_period_types": ["water_year", "season"],
+    "season_definitions": {
+      "winter_DJF": [12, 1, 2],
+      "spring_MAM": [3, 4, 5],
+      "summer_JJA": [6, 7, 8],
+      "fall_SON": [9, 10, 11]
+    },
+    "display_minimum_days": 7,
+    "classification_precedence": ["persistent_condition", "short_signal", "episode"]
+  },
+  "labels": {
+    "general_disclaimer": "Exploratory Bolster & Fortify gate-closure pattern and station-sensitivity analysis. Not a regulatory compliance determination. Not reviewed or approved for the public interface. Language describes timing association only (\"during the closure\", \"gate-associated timing\") - never causal.",
+    "sign_convention_label": "Positive = Bolster & Fortify saltier (higher EC) than Business as Usual. Negative = Bolster & Fortify fresher (lower EC) than Business as Usual."
+  },
+  "output_paths": { "analysis_dir": "public/data/regional-summary/raw/bf-three-closure-analysis" }
+}

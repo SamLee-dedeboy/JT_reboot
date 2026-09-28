@@ -90,6 +90,7 @@ const navItems: NavItem[] = [
       { label: 'Design System', href: '/design-system' },
       { label: 'EJ Playground', href: '/pages/playground' },
       { label: 'Baseline Exploration', href: '/pages/baseline-exploration' },
+      { label: 'Scenario Time Lapse', href: '/pages/scenario-time-lapse' },
       { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
       { label: 'Watershed', href: '/pages/watershed' },
       { label: 'Rank Visualization', href: '/pages/rank-visualization' },

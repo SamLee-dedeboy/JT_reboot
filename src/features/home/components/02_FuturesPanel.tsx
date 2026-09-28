@@ -74,7 +74,7 @@ export default function FuturesPanel() {
                   {future.title}
                 </Typography>
                 <Typography
-                  variant="body1"
+                  variant="bodyLarge"
                   sx={{ color: 'common.white', mt: theme.jtSpacing.component.md }}
                 >
                   {future.body}

@@ -81,7 +81,10 @@ const franksRows = parseCsv(
   await readFile(path.join(dataDir, 'raw/franks-tract-sensitivity.csv'), 'utf8'),
 )
 const franksIds = parseIds(franksRows.find((row) => row.variant === 'core_9')?.station_ids ?? '')
-const cliftonIds = [284, 288, 355, 357, 358, 360, 362, 363, 369]
+const freshwaterIds = [
+  132, 291, 292, 293, 294, 295, 296, 297, 298, 299, 302, 303, 304, 306, 355, 356, 357,
+]
+const cliftonIds = [284, 288, 355, 357, 358, 359, 360, 362, 363]
 const scenarioByKey = new Map(dashboard.scenarios.map((scenario) => [scenario.key, scenario]))
 const stationIndexById = new Map(
   dashboard.stations.map((station, index) => [Number(station.station_id), index]),
@@ -98,6 +101,8 @@ function membership(pattern, placeId) {
   if (placeId === 'north_franks_tract')
     return { ids: northIds, source: 'reviewed-region-membership' }
   if (placeId === 'franks_tract') return { ids: franksIds, source: 'franks-tract-core-9' }
+  if (placeId === 'bf_freshwater_pathway')
+    return { ids: freshwaterIds, source: 'curated-region-membership' }
   if (placeId === 'clifton_court_forebay')
     return { ids: cliftonIds, source: 'curated-region-membership' }
   return { ids: [], source: 'unavailable' }
@@ -126,32 +131,32 @@ for (const [scenarioKey, scenarioGroup] of Object.entries(patternList.scenarios)
         ? [
             {
               id: 'gates-closed-2018',
-              startDate: '2018-10-17',
-              endDate: '2018-12-15',
+              startDate: '2018-10-01',
+              endDate: '2019-01-13',
               label: 'Operable gates closed',
               description:
-                'Illustrative operating window aligned to the shortlisted North Franks Tract response.',
-              provenance: 'generated-placeholder',
-              reviewStatus: 'needs-review',
+                'First inferred Franks Tract gate-closure period used for the regional sensitivity analysis.',
+              provenance: 'curated-gate-operation-schedule',
+              reviewStatus: 'reviewed',
             },
             {
               id: 'gates-closed-2019',
-              startDate: '2019-01-01',
-              endDate: '2019-03-01',
+              startDate: '2019-11-26',
+              endDate: '2019-12-10',
               label: 'Operable gates closed',
               description:
-                'Illustrative operating window aligned to the shortlisted North Franks Tract response.',
-              provenance: 'generated-placeholder',
-              reviewStatus: 'needs-review',
+                'Second inferred Franks Tract gate-closure period used for the regional sensitivity analysis.',
+              provenance: 'curated-gate-operation-schedule',
+              reviewStatus: 'reviewed',
             },
             {
               id: 'gates-closed-2020',
-              startDate: '2020-09-30',
-              endDate: '2020-11-28',
+              startDate: '2020-07-15',
+              endDate: '2020-11-29',
               label: 'Operable gates closed',
               description:
-                'Illustrative operating window aligned to the shortlisted North Franks Tract response.',
-              provenance: 'generated-placeholder',
+                'Provisional third gate-closure period; the curated dashboard findings focus on the shared October–November response window.',
+              provenance: 'curated-gate-operation-schedule',
               reviewStatus: 'needs-review',
             },
           ]

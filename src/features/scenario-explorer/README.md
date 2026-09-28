@@ -2,6 +2,8 @@
 
 Interactive comparison of RMA scenarios, paired RMA/SCHISM output, and tiered-outflow SCHISM runs.
 
+Append `?offline=1` to use the network-free exhibit basemap (`src/map/offlineBasemapStyle.ts`) instead of the online Mapbox Studio style. See the regional summary README for its data and rebuild steps.
+
 ## Provenance
 
 Migrated on 2026-07-17 from the local project at `JT_exploration/RMA/EDA`. The source project was copied and left unchanged. The integration converts the React code to TypeScript, uses the JT website theme and route shell, and namespaces its runtime data.

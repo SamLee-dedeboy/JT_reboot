@@ -1204,6 +1204,9 @@ export default function DesignSystem() {
                 {'Heading \u2014 Hammersmith One'}
               </TooltipTypography>
               <TooltipTypography variant="body1">{'Body \u2014 Proxima Nova'}</TooltipTypography>
+              <TooltipTypography variant="bodyLarge">
+                Body Large is the primary narrative body style used across all landing pages.
+              </TooltipTypography>
               <TooltipTypography variant="body1">
                 Specs format: font-size / font-weight / line-height / font-family
               </TooltipTypography>

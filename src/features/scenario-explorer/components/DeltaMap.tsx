@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../mapConfig'
+import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../../map/offlineBasemapStyle'
 import { palette } from '../../../theme/index'
 import type { FeatureCollection, Point } from 'geojson'
 import type { GeoJSONSource } from 'mapbox-gl'
@@ -246,7 +247,7 @@ function MapCanvas({
     if (!containerRef.current) return
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: SCENARIO_EXPLORER_MAP_STYLE,
+      style: isOfflineMapEnabled() ? createOfflineBasemapStyle() : SCENARIO_EXPLORER_MAP_STYLE,
       bounds: MAP_BOUNDS,
       fitBoundsOptions: { padding: 10 },
       attributionControl: false,

@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Nunito+Sans:opsz,wght@6..12,200..900&display=swap');
-
 :root {
   /* Font families referenced by the remaining plain CSS files.
      All other design tokens (colors, spacing, type) live in the MUI theme. */
   --font-heading: 'Hammersmith One', sans-serif;
-  --font-body: 'proxima-nova', 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-body:
+    'proxima-nova', 'Nunito Sans Variable', 'Nunito Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 *,

@@ -40,3 +40,6 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
+
+# Offline basemap Overpass downloads (scripts/build-offline-basemap.mjs)
+.cache/

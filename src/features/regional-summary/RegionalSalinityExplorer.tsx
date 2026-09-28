@@ -1,21 +1,29 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import CloseIcon from '@mui/icons-material/Close'
 import HelpIcon from '@mui/icons-material/Help'
-import { Box, Button, Typography } from '@mui/material'
-import { alpha, useTheme } from '@mui/material/styles'
+import { Box, Button, IconButton, Typography } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { Geometry, Position } from 'geojson'
 import type { Map as MapboxMap } from 'mapbox-gl'
-import { useCallback, useMemo, useRef, useState } from 'react'
-import { Layer, Marker, Source, type LayerProps } from 'react-map-gl/mapbox'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Layer, Marker, Popup, Source, type LayerProps } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
 import { assetUrl } from '../../utils/baseUrl'
 import type { ScenarioContent } from '../scenarios/content/scenarioContent'
 import RegionalPatternsPage from './RegionalPatternsPage'
 import RegionalPlaceMarker from './RegionalPlaceMarker'
 import ScenarioStrategyGuide from './ScenarioStrategyGuide'
+import {
+  excludedRegionalPatternIds,
+  getRegionalPlaceContent,
+  sortRegionalPlaces,
+  type RegionalTextHighlight,
+} from './regionalPlaceContent'
 import { regionalPatternIds, registerRegionalPolygonPatterns } from './regionalPolygonPatterns'
 import { type RegionalPlace, useRegionalPlaces } from './regionalSummaryData'
+import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import {
   regionalSummaryControlStyles,
   regionalSummarySizing,
@@ -209,7 +217,30 @@ export default function RegionalSalinityExplorer({
 }: RegionalSalinityExplorerProps) {
   const theme = useTheme()
   const reduceMotion = useReducedMotion()
-  const { places } = useRegionalPlaces(scenario.slug)
+  const { places: sourcePlaces } = useRegionalPlaces(scenario.slug)
+  const places = useMemo(
+    () =>
+      sortRegionalPlaces(
+        scenario.slug,
+        sourcePlaces.map((place) => {
+          const patterns = place.patterns.filter(
+            (pattern) => !excludedRegionalPatternIds.has(pattern.id),
+          )
+          const directions = new Set(
+            patterns.flatMap((pattern) => (pattern.direction ? [pattern.direction] : [])),
+          )
+          const [onlyDirection] = directions
+
+          return {
+            ...place,
+            patterns,
+            trend: directions.size > 1 ? ('flipping' as const) : (onlyDirection ?? place.trend),
+            name: getRegionalPlaceContent(scenario.slug, place).displayName,
+          }
+        }),
+      ),
+    [scenario.slug, sourcePlaces],
+  )
   const [selectedRegion, setSelectedRegion] = useState<RegionalPlace | null>(null)
   const [patternsOpen, setPatternsOpen] = useState(false)
   const [patternsReady, setPatternsReady] = useState(false)
@@ -218,6 +249,57 @@ export default function RegionalSalinityExplorer({
   const [strategyGuideStep, setStrategyGuideStep] = useState(0)
   const [mapCursor, setMapCursor] = useState<'grab' | 'pointer'>('grab')
   const mapRef = useRef<MapboxMap | null>(null)
+  const offlineMapStyle = useMemo(
+    () => (isOfflineMapEnabled() ? createOfflineBasemapStyle() : undefined),
+    [],
+  )
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !selectedRegion || strategyGuideOpen || patternsOpen) return
+
+    let secondFrame = 0
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        const mapContainer = map.getContainer()
+        const preview = mapContainer.querySelector<HTMLElement>('.regional-summary-preview-popup')
+        if (!preview) return
+
+        const mapBounds = mapContainer.getBoundingClientRect()
+        const previewBounds = preview.getBoundingClientRect()
+        const inset = Math.min(
+          regionalSummarySizing.previewViewportInsetMax,
+          Math.max(
+            regionalSummarySizing.previewViewportInsetMin,
+            mapBounds.width * regionalSummarySizing.previewViewportInsetRatio,
+          ),
+        )
+        const safeLeft = mapBounds.left + inset
+        const safeRight = mapBounds.right - inset
+        const safeTop = mapBounds.top + inset
+        const safeBottom = mapBounds.bottom - inset
+        let visualShiftX = 0
+        let visualShiftY = 0
+
+        if (previewBounds.left < safeLeft) visualShiftX = safeLeft - previewBounds.left
+        if (previewBounds.right > safeRight) visualShiftX = safeRight - previewBounds.right
+        if (previewBounds.top < safeTop) visualShiftY = safeTop - previewBounds.top
+        if (previewBounds.bottom > safeBottom) visualShiftY = safeBottom - previewBounds.bottom
+
+        if (visualShiftX || visualShiftY) {
+          map.panBy([-visualShiftX, -visualShiftY], {
+            duration: reduceMotion ? 0 : 520,
+            essential: false,
+          })
+        }
+      })
+    })
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame)
+      window.cancelAnimationFrame(secondFrame)
+    }
+  }, [patternsOpen, reduceMotion, selectedRegion, strategyGuideOpen])
 
   const regionalInteractiveLayerIds = useMemo(
     () =>
@@ -331,6 +413,7 @@ export default function RegionalSalinityExplorer({
   }, [moveToStrategyWelcome, reduceMotion])
 
   const openStrategyGuide = useCallback(() => {
+    setSelectedRegion(null)
     setStrategyGuideOpen(true)
     showStrategyWelcome()
   }, [showStrategyWelcome])
@@ -339,6 +422,14 @@ export default function RegionalSalinityExplorer({
     if (trend === 'saltier') return theme.palette.salinity.pink
     if (trend === 'fresher') return theme.palette.salinity.teal
     if (trend === 'flipping') return theme.palette.salinity.pink
+    return theme.palette.base[100]
+  }
+
+  const editorialColor = (highlight?: RegionalTextHighlight) => {
+    if (highlight === 'saltier') return theme.palette.salinity.pink
+    if (highlight === 'fresher') return theme.palette.salinity.teal
+    if (highlight === 'primary') return theme.palette.primary.main
+    if (highlight === 'white') return theme.palette.common.white
     return theme.palette.base[100]
   }
 
@@ -482,9 +573,29 @@ export default function RegionalSalinityExplorer({
                 position: 'relative',
                 height: regionalSummarySizing.contentHeight,
                 overflow: 'hidden',
+                '& .regional-summary-preview-popup': {
+                  zIndex: 6,
+                },
+                '& .regional-summary-preview-popup .mapboxgl-popup-content': {
+                  width: 'max-content',
+                  minWidth: regionalSummarySizing.previewWidth,
+                  maxWidth: 'calc(100vw - 48px)',
+                  minHeight: regionalSummarySizing.previewMinHeight,
+                  p: 0,
+                  border: 1,
+                  borderColor: 'base.500',
+                  borderRadius: 'clamp(18px, 1.2vw, 36px)',
+                  bgcolor: 'base.800',
+                  boxShadow: 'none',
+                  backdropFilter: 'blur(14px)',
+                },
+                '& .regional-summary-preview-popup .mapboxgl-popup-tip': {
+                  display: 'none',
+                },
               }}
             >
               <BaseMap
+                mapStyle={offlineMapStyle}
                 mapStyleUrl="mapbox://styles/justtransition/cmreic454000z01sle8uh6v7n"
                 initialViewState={regionalOverview}
                 dragPan
@@ -531,7 +642,7 @@ export default function RegionalSalinityExplorer({
                     type: 'fill',
                     paint: {
                       'fill-color': polygonColor,
-                      'fill-opacity': selected ? 0.5 : 0.25,
+                      'fill-opacity': selected ? 0.7 : 0.4,
                     },
                   }
                   const patternLayer: LayerProps = {
@@ -548,7 +659,7 @@ export default function RegionalSalinityExplorer({
                     paint: {
                       'line-color': color,
                       'line-width': selected ? 4 : 2,
-                      'line-opacity': selected ? 1 : 0.82,
+                      'line-opacity': 0, //selected ? 1 : 0.82,
                       //'line-dasharray': [2, 2],
                       //...(approximate ? { 'line-dasharray': [2, 2] } : {}),
                     },
@@ -589,6 +700,164 @@ export default function RegionalSalinityExplorer({
                     </Marker>
                   )
                 })}
+                {selectedRegion ? (
+                  <Popup
+                    key={`${selectedRegion.id}-${getRegionalPlaceContent(scenario.slug, selectedRegion).cardSide}`}
+                    longitude={selectedRegion.coordinates[0]}
+                    latitude={selectedRegion.coordinates[1]}
+                    anchor={
+                      getRegionalPlaceContent(scenario.slug, selectedRegion).cardSide === 'left'
+                        ? 'right'
+                        : 'left'
+                    }
+                    offset={regionalSummarySizing.previewMarkerOffset}
+                    closeButton={false}
+                    closeOnClick={false}
+                    focusAfterOpen={false}
+                    maxWidth="none"
+                    className="regional-summary-preview-popup"
+                  >
+                    <Box
+                      aria-live="polite"
+                      sx={{
+                        p: regionalSummarySizing.previewPadding,
+                        display: 'grid',
+                        gap: regionalSummarySizing.previewGap,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: 'minmax(0, 1fr) auto',
+                          alignItems: 'center',
+                          gap: 2,
+                        }}
+                      >
+                        <Typography
+                          component="h2"
+                          sx={{
+                            ...regionalSummaryTypography.regionTitle,
+                            pl: regionalSummarySizing.previewPadding,
+                            whiteSpace: 'nowrap',
+                            color:
+                              selectedRegion.trend === 'saltier'
+                                ? 'salinity.pink'
+                                : 'salinity.teal',
+                          }}
+                        >
+                          {selectedRegion.name}
+                        </Typography>
+                        <IconButton
+                          aria-label="Close regional pattern summary"
+                          onClick={() => setSelectedRegion(null)}
+                          sx={{
+                            width: regionalSummarySizing.compactTouchTarget,
+                            height: regionalSummarySizing.compactTouchTarget,
+                            color:
+                              selectedRegion.trend === 'saltier'
+                                ? 'salinity.pink'
+                                : 'salinity.teal',
+                            '& .MuiSvgIcon-root': {
+                              fontSize: regionalSummarySizing.controlIconSize,
+                            },
+                          }}
+                        >
+                          <CloseIcon />
+                        </IconButton>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          width: regionalSummarySizing.previewWidth,
+                          px: regionalSummarySizing.previewPadding,
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            ...regionalSummaryTypography.scenarioNumber,
+                            color: 'common.white',
+                          }}
+                        >
+                          Why this place
+                        </Typography>
+                        <Typography
+                          sx={{
+                            ...regionalSummaryTypography.instruction,
+                            color: 'base.100',
+                            mt: 1.5,
+                          }}
+                        >
+                          {getRegionalPlaceContent(scenario.slug, selectedRegion).whyThisPlace}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          width: regionalSummarySizing.previewWidth,
+                          p: regionalSummarySizing.previewPadding,
+                          boxSizing: 'border-box',
+                          border: 2,
+                          borderColor:
+                            selectedRegion.trend === 'saltier' ? 'salinity.pink' : 'salinity.teal',
+                          borderRadius: 'clamp(12px, 0.8vw, 24px)',
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            ...regionalSummaryTypography.scenarioNumber,
+                            color: 'common.white',
+                          }}
+                        >
+                          Key takeaway
+                        </Typography>
+                        <Typography
+                          sx={{
+                            ...regionalSummaryTypography.instruction,
+                            color: 'base.100',
+                            mt: 1.5,
+                          }}
+                        >
+                          {getRegionalPlaceContent(scenario.slug, selectedRegion).keyTakeaway?.map(
+                            (segment, index) => (
+                              <Box
+                                component="span"
+                                key={`${segment.text}-${index}`}
+                                sx={{
+                                  color: editorialColor(segment.highlight),
+                                  fontWeight: segment.strong ? 800 : 400,
+                                }}
+                              >
+                                {segment.text}
+                              </Box>
+                            ),
+                          ) ?? (
+                            <Box
+                              component="span"
+                              sx={{
+                                color: trendColor(selectedRegion.trend),
+                                fontWeight: 800,
+                              }}
+                            >
+                              {regionalTimingSummary(selectedRegion)}
+                            </Box>
+                          )}
+                        </Typography>
+                      </Box>
+                      <Button
+                        endIcon={<ArrowForwardIcon />}
+                        onClick={() => setPatternsOpen(true)}
+                        sx={{
+                          ...regionalSummaryControlStyles.primaryTouchButton,
+                          width: '100%',
+                          justifySelf: 'start',
+                        }}
+                      >
+                        View Salinity Pattern Timeline
+                      </Button>
+                    </Box>
+                  </Popup>
+                ) : null}
                 {scenario.slug === 'bolster-and-fortify' &&
                 strategyGuideOpen &&
                 strategyGuideStarted
@@ -633,52 +902,6 @@ export default function RegionalSalinityExplorer({
                   : null}
               </BaseMap>
 
-              {selectedRegion ? (
-                <Box
-                  aria-live="polite"
-                  sx={(theme) => ({
-                    position: 'absolute',
-                    left: { xs: 12, md: 24 },
-                    bottom: { xs: 12, md: 24 },
-                    width: { xs: 'calc(100% - 24px)', sm: regionalSummarySizing.previewWidth },
-                    minHeight: regionalSummarySizing.previewMinHeight,
-                    p: regionalSummarySizing.surfacePadding,
-                    border: 0,
-                    borderRadius: 1,
-                    bgcolor: alpha(theme.palette.base[800], 0.97),
-                    boxShadow: `0 24px 64px ${alpha(theme.palette.common.black, 0.62)}`,
-                    backdropFilter: 'blur(14px)',
-                  })}
-                >
-                  <Typography component="h2" sx={regionalSummaryTypography.regionTitle}>
-                    {selectedRegion.name}
-                  </Typography>
-                  <Typography
-                    sx={{ ...regionalSummaryTypography.instruction, color: 'base.100', mt: 1 }}
-                  >
-                    <Box
-                      component="span"
-                      sx={{ color: trendColor(selectedRegion.trend), fontWeight: 800 }}
-                    >
-                      {scenario.slug === 'bolster-and-fortify' &&
-                      /franks tract/i.test(selectedRegion.name)
-                        ? trendLabel[selectedRegion.trend]
-                        : regionalTimingSummary(selectedRegion)}
-                    </Box>
-                    {scenario.slug === 'bolster-and-fortify' &&
-                    /franks tract/i.test(selectedRegion.name)
-                      ? ' because the gates are closed during this period.'
-                      : null}
-                  </Typography>
-                  <Button
-                    endIcon={<ArrowForwardIcon />}
-                    onClick={() => setPatternsOpen(true)}
-                    sx={{ ...regionalSummaryControlStyles.primaryTouchButton, mt: 2 }}
-                  >
-                    View regional patterns
-                  </Button>
-                </Box>
-              ) : null}
               {strategyGuideOpen ? (
                 <ScenarioStrategyGuide
                   scenario={scenario}

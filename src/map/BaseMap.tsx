@@ -17,6 +17,7 @@ type BaseMapProps = Omit<
 > & {
   children?: ReactNode
   initialViewState?: MapViewState
+  mapStyle?: MapProps['mapStyle']
   mapStyleUrl?: string
   onMapReady?: (map: MapboxMap) => void
   onMapStyleData?: (map: MapboxMap) => void
@@ -38,6 +39,7 @@ export type { MapMouseEvent }
 export default function BaseMap({
   children,
   initialViewState,
+  mapStyle,
   mapStyleUrl = DELTA_MAP_STYLE,
   onMapReady,
   onMapStyleData,
@@ -46,8 +48,11 @@ export default function BaseMap({
 }: BaseMapProps) {
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN
   const mapRef = useRef<MapRef | null>(null)
+  const resolvedMapStyle = mapStyle ?? mapStyleUrl
+  const usesRemoteMapboxStyle =
+    typeof resolvedMapStyle === 'string' && resolvedMapStyle.startsWith('mapbox://')
 
-  if (!mapboxToken) {
+  if (usesRemoteMapboxStyle && !mapboxToken) {
     return <Box sx={tokenFallbackSx}>Add VITE_MAPBOX_TOKEN to render the map.</Box>
   }
 
@@ -56,8 +61,8 @@ export default function BaseMap({
       {...mapProps}
       ref={mapRef}
       initialViewState={initialViewState}
-      mapStyle={mapStyleUrl}
-      mapboxAccessToken={mapboxToken}
+      mapStyle={resolvedMapStyle}
+      mapboxAccessToken={mapboxToken || undefined}
       style={style}
       onLoad={(event) => onMapReady?.(event.target as MapboxMap)}
       onStyleData={() => {

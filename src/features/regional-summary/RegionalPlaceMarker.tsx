@@ -52,7 +52,7 @@ export default function RegionalPlaceMarker({
         minHeight: regionalSummarySizing.touchTarget,
         minWidth: regionalSummarySizing.touchTarget,
         p: 0,
-        transformOrigin: '24px 100%',
+        transformOrigin: '50% 100%',
         userSelect: 'none',
         '&:focus-visible': {
           outline: '3px solid',
@@ -105,8 +105,9 @@ export default function RegionalPlaceMarker({
             color,
             fontSize: regionalSummarySizing.markerIconSize,
             position: 'absolute',
-            left: '21%',
-            top: '17%',
+            left: '42.9%',
+            top: '31.1%',
+            transform: 'translate(-50%, -50%)',
           }}
         />
       </Box>

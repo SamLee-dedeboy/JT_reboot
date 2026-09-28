@@ -1269,9 +1269,7 @@ export default function RegionalChart({
                         ) : (
                           <VisibilityOffOutlinedIcon fontSize="small" />
                         )}
-                        {useFullScenarioNames
-                          ? scenario.label
-                          : abbreviateScenario(scenario.label)}
+                        {useFullScenarioNames ? scenario.label : abbreviateScenario(scenario.label)}
                       </ToggleButton>
                     </span>
                   </Tooltip>

@@ -45,7 +45,8 @@ export default function ExplorerHeader({
     ? PUBLIC_MODES
     : MODES.filter(
         ({ value }) =>
-          (value !== 'schism-runs' || showSchismRuns) && (!value.startsWith('slr-') || showSlrModes),
+          (value !== 'schism-runs' || showSchismRuns) &&
+          (!value.startsWith('slr-') || showSlrModes),
       )
 
   return (
@@ -146,18 +147,10 @@ export default function ExplorerHeader({
                         gridTemplateColumns: 'auto minmax(0, 1fr)',
                       })}
                     >
-                      <Typography
-                        component="span"
-                        variant="button"
-                        color="brand.primaryBlue"
-                      >
+                      <Typography component="span" variant="button" color="brand.primaryBlue">
                         {number}
                       </Typography>
-                      <Typography
-                        component="span"
-                        variant="button"
-                        color="brand.primaryBlue"
-                      >
+                      <Typography component="span" variant="button" color="brand.primaryBlue">
                         {label}
                       </Typography>
                     </Box>

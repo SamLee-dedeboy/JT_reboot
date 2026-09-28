@@ -75,3 +75,29 @@ export function usePatternEvidence() {
 
   return data
 }
+
+interface SurroundingStationEvidenceDataset {
+  patterns: Record<string, PatternStationEvidence[]>
+}
+
+export function useSurroundingStationEvidence() {
+  const [data, setData] = useState<SurroundingStationEvidenceDataset | null>(null)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch(assetUrl('/data/regional-summary/pattern-surrounding-stations.json'), {
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Surrounding station request failed (${response.status})`)
+        return response.json() as Promise<SurroundingStationEvidenceDataset>
+      })
+      .then(setData)
+      .catch((error: unknown) => {
+        if (!(error instanceof DOMException && error.name === 'AbortError')) setData(null)
+      })
+    return () => controller.abort()
+  }, [])
+
+  return data
+}

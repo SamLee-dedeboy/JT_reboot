@@ -68,9 +68,9 @@ const strategiesByScenario: Record<string, StrategyStep[]> = {
         'Reclaimed levees inside Franks Tract direct San Joaquin River water south into Old River.',
     },
     {
-      title: 'Create a through-Delta freshwater pathway',
+      title: 'Fortify the Old River corridor',
       description:
-        'A connected freshwater route carries San Joaquin River water through the Delta toward Clifton Court Forebay and the southern pumping plants.',
+        'Strengthened levees protect the freshwater route toward Clifton Court Forebay and the southern pumping plants.',
     },
   ],
   'a-tunnel': [
@@ -190,6 +190,9 @@ export default function ScenarioStrategyGuide({
               color: 'base.100',
               minHeight: regionalSummarySizing.compactTouchTarget,
               minWidth: regionalSummarySizing.compactTouchTarget,
+              '& .MuiSvgIcon-root': {
+                fontSize: regionalSummarySizing.controlIconSize,
+              },
             }}
           >
             <CloseIcon />
