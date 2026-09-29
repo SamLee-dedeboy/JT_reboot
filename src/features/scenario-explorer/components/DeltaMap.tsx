@@ -4,6 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../mapConfig'
+import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../../map/offlineBasemapStyle'
 import { palette } from '../../../theme/index'
 import type { FeatureCollection, Point } from 'geojson'
 import type { GeoJSONSource } from 'mapbox-gl'
@@ -28,6 +29,8 @@ interface MapCanvasProps {
   mapExtent: number
   histogramBrush: HistogramBrush
   d1641Data: D1641Dataset | null
+  showBrushStationLabels?: boolean
+  emphasizeD1641Stations?: boolean
 }
 
 type ComplianceState = 'none' | 'compliant' | 'exceeded' | 'insufficient' | 'high-tide'
@@ -139,6 +142,8 @@ function MapCanvas({
   region,
   mapExtent,
   histogramBrush,
+  showBrushStationLabels = true,
+  emphasizeD1641Stations = false,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
@@ -242,7 +247,7 @@ function MapCanvas({
     if (!containerRef.current) return
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: SCENARIO_EXPLORER_MAP_STYLE,
+      style: isOfflineMapEnabled() ? createOfflineBasemapStyle() : SCENARIO_EXPLORER_MAP_STYLE,
       bounds: MAP_BOUNDS,
       fitBoundsOptions: { padding: 10 },
       attributionControl: false,
@@ -287,7 +292,7 @@ function MapCanvas({
         source: 'stations',
         filter: ['==', ['get', 'd1641State'], 'exceeded'],
         paint: {
-          'circle-radius': 12,
+          'circle-radius': emphasizeD1641Stations ? 14 : 12,
           'circle-color': palette.accent.yellow,
           'circle-opacity': [
             'case',
@@ -316,7 +321,13 @@ function MapCanvas({
         filter: ['in', ['get', 'd1641State'], ['literal', ['compliant', 'exceeded']]],
         layout: {
           'text-field': ['match', ['get', 'd1641State'], 'exceeded', '◆', '◇'],
-          'text-size': ['match', ['get', 'd1641State'], 'exceeded', 25, 30],
+          'text-size': [
+            'match',
+            ['get', 'd1641State'],
+            'exceeded',
+            emphasizeD1641Stations ? 29 : 25,
+            emphasizeD1641Stations ? 34 : 30,
+          ],
           'text-allow-overlap': true,
           'text-ignore-placement': true,
         },
@@ -347,7 +358,7 @@ function MapCanvas({
         filter: ['==', ['get', 'd1641State'], 'exceeded'],
         layout: {
           'text-field': ['get', 'exceedanceScenarios'],
-          'text-size': 14,
+          'text-size': emphasizeD1641Stations ? 16 : 14,
           'text-offset': [0.85, -0.85],
           'text-allow-overlap': true,
           'text-ignore-placement': true,
@@ -372,7 +383,7 @@ function MapCanvas({
         source: 'stations',
         filter: ['==', ['get', 'selected'], 1],
         paint: {
-          'circle-radius': 10,
+          'circle-radius': emphasizeD1641Stations ? 11.5 : 10,
           'circle-color': 'rgba(0,0,0,0)',
           'circle-stroke-color': palette.common.white,
           'circle-stroke-width': 2.5,
@@ -384,7 +395,7 @@ function MapCanvas({
         source: 'stations',
         filter: ['==', ['get', 'd1641Onset'], 1],
         paint: {
-          'circle-radius': 8,
+          'circle-radius': emphasizeD1641Stations ? 9 : 8,
           'circle-color': 'rgba(0,0,0,0)',
           'circle-stroke-color': palette.accent.yellow,
           'circle-stroke-width': 2,
@@ -407,24 +418,26 @@ function MapCanvas({
           'circle-opacity-transition': { duration: 250 },
         },
       })
-      map.addLayer({
-        id: 'station-brush-label',
-        type: 'symbol',
-        source: 'stations',
-        filter: ['==', ['get', 'brushed'], 1],
-        layout: {
-          'text-field': ['to-string', ['get', 'station_id']],
-          'text-size': 12,
-          'text-offset': [0, 1.35],
-          'text-anchor': 'top',
-          'text-allow-overlap': true,
-        },
-        paint: {
-          'text-color': palette.common.white,
-          'text-halo-color': palette.base[900],
-          'text-halo-width': 2,
-        },
-      })
+      if (showBrushStationLabels) {
+        map.addLayer({
+          id: 'station-brush-label',
+          type: 'symbol',
+          source: 'stations',
+          filter: ['==', ['get', 'brushed'], 1],
+          layout: {
+            'text-field': ['to-string', ['get', 'station_id']],
+            'text-size': 12,
+            'text-offset': [0, 1.35],
+            'text-anchor': 'top',
+            'text-allow-overlap': true,
+          },
+          paint: {
+            'text-color': palette.common.white,
+            'text-halo-color': palette.base[900],
+            'text-halo-width': 2,
+          },
+        })
+      }
       const showStationPopup = (event: mapboxgl.MapMouseEvent) => {
         const feature = map.queryRenderedFeatures(event.point, {
           layers: ['station-brush-highlight', 'stations'],
@@ -755,6 +768,8 @@ export default function DeltaMap({
   region,
   mapExtent,
   histogramBrush,
+  showBrushStationLabels = true,
+  emphasizeD1641Stations = false,
 }: DeltaMapProps) {
   return (
     <Paper
@@ -782,6 +797,8 @@ export default function DeltaMap({
         region={region}
         mapExtent={mapExtent}
         histogramBrush={histogramBrush}
+        showBrushStationLabels={showBrushStationLabels}
+        emphasizeD1641Stations={emphasizeD1641Stations}
       />
       {d1641Data && (
         <Paper

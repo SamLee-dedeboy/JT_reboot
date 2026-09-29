@@ -114,7 +114,7 @@ export default function OutflowVariationGrid({
           <Typography id="outflow-panels-title" variant="h2" component="h2">
             {title}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'common.white', maxWidth: '55ch' }}>
+          <Typography variant="bodyLarge" sx={{ color: 'common.white', maxWidth: '55ch' }}>
             {description}
           </Typography>
         </Stack>
@@ -203,7 +203,7 @@ export default function OutflowVariationGrid({
                 {variation.title}
               </Typography>
               <Typography
-                variant="body2"
+                variant="bodyLarge"
                 component="p"
                 sx={{ maxWidth: '70ch', color: 'base.100' }}
               >

@@ -27,14 +27,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Min-forest",
       "restoration_level": "min",
       "scenario_habitat": "forest",
-      "value_low": 0.0,
-      "value_high": 60768.0
+      "value_low": 0,
+      "value_high": 45792
     },
     {
       "habitat_focus": "forests",
@@ -51,14 +51,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Min-forest",
       "restoration_level": "min",
       "scenario_habitat": "forest",
-      "value_low": 39800000000.0,
-      "value_high": 21600000000000.0
+      "value_low": 3579528607200,
+      "value_high": 21647625386400
     },
     {
       "habitat_focus": "meadows",
@@ -75,14 +75,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Min-forest",
       "restoration_level": "min",
       "scenario_habitat": "forest",
-      "value_low": 6418.84344,
-      "value_high": 6418.84344
+      "value_low": 7878.7248,
+      "value_high": 7878.7248
     },
     {
       "habitat_focus": "meadows",
@@ -219,14 +219,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Min-meadow",
       "restoration_level": "min",
       "scenario_habitat": "meadow",
-      "value_low": 0.0,
-      "value_high": 20256.0
+      "value_low": 0,
+      "value_high": 15264
     },
     {
       "habitat_focus": "forests",
@@ -243,14 +243,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Min-meadow",
       "restoration_level": "min",
       "scenario_habitat": "meadow",
-      "value_low": 13300000000.0,
-      "value_high": 7220000000000.0
+      "value_low": 1193176202400,
+      "value_high": 7215875128800
     },
     {
       "habitat_focus": "meadows",
@@ -267,14 +267,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Min-meadow",
       "restoration_level": "min",
       "scenario_habitat": "meadow",
-      "value_low": 19256.53032,
-      "value_high": 19256.53032
+      "value_low": 23636.1744,
+      "value_high": 23636.1744
     },
     {
       "habitat_focus": "meadows",
@@ -411,14 +411,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Min-floodplain",
       "restoration_level": "min",
       "scenario_habitat": "floodplain",
-      "value_low": 0.0,
-      "value_high": 20256.0
+      "value_low": 0,
+      "value_high": 15264
     },
     {
       "habitat_focus": "forests",
@@ -435,14 +435,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Min-floodplain",
       "restoration_level": "min",
       "scenario_habitat": "floodplain",
-      "value_low": 13300000000.0,
-      "value_high": 7220000000000.0
+      "value_low": 1193176202400,
+      "value_high": 7215875128800
     },
     {
       "habitat_focus": "meadows",
@@ -459,14 +459,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Min-floodplain",
       "restoration_level": "min",
       "scenario_habitat": "floodplain",
-      "value_low": 6418.84344,
-      "value_high": 6418.84344
+      "value_low": 7878.7248,
+      "value_high": 7878.7248
     },
     {
       "habitat_focus": "meadows",
@@ -603,14 +603,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Med-forest",
       "restoration_level": "med",
       "scenario_habitat": "forest",
-      "value_low": 0.0,
-      "value_high": 151920.0
+      "value_low": 0,
+      "value_high": 114480
     },
     {
       "habitat_focus": "forests",
@@ -627,14 +627,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Med-forest",
       "restoration_level": "med",
       "scenario_habitat": "forest",
-      "value_low": 99400000000.0,
-      "value_high": 54100000000000.0
+      "value_low": 8948821518000,
+      "value_high": 54119063466000
     },
     {
       "habitat_focus": "meadows",
@@ -651,14 +651,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Med-forest",
       "restoration_level": "med",
       "scenario_habitat": "forest",
-      "value_low": 25675.37376,
-      "value_high": 25675.37376
+      "value_low": 31514.8992,
+      "value_high": 31514.8992
     },
     {
       "habitat_focus": "meadows",
@@ -795,14 +795,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Med-meadow",
       "restoration_level": "med",
       "scenario_habitat": "meadow",
-      "value_low": 0.0,
-      "value_high": 81024.0
+      "value_low": 0,
+      "value_high": 61056
     },
     {
       "habitat_focus": "forests",
@@ -819,14 +819,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Med-meadow",
       "restoration_level": "med",
       "scenario_habitat": "meadow",
-      "value_low": 53000000000.0,
-      "value_high": 28900000000000.0
+      "value_low": 4772704809600,
+      "value_high": 28863500515200
     },
     {
       "habitat_focus": "meadows",
@@ -843,14 +843,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Med-meadow",
       "restoration_level": "med",
       "scenario_habitat": "meadow",
-      "value_low": 48141.3258,
-      "value_high": 48141.3258
+      "value_low": 59090.436,
+      "value_high": 59090.436
     },
     {
       "habitat_focus": "meadows",
@@ -987,14 +987,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Med-floodplain",
       "restoration_level": "med",
       "scenario_habitat": "floodplain",
-      "value_low": 0.0,
-      "value_high": 81024.0
+      "value_low": 0,
+      "value_high": 61056
     },
     {
       "habitat_focus": "forests",
@@ -1011,14 +1011,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Med-floodplain",
       "restoration_level": "med",
       "scenario_habitat": "floodplain",
-      "value_low": 53000000000.0,
-      "value_high": 28900000000000.0
+      "value_low": 4772704809600,
+      "value_high": 28863500515200
     },
     {
       "habitat_focus": "meadows",
@@ -1035,14 +1035,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Med-floodplain",
       "restoration_level": "med",
       "scenario_habitat": "floodplain",
-      "value_low": 25675.37376,
-      "value_high": 25675.37376
+      "value_low": 31514.8992,
+      "value_high": 31514.8992
     },
     {
       "habitat_focus": "meadows",
@@ -1179,14 +1179,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Max-forest",
       "restoration_level": "max",
       "scenario_habitat": "forest",
-      "value_low": 0.0,
-      "value_high": 303840.0
+      "value_low": 0,
+      "value_high": 228960
     },
     {
       "habitat_focus": "forests",
@@ -1203,14 +1203,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Max-forest",
       "restoration_level": "max",
       "scenario_habitat": "forest",
-      "value_low": 199000000000.0,
-      "value_high": 108000000000000.0
+      "value_low": 17897643036000,
+      "value_high": 108238126932000
     },
     {
       "habitat_focus": "meadows",
@@ -1227,14 +1227,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Max-forest",
       "restoration_level": "max",
       "scenario_habitat": "forest",
-      "value_low": 64188.4344,
-      "value_high": 64188.4344
+      "value_low": 78787.248,
+      "value_high": 78787.248
     },
     {
       "habitat_focus": "meadows",
@@ -1371,14 +1371,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Max-meadow",
       "restoration_level": "max",
       "scenario_habitat": "meadow",
-      "value_low": 0.0,
-      "value_high": 192530.3714
+      "value_low": 0,
+      "value_high": 152640
     },
     {
       "habitat_focus": "forests",
@@ -1395,14 +1395,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Max-meadow",
       "restoration_level": "max",
       "scenario_habitat": "meadow",
-      "value_low": 126000000000.0,
-      "value_high": 68600000000000.0
+      "value_low": 11931762024000,
+      "value_high": 72158751288000
     },
     {
       "habitat_focus": "meadows",
@@ -1419,14 +1419,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Max-meadow",
       "restoration_level": "max",
       "scenario_habitat": "meadow",
-      "value_low": 192565.3032,
-      "value_high": 192565.3032
+      "value_low": 236361.744,
+      "value_high": 236361.744
     },
     {
       "habitat_focus": "meadows",
@@ -1563,14 +1563,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in runoff South",
-      "metric_low": 0.0,
-      "metric_high": 0.211,
+      "metric_low": 0,
+      "metric_high": 0.159,
       "unit": "AF/year/acre",
       "scenario": "Max-floodplain",
       "restoration_level": "max",
       "scenario_habitat": "floodplain",
-      "value_low": 0.0,
-      "value_high": 202560.0
+      "value_low": 0,
+      "value_high": 152640
     },
     {
       "habitat_focus": "forests",
@@ -1587,14 +1587,14 @@
     {
       "habitat_focus": "forests",
       "metric": "Change in WF emissions",
-      "metric_low": 7.0,
-      "metric_high": 3810.0,
+      "metric_low": 630,
+      "metric_high": 3810,
       "unit": "g/m2",
       "scenario": "Max-floodplain",
       "restoration_level": "max",
       "scenario_habitat": "floodplain",
-      "value_low": 133000000000.0,
-      "value_high": 72200000000000.0
+      "value_low": 11931762024000,
+      "value_high": 72158751288000
     },
     {
       "habitat_focus": "meadows",
@@ -1611,14 +1611,14 @@
     {
       "habitat_focus": "meadows",
       "metric": "Change in ET**",
-      "metric_low": null,
-      "metric_high": 0.554,
+      "metric_low": 0.428,
+      "metric_high": 0.68,
       "unit": "AF/year/acre",
       "scenario": "Max-floodplain",
       "restoration_level": "max",
       "scenario_habitat": "floodplain",
-      "value_low": 25675.37376,
-      "value_high": 25675.37376
+      "value_low": 31514.8992,
+      "value_high": 31514.8992
     },
     {
       "habitat_focus": "meadows",

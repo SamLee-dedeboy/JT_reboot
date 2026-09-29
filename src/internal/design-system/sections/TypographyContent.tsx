@@ -86,6 +86,12 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
       content: 'Body text',
     },
     {
+      label: 'Body Large',
+      variantName: 'bodyLarge',
+      variant: theme.typography.bodyLarge as TypographyToken,
+      content: 'Primary narrative body text used across all landing pages.',
+    },
+    {
       label: 'Body 2',
       variantName: 'body2',
       variant: theme.typography.body2 as TypographyToken,
@@ -163,7 +169,7 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
       title: 'Text Body',
       description: 'Paragraph, supporting copy, and small-print text styles.',
       items: typography.filter((t) =>
-        ['Body 1', 'Body 2', 'Caption', 'Caption Small'].includes(t.label),
+        ['Body 1', 'Body Large', 'Body 2', 'Caption', 'Caption Small'].includes(t.label),
       ),
     },
     {

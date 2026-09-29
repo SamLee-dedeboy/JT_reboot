@@ -9,10 +9,9 @@ import ScenarioMapCamera from '../../map/layers/ScenarioMapCamera'
 import ScenarioMapLegend from '../../map/layers/ScenarioMapLegend'
 import ScenarioMapLayers from '../../map/layers/ScenarioMapLayers'
 import Footer from '../../ui/Footer'
-import Hl from '../../ui/Highlight'
 import Navbar from '../../ui/Navbar'
 import NavRail from '../../ui/NavRail'
-import { highlighter, jtSpacing, map } from '../../theme'
+import { jtSpacing, map } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
 import { scenarioBySlug } from './content/scenarioContent'
@@ -71,32 +70,14 @@ function HighlightedParagraph({ text }: { text: string }) {
       parts.push(text.slice(cursor, nextHighlight.index))
     }
 
-    const isPrimaryHighlight = [
-      'restoring watersheds',
-      'within the Delta',
-      'its much larger watershed',
-    ].includes(nextHighlight.phrase)
-    const usesAccentUnderline =
-      nextHighlight.phrase ===
-      'If a levee fails, water can rapidly flood the deeply subsided island.'
     parts.push(
-      usesAccentUnderline ? (
-        <Hl
-          key={`${nextHighlight.phrase}-${nextHighlight.index}`}
-          color={highlighter.accentBlueBalanced}
-          styleVariant="wash"
-        >
-          {nextHighlight.phrase}
-        </Hl>
-      ) : (
-        <Box
-          component="strong"
-          key={`${nextHighlight.phrase}-${nextHighlight.index}`}
-          sx={{ color: isPrimaryHighlight ? 'primary.main' : 'inherit' }}
-        >
-          {nextHighlight.phrase}
-        </Box>
-      ),
+      <Box
+        component="span"
+        key={`${nextHighlight.phrase}-${nextHighlight.index}`}
+        sx={{ color: 'primary.main' }}
+      >
+        {nextHighlight.phrase}
+      </Box>,
     )
     cursor = nextHighlight.index + nextHighlight.phrase.length
   }
@@ -286,10 +267,10 @@ export default function ScenarioTemplatePage() {
               alignItems: 'start',
             }}
           >
-            <Box component="aside" sx={{ position: { lg: 'sticky' }, top: { lg: 110 } }}>
+            <Box component="aside" sx={{ position: { lg: 'sticky' }, top: { lg: 148 } }}>
               <Typography
                 variant="eyebrow"
-                sx={{ display: 'block', color: 'base.200', mb: jtSpacing.section.md }}
+                sx={{ display: 'block', color: 'base.200', mb: jtSpacing.component.md }}
               >
                 On this page
               </Typography>
@@ -335,27 +316,50 @@ export default function ScenarioTemplatePage() {
                         <HighlightedParagraph text={paragraph} />
                       </Typography>
                     ))}
-                    {chapter.highlights?.map((highlight) => (
-                      <ScenarioNarrativeHighlight
-                        key={highlight.title}
-                        title={highlight.title}
-                        paragraphs={highlight.paragraphs}
-                        selected={
-                          selectedHabitatType ===
-                          (highlight.mapHabitatType ?? highlight.exploreHabitat)
-                        }
-                        onSelect={
-                          highlight.mapHabitatType || highlight.exploreHabitat
-                            ? () =>
-                                setSelectedHabitatType((current) =>
-                                  current === (highlight.mapHabitatType ?? highlight.exploreHabitat)
-                                    ? null
-                                    : (highlight.mapHabitatType ?? highlight.exploreHabitat)!,
-                                )
-                            : undefined
-                        }
-                      />
-                    ))}
+                    {chapter.highlights && (
+                      <Box
+                        component="aside"
+                        aria-label={`${chapter.title} interactive map layers`}
+                        sx={{
+                          mt: jtSpacing.component.md,
+                          p: { xs: jtSpacing.component.xs, md: jtSpacing.component.sm },
+                          border: 1,
+                          borderColor: 'base.300',
+                          borderRadius: 1,
+                          bgcolor: 'translucent.100',
+                          '& > * + *': {
+                            borderTop: 1,
+                            borderColor: 'border.default',
+                          },
+                        }}
+                      >
+                        {chapter.highlights.map((highlight) => {
+                          const habitatType = highlight.mapHabitatType ?? highlight.exploreHabitat
+                          const accentColor = highlight.mapHabitatType
+                            ? map.scenarios.newGreenWatershedHabitats[highlight.mapHabitatType]
+                            : map.boundaries.watershedRegion
+
+                          return (
+                            <ScenarioNarrativeHighlight
+                              key={highlight.title}
+                              title={highlight.title}
+                              summary={highlight.summary}
+                              paragraphs={highlight.paragraphs}
+                              accentColor={accentColor}
+                              selected={selectedHabitatType === habitatType}
+                              onSelect={
+                                habitatType
+                                  ? () =>
+                                      setSelectedHabitatType((current) =>
+                                        current === habitatType ? null : habitatType,
+                                      )
+                                  : undefined
+                              }
+                            />
+                          )
+                        })}
+                      </Box>
+                    )}
                     {chapter.highlightsAction && (
                       <Button
                         component={Link}

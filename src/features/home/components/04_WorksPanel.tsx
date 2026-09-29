@@ -59,7 +59,7 @@ export default function WorksPanel() {
               How it works
             </Typography>
             <Typography
-              variant="body1"
+              variant="bodyLarge"
               sx={{
                 mt: theme.jtSpacing.component.lg,
                 color: 'common.white',
@@ -105,7 +105,7 @@ export default function WorksPanel() {
                   {number}
                 </Typography>
                 <Typography
-                  variant="body2"
+                  variant="bodyLarge"
                   sx={{ gridColumn: 2, gridRow: 1, color: 'common.white' }}
                 >
                   {text}

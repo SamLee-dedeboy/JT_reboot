@@ -210,6 +210,7 @@ function StickyScenarioPanels() {
                 <ExpandableScenarioPanels
                   items={adaptationScenarioItems}
                   actionLabel="Explore"
+                  bodyVariant="bodyLarge"
                   header={
                     <Stack spacing={1.2} sx={{ maxWidth: { xs: 620, md: 760 } }}>
                       <Typography component="p" variant="eyebrow" sx={{ color: 'primary.main' }}>
@@ -219,7 +220,10 @@ function StickyScenarioPanels() {
                       <Typography variant="h2" component="h2">
                         {panel.title}
                       </Typography>
-                      <Typography variant="body2" sx={{ color: 'common.white', maxWidth: '58ch' }}>
+                      <Typography
+                        variant="bodyLarge"
+                        sx={{ color: 'common.white', maxWidth: '58ch' }}
+                      >
                         {panel.body}
                       </Typography>
                     </Stack>
@@ -236,7 +240,7 @@ function StickyScenarioPanels() {
                   <Typography variant="h2" component="h2">
                     {panel.title}
                   </Typography>
-                  <Typography variant="body1">{panel.body}</Typography>
+                  <Typography variant="bodyLarge">{panel.body}</Typography>
                   {index === 0 && (
                     <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
                       <Button
@@ -307,7 +311,7 @@ export default function ScenariosLandingPage() {
                 <Typography variant="h1" component="h1" sx={{ maxWidth: '15ch' }}>
                   Choose a future to explore
                 </Typography>
-                <Typography variant="body1" sx={{ maxWidth: '58ch', color: 'base.100' }}>
+                <Typography variant="bodyLarge" sx={{ maxWidth: '58ch', color: 'base.100' }}>
                   Start with current operations, then move through outflow variations and adaptation
                   pathways to compare what different Delta futures ask of communities, ecosystems,
                   and water systems.
@@ -362,7 +366,7 @@ export default function ScenariosLandingPage() {
                 <Typography variant="h2" component="h2">
                   Dive deeper into the scenarios
                 </Typography>
-                <Typography variant="body1" sx={{ color: 'base.100' }}>
+                <Typography variant="bodyLarge" sx={{ color: 'base.100' }}>
                   Understand how each future is modeled and evaluated, then compare its benefits,
                   impacts, and performance side by side.
                 </Typography>

@@ -52,7 +52,7 @@ function StakeSection({
       {section.introduction.map((paragraph) => (
         <Typography
           key={paragraph}
-          variant="body1"
+          variant="bodyLarge"
           sx={{ color: 'common.white', mt: theme.jtSpacing.component.md }}
         >
           {emphasize(paragraph, section.emphasize)}
@@ -71,7 +71,7 @@ function StakeSection({
           {section.details.map((paragraph) => (
             <Typography
               key={paragraph}
-              variant="body1"
+              variant="bodyLarge"
               sx={{ color: 'base.100', mt: theme.jtSpacing.component.sm }}
             >
               {emphasize(paragraph, section.emphasize)}

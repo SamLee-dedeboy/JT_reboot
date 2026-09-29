@@ -11,6 +11,7 @@ import ScenariosKeyParametersPage from '../features/scenarios/ScenariosKeyParame
 import ScenariosLandingPage from '../features/scenarios/ScenariosLandingPage'
 import BaselineExploration from '../internal/BaselineExploration'
 import CoDesignTimelinePage from '../internal/CoDesignTimeline'
+import ScenarioTimeLapse from '../internal/ScenarioTimeLapse'
 import DesignSystem from '../internal/design-system/DesignSystem'
 import KelpDiagram from '../internal/KelpDiagram'
 import Playground from '../internal/Playground'
@@ -39,10 +40,20 @@ export default function AppRouter() {
       <Route path="/pages/resources" element={<Resources />} />
       <Route path="/pages/playground" element={<Playground />} />
       <Route path="/pages/baseline-exploration" element={<BaselineExploration />} />
-      <Route path="/pages/scenario-explorer" element={deferred(<ScenarioExplorerPage />)} />
+      <Route path="/pages/scenario-time-lapse" element={<ScenarioTimeLapse />} />
+      <Route
+        path="/pages/scenario-explorer"
+        element={deferred(<ScenarioExplorerPage enableDateHighlights publicModesOnly />)}
+      />
       <Route
         path="/pages/scenario-explorer/internal"
         element={deferred(<ScenarioExplorerPage enableDateHighlights enableSlrModes />)}
+      />
+      <Route
+        path="/pages/scenario-explorer/d1641"
+        element={deferred(
+          <ScenarioExplorerPage enableDateHighlights enableSlrModes d1641StationsOnly />,
+        )}
       />
       <Route path="/pages/regional-summary" element={deferred(<RegionalSummaryPage />)} />
       <Route path="/pages/co-design-dashboard/*" element={deferred(<CoDesignDashboard />)} />

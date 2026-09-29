@@ -3,6 +3,7 @@ import { Box, Button, Typography, alpha, useTheme } from '@mui/material'
 import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
 import { useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import type { TypographyProps } from '@mui/material/Typography'
 
 export interface ExpandableScenarioPanelItem {
   title: string
@@ -18,6 +19,7 @@ interface ExpandableScenarioPanelsProps {
   header?: ReactNode
   sharedImage?: boolean
   collapseOnScroll?: boolean
+  bodyVariant?: TypographyProps['variant']
   comparisonContent?: (
     selectedPanel: number | null,
     onSelectPanel: (index: number | null) => void,
@@ -32,6 +34,7 @@ export default function ExpandableScenarioPanels({
   header,
   sharedImage = false,
   collapseOnScroll = false,
+  bodyVariant = 'body2',
   comparisonContent,
 }: ExpandableScenarioPanelsProps) {
   const theme = useTheme()
@@ -464,7 +467,7 @@ export default function ExpandableScenarioPanels({
                     {item.body && (
                       <Typography
                         className="expandable-panel-body"
-                        variant="body2"
+                        variant={bodyVariant}
                         sx={{
                           maxWidth: '36ch',
                           color: 'base.100',

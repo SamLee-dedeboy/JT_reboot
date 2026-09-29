@@ -11,6 +11,17 @@ const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode
   { number: '06', label: 'Compare SLR Scenarios', value: 'slr-scenarios' },
 ]
 
+const PUBLIC_MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [
+  { number: '01', label: 'Adaptation Scenario Comparison', value: 'rma-scenarios' },
+  { number: '02', label: 'Alternative Delta Outflow', value: 'tiered-outflows' },
+  {
+    number: '03',
+    label: 'Sea Level Rise Adaptation Scenario Comparison',
+    value: 'slr-scenarios',
+  },
+  { number: '04', label: 'Sea Level Rise vs. Current Comparison', value: 'slr-current' },
+]
+
 interface ExplorerHeaderProps {
   description: string
   mode: DashboardMode
@@ -18,6 +29,7 @@ interface ExplorerHeaderProps {
   onTutorialOpen: () => void
   showSchismRuns?: boolean
   showSlrModes?: boolean
+  publicModesOnly?: boolean
 }
 
 export default function ExplorerHeader({
@@ -27,11 +39,15 @@ export default function ExplorerHeader({
   onTutorialOpen,
   showSchismRuns = false,
   showSlrModes = false,
+  publicModesOnly = false,
 }: ExplorerHeaderProps) {
-  const availableModes = MODES.filter(
-    ({ value }) =>
-      (value !== 'schism-runs' || showSchismRuns) && (!value.startsWith('slr-') || showSlrModes),
-  )
+  const availableModes = publicModesOnly
+    ? PUBLIC_MODES
+    : MODES.filter(
+        ({ value }) =>
+          (value !== 'schism-runs' || showSchismRuns) &&
+          (!value.startsWith('slr-') || showSlrModes),
+      )
 
   return (
     <Box
@@ -53,7 +69,7 @@ export default function ExplorerHeader({
           gap: theme.jtSpacing.gap.sm,
           gridTemplateColumns: {
             xs: '1fr',
-            lg: 'max-content minmax(20rem, 28rem) minmax(max-content, 1fr)',
+            lg: 'max-content minmax(24rem, 34rem) minmax(max-content, 1fr)',
           },
           width: '100%',
         })}
@@ -65,82 +81,93 @@ export default function ExplorerHeader({
           </Box>{' '}
           explorer
         </Typography>
-        {showSlrModes ? (
-          <FormControl
-            data-tour="comparison-tabs"
-            size="small"
+        {showSlrModes || publicModesOnly ? (
+          <Box
             sx={{
               alignSelf: 'center',
+              display: 'grid',
+              gap: 0.5,
               justifySelf: { xs: 'stretch', lg: 'center' },
               minWidth: { xs: 0, sm: 320 },
             }}
           >
-            <Select
-              aria-label="Dashboard comparison mode"
-              value={mode}
-              onChange={(event) => onModeChange(event.target.value as DashboardMode)}
-              MenuProps={{
-                slotProps: {
-                  paper: {
-                    sx: {
-                      bgcolor: 'base.700',
-                      border: 1,
-                      borderColor: 'brand.primaryBlue',
+            <FormControl data-tour="comparison-tabs" size="small">
+              <Select
+                aria-label="Dashboard comparison mode"
+                value={mode}
+                onChange={(event) => onModeChange(event.target.value as DashboardMode)}
+                MenuProps={{
+                  slotProps: {
+                    paper: {
+                      sx: {
+                        bgcolor: 'base.700',
+                        border: 1,
+                        borderColor: 'brand.primaryBlue',
+                      },
                     },
                   },
-                },
-              }}
-              sx={(theme) => ({
-                bgcolor: alpha(theme.palette.brand.primaryBlue, 0.08),
-                color: 'brand.primaryBlue',
-                height: theme.spacing(5),
-                typography: 'button',
-                '& .MuiSelect-select': { alignItems: 'center', display: 'flex', py: 0 },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'brand.primaryBlue',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline':
-                  {
+                }}
+                sx={(theme) => ({
+                  bgcolor: alpha(theme.palette.brand.primaryBlue, 0.08),
+                  color: 'brand.primaryBlue',
+                  height: theme.spacing(5),
+                  typography: 'button',
+                  '& .MuiSelect-select': { alignItems: 'center', display: 'flex', py: 0 },
+                  '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'brand.primaryBlue',
                   },
-                '& .MuiSelect-icon': { color: 'brand.primaryBlue' },
-              })}
-            >
-              {availableModes.map(({ number, label, value }) => (
-                <MenuItem
-                  key={value}
-                  value={value}
-                  sx={(theme) => ({
-                    color: 'brand.primaryBlue',
-                    typography: 'button',
-                    '&.Mui-selected': {
-                      bgcolor: alpha(theme.palette.brand.primaryGreen, 0.2),
-                      color: 'brand.primaryBlue',
+                  '&:hover .MuiOutlinedInput-notchedOutline, &.Mui-focused .MuiOutlinedInput-notchedOutline':
+                    {
+                      borderColor: 'brand.primaryBlue',
                     },
-                    '&.Mui-selected:hover, &:hover': {
-                      bgcolor: alpha(theme.palette.brand.primaryGreen, 0.28),
-                    },
-                  })}
-                >
-                  <Box
+                  '& .MuiSelect-icon': { color: 'brand.primaryBlue' },
+                })}
+              >
+                {availableModes.map(({ number, label, value }) => (
+                  <MenuItem
+                    key={value}
+                    value={value}
                     sx={(theme) => ({
-                      alignItems: 'center',
-                      display: 'grid',
-                      gap: theme.jtSpacing.gap.sm,
-                      gridTemplateColumns: 'auto minmax(0, 1fr)',
+                      color: 'brand.primaryBlue',
+                      typography: 'button',
+                      '&.Mui-selected': {
+                        bgcolor: alpha(theme.palette.brand.primaryGreen, 0.2),
+                        color: 'brand.primaryBlue',
+                      },
+                      '&.Mui-selected:hover, &:hover': {
+                        bgcolor: alpha(theme.palette.brand.primaryGreen, 0.28),
+                      },
                     })}
                   >
-                    <Typography component="span" variant="button" color="brand.primaryBlue">
-                      {number}
-                    </Typography>
-                    <Typography component="span" variant="button" color="brand.primaryBlue">
-                      {label}
-                    </Typography>
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+                    <Box
+                      sx={(theme) => ({
+                        alignItems: 'center',
+                        display: 'grid',
+                        gap: theme.jtSpacing.gap.sm,
+                        gridTemplateColumns: 'auto minmax(0, 1fr)',
+                      })}
+                    >
+                      <Typography component="span" variant="button" color="brand.primaryBlue">
+                        {number}
+                      </Typography>
+                      <Typography component="span" variant="button" color="brand.primaryBlue">
+                        {label}
+                      </Typography>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {publicModesOnly && (
+              <Typography
+                component="p"
+                variant="captionSmall"
+                sx={{ color: 'brand.primaryBlue', m: 0 }}
+              >
+                ↑ Check out other comparisons
+              </Typography>
+            )}
+          </Box>
         ) : (
           <Tabs
             data-tour="comparison-tabs"

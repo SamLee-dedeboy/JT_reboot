@@ -61,7 +61,7 @@ export default function WhatIfPanel() {
             </ScrollReveal>
 
             <ScrollReveal>
-              <Typography variant="body1" sx={{ color: 'base.50' }}>
+              <Typography variant="bodyLarge" sx={{ color: 'base.50' }}>
                 <Box component="span" sx={{ display: 'block' }}>
                   What if we considered a wide range of future visions for equitable water
                   management in the Delta under a shifting climate of uncertainty?
@@ -84,7 +84,10 @@ export default function WhatIfPanel() {
                 defining these scenarios… before decisions are made?
               </Typography>
 
-              <Typography variant="body1" sx={{ mt: theme.jtSpacing.section.sm, color: 'base.50' }}>
+              <Typography
+                variant="bodyLarge"
+                sx={{ mt: theme.jtSpacing.section.sm, color: 'base.50' }}
+              >
                 <Box component="span" sx={{ display: 'block' }}>
                   Better yet, what if communities could prioritize the features and performance of
                   each scenario, assessing them side by side to understand the impacts and benefits

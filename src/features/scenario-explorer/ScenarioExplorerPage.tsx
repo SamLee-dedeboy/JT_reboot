@@ -68,6 +68,7 @@ interface LabeledSelectProps {
 }
 
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual')
+const isTunnelScenario = (label: string) => label.trim().toLowerCase() === 'a tunnel'
 const SLR_SCENARIO_ORDER = ['baseline-slr', 'bolster-slr', 'ecomachine-slr', 'newgreen-slr']
 const scenarioAbbreviation = (label: string) =>
   ({
@@ -92,7 +93,28 @@ const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') =>
     '&&:hover': { color: 'text.primary' },
   }) as const
 
-function ResponsiveScenarioLabel({ label }: { label: string }) {
+function UnavailableSlrOptions({ color }: { color: 'brand.primaryBlue' | 'brand.primaryGreen' }) {
+  return (
+    <>
+      <MenuItem disabled value="calling-on-reserves-coming-soon" sx={menuItemSx(color)}>
+        Calling on Reserves (SLR)
+      </MenuItem>
+      <MenuItem disabled value="a-tunnel-coming-soon" sx={menuItemSx(color)}>
+        A Tunnel (SLR)
+      </MenuItem>
+    </>
+  )
+}
+
+function ResponsiveScenarioLabel({
+  fullName = false,
+  label,
+}: {
+  fullName?: boolean
+  label: string
+}) {
+  if (fullName) return label
+
   return (
     <>
       <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>
@@ -215,11 +237,65 @@ function SwapButton({
 interface ScenarioExplorerPageProps {
   enableDateHighlights?: boolean
   enableSlrModes?: boolean
+  d1641StationsOnly?: boolean
+  publicModesOnly?: boolean
+}
+
+function filterDatasetToStations(dataset: ScenarioDataset, stationIds: Set<string>) {
+  const includedIndices = dataset.stations
+    .map((station, index) => (stationIds.has(String(station.station_id)) ? index : -1))
+    .filter((index) => index >= 0)
+  const stations = includedIndices.map((index) => dataset.stations[index])
+  const regions = dataset.regions.filter((regionName) =>
+    stations.some((station) => station.region === regionName),
+  )
+  const filterSeries = (series: ValueSeries[]) => includedIndices.map((index) => series[index])
+  const regionValues = (stationValues: ValueSeries[]) =>
+    Object.fromEntries(
+      regions.map((regionName) => {
+        const indices = stations
+          .map((station, index) => (station.region === regionName ? index : -1))
+          .filter((index) => index >= 0)
+        return [
+          regionName,
+          dataset.dates.map((_, dateIndex) => {
+            const values = indices
+              .map((index) => stationValues[index]?.[dateIndex])
+              .filter((value): value is number => value != null && Number.isFinite(value))
+            return values.length
+              ? values.reduce((sum, value) => sum + value, 0) / values.length
+              : null
+          }),
+        ]
+      }),
+    )
+
+  return {
+    ...dataset,
+    stations,
+    regions,
+    referenceStationValues: dataset.referenceStationValues
+      ? filterSeries(dataset.referenceStationValues)
+      : undefined,
+    scenarios: dataset.scenarios.map((scenario) => {
+      const stationValues = filterSeries(scenario.stationValues)
+      return {
+        ...scenario,
+        stationValues,
+        regionValues: regionValues(stationValues),
+        referenceStationValues: scenario.referenceStationValues
+          ? filterSeries(scenario.referenceStationValues)
+          : undefined,
+      }
+    }),
+  }
 }
 
 export default function ScenarioExplorerPage({
   enableDateHighlights = false,
   enableSlrModes = false,
+  d1641StationsOnly = false,
+  publicModesOnly = false,
 }: ScenarioExplorerPageProps) {
   const [datasets, setDatasets] = useState<Partial<ScenarioDatasets> | null>(null)
   const [d1641Data, setD1641Data] = useState<D1641Dataset | null>(null)
@@ -241,6 +317,8 @@ export default function ScenarioExplorerPage({
   const [valuesInfoAnchor, setValuesInfoAnchor] = useState<HTMLButtonElement | null>(null)
   const [tutorialOpen, setTutorialOpen] = useState(false)
   const [isChartExpanded, setIsChartExpanded] = useState(false)
+  const compactScenarioLabel = (label: string) =>
+    publicModesOnly ? undefined : scenarioAbbreviation(label)
 
   useEffect(() => {
     // Expansion is only meaningful while at least two scenario lines are visible.
@@ -262,7 +340,8 @@ export default function ScenarioExplorerPage({
   )
 
   useEffect(() => {
-    const initialConfig = DATASET_CONFIG['rma-scenarios']
+    const initialMode: DashboardMode = 'rma-scenarios'
+    const initialConfig = DATASET_CONFIG[initialMode]
     Promise.all([
       fetch(assetUrl(initialConfig.url)).then(
         (response) => response.json() as Promise<ScenarioDataset>,
@@ -270,15 +349,15 @@ export default function ScenarioExplorerPage({
       fetch(assetUrl('/data/scenario-explorer/d1641_rma.json')).then(
         (response) => response.json() as Promise<D1641Dataset>,
       ),
-    ]).then(([rmaScenarios, compliance]) => {
-      setDatasets({ rmaScenarios })
+    ]).then(([initialData, compliance]) => {
+      setDatasets({ [initialConfig.key]: initialData })
       setD1641Data(compliance)
       setDateIndex(0)
       setHistogramDateIndex(0)
     })
   }, [])
 
-  const data =
+  const sourceData =
     dashboardMode === 'rma-schism'
       ? datasets?.rmaSchism
       : dashboardMode === 'tiered-outflows'
@@ -288,6 +367,22 @@ export default function ScenarioExplorerPage({
           : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
             ? datasets?.slrScenarios
             : datasets?.rmaScenarios
+
+  const d1641StationIds = useMemo(() => {
+    if (!d1641Data) return null
+    return new Set(
+      Object.values(d1641Data.scenarios).flatMap((scenarioCompliance) =>
+        Object.keys(scenarioCompliance.stations),
+      ),
+    )
+  }, [d1641Data])
+  const data = useMemo(
+    () =>
+      sourceData && d1641StationsOnly && d1641StationIds
+        ? filterDatasetToStations(sourceData, d1641StationIds)
+        : sourceData,
+    [d1641StationIds, d1641StationsOnly, sourceData],
+  )
 
   const selectDashboardMode = async (nextMode: DashboardMode) => {
     if (!datasets || nextMode === dashboardMode) return
@@ -772,8 +867,13 @@ export default function ScenarioExplorerPage({
       </Box>
     )
   }
-  const headerDescription =
-    'Explore salinity changes across scenarios, regions, stations, and time with the linked map, timeline, and station distribution. See Tutorial for help. If the layout feels crowded, use a larger screen or zoom out in your browser (Ctrl/Cmd + −).'
+  const publicAvailabilityMessage =
+    dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
+      ? 'The modeling results of scenarios “Calling on Reserves” and “A Tunnel” are coming soon.'
+      : 'The modeling results of scenario “A Tunnel” are coming soon.'
+  const headerDescription = d1641StationsOnly
+    ? `D-1641 station view · showing only the ${data.stations.length} mapped Decision 1641 monitoring locations. The map, regional timeline, and station distribution are all recalculated from this subset.`
+    : `Explore salinity changes across scenarios, regions, stations, and time with the linked map, timeline, and station distribution. See Tutorial for help.${publicModesOnly ? ` ${publicAvailabilityMessage}` : ' If the layout feels crowded, use a larger screen or zoom out in your browser (Ctrl/Cmd + −).'}`
 
   return (
     <>
@@ -825,6 +925,7 @@ export default function ScenarioExplorerPage({
           onTutorialOpen={() => setTutorialOpen(true)}
           showSchismRuns={enableDateHighlights}
           showSlrModes={enableSlrModes}
+          publicModesOnly={publicModesOnly}
         />
         <ExplorerTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
@@ -907,18 +1008,19 @@ export default function ScenarioExplorerPage({
                     label="Scenario"
                     value={scenario}
                     displayValue={scenarioOptions.find((item) => item.key === scenario)?.label}
-                    compactValue={scenarioAbbreviation(
+                    compactValue={compactScenarioLabel(
                       scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario,
                     )}
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
                     {data.scenarios.map((item) => (
                       <MenuItem
+                        disabled={publicModesOnly && isTunnelScenario(item.label)}
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryGreen')}
                       >
-                        <ResponsiveScenarioLabel label={item.label} />
+                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
                   </LabeledSelect>
@@ -930,20 +1032,25 @@ export default function ScenarioExplorerPage({
                     label="Scenario"
                     value={scenario}
                     displayValue={scenarioOptions.find((item) => item.key === scenario)?.label}
-                    compactValue={scenarioAbbreviation(
+                    compactValue={compactScenarioLabel(
                       scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario,
                     )}
                     onChange={(event) => selectSlrFamily(event.target.value)}
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
+                        disabled={publicModesOnly && isTunnelScenario(item.label)}
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryGreen')}
                       >
-                        <ResponsiveScenarioLabel label={item.label.replace(/\s*\(SLR\)$/, '')} />
+                        <ResponsiveScenarioLabel
+                          fullName={publicModesOnly}
+                          label={item.label.replace(/\s*\(SLR\)$/, '')}
+                        />
                       </MenuItem>
                     ))}
+                    {publicModesOnly && <UnavailableSlrOptions color="brand.primaryGreen" />}
                   </LabeledSelect>
                 </>
               ) : dashboardMode === 'tiered-outflows' || dashboardMode === 'schism-runs' ? (
@@ -953,7 +1060,7 @@ export default function ScenarioExplorerPage({
                     label="Base Scenario"
                     value={baseScenario}
                     displayValue={scenarioOptions.find((item) => item.key === baseScenario)?.label}
-                    compactValue={scenarioAbbreviation(
+                    compactValue={compactScenarioLabel(
                       scenarioOptions.find((item) => item.key === baseScenario)?.label ??
                         baseScenario,
                     )}
@@ -961,12 +1068,14 @@ export default function ScenarioExplorerPage({
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
-                        disabled={item.key === scenario}
+                        disabled={
+                          item.key === scenario || (publicModesOnly && isTunnelScenario(item.label))
+                        }
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryBlue')}
                       >
-                        <ResponsiveScenarioLabel label={item.label} />
+                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
                   </LabeledSelect>
@@ -976,19 +1085,22 @@ export default function ScenarioExplorerPage({
                     label="Selected Scenario"
                     value={scenario}
                     displayValue={scenarioOptions.find((item) => item.key === scenario)?.label}
-                    compactValue={scenarioAbbreviation(
+                    compactValue={compactScenarioLabel(
                       scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario,
                     )}
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
-                        disabled={item.key === baseScenario}
+                        disabled={
+                          item.key === baseScenario ||
+                          (publicModesOnly && isTunnelScenario(item.label))
+                        }
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryGreen')}
                       >
-                        <ResponsiveScenarioLabel label={item.label} />
+                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
                   </LabeledSelect>
@@ -1000,7 +1112,7 @@ export default function ScenarioExplorerPage({
                     label="Base Scenario"
                     value={baseScenario}
                     displayValue={scenarioOptions.find((item) => item.key === baseScenario)?.label}
-                    compactValue={scenarioAbbreviation(
+                    compactValue={compactScenarioLabel(
                       scenarioOptions.find((item) => item.key === baseScenario)?.label ??
                         baseScenario,
                     )}
@@ -1008,13 +1120,17 @@ export default function ScenarioExplorerPage({
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
+                        disabled={publicModesOnly && isTunnelScenario(item.label)}
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryBlue')}
                       >
-                        <ResponsiveScenarioLabel label={item.label} />
+                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
+                    {publicModesOnly && dashboardMode === 'slr-scenarios' && (
+                      <UnavailableSlrOptions color="brand.primaryBlue" />
+                    )}
                   </LabeledSelect>
                   <SwapButton onClick={swapScenarios} />
                   <LabeledSelect
@@ -1022,21 +1138,27 @@ export default function ScenarioExplorerPage({
                     label="Selected Scenario"
                     value={scenario}
                     displayValue={scenarioOptions.find((item) => item.key === scenario)?.label}
-                    compactValue={scenarioAbbreviation(
+                    compactValue={compactScenarioLabel(
                       scenarioOptions.find((item) => item.key === scenario)?.label ?? scenario,
                     )}
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
-                        disabled={item.key === baseScenario}
+                        disabled={
+                          item.key === baseScenario ||
+                          (publicModesOnly && isTunnelScenario(item.label))
+                        }
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryGreen')}
                       >
-                        <ResponsiveScenarioLabel label={item.label} />
+                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
+                    {publicModesOnly && dashboardMode === 'slr-scenarios' && (
+                      <UnavailableSlrOptions color="brand.primaryGreen" />
+                    )}
                   </LabeledSelect>
                 </>
               )}
@@ -1228,6 +1350,9 @@ export default function ScenarioExplorerPage({
                 expanded={isChartExpanded}
                 onExpandedChange={setIsChartExpanded}
                 enableDateHighlights={enableDateHighlights}
+                useFullScenarioNames={publicModesOnly}
+                disableTunnelScenario={publicModesOnly}
+                showTimeframeSelector={!publicModesOnly}
               />
               {!isChartExpanded && (
                 <StationHistogram
@@ -1262,6 +1387,8 @@ export default function ScenarioExplorerPage({
               region={region}
               mapExtent={mapExtent}
               histogramBrush={histogramBrush}
+              showBrushStationLabels={!publicModesOnly}
+              emphasizeD1641Stations={d1641StationsOnly}
             />
           )}
         </Box>

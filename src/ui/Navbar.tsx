@@ -85,10 +85,12 @@ const navItems: NavItem[] = [
     caption: 'Project tools and design references for the team.',
     dropdown: [
       { label: 'Scenario Explorer', href: '/pages/scenario-explorer/internal' },
+      { label: 'D-1641 Station Explorer', href: '/pages/scenario-explorer/d1641' },
       { label: 'Regional Summary', href: '/pages/regional-summary' },
       { label: 'Design System', href: '/design-system' },
       { label: 'EJ Playground', href: '/pages/playground' },
       { label: 'Baseline Exploration', href: '/pages/baseline-exploration' },
+      { label: 'Scenario Time Lapse', href: '/pages/scenario-time-lapse' },
       { label: 'KelpDiagram', href: '/pages/kelp-diagram' },
       { label: 'Watershed', href: '/pages/watershed' },
       { label: 'Rank Visualization', href: '/pages/rank-visualization' },

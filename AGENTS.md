@@ -14,6 +14,7 @@ The application uses React 19, TypeScript, Vite, React Router, MUI, Mapbox GL, D
 npm install          # Install dependencies
 npm run dev          # Start Vite at http://localhost:5173
 npm run build        # TypeScript project build + Vite production build
+npm run build:kiosk  # Production build for the offline exhibit (VITE_OFFLINE_MAP=1)
 npm run lint         # Run ESLint
 npm run format       # Format maintained files with Prettier
 npm run format:check # Check formatting without modifying files
@@ -38,8 +39,8 @@ Current route groups:
 - Public home: `/`
 - Scenarios: `/scenarios`, `/scenarios/background-context`, `/scenarios/key-parameters`, and `/scenarios/:scenarioSlug`
 - Repository: `/pages/project-documentation`, `/pages/service-learning`, and `/pages/resources`
-- Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/regional-summary`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
-- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/co-design-timeline`, and `/design-system`
+- Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/scenario-explorer/d1641`, `/pages/regional-summary`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
+- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/scenario-time-lapse`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/co-design-timeline`, and `/design-system`
 
 ## Source Architecture
 
@@ -70,6 +71,7 @@ Keep route-specific code in its feature. Move code into `src/ui`, `src/map`, or 
 - Internal tools can use `src/internal/PageLayout.tsx` for a shared Navbar/hero/Footer shell.
 - `src/ui/Navbar.tsx` contains `DesktopNavbar` and `MobileNavbar`; the parent mounts exactly one based on the MUI `md` breakpoint.
 - `src/map/BaseMap.tsx` and `src/map/MapLayerOrchestrator.tsx` provide shared map infrastructure. Specialized map presentations live under `src/map/instances/` or within their owning feature.
+- `src/map/offlineBasemapStyle.ts` is the network-free exhibit basemap enabled by `?offline=1` on the regional summary and scenario explorer, or always in `npm run build:kiosk` builds (`.env.kiosk` sets `VITE_OFFLINE_MAP=1`). It mirrors the online Mapbox Studio styles using bundled OpenStreetMap layers and glyphs; regenerate its data with `node scripts/build-offline-basemap.mjs`.
 
 ## Theme and Design System
 

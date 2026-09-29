@@ -1,265 +1,437 @@
-import { useCallback, useState } from 'react'
-import { Box, Button, Tab, Tabs, Typography } from '@mui/material'
-import { alpha } from '@mui/material/styles'
-import StationToggle from './components/StationToggle'
-import ComparisonFilterControl from './components/ComparisonFilterControl'
-import TimeRangeControl from './components/TimeRangeControl'
-import RegionalSummaryTutorial from './components/RegionalSummaryTutorial'
-import RegionalSummaryMethod from './components/RegionalSummaryMethod'
-import StationMaximumMode from './components/StationMaximumMode'
-import ArtworkMap from './components/map/Map'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import TouchAppIcon from '@mui/icons-material/TouchApp'
+import { Box, Button, Typography } from '@mui/material'
+import { alpha, useTheme } from '@mui/material/styles'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useState } from 'react'
+import { scenarios, type ScenarioContent } from '../scenarios/content/scenarioContent'
+import { assetUrl } from '../../utils/baseUrl'
 import {
-  DISABLED_SCENARIOS,
-  SCENARIOS,
-  type ComparisonFilter,
-  type RegionalScenario,
-  type SelectedRegionTimeline,
-} from './types'
+  regionalSummaryControlStyles,
+  regionalSummarySizing,
+  regionalSummaryTypography,
+} from './regionalSummaryStyles'
+import RegionalSalinityExplorer from './RegionalSalinityExplorer'
+import RegionalProjectIntroduction from './RegionalProjectIntroduction'
+
+const alternativeDeltaOutflows: ScenarioContent = {
+  slug: 'alternative-delta-outflows',
+  number: '01',
+  title: 'Increasing Delta Outflow',
+  image: '/images/scenarios/outflow.jpg',
+  summary:
+    'How does increasing or decreasing how much water flows through the Delta change salinity relative to current operations?',
+  story: [],
+  mapFeatures: [],
+}
+
+const adaptationScenarioOrder = [
+  'eco-machine',
+  'new-green-watershed',
+  'bolster-and-fortify',
+  'calling-on-reserves',
+  'a-tunnel',
+] as const
+
+const regionalScenarioIntroductions: Record<string, string> = {
+  'eco-machine':
+    'Where can tidal restoration be implemented in the Delta to strategically reduce salinity, while also creating ecological, eco-cultural, recreational, and community benefits?',
+  'new-green-watershed':
+    'In addition to tidal restoration, what if the Delta and larger watershed were holistically restored to reduce systemic risks to the Delta’s water infrastructure, transition to a more regenerative and sustainable economy, and advance Indigenous sovereignty?',
+  'bolster-and-fortify':
+    'What if reinforced levees combined with operable gates created a more resilient freshwater corridor through the Delta?',
+  'calling-on-reserves':
+    'What if the state’s major dams and reservoirs were operated differently—mainly by changing when and how water is stored and released—to improve drought resilience, manage salinity, and better support aquatic ecosystems?',
+  'a-tunnel':
+    'What if a large tunnel—the Delta Conveyance Project, or DCP—were constructed to divert freshwater from the Sacramento River during high storm flows and convey that water underground to export pumps in the South Delta?',
+}
+
+const adaptationScenarios = [
+  alternativeDeltaOutflows,
+  ...adaptationScenarioOrder.map((slug, index) => {
+    const scenario = scenarios.find((candidate) => candidate.slug === slug) as ScenarioContent
+    return {
+      ...scenario,
+      number: String(index + 2).padStart(2, '0'),
+      summary: regionalScenarioIntroductions[slug],
+    }
+  }),
+]
 
 export default function RegionalSummaryPage() {
-  const [viewMode, setViewMode] = useState<'regional' | 'station-maximum'>('regional')
-  const [showStations, setShowStations] = useState(false)
-  const [scenario, setScenario] = useState<RegionalScenario>(SCENARIOS[1])
-  const [tutorialOpen, setTutorialOpen] = useState(false)
-  const [methodOpen, setMethodOpen] = useState(false)
-  const [selectedRegion, setSelectedRegion] = useState<SelectedRegionTimeline | null>(null)
-  const [focusedReportId, setFocusedReportId] = useState<string | null>(null)
-  const [comparisonFilter, setComparisonFilter] = useState<ComparisonFilter>({
-    mode: 'either',
-    showUsCm: true,
-    showPercent: true,
-    minimumUsCm: 450,
-    minimumPercent: 10,
-    startMonth: null,
-    endMonth: null,
-  })
-  const handleSelectedRegionChange = useCallback((region: SelectedRegionTimeline | null) => {
-    setSelectedRegion(region)
-    setFocusedReportId(null)
-  }, [])
+  const theme = useTheme()
+  const reduceMotion = useReducedMotion()
+  const [selectedScenario, setSelectedScenario] = useState<ScenarioContent | null>(null)
+  const [pendingScenario, setPendingScenario] = useState<ScenarioContent | null>(null)
+  const [detailsVisible, setDetailsVisible] = useState(false)
+  const [isExploring, setIsExploring] = useState(false)
+  const [projectIntroductionOpen, setProjectIntroductionOpen] = useState(false)
+
+  const selectScenario = (scenario: ScenarioContent) => {
+    if (!selectedScenario) {
+      setSelectedScenario(scenario)
+      setDetailsVisible(true)
+      return
+    }
+
+    if (selectedScenario.slug === scenario.slug) {
+      setDetailsVisible(true)
+      return
+    }
+
+    setPendingScenario(scenario)
+    setDetailsVisible(false)
+  }
+
+  const finishDetailsExit = () => {
+    if (pendingScenario) {
+      setSelectedScenario(pendingScenario)
+      setPendingScenario(null)
+      setDetailsVisible(true)
+      return
+    }
+
+    setSelectedScenario(null)
+  }
 
   return (
-    <Box sx={{ minHeight: '100dvh', bgcolor: 'base.800' }}>
-      <Box
-        component="main"
-        aria-label="Regional Summary"
-        sx={{
-          height: '100dvh',
-          minHeight: 520,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-          position: 'relative',
-          bgcolor: 'base.800',
-        }}
-      >
-        <Box
-          component="header"
-          sx={{
-            display: 'grid',
-            alignContent: 'center',
-            gridTemplateRows: 'auto auto auto',
-            rowGap: 1.25,
-            flex: '0 0 auto',
-            position: 'relative',
-            width: '100%',
-            zIndex: 3,
-            px: { xs: 2, sm: 3, md: 4 },
-            py: { xs: 1.5, md: 2 },
-          }}
-        >
-          <Box
-            data-tour="regional-purpose"
-            sx={(theme) => ({
-              alignItems: 'center',
-              display: 'grid',
-              gap: theme.jtSpacing.gap.md,
-              gridTemplateColumns: 'minmax(0, 1fr) auto',
-            })}
+    <Box sx={{ height: '100dvh', overflow: 'hidden', bgcolor: 'base.900' }}>
+      <AnimatePresence mode="wait" initial={false}>
+        {isExploring && selectedScenario ? (
+          <motion.div
+            key="regional-salinity-map"
+            style={{
+              height: '100dvh',
+              overflow: 'hidden',
+              backgroundColor: theme.palette.base[900],
+            }}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.985 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.985 }}
+            transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Box>
-              <Typography
-                variant="h2"
-                component="h2"
-                sx={{
-                  color: 'common.white',
-                  fontSize: { xs: '1.35rem', sm: '2rem', md: '2.6rem' },
-                  lineHeight: 1,
-                }}
-              >
-                Regional Summary
-              </Typography>
-              <Typography variant="caption" sx={{ color: 'base.100', display: 'block', mt: 0.75 }}>
-                {viewMode === 'regional'
-                  ? 'Explore where and when each planning scenario produces meaningful salinity changes relative to Business as Usual.'
-                  : 'Examine the most salt-affected station among 10 Franks Tract stations for each day and scenario.'}
-              </Typography>
-            </Box>
-            <Box
-              sx={(theme) => ({
-                alignItems: 'center',
-                display: 'flex',
-                gap: theme.jtSpacing.gap.sm,
-              })}
-            >
-              <Tabs
-                value={viewMode}
-                onChange={(_, value: 'regional' | 'station-maximum') => {
-                  setViewMode(value)
-                  if (value === 'regional' && DISABLED_SCENARIOS.includes(scenario)) {
-                    setScenario(SCENARIOS[1])
-                  }
-                }}
-                aria-label="Regional Summary analysis mode"
-                sx={{
-                  minHeight: 40,
-                  '& .MuiTab-root': { minHeight: 40 },
-                  '& .MuiTabs-indicator': { bgcolor: 'brand.primaryGreen' },
-                }}
-              >
-                <Tab label="Regional reports" value="regional" />
-                <Tab label="Station maximum" value="station-maximum" />
-              </Tabs>
-              {viewMode === 'regional' && (
-                <>
-                  <Button variant="outlined" onClick={() => setMethodOpen(true)}>
-                    Method
-                  </Button>
-                  <Button variant="outlined" onClick={() => setTutorialOpen(true)}>
-                    Tutorial
-                  </Button>
-                </>
-              )}
-            </Box>
-          </Box>
-          <Box
-            sx={(theme) => ({
-              alignItems: 'stretch',
-              display: 'grid',
-              gap: theme.jtSpacing.gap.sm,
-              gridTemplateColumns: {
-                xs: '1fr',
-                md: 'minmax(0, 1fr) minmax(180px, 200px)',
-                lg: 'minmax(0, 1fr) minmax(460px, 550px) minmax(130px, 150px)',
-              },
-              minWidth: 0,
-              '& > [data-tour="regional-thresholds"]': {
-                gridColumn: { md: '1 / -1', lg: 'auto' },
-                gridRow: { md: 2, lg: 'auto' },
-              },
-              '& > [data-tour="regional-stations"]': {
-                gridColumn: { md: 2, lg: 'auto' },
-                gridRow: { md: 1, lg: 'auto' },
-              },
-            })}
-          >
-            <Box
-              data-tour="regional-scenarios"
-              role="group"
-              aria-label="Scenario filter"
-              sx={(theme) => ({
-                alignItems: 'center',
-                display: 'flex',
-                minWidth: 0,
-                '& .MuiTab-root:hover, & .MuiTab-root:focus-visible': {
-                  bgcolor: alpha(theme.palette.brand.primaryGreen, 0.14),
-                  borderColor: alpha(theme.palette.brand.primaryGreen, 0.3),
-                },
-                '& .MuiTab-root.Mui-selected': {
-                  bgcolor: 'brand.primaryGreen !important',
-                  borderColor: 'brand.primaryGreen !important',
-                  color: 'common.black !important',
-                },
-              })}
-            >
-              <Tabs
-                value={scenario}
-                onChange={(_, value: RegionalScenario) => setScenario(value)}
-                variant="scrollable"
-                scrollButtons={false}
-                aria-label="Scenario compared with Business as Usual"
-                sx={(theme) => ({
-                  minHeight: theme.spacing(5),
-                  width: '100%',
-                  '& .MuiTabs-flexContainer': { alignItems: 'center', gap: theme.jtSpacing.gap.xs },
-                  '& .MuiTabs-indicator': { display: 'none' },
-                  '& .MuiTab-root': {
-                    ...theme.typography.captionSmall,
-                    border: 1,
-                    borderColor: 'transparent',
-                    borderRadius: 'var(--mui-shape-borderRadius)',
-                    color: 'common.white',
-                    flexShrink: 0,
-                    fontWeight: 500,
-                    minHeight: theme.spacing(5),
-                    minWidth: 0,
-                    opacity: 1,
-                    px: theme.jtSpacing.component.xs,
-                    py: 0,
-                    transition:
-                      'background-color 180ms ease, border-color 180ms ease, color 180ms ease',
-                    '&:hover, &:focus-visible': {
-                      bgcolor: alpha(theme.palette.brand.primaryGreen, 0.14),
-                      borderColor: alpha(theme.palette.brand.primaryGreen, 0.3),
-                      outline: 'none',
-                    },
-                    '&.Mui-selected': {
-                      bgcolor: 'brand.primaryGreen',
-                      borderColor: 'brand.primaryGreen',
-                      color: 'common.black',
-                    },
-                  },
-                  '& .MuiTabs-scroller': { overflowX: 'auto !important', scrollbarWidth: 'none' },
-                  '& .MuiTabs-scroller::-webkit-scrollbar': { display: 'none' },
-                })}
-              >
-                {SCENARIOS.filter(
-                  (item) => viewMode === 'station-maximum' || !DISABLED_SCENARIOS.includes(item),
-                ).map((item) => (
-                  <Tab
-                    disabled={viewMode === 'regional' && DISABLED_SCENARIOS.includes(item)}
-                    key={item}
-                    value={item}
-                    label={item}
-                  />
-                ))}
-              </Tabs>
-            </Box>
-            {viewMode === 'regional' && (
-              <ComparisonFilterControl
-                filter={comparisonFilter}
-                scenario={scenario}
-                onChange={setComparisonFilter}
-              />
-            )}
-            {viewMode === 'regional' && (
-              <StationToggle showStations={showStations} onStationsChange={setShowStations} />
-            )}
-          </Box>
-          {viewMode === 'regional' && (
-            <TimeRangeControl
-              filter={comparisonFilter}
-              scenario={scenario}
-              selectedRegion={selectedRegion}
-              onReportSelect={setFocusedReportId}
-              onChange={setComparisonFilter}
+            <RegionalSalinityExplorer
+              scenario={selectedScenario}
+              onBack={() => setIsExploring(false)}
             />
-          )}
-        </Box>
-        {viewMode === 'regional' ? (
-          <ArtworkMap
-            showStations={showStations}
-            scenario={scenario}
-            comparisonFilter={comparisonFilter}
-            focusedReportId={focusedReportId}
-            onSelectedRegionChange={handleSelectedRegionChange}
-          />
+          </motion.div>
         ) : (
-          <StationMaximumMode scenario={scenario} />
+          <motion.div
+            key="scenario-selection"
+            style={{
+              height: '100dvh',
+              overflow: 'hidden',
+              backgroundColor: theme.palette.base[900],
+            }}
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.985 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, scale: 0.985 }}
+            transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Box
+              component="main"
+              aria-label="Regional Summary scenario selection"
+              sx={{
+                minHeight: '100dvh',
+                bgcolor: 'base.900',
+                color: 'common.white',
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+              }}
+            >
+              <Box
+                component="header"
+                sx={{
+                  minHeight: { xs: 112, md: 120 },
+                  px: regionalSummarySizing.pageInset,
+                  py: 'clamp(16px, 1.25vw, 48px)',
+                  display: 'grid',
+                  gridTemplateColumns: {
+                    xs: 'minmax(0, 1fr) auto',
+                    xl: 'minmax(0, 1fr) auto auto',
+                  },
+                  alignItems: 'center',
+                  gap: regionalSummarySizing.sectionGap,
+                  borderBottom: 1,
+                  borderColor: 'translucent.primaryGreen',
+                  flex: '0 0 auto',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    flexWrap: 'wrap',
+                    columnGap: 2,
+                    rowGap: 0.5,
+                  }}
+                >
+                  <Typography component="h1" sx={regionalSummaryTypography.pageTitle}>
+                    Choose an adaptation scenario
+                  </Typography>
+                  <Typography
+                    component="p"
+                    sx={{ ...regionalSummaryTypography.pagePrompt, color: 'base.100' }}
+                  >
+                    to explore salinity patterns across the Delta
+                  </Typography>
+                </Box>
+                <Button
+                  variant="outlined"
+                  startIcon={<InfoOutlinedIcon />}
+                  onClick={() => setProjectIntroductionOpen(true)}
+                  sx={{
+                    ...regionalSummaryControlStyles.compactTouchButton,
+                    color: 'common.white',
+                    borderColor: 'primary.main',
+                    borderWidth: '4px',
+                    whiteSpace: 'nowrap',
+                    '&:hover': { borderWidth: '4px' },
+                    '& [data-testid="InfoOutlinedIcon"]': {
+                      fontSize: `${regionalSummarySizing.prominentIconSize} !important`,
+                    },
+                  }}
+                >
+                  What is Just Transitions in the Delta?
+                </Button>
+                <Box
+                  sx={{
+                    display: { xs: 'none', xl: 'flex' },
+                    alignItems: 'center',
+                    gap: 1,
+                    color: 'base.100',
+                  }}
+                >
+                  <TouchAppIcon
+                    aria-hidden="true"
+                    sx={{ fontSize: regionalSummarySizing.controlIconSize }}
+                  />
+                  <Typography sx={regionalSummaryTypography.instruction}>
+                    Tap a scenario to learn more
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box
+                component="ul"
+                sx={{
+                  m: 0,
+                  p: 0,
+                  listStyle: 'none',
+                  display: 'flex',
+                  flex: '1 1 auto',
+                  minHeight: 0,
+                  flexDirection: { xs: 'column', md: 'row' },
+                  overflow: { xs: 'auto', md: 'hidden' },
+                }}
+              >
+                {adaptationScenarios.map((scenario) => {
+                  const isSelected = selectedScenario?.slug === scenario.slug
+                  const anotherScenarioSelected = selectedScenario !== null && !isSelected
+
+                  return (
+                    <Box
+                      component="li"
+                      key={scenario.slug}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isSelected}
+                      aria-label={`${scenario.title}. ${isSelected ? 'Selected' : 'Tap to learn more'}`}
+                      onClick={() => selectScenario(scenario)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault()
+                          selectScenario(scenario)
+                        }
+                      }}
+                      sx={{
+                        position: 'relative',
+                        isolation: 'isolate',
+                        minWidth: 0,
+                        minHeight: { xs: isSelected ? 430 : 144, md: 0 },
+                        flex: {
+                          xs: '0 0 auto',
+                          md: isSelected ? '3 1 0' : anotherScenarioSelected ? '0.48 1 0' : '1 1 0',
+                        },
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        borderRight: { md: 1 },
+                        borderBottom: { xs: 1, md: 0 },
+                        borderColor: 'translucent.primaryGreen',
+                        outline: 'none',
+                        transition: reduceMotion
+                          ? 'none'
+                          : 'flex 520ms cubic-bezier(0.22, 1, 0.36, 1), min-height 520ms cubic-bezier(0.22, 1, 0.36, 1)',
+                        '&:focus-visible': {
+                          boxShadow: `inset 0 0 0 4px ${theme.palette.primary.main}`,
+                        },
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          inset: 0,
+                          zIndex: -1,
+                          bgcolor: isSelected
+                            ? alpha(theme.palette.base[900], 0.28)
+                            : alpha(theme.palette.base[900], anotherScenarioSelected ? 0.72 : 0.38),
+                          transition: 'background-color 240ms ease',
+                        },
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={assetUrl(scenario.image)}
+                        alt=""
+                        sx={{
+                          position: 'absolute',
+                          inset: 0,
+                          zIndex: -2,
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          transform: isSelected ? 'scale(1.035)' : 'scale(1)',
+                          filter: anotherScenarioSelected
+                            ? 'brightness(0.62) saturate(0.72)'
+                            : 'none',
+                          transition: reduceMotion
+                            ? 'none'
+                            : 'transform 700ms cubic-bezier(0.22, 1, 0.36, 1), filter 320ms ease',
+                        }}
+                      />
+
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          inset: 0,
+                          p: regionalSummarySizing.surfacePadding,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'flex-start',
+                          background: isSelected
+                            ? 'linear-gradient(90deg, rgba(16,22,24,0.72) 0%, rgba(16,22,24,0.34) 58%, rgba(16,22,24,0.08) 100%)'
+                            : anotherScenarioSelected
+                              ? 'linear-gradient(180deg, rgba(16,22,24,0.78) 0%, rgba(16,22,24,0.54) 100%)'
+                              : 'linear-gradient(180deg, rgba(16,22,24,0.58) 0%, rgba(16,22,24,0.08) 72%)',
+                        }}
+                      >
+                        <Typography
+                          component="p"
+                          sx={{
+                            ...regionalSummaryTypography.scenarioNumber,
+                            color: 'primary.main',
+                            mb: 1.5,
+                          }}
+                        >
+                          {scenario.number}
+                        </Typography>
+                        <Typography
+                          component="h2"
+                          sx={{
+                            ...regionalSummaryTypography.scenarioTitle,
+                            maxWidth: isSelected ? '18ch' : '10ch',
+                            textWrap: 'balance',
+                            opacity: anotherScenarioSelected ? 0 : 1,
+                            transform: anotherScenarioSelected
+                              ? 'translateY(-8px)'
+                              : 'translateY(0)',
+                            transition: reduceMotion
+                              ? 'none'
+                              : 'opacity 180ms ease, transform 240ms ease',
+                          }}
+                        >
+                          {scenario.title}
+                        </Typography>
+
+                        <AnimatePresence initial={false} onExitComplete={finishDetailsExit}>
+                          {isSelected && detailsVisible && (
+                            <motion.div
+                              key={scenario.slug}
+                              initial={reduceMotion ? false : { opacity: 0 }}
+                              animate={{
+                                opacity: 1,
+                                transition: { duration: 0.2, delay: reduceMotion ? 0 : 0.16 },
+                              }}
+                              exit={
+                                reduceMotion
+                                  ? undefined
+                                  : { opacity: 0, transition: { duration: 0.12, delay: 0 } }
+                              }
+                            >
+                              <Typography
+                                sx={{
+                                  ...regionalSummaryTypography.scenarioSummary,
+                                  mt: 2.5,
+                                  maxWidth: '52ch',
+                                  color: 'common.white',
+                                  textWrap: 'pretty',
+                                }}
+                              >
+                                {scenario.summary}
+                              </Typography>
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 3 }}>
+                                <Button
+                                  variant={scenario.title === 'A Tunnel' ? 'outlined' : 'contained'}
+                                  size="large"
+                                  endIcon={<ArrowForwardIcon />}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    setIsExploring(true)
+                                  }}
+                                  sx={{
+                                    ...regionalSummaryControlStyles.primaryTouchButton,
+                                  }}
+                                >
+                                  {scenario.title === 'A Tunnel'
+                                    ? 'Scenario Overview'
+                                    : 'Salinity Exploration'}
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  size="large"
+                                  startIcon={<ArrowBackIcon />}
+                                  onClick={(event) => {
+                                    event.stopPropagation()
+                                    setPendingScenario(null)
+                                    setDetailsVisible(false)
+                                  }}
+                                  sx={{
+                                    ...regionalSummaryControlStyles.primaryTouchButton,
+                                    color: 'common.white',
+                                    borderColor: 'primary.main',
+                                  }}
+                                >
+                                  All scenarios
+                                </Button>
+                              </Box>
+                              {scenario.title === 'A Tunnel' ? (
+                                <Typography
+                                  sx={{
+                                    ...regionalSummaryTypography.instruction,
+                                    color: 'base.100',
+                                    mt: 1.5,
+                                  }}
+                                >
+                                  Modeling results are coming soon.
+                                </Typography>
+                              ) : null}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </Box>
+                    </Box>
+                  )
+                })}
+              </Box>
+            </Box>
+          </motion.div>
         )}
-      </Box>
-      <RegionalSummaryTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
-      <RegionalSummaryMethod open={methodOpen} onClose={() => setMethodOpen(false)} />
+      </AnimatePresence>
+      <RegionalProjectIntroduction
+        open={projectIntroductionOpen}
+        onClose={() => setProjectIntroductionOpen(false)}
+      />
     </Box>
   )
 }

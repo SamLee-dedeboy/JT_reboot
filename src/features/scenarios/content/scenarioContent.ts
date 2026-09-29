@@ -39,6 +39,7 @@ export interface ScenarioChapter {
   paragraphs: string[]
   highlights?: Array<{
     title: string
+    summary: string
     paragraphs: string[]
     mapHabitatType?: 'soil' | 'transitional' | 'tidal'
     exploreHabitat?: 'forest' | 'meadow' | 'floodplain'
@@ -151,6 +152,8 @@ export const scenarios: ScenarioContent[] = [
         highlights: [
           {
             title: 'Keeping peat soils wet',
+            summary:
+              'Keeping water in peat soils can stop the ground from sinking while supporting farming, habitat, carbon storage, and cultural uses.',
             mapHabitatType: 'soil',
             paragraphs: [
               'In deeply to moderately subsided Delta areas that remain protected by levees, the central strategy is to keep peat soils wet, so they stop decomposing and sinking.',
@@ -159,6 +162,8 @@ export const scenarios: ScenarioContent[] = [
           },
           {
             title: 'Restoring tidal wetlands',
+            summary:
+              'Near sea level, restored tidal wetlands could reshape water and salinity movement while creating habitat and spaces for recreation and cultural practices.',
             mapHabitatType: 'tidal',
             paragraphs: [
               'Near sea level, tidal wetlands are proposed if levees are breached, such as areas of Suisun Marsh.',
@@ -167,6 +172,8 @@ export const scenarios: ScenarioContent[] = [
           },
           {
             title: 'Connecting water to higher ground',
+            summary:
+              'Transitional habitats can connect channels, floodplains, and uplands so fish, plants, and wildlife have room to move as water levels rise.',
             mapHabitatType: 'transitional',
             paragraphs: [
               'Along the Delta’s edges, transitional habitats could connect tidal areas and river channels with floodplains and higher ground. These connections would give plants and wildlife more room to move as water levels rise.',
@@ -188,6 +195,8 @@ export const scenarios: ScenarioContent[] = [
         highlights: [
           {
             title: 'Forest restoration',
+            summary:
+              'Forest stewardship can reduce severe wildfire risk and create healthier conditions for habitat, meadows, and the wider watershed.',
             exploreHabitat: 'forest',
             paragraphs: [
               'Forest thinning, mastication of trees, prescribed and cultural burning, and other stewardship practices can remove excess fuels and create a more varied forest structure. Existing research indicates that these changes can reduce the risk of severe wildfire, improve habitat, and create conditions that support nearby meadow and watershed restoration.',
@@ -195,6 +204,8 @@ export const scenarios: ScenarioContent[] = [
           },
           {
             title: 'Meadow restoration',
+            summary:
+              'Repairing eroded mountain meadows helps them hold and slowly release water while rebuilding wetland habitat.',
             exploreHabitat: 'meadow',
             paragraphs: [
               'Eroded stream channels can drain mountain meadows and lower their water tables. Restoration techniques—including filling incised channels, constructing beaver dam analogs, and removing encroaching conifers—can slow and spread streamflow across the meadow. Studies show that these techniques create barriers to streamflow, thereby allowing more water to soak into the soil, supporting wetland plant communities, and creating habitat for diverse species.',
@@ -202,6 +213,8 @@ export const scenarios: ScenarioContent[] = [
           },
           {
             title: 'Floodplain restoration',
+            summary:
+              'Reconnected floodplains give high flows more room to spread out, easing pressure on levees while restoring shallow-water habitat.',
             exploreHabitat: 'floodplain',
             paragraphs: [
               'Floodplains give high river flows room to spread out, slow down, and create shallow-water habitat. Reconnecting them could reduce pressure on existing levees and nearby upstream communities while restoring wetlands and riverbank habitat.',
