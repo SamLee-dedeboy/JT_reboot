@@ -10,7 +10,7 @@ interface RankingScenario {
   slug: string
 }
 
-interface ScenarioRankingOverviewProps {
+interface RankingOverviewProps {
   scenarios: readonly RankingScenario[]
 }
 
@@ -32,7 +32,7 @@ const criterionColors = [
   'accent.blue',
 ] as const
 
-export default function ScenarioRankingOverview({ scenarios }: ScenarioRankingOverviewProps) {
+export default function RankingOverview({ scenarios }: RankingOverviewProps) {
   const theme = useTheme()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const selectedScenario = scenarios[selectedIndex]

@@ -24,6 +24,9 @@ interface NavRailProps {
   items?: NavRailItem[]
   ariaLabel?: string
   variant?: 'default' | 'home'
+  activeItemId?: string
+  onNavigate?: (id: string) => void
+  scrollBehavior?: ScrollBehavior
   sx?: SxProps<Theme>
 }
 
@@ -31,11 +34,19 @@ export default function NavRail({
   items = HOME_SECTIONS,
   ariaLabel = 'Section navigation',
   variant = 'default',
+  activeItemId,
+  onNavigate,
+  scrollBehavior = 'smooth',
   sx,
 }: NavRailProps) {
   const [active, setActive] = useState(items[0]?.id ?? '')
-  const activeId = items.some((item) => item.id === active) ? active : (items[0]?.id ?? '')
+  const observedActiveId = items.some((item) => item.id === active)
+    ? active
+    : (items[0]?.id ?? '')
+  const activeId = activeItemId ?? observedActiveId
   useEffect(() => {
+    if (activeItemId !== undefined) return
+
     const els = items
       .map((s) => document.getElementById(s.id))
       .filter((el): el is HTMLElement => !!el)
@@ -54,11 +65,12 @@ export default function NavRail({
     )
     els.forEach((el) => io.observe(el))
     return () => io.disconnect()
-  }, [items])
+  }, [activeItemId, items])
 
   const go = (id: string) => {
+    onNavigate?.(id)
     const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (el) el.scrollIntoView({ behavior: scrollBehavior, block: 'start' })
   }
 
   return (

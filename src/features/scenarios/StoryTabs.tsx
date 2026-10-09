@@ -1,10 +1,9 @@
 import { Box, Container, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../theme'
-import { scenarios } from './content/scenarioContent'
+import { scenarios } from './content'
 
 const scenarioOrder = [
-  'business-as-usual',
   'eco-machine',
   'new-green-watershed',
   'bolster-and-fortify',
@@ -16,7 +15,7 @@ const orderedScenarios = scenarioOrder
   .map((slug) => scenarios.find((scenario) => scenario.slug === slug))
   .filter((scenario): scenario is (typeof scenarios)[number] => scenario != null)
 
-export default function ScenarioTabs({
+export default function StoryTabs({
   currentSlug,
   destination = 'story',
 }: {
@@ -42,7 +41,7 @@ export default function ScenarioTabs({
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: 'repeat(6, max-content)', lg: 'repeat(6, 1fr)' },
+            gridTemplateColumns: { xs: 'repeat(5, max-content)', lg: 'repeat(5, 1fr)' },
             gap: jtSpacing.gap.xs,
             overflowX: 'auto',
             scrollbarWidth: 'none',

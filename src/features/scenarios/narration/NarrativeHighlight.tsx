@@ -2,9 +2,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
 import { Box, ButtonBase, Collapse, Stack, Typography, alpha } from '@mui/material'
 import { useId, useState } from 'react'
-import { jtSpacing } from '../../theme'
+import { jtSpacing } from '../../../theme'
 
-interface ScenarioNarrativeHighlightProps {
+interface NarrativeHighlightProps {
   title: string
   summary: string
   paragraphs: string[]
@@ -14,7 +14,7 @@ interface ScenarioNarrativeHighlightProps {
   actionLabel?: string
 }
 
-export default function ScenarioNarrativeHighlight({
+export default function NarrativeHighlight({
   title,
   summary,
   paragraphs,
@@ -22,7 +22,7 @@ export default function ScenarioNarrativeHighlight({
   selected = false,
   onSelect,
   actionLabel,
-}: ScenarioNarrativeHighlightProps) {
+}: NarrativeHighlightProps) {
   const [expanded, setExpanded] = useState(false)
   const detailsId = useId()
 

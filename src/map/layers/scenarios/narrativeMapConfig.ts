@@ -1,6 +1,28 @@
 import type { LayerProps } from 'react-map-gl/mapbox'
 import type { FeatureCollection, Point } from 'geojson'
-import { map } from '../../theme'
+import { map } from '../../../theme'
+
+export type NarrativeMapScope = 'delta' | 'statewide' | 'statewide-ecocultural'
+export type NarrativeMapBounds = [[number, number], [number, number]]
+
+export interface NarrativeMapConfig {
+  interactive: boolean
+  initialViewState: {
+    longitude: number
+    latitude: number
+    zoom: number
+  }
+  maxBounds: NarrativeMapBounds
+  showNavigationControl?: boolean
+  legendActivation: 'always' | 'adaptation'
+  highlightFallbackColor: string
+  bounds: Partial<Record<NarrativeMapScope, NarrativeMapBounds>>
+  triggers?: {
+    adaptationLayers?: string
+    statewide?: string
+    ecocultural?: string
+  }
+}
 
 export interface ScenarioMapSourceConfig {
   id: string
@@ -10,7 +32,7 @@ export interface ScenarioMapSourceConfig {
   tileSize?: number
   layers: LayerProps[]
   activation?: 'adaptation'
-  visibilityScope?: 'delta' | 'statewide' | 'statewide-ecocultural'
+  visibilityScope?: NarrativeMapScope
   selectableProperty?: string
   selectionKey?: string
   legend?: {
@@ -93,7 +115,7 @@ const newGreenWatershedHabitats: ScenarioMapSourceConfig = {
       {
         label: 'Priority fish passage',
         color: map.scenarios.newGreenWatershedHabitats.riparian,
-        selectionKey: 'transitional',
+        selectionKey: 'riparian',
         kind: 'line',
       },
     ],
@@ -131,7 +153,7 @@ const newGreenWatershedRiparian: ScenarioMapSourceConfig = {
   url: 'mapbox://justtransition.esdnqq',
   visibilityScope: 'delta',
   activation: 'adaptation',
-  selectionKey: 'transitional',
+  selectionKey: 'riparian',
   layers: [
     {
       id: 'scenario-ngw-riparian-line',
@@ -319,4 +341,60 @@ export const scenarioMapLayersBySlug: Record<string, ScenarioMapSourceConfig[]> 
     statewideWatershedRegionLabels,
     statewideIndigenousTerritories,
   ],
+}
+
+const deltaBounds: NarrativeMapBounds = [
+  [-122.25, 37.55],
+  [-121.25, 38.65],
+]
+
+const watershedOverviewBounds: NarrativeMapBounds = [
+  [-123.6, 33.4],
+  [-119.1, 42.1],
+]
+
+const defaultNarrativeMapConfig: NarrativeMapConfig = {
+  interactive: false,
+  initialViewState: { longitude: -121.73, latitude: 38.04, zoom: 8.75 },
+  maxBounds: [
+    [-124.6, 32.4],
+    [-114, 42.1],
+  ],
+  legendActivation: 'always',
+  highlightFallbackColor: map.boundaries.legalDelta,
+  bounds: { delta: deltaBounds },
+}
+
+export const narrativeMapConfigBySlug: Record<string, NarrativeMapConfig> = {
+  'new-green-watershed': {
+    interactive: true,
+    initialViewState: { longitude: -121.73, latitude: 38.04, zoom: 8.75 },
+    maxBounds: [
+      [-124.6, 32.4],
+      [-114, 42.1],
+    ],
+    showNavigationControl: true,
+    legendActivation: 'adaptation',
+    highlightFallbackColor: map.boundaries.watershedRegion,
+    bounds: {
+      delta: deltaBounds,
+      statewide: watershedOverviewBounds,
+      'statewide-ecocultural': watershedOverviewBounds,
+    },
+    triggers: {
+      adaptationLayers: 'chapter-2',
+      statewide: 'chapter-3',
+      ecocultural: 'ecocultural-stewardship',
+    },
+  },
+}
+
+export function getNarrativeMapConfig(scenarioSlug: string) {
+  return narrativeMapConfigBySlug[scenarioSlug] ?? defaultNarrativeMapConfig
+}
+
+export function getNarrativeMapLegendItem(scenarioSlug: string, selectionKey: string) {
+  return scenarioMapLayersBySlug[scenarioSlug]
+    ?.flatMap((source) => source.legend?.items ?? [])
+    .find((item) => item.selectionKey === selectionKey)
 }

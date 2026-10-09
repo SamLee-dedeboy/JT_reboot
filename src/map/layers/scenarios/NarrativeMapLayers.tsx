@@ -1,21 +1,24 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
 import { Layer, Source } from 'react-map-gl/mapbox'
-import { map } from '../../theme'
-import { scenarioMapLayersBySlug } from './scenarioLayerConfig'
+import { map } from '../../../theme'
+import {
+  scenarioMapLayersBySlug,
+  type NarrativeMapScope,
+} from './narrativeMapConfig'
 
-interface ScenarioMapLayersProps {
+interface NarrativeMapLayersProps {
   scenarioSlug: string
   showAdaptationLayers?: boolean
   selectedHabitatType?: string | null
-  visibilityScope?: 'delta' | 'statewide' | 'statewide-ecocultural'
+  visibilityScope?: NarrativeMapScope
 }
 
-export default function ScenarioMapLayers({
+export default function NarrativeMapLayers({
   scenarioSlug,
   showAdaptationLayers = false,
   selectedHabitatType,
   visibilityScope = 'delta',
-}: ScenarioMapLayersProps) {
+}: NarrativeMapLayersProps) {
   const sources = (scenarioMapLayersBySlug[scenarioSlug] ?? []).filter((source) => {
     const sourceScope = source.visibilityScope ?? 'delta'
     if (visibilityScope === 'statewide-ecocultural') {

@@ -2,12 +2,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom'
-import Footer from '../../ui/Footer'
-import Navbar from '../../ui/Navbar'
-import { jtSpacing } from '../../theme'
-import { assetUrl } from '../../utils/baseUrl'
-import { evaluationCriteria, evaluationMetrics, scenarioBySlug } from './content/scenarioContent'
-import ScenarioTabs from './ScenarioTabs'
+import { jtSpacing } from '../../../theme'
+import Footer from '../../../ui/Footer'
+import Navbar from '../../../ui/Navbar'
+import { assetUrl } from '../../../utils/baseUrl'
+import StoryTabs from '../StoryTabs'
+import { evaluationCriteria, evaluationMetrics, scenarioBySlug } from '../content'
 
 const explorerScenarioKeys: Record<string, string> = {
   'business-as-usual': 'bau',
@@ -49,7 +49,7 @@ function EvaluationMetricPanel({ criterionId }: { criterionId: keyof typeof eval
   )
 }
 
-export default function ScenarioResultsPage() {
+export default function ResultsPage() {
   const { scenarioSlug = '' } = useParams()
   const [searchParams] = useSearchParams()
   const scenario = scenarioBySlug[scenarioSlug]
@@ -102,7 +102,7 @@ export default function ScenarioResultsPage() {
           </Container>
         </Box>
 
-        <ScenarioTabs currentSlug={scenario.slug} destination="results" />
+        <StoryTabs currentSlug={scenario.slug} destination="results" />
 
         <Container
           maxWidth="lg"

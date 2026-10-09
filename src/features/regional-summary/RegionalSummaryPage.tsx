@@ -6,7 +6,7 @@ import { Box, Button, Typography } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
-import { scenarios, type ScenarioContent } from '../scenarios/content/scenarioContent'
+import { scenarios, type ScenarioContent } from '../scenarios/content'
 import { assetUrl } from '../../utils/baseUrl'
 import {
   regionalSummaryControlStyles,

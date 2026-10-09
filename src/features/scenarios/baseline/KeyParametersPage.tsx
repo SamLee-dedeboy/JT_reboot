@@ -2,11 +2,12 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import TuneIcon from '@mui/icons-material/Tune'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import ScrollReveal from '../../ui/animation/ScrollReveal'
-import Footer from '../../ui/Footer'
-import Navbar from '../../ui/Navbar'
+import Footer from '../../../ui/Footer'
+import Navbar from '../../../ui/Navbar'
+import ScrollReveal from '../../../ui/animation/ScrollReveal'
+import { keyParametersIntroduction } from '../content'
 
-export default function ScenariosKeyParametersPage() {
+export default function KeyParametersPage() {
   return (
     <>
       <Navbar />
@@ -44,8 +45,7 @@ export default function ScenariosKeyParametersPage() {
                 Key parameters
               </Typography>
               <Typography variant="body1" sx={{ maxWidth: '58ch', color: 'base.100' }}>
-                Placeholder page for the baseline scenario parameters. This will hold the modeling
-                assumptions, boundary conditions, and comparison inputs for the baseline scenario.
+                {keyParametersIntroduction}
               </Typography>
             </Stack>
           </ScrollReveal>

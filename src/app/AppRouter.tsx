@@ -4,11 +4,11 @@ import HomePage from '../features/home/HomePage'
 import ProjectDocumentation from '../features/repository/ProjectDocumentation'
 import Resources from '../features/repository/Resources'
 import ServiceLearning from '../features/repository/ServiceLearning'
-import ScenarioTemplatePage from '../features/scenarios/ScenarioTemplatePage'
-import ScenarioResultsPage from '../features/scenarios/ScenarioResultsPage'
-import ScenariosBackgroundPage from '../features/scenarios/ScenariosBackgroundPage'
-import ScenariosKeyParametersPage from '../features/scenarios/ScenariosKeyParametersPage'
-import ScenariosLandingPage from '../features/scenarios/ScenariosLandingPage'
+import LandingPage from '../features/scenarios/LandingPage'
+import BackgroundPage from '../features/scenarios/baseline/BackgroundPage'
+import KeyParametersPage from '../features/scenarios/baseline/KeyParametersPage'
+import IntroductionPage from '../features/scenarios/narration/IntroductionPage'
+import ResultsPage from '../features/scenarios/results/ResultsPage'
 import BaselineExploration from '../internal/BaselineExploration'
 import ScenarioTimeLapse from '../internal/ScenarioTimeLapse'
 import DesignSystem from '../internal/design-system/DesignSystem'
@@ -28,11 +28,11 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/scenarios" element={<ScenariosLandingPage />} />
-      <Route path="/scenarios/background-context" element={<ScenariosBackgroundPage />} />
-      <Route path="/scenarios/key-parameters" element={<ScenariosKeyParametersPage />} />
-      <Route path="/scenarios/:scenarioSlug/results" element={<ScenarioResultsPage />} />
-      <Route path="/scenarios/:scenarioSlug" element={<ScenarioTemplatePage />} />
+      <Route path="/scenarios" element={<LandingPage />} />
+      <Route path="/scenarios/background-context" element={<BackgroundPage />} />
+      <Route path="/scenarios/key-parameters" element={<KeyParametersPage />} />
+      <Route path="/scenarios/:scenarioSlug/results" element={<ResultsPage />} />
+      <Route path="/scenarios/:scenarioSlug" element={<IntroductionPage />} />
       <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
       <Route path="/pages/service-learning" element={<ServiceLearning />} />
       <Route path="/pages/resources" element={<Resources />} />
