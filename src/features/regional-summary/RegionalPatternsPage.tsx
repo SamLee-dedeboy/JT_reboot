@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Layer, Marker, Source, type LayerProps } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
 import { assetUrl } from '../../utils/baseUrl'
-import type { ScenarioContent } from '../scenarios/content/scenarioContent'
+import type { ScenarioContent } from '../scenarios/content'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
 import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import {

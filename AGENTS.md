@@ -48,7 +48,8 @@ The `src` directory is organized by application role and feature:
 
 - `src/app/`: providers, shared application shell, and route configuration.
 - `src/features/home/`: public home page, its section components, and home content.
-- `src/features/scenarios/`: scenario landing, background, parameter, template pages, plots, and scenario content.
+- `src/features/scenarios/`: scenario landing composition and shared navigation helpers. Baseline pages live in `baseline/`, adaptation and tiered-outflow introductions in `narration/`, modeling and criteria pages in `results/`, text/data in `content/`, and retired implementations in `archived/`.
+- Scenario copy is split by domain under `src/features/scenarios/content/`: baseline, tiered outflows, adaptation scenarios, results/evaluation, and shared types. Consumers should import from the folder index instead of reaching into a domain file directly.
 - `src/features/repository/`: repository routes, shared repository layout, cards, tabs, timelines, and data.
 - `src/features/scenario-explorer/`: scenario explorer page, charts, controls, types, and feature-local utilities.
 - `src/features/regional-summary/`: regional summary page, tutorials, controls, map UI, and feature-local types.
@@ -71,6 +72,7 @@ Keep route-specific code in its feature. Move code into `src/ui`, `src/map`, or 
 - Internal tools can use `src/internal/PageLayout.tsx` for a shared Navbar/hero/Footer shell.
 - `src/ui/Navbar.tsx` contains `DesktopNavbar` and `MobileNavbar`; the parent mounts exactly one based on the MUI `md` breakpoint.
 - `src/map/BaseMap.tsx` and `src/map/MapLayerOrchestrator.tsx` provide shared map infrastructure. Specialized map presentations live under `src/map/instances/` or within their owning feature.
+- Scenario narration maps are configured per slug in `src/map/layers/scenarios/narrativeMapConfig.ts`. Keep camera bounds, interaction controls, scroll-trigger IDs, layer scopes, legends, and highlight colors in that configuration rather than branching on scenario slugs in `IntroductionPage`.
 - `src/map/offlineBasemapStyle.ts` is the network-free exhibit basemap enabled by `?offline=1` on the regional summary and scenario explorer, or always in `npm run build:kiosk` builds (`.env.kiosk` sets `VITE_OFFLINE_MAP=1`). It mirrors the online Mapbox Studio styles using bundled OpenStreetMap layers and glyphs; regenerate its data with `node scripts/build-offline-basemap.mjs`.
 
 ## Theme and Design System

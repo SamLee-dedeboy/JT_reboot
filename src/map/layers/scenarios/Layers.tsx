@@ -1,22 +1,22 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
 import { Layer, Source } from 'react-map-gl/mapbox'
-import { map } from '../../theme'
-import { scenarioMapLayersBySlug } from './scenarioLayerConfig'
+import { map } from '../../../theme'
+import { layersBySlug, type MapScope } from './config'
 
-interface ScenarioMapLayersProps {
+interface LayersProps {
   scenarioSlug: string
   showAdaptationLayers?: boolean
   selectedHabitatType?: string | null
-  visibilityScope?: 'delta' | 'statewide' | 'statewide-ecocultural'
+  visibilityScope?: MapScope
 }
 
-export default function ScenarioMapLayers({
+export default function Layers({
   scenarioSlug,
   showAdaptationLayers = false,
   selectedHabitatType,
   visibilityScope = 'delta',
-}: ScenarioMapLayersProps) {
-  const sources = (scenarioMapLayersBySlug[scenarioSlug] ?? []).filter((source) => {
+}: LayersProps) {
+  const sources = (layersBySlug[scenarioSlug] ?? []).filter((source) => {
     const sourceScope = source.visibilityScope ?? 'delta'
     if (visibilityScope === 'statewide-ecocultural') {
       return sourceScope === 'statewide-ecocultural'
@@ -37,6 +37,7 @@ export default function ScenarioMapLayers({
         >
           {source.layers.map((layer) => {
             if (source.activation === 'adaptation' && layer.type === 'fill') {
+              const isSelected = selectedHabitatType === source.selectionKey
               const visibleOpacity =
                 selectedHabitatType && source.selectableProperty
                   ? ([
@@ -45,7 +46,11 @@ export default function ScenarioMapLayers({
                       0.95,
                       0.12,
                     ] as ExpressionSpecification)
-                  : (layer.paint?.['fill-opacity'] ?? 1)
+                  : selectedHabitatType && source.selectionKey
+                    ? isSelected
+                      ? 0.85
+                      : 0.1
+                    : (layer.paint?.['fill-opacity'] ?? 1)
 
               return (
                 <Layer

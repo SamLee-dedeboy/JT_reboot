@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import type { ScenarioDataset } from '../../scenario-explorer/types'
 import { assetUrl } from '../../../utils/baseUrl'
 
-interface ScenarioRidgelinePlotProps {
+interface RidgelinePlotProps {
   selectedIndex: number | null
   onSelect: (index: number | null) => void
   active: boolean
@@ -43,12 +43,12 @@ function sampleSeries(values: number[]) {
   })
 }
 
-export default function ScenarioRidgelinePlot({
+export default function RidgelinePlot({
   selectedIndex,
   onSelect,
   active,
   seaLevelRise,
-}: ScenarioRidgelinePlotProps) {
+}: RidgelinePlotProps) {
   const theme = useTheme()
   const [data, setData] = useState<ScenarioDataset | null>(null)
   const [failed, setFailed] = useState(false)

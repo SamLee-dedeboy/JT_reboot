@@ -1,10 +1,9 @@
 import { Box, Container, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../theme'
-import { scenarios } from './content/scenarioContent'
+import { scenarios } from './content'
 
 const scenarioOrder = [
-  'business-as-usual',
   'eco-machine',
   'new-green-watershed',
   'bolster-and-fortify',
@@ -16,7 +15,7 @@ const orderedScenarios = scenarioOrder
   .map((slug) => scenarios.find((scenario) => scenario.slug === slug))
   .filter((scenario): scenario is (typeof scenarios)[number] => scenario != null)
 
-export default function ScenarioTabs({
+export default function StoryTabs({
   currentSlug,
   destination = 'story',
 }: {
@@ -38,15 +37,25 @@ export default function ScenarioTabs({
         boxShadow: (theme) => theme.navigation.dropdownShadow,
       }}
     >
-      <Container maxWidth={false} sx={{ width: '90dvw', px: 0 }}>
+      <Container
+        maxWidth={false}
+        sx={{
+          width: '90dvw',
+          px: 0,
+          display: 'flex',
+          justifyContent: { xs: 'flex-start', lg: 'center' },
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' },
+        }}
+      >
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: 'repeat(6, max-content)', lg: 'repeat(6, 1fr)' },
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            width: 'max-content',
+            flex: '0 0 auto',
             gap: jtSpacing.gap.xs,
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
           {orderedScenarios.map((scenario, index) => {
@@ -62,7 +71,6 @@ export default function ScenarioTabs({
                   gridTemplateColumns: 'auto minmax(0, 1fr)',
                   alignItems: 'center',
                   gap: jtSpacing.gap.xs,
-                  minWidth: { xs: 180, lg: 0 },
                   px: jtSpacing.component.sm,
                   py: jtSpacing.component.sm,
                   borderRadius: 1,

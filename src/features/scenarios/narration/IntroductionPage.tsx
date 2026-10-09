@@ -1,38 +1,29 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { NavigationControl } from 'react-map-gl/mapbox'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import BaseMap from '../../map/BaseMap'
-import ScenarioMapCamera from '../../map/layers/ScenarioMapCamera'
-import ScenarioMapLegend from '../../map/layers/ScenarioMapLegend'
-import ScenarioMapLayers from '../../map/layers/ScenarioMapLayers'
-import Footer from '../../ui/Footer'
-import Navbar from '../../ui/Navbar'
-import NavRail from '../../ui/NavRail'
-import { jtSpacing, map } from '../../theme'
-import { assetUrl } from '../../utils/baseUrl'
-import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
-import { scenarioBySlug } from './content/scenarioContent'
-import ScenarioNarrativeHighlight from './ScenarioNarrativeHighlight'
-import ScenarioTabs from './ScenarioTabs'
+import BaseMap from '../../../map/BaseMap'
+import Camera from '../../../map/layers/scenarios/Camera'
+import Layers from '../../../map/layers/scenarios/Layers'
+import Legend from '../../../map/layers/scenarios/Legend'
+import { getConfig, getLegendItem } from '../../../map/layers/scenarios/config'
+import { jtSpacing } from '../../../theme'
+import Footer from '../../../ui/Footer'
+import Navbar from '../../../ui/Navbar'
+import NavRail from '../../../ui/NavRail'
+import { assetUrl } from '../../../utils/baseUrl'
+import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
+import StoryTabs from '../StoryTabs'
+import { scenarioBySlug } from '../content'
+import Highlight from './Highlight'
+import useMapState from './useMapState'
 
 const scenarioDetailGridColumns = {
   xs: '1fr',
   lg: 'minmax(180px, .3fr) minmax(0, 1fr) minmax(320px, .9fr)',
 } as const
-
-const scenarioMapViewState = {
-  longitude: -121.73,
-  latitude: 38.04,
-  zoom: 8.75,
-} as const
-
-const californiaMapBounds = [
-  [-124.6, 32.4],
-  [-114, 42.1],
-] as [[number, number], [number, number]]
 
 const paragraphHighlights = [
   'the land to sink',
@@ -44,7 +35,8 @@ const paragraphHighlights = [
   'its much larger watershed',
 ] as const
 
-const scenarioSectionNavigationLabels = [
+const threeSectionNavigationLabels = ['Motivation', 'Adaptation approach', 'Key Takeaway'] as const
+const fourSectionNavigationLabels = [
   'Motivation',
   'Adaptation approach',
   'Supporting strategy',
@@ -74,7 +66,7 @@ function HighlightedParagraph({ text }: { text: string }) {
       <Box
         component="span"
         key={`${nextHighlight.phrase}-${nextHighlight.index}`}
-        sx={{ color: 'primary.main' }}
+        sx={{ color: 'secondary.main' }}
       >
         {nextHighlight.phrase}
       </Box>,
@@ -85,91 +77,17 @@ function HighlightedParagraph({ text }: { text: string }) {
   return <>{parts}</>
 }
 
-export default function ScenarioTemplatePage() {
+export default function IntroductionPage() {
   const { scenarioSlug = '' } = useParams()
   const scenario = scenarioBySlug[scenarioSlug]
-  const isNewGreenWatershed = scenarioSlug === 'new-green-watershed'
+  const isTieredOutflows = scenarioSlug === 'tiered-outflows'
   const [selectedHabitatType, setSelectedHabitatType] = useState<string | null>(null)
-  const [showAdaptationLayers, setShowAdaptationLayers] = useState(false)
-  const [showStatewideMap, setShowStatewideMap] = useState(false)
-  const [showEcoculturalLayers, setShowEcoculturalLayers] = useState(false)
-  const effectiveShowAdaptationLayers = isNewGreenWatershed && showAdaptationLayers
-  const effectiveShowStatewideMap = isNewGreenWatershed && showStatewideMap
-  const effectiveShowEcoculturalLayers = isNewGreenWatershed && showEcoculturalLayers
-
-  useEffect(() => {
-    if (!isNewGreenWatershed) return
-
-    const adaptationSection = document.getElementById('chapter-2')
-    const supportingStrategySection = document.getElementById('chapter-3')
-    if (!adaptationSection || !supportingStrategySection) return
-
-    let animationFrame = 0
-    let statewideTransitionTimer: number | undefined
-    const updateCameraMode = () => {
-      cancelAnimationFrame(animationFrame)
-      animationFrame = requestAnimationFrame(() => {
-        const readingThreshold = window.innerHeight * 0.25
-        const hasReachedAdaptation =
-          adaptationSection.getBoundingClientRect().top <= readingThreshold
-        const hasReachedSupportingStrategy =
-          supportingStrategySection.getBoundingClientRect().top <= readingThreshold
-
-        if (hasReachedSupportingStrategy) {
-          setShowAdaptationLayers(false)
-          if (statewideTransitionTimer == null) {
-            statewideTransitionTimer = window.setTimeout(() => {
-              setShowStatewideMap(true)
-            }, map.scenarios.layerFadeDurationMs)
-          }
-        } else {
-          if (statewideTransitionTimer != null) {
-            window.clearTimeout(statewideTransitionTimer)
-            statewideTransitionTimer = undefined
-          }
-          setShowStatewideMap(false)
-          setShowAdaptationLayers(hasReachedAdaptation)
-        }
-      })
-    }
-
-    updateCameraMode()
-    window.addEventListener('scroll', updateCameraMode, { passive: true })
-    window.addEventListener('resize', updateCameraMode)
-
-    return () => {
-      cancelAnimationFrame(animationFrame)
-      if (statewideTransitionTimer != null) window.clearTimeout(statewideTransitionTimer)
-      window.removeEventListener('scroll', updateCameraMode)
-      window.removeEventListener('resize', updateCameraMode)
-    }
-  }, [isNewGreenWatershed])
-
-  useEffect(() => {
-    if (!isNewGreenWatershed) return
-
-    const ecoculturalSection = document.getElementById('ecocultural-stewardship')
-    if (!ecoculturalSection) return
-
-    let animationFrame = 0
-    const updateEcoculturalLayers = () => {
-      cancelAnimationFrame(animationFrame)
-      animationFrame = requestAnimationFrame(() => {
-        const readingThreshold = window.innerHeight * 0.25
-        setShowEcoculturalLayers(ecoculturalSection.getBoundingClientRect().top <= readingThreshold)
-      })
-    }
-
-    updateEcoculturalLayers()
-    window.addEventListener('scroll', updateEcoculturalLayers, { passive: true })
-    window.addEventListener('resize', updateEcoculturalLayers)
-
-    return () => {
-      cancelAnimationFrame(animationFrame)
-      window.removeEventListener('scroll', updateEcoculturalLayers)
-      window.removeEventListener('resize', updateEcoculturalLayers)
-    }
-  }, [isNewGreenWatershed])
+  const mapConfig = getConfig(scenarioSlug)
+  const mapState = useMapState(mapConfig)
+  const cameraBounds =
+    (selectedHabitatType ? mapConfig.selectionBounds?.[selectedHabitatType] : undefined) ??
+    mapConfig.bounds[mapState.scope] ??
+    mapConfig.bounds.delta
 
   if (!scenario) return <Navigate to="/scenarios" replace />
 
@@ -225,7 +143,9 @@ export default function ScenarioTemplatePage() {
               >
                 All scenarios
               </Button>
-              <Typography variant="numberArticle">{scenario.number}</Typography>
+              {!isTieredOutflows && (
+                <Typography variant="numberArticle">{scenario.number}</Typography>
+              )}
               <Typography variant="h1">{scenario.title}</Typography>
               <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '60ch' }}>
                 {scenario.summary}
@@ -248,7 +168,7 @@ export default function ScenarioTemplatePage() {
           </Container>
         </Box>
 
-        <ScenarioTabs currentSlug={scenario.slug} />
+        {!isTieredOutflows && <StoryTabs currentSlug={scenario.slug} />}
 
         {/* Keeps section navigation visible while the narrative is inspected. */}
         <Container
@@ -276,10 +196,16 @@ export default function ScenarioTemplatePage() {
               </Typography>
               <NavRail
                 ariaLabel={`${scenario.title} sections`}
-                items={scenario.story.map((_, chapterIndex) => ({
+                items={scenario.story.map((chapter, chapterIndex) => ({
                   id: `chapter-${chapterIndex + 1}`,
                   label:
-                    scenarioSectionNavigationLabels[chapterIndex] ?? `Section ${chapterIndex + 1}`,
+                    chapter.navigationLabel ??
+                    (isTieredOutflows
+                      ? chapter.title
+                      : ((scenario.story.length === 4
+                          ? fourSectionNavigationLabels
+                          : threeSectionNavigationLabels)[chapterIndex] ??
+                        `Section ${chapterIndex + 1}`)),
                 }))}
                 sx={{
                   position: 'relative',
@@ -334,13 +260,17 @@ export default function ScenarioTemplatePage() {
                         }}
                       >
                         {chapter.highlights.map((highlight) => {
-                          const habitatType = highlight.mapHabitatType ?? highlight.exploreHabitat
-                          const accentColor = highlight.mapHabitatType
-                            ? map.scenarios.newGreenWatershedHabitats[highlight.mapHabitatType]
-                            : map.boundaries.watershedRegion
+                          const habitatType =
+                            highlight.mapSelectionKey ??
+                            highlight.mapHabitatType ??
+                            highlight.exploreHabitat
+                          const accentColor =
+                            (habitatType
+                              ? getLegendItem(scenario.slug, habitatType)?.color
+                              : undefined) ?? mapConfig.highlightFallbackColor
 
                           return (
-                            <ScenarioNarrativeHighlight
+                            <Highlight
                               key={highlight.title}
                               title={highlight.title}
                               summary={highlight.summary}
@@ -454,39 +384,38 @@ export default function ScenarioTemplatePage() {
                 }}
               >
                 <BaseMap
-                  initialViewState={scenarioMapViewState}
+                  initialViewState={mapConfig.initialViewState}
                   mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
-                  interactive={scenario.slug === 'new-green-watershed'}
-                  dragPan={scenario.slug === 'new-green-watershed'}
+                  interactive={mapConfig.interactive}
+                  dragPan={mapConfig.interactive}
                   dragRotate={false}
-                  scrollZoom={scenario.slug === 'new-green-watershed'}
-                  touchZoomRotate={scenario.slug === 'new-green-watershed'}
-                  maxBounds={californiaMapBounds}
+                  scrollZoom={mapConfig.interactive}
+                  touchZoomRotate={mapConfig.interactive}
+                  maxBounds={mapConfig.maxBounds}
                 >
-                  <ScenarioMapCamera statewide={effectiveShowStatewideMap} />
-                  <ScenarioMapLayers
+                  {cameraBounds && <Camera bounds={cameraBounds} />}
+                  <Layers
                     scenarioSlug={scenario.slug}
-                    showAdaptationLayers={effectiveShowAdaptationLayers}
-                    selectedHabitatType={selectedHabitatType}
-                    visibilityScope={
-                      effectiveShowStatewideMap
-                        ? effectiveShowEcoculturalLayers
-                          ? 'statewide-ecocultural'
-                          : 'statewide'
-                        : 'delta'
+                    showAdaptationLayers={
+                      mapState.showAdaptationLayers || selectedHabitatType != null
                     }
+                    selectedHabitatType={selectedHabitatType}
+                    visibilityScope={mapState.scope}
                   />
-                  {scenario.slug === 'new-green-watershed' && (
+                  {mapConfig.showNavigationControl && (
                     <NavigationControl position="bottom-right" showCompass={false} />
                   )}
                 </BaseMap>
-                {!effectiveShowStatewideMap && (
-                  <ScenarioMapLegend
-                    scenarioSlug={scenario.slug}
-                    visible={effectiveShowAdaptationLayers}
-                    selectedHabitatType={selectedHabitatType}
-                  />
-                )}
+                <Legend
+                  scenarioSlug={scenario.slug}
+                  visibilityScope={mapState.scope}
+                  visible={
+                    mapConfig.legendActivation !== 'adaptation' ||
+                    mapState.showAdaptationLayers ||
+                    selectedHabitatType != null
+                  }
+                  selectedHabitatType={selectedHabitatType}
+                />
               </Box>
             </Box>
           </Box>

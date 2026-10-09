@@ -8,9 +8,9 @@ import ScrollReveal from '../../../ui/animation/ScrollReveal'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import { assetUrl } from '../../../utils/baseUrl'
-import OutflowVariationGrid from '../OutflowVariationGrid'
-import ScenarioRidgelinePlot from './ScenarioRidgelinePlot'
-import ScenarioRankingOverview from './ScenarioRankingOverview'
+import OutflowPanel from '../OutflowPanel'
+import RankingOverview from './RankingOverview'
+import RidgelinePlot from './RidgelinePlot'
 
 const adaptationScenarios = [
   {
@@ -89,7 +89,7 @@ const scenarioSectionLinks = [
   { label: 'View Scenario Rankings', href: '#ranking-overview' },
 ] as const
 
-export default function ScenariosLandingPage() {
+export default function ArchivedLandingPage() {
   const theme = useTheme()
 
   return (
@@ -310,7 +310,7 @@ export default function ScenariosLandingPage() {
           aria-labelledby="outflow-panels-title"
           sx={{ scrollMarginTop: { xs: '72px', md: '76px' } }}
         >
-          <OutflowVariationGrid />
+          <OutflowPanel />
         </Box>
 
         <Box
@@ -323,7 +323,7 @@ export default function ScenariosLandingPage() {
             items={expandableScenarioItems}
             collapseOnScroll
             comparisonContent={(selectedPanel, onSelectPanel, active, seaLevelRise) => (
-              <ScenarioRidgelinePlot
+              <RidgelinePlot
                 selectedIndex={selectedPanel}
                 onSelect={onSelectPanel}
                 active={active}
@@ -376,7 +376,7 @@ export default function ScenariosLandingPage() {
                   </Typography>
                 </Stack>
 
-                <ScenarioRankingOverview scenarios={adaptationScenarios} />
+                <RankingOverview scenarios={adaptationScenarios} />
               </Stack>
             </ScrollReveal>
           </Container>

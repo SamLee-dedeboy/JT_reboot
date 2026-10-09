@@ -8,12 +8,13 @@ import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/materi
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import scrollama from 'scrollama'
-import ScrollReveal from '../../ui/animation/ScrollReveal'
-import Footer from '../../ui/Footer'
-import NavRail from '../../ui/NavRail'
-import Navbar from '../../ui/Navbar'
-import ScenariosBackgroundMap from '../../map/instances/ScenariosBackgroundMap'
-import type { ScenariosBackgroundMapStep } from '../../map/layers/ScenariosBackgroundLayers'
+import ScenariosBackgroundMap from '../../../map/instances/ScenariosBackgroundMap'
+import type { ScenariosBackgroundMapStep } from '../../../map/layers/ScenariosBackgroundLayers'
+import Footer from '../../../ui/Footer'
+import Navbar from '../../../ui/Navbar'
+import NavRail from '../../../ui/NavRail'
+import ScrollReveal from '../../../ui/animation/ScrollReveal'
+import { baselineBackgroundChapters, baselineKeyTerms } from '../content'
 
 interface ContextChapter {
   id: string
@@ -25,48 +26,18 @@ interface ContextChapter {
   mapStep: ScenariosBackgroundMapStep
 }
 
-const contextChapters: ContextChapter[] = [
-  {
-    id: '01',
-    kicker: 'Two Rivers',
-    title: 'California has two major river systems shaping the Delta',
-    body: 'The Sacramento River flows south from Northern California, while the San Joaquin River flows north through the Central Valley. They meet in the Sacramento-San Joaquin Delta, where freshwater moves toward Suisun Bay, San Francisco Bay, and the Pacific Ocean.',
-    icon: <RouteIcon />,
-    accent: '#7ed957',
-    mapStep: 'rivers',
-  },
-  {
-    id: '02',
-    kicker: 'The Push and Pull',
-    title: 'Freshwater outflow pushes west while ocean water pushes inland',
-    body: 'Delta management is shaped by a tug of war: river outflow helps repel salty ocean water, while tides and sea level pressure can move saltwater inland. At the same time, major state and federal water projects export drinking and agricultural water from the southern Delta to communities and farms farther south.',
-    icon: <CompareArrowsIcon />,
-    accent: '#79e1e4',
-    mapStep: 'flow',
-  },
-  {
-    id: '03',
-    kicker: 'X2 Distance',
-    title: 'X2 helps measure where that tug of war is happening',
-    body: 'The X2 salinity index tracks how far the low-salinity zone extends inland from the Golden Gate. In the StoryMap baseline, this distance is shown along the Sacramento and San Joaquin rivers in five-kilometer increments, making X2 a useful shorthand for understanding where freshwater outflow and ocean inflow are meeting.',
-    icon: <WaterDropIcon />,
-    accent: '#f2c820',
-    mapStep: 'x2',
-  },
-]
+const chapterPresentation = {
+  '01': { icon: <RouteIcon />, accent: '#7ed957' },
+  '02': { icon: <CompareArrowsIcon />, accent: '#79e1e4' },
+  '03': { icon: <WaterDropIcon />, accent: '#f2c820' },
+} as const
 
-const keyTerms = [
-  ['Outflow', 'Freshwater moving from the rivers through the Delta toward the Bay.'],
-  [
-    'Salinity intrusion',
-    'Saltier Bay water moving inland when tides, sea level, or low river flows allow it.',
-  ],
-  [
-    'Exports',
-    'Water diverted from the southern Delta for farms and drinking water in other parts of California.',
-  ],
-  ['X2', 'A distance-based salinity marker used to track the low-salinity zone.'],
-]
+const contextChapters: ContextChapter[] = baselineBackgroundChapters.map((chapter) => ({
+  ...chapter,
+  ...chapterPresentation[chapter.id],
+}))
+
+const keyTerms = baselineKeyTerms
 
 const navRailItems = [
   { id: 'overview', label: 'Overview' },
@@ -85,7 +56,7 @@ const eyebrowSx = {
   gap: 1,
 } as const
 
-export default function ScenariosBackgroundPage() {
+export default function BackgroundPage() {
   const theme = useTheme()
   const stepsRef = useRef<HTMLDivElement | null>(null)
   const [activeStep, setActiveStep] = useState<ScenariosBackgroundMapStep>('overview')

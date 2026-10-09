@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import { Box, Button, IconButton, Paper, Stack, Typography } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { ScenarioContent } from '../scenarios/content/scenarioContent'
+import type { ScenarioContent } from '../scenarios/content'
 import {
   regionalSummaryControlStyles,
   regionalSummaryDetailTypography,
