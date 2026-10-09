@@ -8,7 +8,7 @@ import LandingPage from '../features/scenarios/LandingPage'
 import BackgroundPage from '../features/scenarios/baseline/BackgroundPage'
 import KeyParametersPage from '../features/scenarios/baseline/KeyParametersPage'
 import IntroductionPage from '../features/scenarios/narration/IntroductionPage'
-import ResultsPage from '../features/scenarios/results/ResultsPage'
+import Results from '../features/scenarios/results/Page'
 import BaselineExploration from '../internal/BaselineExploration'
 import ScenarioTimeLapse from '../internal/ScenarioTimeLapse'
 import DesignSystem from '../internal/design-system/DesignSystem'
@@ -31,7 +31,8 @@ export default function AppRouter() {
       <Route path="/scenarios" element={<LandingPage />} />
       <Route path="/scenarios/background-context" element={<BackgroundPage />} />
       <Route path="/scenarios/key-parameters" element={<KeyParametersPage />} />
-      <Route path="/scenarios/:scenarioSlug/results" element={<ResultsPage />} />
+      <Route path="/scenarios/results" element={<Results />} />
+      <Route path="/scenarios/:scenarioSlug/results" element={<Results />} />
       <Route path="/scenarios/:scenarioSlug" element={<IntroductionPage />} />
       <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
       <Route path="/pages/service-learning" element={<ServiceLearning />} />

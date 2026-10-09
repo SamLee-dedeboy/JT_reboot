@@ -9,7 +9,13 @@ export {
   baselineScenario,
   keyParametersIntroduction,
 } from './baseline'
-export { evaluationCriteria, evaluationMetrics } from './results'
+export {
+  evaluationTeams,
+  outflowResultVariations,
+  resultFamilies,
+  resultsOverviewSections,
+  slrScenarioSlugs,
+} from './results'
 export { tieredOutflowsScenario } from './tieredOutflows'
 export type { ScenarioChapter, ScenarioContent } from './types'
 
@@ -18,4 +24,3 @@ export const scenarios = [baselineScenario, tieredOutflowsScenario, ...adaptatio
 export const scenarioBySlug = Object.fromEntries(
   scenarios.map((scenario) => [scenario.slug, scenario]),
 )
-

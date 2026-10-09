@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react'
-import type {
-  NarrativeMapConfig,
-  NarrativeMapScope,
-} from '../../../map/layers/scenarios/narrativeMapConfig'
+import type { Config, MapScope } from '../../../map/layers/scenarios/config'
 import { map } from '../../../theme'
 
-interface NarrativeMapState {
-  scope: NarrativeMapScope
+interface MapState {
+  scope: MapScope
   showAdaptationLayers: boolean
 }
 
-export default function useNarrativeMapState(config: NarrativeMapConfig): NarrativeMapState {
+export default function useMapState(config: Config): MapState {
   const [showAdaptationLayers, setShowAdaptationLayers] = useState(false)
   const [showStatewideMap, setShowStatewideMap] = useState(false)
   const [showEcoculturalLayers, setShowEcoculturalLayers] = useState(false)

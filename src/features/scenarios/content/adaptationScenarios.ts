@@ -11,34 +11,43 @@ export const adaptationScenarios: ScenarioContent[] = [
     story: [
       {
         title: 'What if restoration could help manage salinity?',
+        navigationLabel: 'Motivation',
         paragraphs: [
           'Tides naturally carry salt water from San Francisco Bay into the Delta. Freshwater flowing downstream helps resist that movement, but drought and sea level rise can allow salinity to travel farther inland, affecting ecosystems, communities, agriculture, and freshwater supplies.',
-          'Restoration is often discussed as a way to rebuild habitat. Eco Machine asks whether it could also help manage how water and salinity move through the Delta. Strategically placed tidal wetlands and vegetated landforms could redirect tidal energy, slow saltwater movement, and work alongside existing water infrastructure.',
-          'The scenario treats restoration as working green infrastructure. It explores where nature-based projects could improve salinity conditions while also creating habitat and new opportunities for recreation, cultural practices, and community use.',
+          "Restoration is often discussed as a way to rebuild habitat. But the shape of the Delta's landscape also influences how tidal water moves and where salt travels. Eco Machine asks whether strategically designed restoration could help manage salinity while providing ecological and community benefits.",
         ],
       },
       {
-        title: 'Restoring two connected landscapes',
+        title: 'Two locations for multi-benefit restoration',
+        navigationLabel: 'Design Approach',
         paragraphs: [
-          'Eco Machine focuses on Suisun Marsh and Franks Tract, two places where restoration could meaningfully influence tidal movement. Their locations and histories create different opportunities for shaping water while supporting a wider range of benefits.',
-          'Around Grizzly Island in Suisun Marsh, restored tidal wetlands could direct more tidal energy toward Suisun Bay rather than farther inland. The scenario examines whether this change could reduce salinity intrusion while expanding marsh habitat and access to the landscape.',
-          'Franks Tract is a former Delta island that has remained flooded since its levees failed. Vegetated landforms based on the community-informed Franks Tract Futures design could interrupt a pathway for salinity intrusion while creating a richer mix of shallow-water habitat and recreational spaces.',
+          'Eco Machine explores restoration on Suisun Marsh and Franks Tract, two locations where changes to the landscape could influence tidal movement and salinity intrusion. Each location offers a different approach to managing salinity while supporting habitat restoration, recreation, and community use.',
+        ],
+        highlights: [
+          {
+            title: 'Suisun Marsh: Redirecting tidal energy',
+            summary:
+              'Around Grizzly Island, restored tidal wetlands could direct more tidal energy toward Suisun Bay rather than farther inland. The scenario examines whether this change could reduce salinity intrusion while expanding marsh habitat and access to the landscape.',
+            paragraphs: [],
+            mapSelectionKey: 'suisun-marsh',
+          },
+          {
+            title: 'Franks Tract: Reshaping water pathways',
+            summary:
+              'Franks Tract is a former Delta island that has remained flooded since its levees failed in the 1930s. Located in the central Delta, this large open-water area plays an important role in salinity intrusion. Vegetated landforms based on a community-informed restoration design could interrupt a pathway for salinity intrusion while supporting recreation and community use.',
+            paragraphs: [
+              'The scenario draws on Franks Tract Futures, a 2019–2020 public planning effort that brought together communities and experts to develop a multi-benefit restoration design.',
+            ],
+            mapSelectionKey: 'franks-tract',
+          },
         ],
       },
       {
-        title: 'Designing restoration for multiple benefits',
+        title: 'Restoration as Working Green Infrastructure',
+        navigationLabel: 'Key Takeaway',
         paragraphs: [
-          'A restoration project can change the way tides move through connected channels, so its location and form matter. A project that improves conditions in one place could have little effect—or create new challenges—somewhere else. Eco Machine therefore does not assume that every restored acre will affect salinity in the same way.',
-          'The scenario also asks what restoration should provide beyond salinity management. New wetlands and landforms could support fish and wildlife, strengthen connections to culturally important places, and create opportunities for boating, fishing, and other forms of recreation.',
-          'These benefits depend on how projects are designed and whose priorities shape them. Eco Machine considers salinity performance alongside ecological, recreational, community, and ecocultural outcomes rather than treating restoration as a single-purpose intervention.',
-        ],
-      },
-      {
-        title: 'Restoration as working infrastructure',
-        paragraphs: [
-          'Eco Machine tests a focused proposition: selected landscapes may be able to perform some of the work usually assigned to engineered water infrastructure.',
-          'Its success depends on placement, design, and sequence. The scenario compares where tidal restoration could reduce salinity intrusion, where it could make conditions worse, and how projects might build on one another over time.',
-          'Rather than separating ecosystem restoration from water management, Eco Machine asks what becomes possible when the same landscape is designed to support both.',
+          'Restoration could do more than rebuild habitat. By changing how tidal water moves through the Delta, strategically designed wetlands and landforms could complement existing water infrastructure and help manage salinity.',
+          'By examining these possibilities in Suisun Marsh and Franks Tract, Eco Machine explores how restoration could contribute to salinity management while supporting ecological, recreational, and cultural goals.',
         ],
       },
     ],
@@ -198,38 +207,30 @@ export const adaptationScenarios: ScenarioContent[] = [
     title: 'Calling on Reserves',
     image: '/images/scenarios/calling-on-reserves.jpg',
     summary:
-      'Reservoirs are operated differently to balance drought reserves with freshwater flows that support Delta salinity management and aquatic ecosystems.',
+      'Adjusting when and how much water is released from upstream reservoirs could help manage Delta salinity and preserve water supplies for future droughts.',
     story: [
       {
-        title: 'When should water be held, and when should it be released?',
+        title: 'What if reservoir release timing can help manage Delta salinity?',
+        navigationLabel: 'Motivation',
         paragraphs: [
-          'Reservoirs store water when it is available and release it over time for communities, farms, ecosystems, and water-quality needs. These choices become more difficult during long droughts, when there is less water to meet competing needs and greater uncertainty about what the following years will bring.',
-          'Holding water in reserve can protect against future shortages. Releasing it can increase freshwater flowing into the Delta, help resist salinity intrusion, and support aquatic habitats that depend on the timing and pattern of river flows.',
-          'Calling on Reserves asks whether reservoirs can be operated differently to balance these needs. It focuses on the tension between keeping water for an uncertain future and using it when freshwater flows could provide important benefits downstream.',
+          'Upstream reservoirs capture and store freshwater for communities, agriculture, and ecosystems. Water managers decide when to hold that water and when to release it downstream, balancing immediate needs against future shortages. These decisions become especially difficult during prolonged droughts, when water supplies are limited and future conditions are uncertain.',
+          'Holding water in reserve can help protect against future shortages. Releasing it can increase freshwater flows into the Delta, help resist salinity intrusion, and support habitats that depend on seasonal river flows.',
+          'Calling on Reserves asks whether changing reservoir operations — the timing and amount of water released — could better balance these competing water needs.',
         ],
       },
       {
-        title: 'Changing the timing of reservoir releases',
+        title: 'Rethinking reservoir releases',
+        navigationLabel: 'Design Approach',
         paragraphs: [
-          'Shasta Reservoir captures water from the upper Sacramento River and influences when much of that water moves downstream. The scenario changes the timing and amount of releases from the reservoir, then follows those flows along the Sacramento River and into the Delta.',
-          'Instead of constructing new infrastructure within the Delta, Calling on Reserves works differently with an existing system. Releases could be timed to provide freshwater when it is especially valuable for salinity management or ecological conditions while preserving reserves when future drought risk is greater.',
-          'The central question is not simply whether more water should be released. It is whether different release patterns can make better use of a limited supply without weakening the protection that stored water provides.',
+          'Calling on Reserves focuses on Shasta Reservoir, a major reservoir in the Sacramento River watershed.',
         ],
       },
       {
-        title: 'Following freshwater benefits downstream',
+        title: 'Balancing today’s needs with tomorrow’s uncertainty',
+        navigationLabel: 'Key Takeaway',
         paragraphs: [
-          'Water released from Shasta travels down the Sacramento River before reaching the Delta. Along that route, the timing of flows can affect river and floodplain habitats as well as the amount of freshwater available to push back against salinity.',
-          'Better-timed flows could improve conditions for native fish and other species whose life cycles depend on seasonal changes in rivers. In the Delta, additional freshwater could help protect water quality for communities, agriculture, ecosystems, and statewide supplies.',
-          'These potential benefits remain connected to the amount of water left in reserve. A release that helps during one period could reduce flexibility later, so the scenario keeps ecological and Delta benefits in view alongside drought resilience.',
-        ],
-      },
-      {
-        title: 'Balancing present needs with future uncertainty',
-        paragraphs: [
-          'Calling on Reserves explores adaptation through choices about when water moves rather than through a new physical pathway or barrier.',
-          'The scenario tests whether more responsive reservoir operations can improve Delta salinity conditions and ecological flows while retaining enough stored water to respond to prolonged drought.',
-          'Its central challenge is one shared across California water management: using water when it can provide the greatest benefit without assuming that the next wet year will arrive in time.',
+          "Calling on Reserves explores a different approach to adaptation: changing how existing water infrastructure is operated rather than constructing new facilities or altering the Delta's physical landscape.",
+          'The scenario asks whether more flexible reservoir operations can make better use of limited freshwater resources while maintaining the long-term reliability that stored water provides.',
         ],
       },
     ],
@@ -248,35 +249,52 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Engineered gates and reinforced levees create a more controlled freshwater corridor through the Delta toward the southern pumping plants.',
     story: [
       {
-        title: 'What if the freshwater route through the Delta were reinforced?',
+        title: 'What if we could create a more reliable freshwater corridor?',
+        navigationLabel: 'Motivation',
         paragraphs: [
-          'Freshwater currently travels through a network of Delta channels toward the southern pumping plants. During drought, reduced river flows can allow salinity to move farther inland and affect the quality of water traveling through this system.',
-          'The route also passes deeply subsided islands where water in the channels sits high above the surrounding land. A levee failure could flood communities and farms, reshape connected waterways, and disrupt the path used to move freshwater south.',
-          'Bolster and Fortify asks whether targeted engineering could make this route more reliable. It concentrates gates, reconstructed levees, and levee improvements along one corridor to guide freshwater through the central Delta while limiting drought-time salinity intrusion.',
+          'Freshwater travels through a network of Delta channels toward the southern pumping plants, supplying water to communities and agriculture across California. During drought, reduced river flows can allow salinity to move farther inland, threatening the quality of water moving through this system.',
+          'Much of this network also runs alongside deeply subsided islands, where water in the channels sits high above the surrounding land. A levee failure could flood communities and farmland, and threaten the pathways that move freshwater south.',
+          'Bolster and Fortify explores whether targeted infrastructure improvements could make freshwater delivery more reliable while limiting salinity intrusion during drought.',
         ],
       },
       {
         title: 'Creating a controlled freshwater corridor',
+        navigationLabel: 'Design Approach',
         paragraphs: [
-          'The proposed corridor begins around Franks Tract, where operable gates would help limit salinity movement during drought. Reconstructed levees within the flooded tract would help direct freshwater from the San Joaquin River toward Old River.',
-          'Farther south, repaired and reinforced levees would strengthen the selected channel route toward Clifton Court Forebay and the southern pumping plants. Together, these interventions would turn an existing waterway into a more deliberately managed freshwater pathway.',
-          'Each element depends on the others. Gates can influence where water moves, but the corridor also relies on levees that remain strong enough to separate the channel from deeply subsided land.',
+          'Bolster and Fortify focuses on a proposed Through-Delta Corridor that guides freshwater from the San Joaquin River through Old River toward Clifton Court Forebay and the southern pumping plants.',
+          'The corridor combines three interventions:',
         ],
-      },
-      {
-        title: 'Examining who is protected—and who bears the impacts',
-        paragraphs: [
-          'A fortified corridor could improve the reliability of freshwater moving through the Delta and reduce exposure to salinity along the selected route. Stronger levees could also lower flood risk for some nearby lands, communities, and economic activities.',
-          'Those benefits may not be shared evenly. Gates and levees change how water moves, and protecting one pathway can shift salinity, ecological effects, construction impacts, or flood risk toward other places.',
-          'Bolster and Fortify therefore considers more than whether the corridor works. It also asks which communities and activities benefit from the investment, which experience disruption or new risks, and how those consequences compare with other adaptation strategies.',
+        highlights: [
+          {
+            title: 'Operable gates at Franks Tract',
+            summary:
+              'Two operable salinity-control gates are proposed near the northeastern and southeastern corners of Franks Tract. During drought, these gates could limit saltwater movement to protect freshwater quality along the corridor.',
+            paragraphs: [],
+            mapSelectionKey: 'operable-gates',
+          },
+          {
+            title: 'Reconstructed levees to direct freshwater',
+            summary:
+              'Franks Tract has remained flooded since its levees failed in the 1930s. Reconstructing selected levees within the tract, together with the operable gates, could help establish a more defined freshwater pathway.',
+            paragraphs: [],
+            mapSelectionKey: 'reconstructed-levees',
+          },
+          {
+            title: 'Fortify the Old River corridor',
+            summary:
+              'Farther south, existing levees along Old River would be repaired and reinforced to strengthen the freshwater route toward Clifton Court Forebay. These improvements could reduce the risk of levee failure and help maintain a reliable connection to the southern pumping plants.',
+            paragraphs: [],
+            mapSelectionKey: 'freshwater-corridor',
+          },
         ],
       },
       {
         title: 'A more engineered Delta',
+        navigationLabel: 'Key Takeaway',
         paragraphs: [
-          'Bolster and Fortify responds to uncertainty by increasing physical control over a selected part of the Delta’s channel network.',
-          'Unlike restoration scenarios that work by expanding natural processes, this scenario relies on gates and levees to maintain a dependable freshwater route through a changing landscape.',
-          'The scenario asks whether that control can provide lasting reliability—and whether the benefits justify the costs, disruptions, and unequal effects that a protected corridor could create elsewhere in the Delta.',
+          'Bolster and Fortify explores a future in which engineered infrastructure provides greater control over freshwater movement through the Delta.',
+          'However, greater control comes with trade-offs. Gates and levees can change water circulation and conditions beyond the protected corridor, while construction, maintenance, and long-term operations require substantial investment.',
+          'The scenario asks whether that control can provide lasting reliability — and whether the benefits justify the costs, disruptions, and unequal effects that a protected corridor could create elsewhere in the Delta.',
         ],
       },
     ],
@@ -296,34 +314,49 @@ export const adaptationScenarios: ScenarioContent[] = [
     story: [
       {
         title: 'What if some water traveled beneath the Delta?',
+        navigationLabel: 'Motivation',
         paragraphs: [
-          'Freshwater bound for other parts of California currently travels through Delta channels before reaching the southern pumping plants. Along the way, salinity intrusion can affect water quality, and a major levee failure or earthquake could interrupt the route.',
-          'A Tunnel proposes a different pathway. When conditions allow, some Sacramento River water would be diverted in the northern Delta and carried underground to Bethany Reservoir, where it would connect with the existing system that moves water farther south.',
-          'The protected route could make statewide deliveries less dependent on conditions within Delta channels. It would also leave less Sacramento River water moving through parts of the Delta, potentially changing salinity, aquatic habitat, and conditions for Delta communities.',
+          'Freshwater bound for other parts of California currently travels through Delta channels before reaching the southern pumping plants. Along the way, salinity intrusion can affect water quality, while levee failures or earthquakes could disrupt the delivery system.',
+          'A Tunnel proposes a different approach. When conditions allow, some Sacramento River water would be diverted into an underground tunnel to the existing water delivery system in the south. This alternative route would make statewide water deliveries less vulnerable to changing conditions in Delta channels.',
+          'However, diverting water upstream also means less Sacramento River water may flow through parts of the Delta. These changes could affect salinity, ecosystems, and communities that depend on Delta waterways.',
         ],
       },
       {
-        title: 'Creating a more direct water route',
+        title: 'Creating an underground freshwater route',
+        navigationLabel: 'Design Approach',
         paragraphs: [
-          'New intake facilities along the Sacramento River would direct water into an underground route beneath the Delta. At its southern end, a new pumping facility would move that water into Bethany Reservoir and connect it to existing conveyance infrastructure.',
-          'Moving water underground separates part of the delivery system from the Delta’s changing channels and levees. The route is designed primarily to protect water deliveries rather than to manage salinity or restore landscapes within the Delta.',
-          'Because the tunnel begins upstream, its effects cannot be understood only by looking at where the water arrives. The scenario follows what happens to the river and Delta after some freshwater takes the underground route instead.',
+          'A Tunnel is based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project. The design would create a new underground route connecting the Sacramento River in the northern Delta to Bethany Reservoir in the south, where water would enter the existing statewide conveyance system.',
         ],
-      },
-      {
-        title: 'Tracing changes within the Delta',
-        paragraphs: [
-          'The amount and timing of freshwater flowing through the Delta help shape salinity and aquatic conditions. Diverting water in the north could change those conditions downstream, especially during dry periods when freshwater is already limited.',
-          'These changes could affect fish and other species, agriculture, recreation, and communities that depend on Delta waterways. Communities near the proposed alignment could also experience years of construction and lasting changes to the surrounding landscape.',
-          'The scenario weighs those in-Delta consequences against the potential for a more reliable statewide water-delivery route. It asks who receives the benefits of greater reliability and who experiences the environmental and community impacts.',
+        highlights: [
+          {
+            title: 'Intake facilities in the Northern Delta',
+            summary:
+              'New intake facilities along the Sacramento River would divert water into the proposed conveyance system when conditions allow. These facilities would control how much water enters the tunnel, while the remaining river flow continues downstream through the Delta.',
+            paragraphs: [],
+            mapSelectionKey: 'tunnel-intakes',
+          },
+          {
+            title: 'A tunnel to carry water beneath the Delta',
+            summary:
+              "A roughly 45-mile underground tunnel would transport diverted water south, bypassing much of the Delta's network of channels and levees. Construction would require access shafts and other facilities along the alignment, creating temporary and potentially lasting changes to nearby landscapes and communities.",
+            paragraphs: [],
+            mapSelectionKey: 'tunnel-alignment',
+          },
+          {
+            title: 'Pumping facilities to connect to existing system',
+            summary:
+              'At the southern end, a new pumping facility would move water into Bethany Reservoir. From there, the diverted water would connect with existing infrastructure that delivers freshwater to other parts of California.',
+            paragraphs: [],
+            mapSelectionKey: 'tunnel-pumping',
+          },
         ],
       },
       {
         title: 'A comparison, not an endorsement',
+        navigationLabel: 'Key Takeaway',
         paragraphs: [
-          'Many project participants asked to include A Tunnel because of its scale and importance to California water debates, not because they necessarily support building it.',
-          'Including it allows the same questions to be asked of a major conveyance project as of restoration, reservoir-operation, and levee-fortification strategies: how does it affect salinity, ecosystems, communities, recreation, Tribal interests, and the economy?',
-          'A Tunnel provides a point of comparison for understanding whether protecting the movement of water around the Delta also creates a just and resilient future within it.',
+          'Many project participants requested that A Tunnel be included because of its scale and importance in California water debates, not necessarily because they support its construction.',
+          'While A Tunnel creates an alternative conveyance route that is less directly exposed to salinity intrusion and levee failures within Delta channels, it also asks: Could bypassing parts of the Delta improve statewide water delivery reliability, and what consequences might that create for the Delta?',
         ],
       },
     ],
@@ -334,6 +367,5 @@ export const adaptationScenarios: ScenarioContent[] = [
     ],
     comparisonNote:
       'This scenario is included for comparison and evaluation, not because project participants necessarily consider it desirable.',
-  }
+  },
 ]
-

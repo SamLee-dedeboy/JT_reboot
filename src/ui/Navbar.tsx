@@ -67,8 +67,8 @@ const navItems: NavItem[] = [
     caption: 'Explore possible futures, modeling, evaluation, and scenario performance.',
     dropdown: [
       { label: 'Choose a Future', href: '/scenarios' },
-      { label: 'Modeling & Evaluation', href: '/scenarios#outflow-variations' },
-      { label: 'Performance & Ranking', href: '/scenarios#ranking-overview' },
+      { label: 'Modeling & Evaluation', href: '/scenarios/results' },
+      { label: 'Performance & Ranking', href: '/pages/rank-visualization' },
     ],
   },
   {

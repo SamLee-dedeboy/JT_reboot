@@ -8,6 +8,7 @@ export interface ScenarioChapter {
     paragraphs: string[]
     mapHabitatType?: 'soil' | 'transitional' | 'tidal' | 'riparian'
     exploreHabitat?: 'forest' | 'meadow' | 'floodplain'
+    mapSelectionKey?: string
   }>
   endingParagraphs?: string[]
   subsections?: Array<{
@@ -36,4 +37,3 @@ export interface ScenarioContent {
   mapFeatures: string[]
   comparisonNote?: string
 }
-

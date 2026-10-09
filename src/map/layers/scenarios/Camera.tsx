@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useMap } from 'react-map-gl/mapbox'
-import type { NarrativeMapBounds } from './narrativeMapConfig'
+import type { MapBounds } from './config'
 
-export default function NarrativeMapCamera({ bounds }: { bounds: NarrativeMapBounds }) {
+export default function Camera({ bounds }: { bounds: MapBounds }) {
   const { current: map } = useMap()
 
   useEffect(() => {

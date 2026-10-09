@@ -22,6 +22,21 @@ export const map = {
   },
   scenarios: {
     layerFadeDurationMs: 500,
+    ecoMachineLocations: {
+      suisunMarsh: palette.accent.blue,
+      franksTract: palette.accent.yellow,
+      outline: palette.common.white,
+    },
+    bolsterAndFortify: {
+      gates: palette.accent.blue,
+      levees: palette.accent.yellow,
+      corridor: palette.accent.purple,
+    },
+    tunnel: {
+      facilities: palette.accent.blue,
+      alignment: palette.accent.yellow,
+      pumping: palette.accent.purple,
+    },
     newGreenWatershedSubsidence: {
       elevation0: 'rgba(0,0,0,0)',
       elevationMinus5: 'rgba(96,120,128,0.2)',

@@ -5,13 +5,10 @@ import { useState, type ReactNode } from 'react'
 import { NavigationControl } from 'react-map-gl/mapbox'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import BaseMap from '../../../map/BaseMap'
-import NarrativeMapCamera from '../../../map/layers/scenarios/NarrativeMapCamera'
-import NarrativeMapLayers from '../../../map/layers/scenarios/NarrativeMapLayers'
-import NarrativeMapLegend from '../../../map/layers/scenarios/NarrativeMapLegend'
-import {
-  getNarrativeMapConfig,
-  getNarrativeMapLegendItem,
-} from '../../../map/layers/scenarios/narrativeMapConfig'
+import Camera from '../../../map/layers/scenarios/Camera'
+import Layers from '../../../map/layers/scenarios/Layers'
+import Legend from '../../../map/layers/scenarios/Legend'
+import { getConfig, getLegendItem } from '../../../map/layers/scenarios/config'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
@@ -20,8 +17,8 @@ import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import StoryTabs from '../StoryTabs'
 import { scenarioBySlug } from '../content'
-import NarrativeHighlight from './NarrativeHighlight'
-import useNarrativeMapState from './useNarrativeMapState'
+import Highlight from './Highlight'
+import useMapState from './useMapState'
 
 const scenarioDetailGridColumns = {
   xs: '1fr',
@@ -38,7 +35,8 @@ const paragraphHighlights = [
   'its much larger watershed',
 ] as const
 
-const scenarioSectionNavigationLabels = [
+const threeSectionNavigationLabels = ['Motivation', 'Adaptation approach', 'Key Takeaway'] as const
+const fourSectionNavigationLabels = [
   'Motivation',
   'Adaptation approach',
   'Supporting strategy',
@@ -84,10 +82,12 @@ export default function IntroductionPage() {
   const scenario = scenarioBySlug[scenarioSlug]
   const isTieredOutflows = scenarioSlug === 'tiered-outflows'
   const [selectedHabitatType, setSelectedHabitatType] = useState<string | null>(null)
-  const narrativeMapConfig = getNarrativeMapConfig(scenarioSlug)
-  const narrativeMapState = useNarrativeMapState(narrativeMapConfig)
+  const mapConfig = getConfig(scenarioSlug)
+  const mapState = useMapState(mapConfig)
   const cameraBounds =
-    narrativeMapConfig.bounds[narrativeMapState.scope] ?? narrativeMapConfig.bounds.delta
+    (selectedHabitatType ? mapConfig.selectionBounds?.[selectedHabitatType] : undefined) ??
+    mapConfig.bounds[mapState.scope] ??
+    mapConfig.bounds.delta
 
   if (!scenario) return <Navigate to="/scenarios" replace />
 
@@ -202,7 +202,9 @@ export default function IntroductionPage() {
                     chapter.navigationLabel ??
                     (isTieredOutflows
                       ? chapter.title
-                      : (scenarioSectionNavigationLabels[chapterIndex] ??
+                      : ((scenario.story.length === 4
+                          ? fourSectionNavigationLabels
+                          : threeSectionNavigationLabels)[chapterIndex] ??
                         `Section ${chapterIndex + 1}`)),
                 }))}
                 sx={{
@@ -258,14 +260,17 @@ export default function IntroductionPage() {
                         }}
                       >
                         {chapter.highlights.map((highlight) => {
-                          const habitatType = highlight.mapHabitatType ?? highlight.exploreHabitat
+                          const habitatType =
+                            highlight.mapSelectionKey ??
+                            highlight.mapHabitatType ??
+                            highlight.exploreHabitat
                           const accentColor =
                             (habitatType
-                              ? getNarrativeMapLegendItem(scenario.slug, habitatType)?.color
-                              : undefined) ?? narrativeMapConfig.highlightFallbackColor
+                              ? getLegendItem(scenario.slug, habitatType)?.color
+                              : undefined) ?? mapConfig.highlightFallbackColor
 
                           return (
-                            <NarrativeHighlight
+                            <Highlight
                               key={highlight.title}
                               title={highlight.title}
                               summary={highlight.summary}
@@ -379,32 +384,35 @@ export default function IntroductionPage() {
                 }}
               >
                 <BaseMap
-                  initialViewState={narrativeMapConfig.initialViewState}
+                  initialViewState={mapConfig.initialViewState}
                   mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
-                  interactive={narrativeMapConfig.interactive}
-                  dragPan={narrativeMapConfig.interactive}
+                  interactive={mapConfig.interactive}
+                  dragPan={mapConfig.interactive}
                   dragRotate={false}
-                  scrollZoom={narrativeMapConfig.interactive}
-                  touchZoomRotate={narrativeMapConfig.interactive}
-                  maxBounds={narrativeMapConfig.maxBounds}
+                  scrollZoom={mapConfig.interactive}
+                  touchZoomRotate={mapConfig.interactive}
+                  maxBounds={mapConfig.maxBounds}
                 >
-                  {cameraBounds && <NarrativeMapCamera bounds={cameraBounds} />}
-                  <NarrativeMapLayers
+                  {cameraBounds && <Camera bounds={cameraBounds} />}
+                  <Layers
                     scenarioSlug={scenario.slug}
-                    showAdaptationLayers={narrativeMapState.showAdaptationLayers}
+                    showAdaptationLayers={
+                      mapState.showAdaptationLayers || selectedHabitatType != null
+                    }
                     selectedHabitatType={selectedHabitatType}
-                    visibilityScope={narrativeMapState.scope}
+                    visibilityScope={mapState.scope}
                   />
-                  {narrativeMapConfig.showNavigationControl && (
+                  {mapConfig.showNavigationControl && (
                     <NavigationControl position="bottom-right" showCompass={false} />
                   )}
                 </BaseMap>
-                <NarrativeMapLegend
+                <Legend
                   scenarioSlug={scenario.slug}
-                  visibilityScope={narrativeMapState.scope}
+                  visibilityScope={mapState.scope}
                   visible={
-                    narrativeMapConfig.legendActivation !== 'adaptation' ||
-                    narrativeMapState.showAdaptationLayers
+                    mapConfig.legendActivation !== 'adaptation' ||
+                    mapState.showAdaptationLayers ||
+                    selectedHabitatType != null
                   }
                   selectedHabitatType={selectedHabitatType}
                 />

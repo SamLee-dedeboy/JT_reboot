@@ -37,15 +37,25 @@ export default function StoryTabs({
         boxShadow: (theme) => theme.navigation.dropdownShadow,
       }}
     >
-      <Container maxWidth={false} sx={{ width: '90dvw', px: 0 }}>
+      <Container
+        maxWidth={false}
+        sx={{
+          width: '90dvw',
+          px: 0,
+          display: 'flex',
+          justifyContent: { xs: 'flex-start', lg: 'center' },
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          '&::-webkit-scrollbar': { display: 'none' },
+        }}
+      >
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: 'repeat(5, max-content)', lg: 'repeat(5, 1fr)' },
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            width: 'max-content',
+            flex: '0 0 auto',
             gap: jtSpacing.gap.xs,
-            overflowX: 'auto',
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
           {orderedScenarios.map((scenario, index) => {
@@ -61,7 +71,6 @@ export default function StoryTabs({
                   gridTemplateColumns: 'auto minmax(0, 1fr)',
                   alignItems: 'center',
                   gap: jtSpacing.gap.xs,
-                  minWidth: { xs: 180, lg: 0 },
                   px: jtSpacing.component.sm,
                   py: jtSpacing.component.sm,
                   borderRadius: 1,

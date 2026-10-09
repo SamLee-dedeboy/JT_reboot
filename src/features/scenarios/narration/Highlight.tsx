@@ -4,7 +4,7 @@ import { Box, ButtonBase, Collapse, Stack, Typography, alpha } from '@mui/materi
 import { useId, useState } from 'react'
 import { jtSpacing } from '../../../theme'
 
-interface NarrativeHighlightProps {
+interface HighlightProps {
   title: string
   summary: string
   paragraphs: string[]
@@ -14,7 +14,7 @@ interface NarrativeHighlightProps {
   actionLabel?: string
 }
 
-export default function NarrativeHighlight({
+export default function Highlight({
   title,
   summary,
   paragraphs,
@@ -22,7 +22,7 @@ export default function NarrativeHighlight({
   selected = false,
   onSelect,
   actionLabel,
-}: NarrativeHighlightProps) {
+}: HighlightProps) {
   const [expanded, setExpanded] = useState(false)
   const detailsId = useId()
 
@@ -68,7 +68,7 @@ export default function NarrativeHighlight({
           <ButtonBase
             onClick={onSelect}
             aria-pressed={selected}
-            aria-label={`${selected ? 'Clear' : 'Show'} ${title.toLowerCase()} habitat highlight on map`}
+            aria-label={`${selected ? 'Clear' : 'Show'} ${title.toLowerCase()} highlight on map`}
             sx={(theme) => ({
               gap: jtSpacing.gap.sm,
               px: jtSpacing.component.sm,
@@ -93,41 +93,45 @@ export default function NarrativeHighlight({
         {summary}
       </Typography>
 
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Stack id={detailsId} spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.md }}>
-          {paragraphs.map((paragraph) => (
-            <Typography variant="body2" key={paragraph} sx={{ color: 'base.100' }}>
-              {paragraph}
-            </Typography>
-          ))}
-        </Stack>
-      </Collapse>
+      {paragraphs.length > 0 && (
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Stack id={detailsId} spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.md }}>
+            {paragraphs.map((paragraph) => (
+              <Typography variant="body2" key={paragraph} sx={{ color: 'base.100' }}>
+                {paragraph}
+              </Typography>
+            ))}
+          </Stack>
+        </Collapse>
+      )}
 
-      <Box sx={{ mt: jtSpacing.component.lg }}>
-        <ButtonBase
-          onClick={() => setExpanded((current) => !current)}
-          aria-expanded={expanded}
-          aria-controls={detailsId}
-          sx={(theme) => ({
-            gap: jtSpacing.gap.sm,
-            color: 'primary.main',
-            typography: 'button',
-            '&.Mui-focusVisible': {
-              outline: `2px solid ${theme.palette.primary.main}`,
-              outlineOffset: theme.spacing(0.5),
-            },
-          })}
-        >
-          {expanded ? 'Hide technical details' : 'Read technical details'}
-          <ExpandMoreIcon
-            fontSize="inherit"
+      {paragraphs.length > 0 && (
+        <Box sx={{ mt: jtSpacing.component.lg }}>
+          <ButtonBase
+            onClick={() => setExpanded((current) => !current)}
+            aria-expanded={expanded}
+            aria-controls={detailsId}
             sx={(theme) => ({
-              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: theme.transitions.create('transform'),
+              gap: jtSpacing.gap.sm,
+              color: 'primary.main',
+              typography: 'button',
+              '&.Mui-focusVisible': {
+                outline: `2px solid ${theme.palette.primary.main}`,
+                outlineOffset: theme.spacing(0.5),
+              },
             })}
-          />
-        </ButtonBase>
-      </Box>
+          >
+            {expanded ? 'Hide technical details' : 'Read technical details'}
+            <ExpandMoreIcon
+              fontSize="inherit"
+              sx={(theme) => ({
+                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: theme.transitions.create('transform'),
+              })}
+            />
+          </ButtonBase>
+        </Box>
+      )}
     </Box>
   )
 }

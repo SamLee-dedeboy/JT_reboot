@@ -1,21 +1,21 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { map } from '../../../theme'
-import { scenarioMapLayersBySlug, type NarrativeMapScope } from './narrativeMapConfig'
+import { layersBySlug, type MapScope } from './config'
 
-interface NarrativeMapLegendProps {
+interface LegendProps {
   scenarioSlug: string
   visible?: boolean
   selectedHabitatType?: string | null
-  visibilityScope?: NarrativeMapScope
+  visibilityScope?: MapScope
 }
 
-export default function NarrativeMapLegend({
+export default function Legend({
   scenarioSlug,
   visible = true,
   selectedHabitatType,
   visibilityScope = 'delta',
-}: NarrativeMapLegendProps) {
-  const legends = (scenarioMapLayersBySlug[scenarioSlug] ?? [])
+}: LegendProps) {
+  const legends = (layersBySlug[scenarioSlug] ?? [])
     .filter((source) => (source.visibilityScope ?? 'delta') === visibilityScope)
     .map((source) => source.legend)
     .filter((legend): legend is NonNullable<typeof legend> => legend != null)
