@@ -21,6 +21,7 @@ export const chart = {
       recreation: palette.dataViz.orchid,
       environmentalJustice: palette.dataViz.clay,
       economy: palette.dataViz.cobalt,
+      ecoCultural: palette.dataViz.violet,
     },
     // Selectable team palettes; each is validated against the score pair below.
     teamPalettes: {
@@ -29,8 +30,10 @@ export const chart = {
         palette.dataViz.orchid,
         palette.dataViz.clay,
         palette.dataViz.cobalt,
+        palette.dataViz.violet,
       ],
       neutral: [
+        palette.dataViz.neutral,
         palette.dataViz.neutral,
         palette.dataViz.neutral,
         palette.dataViz.neutral,
@@ -55,6 +58,25 @@ export const chart = {
     spread: palette.base[100],
     spreadSoft: palette.translucent[200],
     track: palette.border.default,
+    // Drill-down views (step 4). A measurement is not a score, so it never uses the
+    // blue/orange pair: one neutral ink, plus a flag color per edge kind so a child
+    // row says how it relates to its parent.
+    drill: {
+      measure: palette.base[100],
+      measureTrack: palette.translucent[200],
+      gap: palette.base[400],
+      edge: {
+        averages: palette.base[50],
+        measures: palette.base[100],
+        derives: palette.base[100],
+        // Its own hue: a sub-scenario is the one edge that does not flow upward,
+        // so it should not read as a quieter version of the ones that do.
+        refines: palette.accent.indigo,
+        duplicates: palette.accent.purple,
+        beside: palette.accent.yellow,
+        unscored: palette.base[300],
+      },
+    },
     zeroLine: palette.base[300],
     well: palette.translucent[500],
   },

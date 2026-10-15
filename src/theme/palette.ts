@@ -69,6 +69,10 @@ export const palette = {
     orchid: '#f69efe',
     clay: '#ae6259',
     cobalt: '#586de3',
+    // Fifth team (eco-cultural). Clear of the others to normal vision (>= ΔE 15);
+    // ΔE ~7 from cobalt/score-blue under protan-deutan, which the per-team icons
+    // and always-present labels cover as secondary encoding.
+    violet: '#b255b6',
     // Single light neutral for every team (9.9:1 on the card surface)
     neutral: '#c9cecf',
   },

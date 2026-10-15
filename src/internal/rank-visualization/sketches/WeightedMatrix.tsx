@@ -104,7 +104,12 @@ export default function WeightedMatrix() {
           >
             <RowLabel name={scenario.name} />
             {scenario.scores.map((score, i) => (
-              <ScoreCell key={teams[i].name} score={score} opacity={weightOpacity(weights[i])} />
+              <ScoreCell
+                key={teams[i].name}
+                score={score}
+                provisional={scenario.provisional[i]}
+                opacity={weightOpacity(weights[i])}
+              />
             ))}
             <SpreadCell spanLeft={scenario.spanLeft} spanWidth={scenario.spanWidth} />
             <TotalCell value={scenario.wAvg} />

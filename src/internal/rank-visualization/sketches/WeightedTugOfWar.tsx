@@ -129,12 +129,18 @@ export default function WeightedTugOfWar() {
               spanLeft={scenario.spanLeft}
               spanWidth={scenario.spanWidth}
               avgPos={toPct(scenario.wAvg)}
-              dots={scenario.scores.map((score, i) => ({
-                color: teams[i].color,
-                pos: toPct(score),
-                size: weightDotSize(weights[i]),
-                opacity: weights[i] === 0 ? 0.25 : 1,
-              }))}
+              dots={scenario.scores.flatMap((score, i) =>
+                score === null
+                  ? []
+                  : [
+                      {
+                        color: teams[i].color,
+                        pos: toPct(score),
+                        size: weightDotSize(weights[i]),
+                        opacity: weights[i] === 0 ? 0.25 : 1,
+                      },
+                    ],
+              )}
             />
             <Typography variant="chartValueLarge" sx={{ textAlign: 'right' }}>
               {fmtScore(scenario.wAvg)}

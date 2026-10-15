@@ -1,28 +1,44 @@
-// Illustrative voting data for the scenario-ranking wireframes.
-// Scores run −5…+5 relative to Business as Usual, which is pinned at 0.
-// Tuned so every design has something to show (checked for ties and
-// near-zero scores under every preset):
-//   - New Green Watershed is the consensus pick: small spread, #1 under every lens.
-//   - Delta Tunnel is the split vote (Economy +5, everyone else against): the
-//     widest spread, and Economy first flips it above today.
-//   - Each "<team> first" lens reorders the middle differently: Ecology first
-//     sinks Bolster & Fortify below today, Recreation first lifts Calling on
-//     Reserves, Justice first lifts Bolster to #2, Economy first lifts the Tunnel.
+// Criterion scores from the five subteams' two sources in research/criteria-stories/:
+// the "Story Behind the Criterion" reports (Sept 2026 drafts) and the Bay-Delta Science
+// Conference slides (Oct 2026), which supersede them. Provenance, derivations, what the
+// slides changed and the remaining gaps: research/criteria-stories/RANKINGS.md.
+//
+// Scale: −5…+5 with Business as Usual anchored at 0, as EJ, Eco-cultural and
+// Economy all report it. Two caveats carried from the reports:
+//   - Values the subteam did not publish as a criterion score are INFERRED, flagged
+//     in `provisional` and marked with * on screen. Two kinds, one label, because a
+//     reader needs the same warning from both: Ecology's whole column is the mean of
+//     its two published metric ranks, and Recreation's whole column is read off the
+//     per-activity threshold percentages in the Oct 2026 slides by a mapping nobody
+//     published. EJ's Calling on Reserves and A Tunnel, and Economy's A Tunnel, are
+//     marked pending by their subteams and carry stand-ins here. None of these are
+//     the subteams' own numbers.
+// Only the six adaptation scenarios are shown; the tiered outflow runs use a
+// different increment and are not comparable with them.
 import { alpha } from '@mui/material/styles'
 import { chart } from '../../theme'
 
 const voting = chart.voting
 
+/** Stable id per subteam: keys icons and palettes, independent of display name. */
+export type TeamKey = 'ecology' | 'recreation' | 'environmentalJustice' | 'economy' | 'ecoCultural'
+
 export interface Team {
+  key: TeamKey
   name: string
   color: string
 }
+
+/** A criterion score, or null where that subteam has not scored the scenario. */
+export type Score = number | null
 
 export interface Scenario {
   name: string
   color: string
   /** One score per team, in TEAMS order. */
-  scores: number[]
+  scores: Score[]
+  /** Per-team flags: true where the score is INFERRED rather than the subteam's own. */
+  provisional: boolean[]
 }
 
 export type Weights = number[]
@@ -32,50 +48,77 @@ export const WEIGHT_MAX = 3
 export const WEIGHT_STEP = 0.5
 /** Quick-pick values for the per-team stepper chips (2b). */
 export const WEIGHT_CHIPS = [0, 0.5, 1, 2]
-export const EQUAL_WEIGHTS: Weights = [1, 1, 1, 1]
+export const EQUAL_WEIGHTS: Weights = [1, 1, 1, 1, 1]
 
 export const TEAMS: Team[] = [
-  { name: 'Ecology', color: voting.team.ecology },
-  { name: 'Recreation', color: voting.team.recreation },
-  { name: 'Env. Justice', color: voting.team.environmentalJustice },
-  { name: 'Economy', color: voting.team.economy },
+  { key: 'ecology', name: 'Ecology', color: voting.team.ecology },
+  { key: 'recreation', name: 'Recreation', color: voting.team.recreation },
+  { key: 'environmentalJustice', name: 'Env. Justice', color: voting.team.environmentalJustice },
+  { key: 'economy', name: 'Economy', color: voting.team.economy },
+  { key: 'ecoCultural', name: 'Eco-cultural', color: voting.team.ecoCultural },
 ]
 
-const SCENARIOS: Scenario[] = [
+/** The six adaptation scenarios, in declaration order; drilldown/model.ts keys off it. */
+export const SCENARIOS: Scenario[] = [
   {
+    // Ecology: landscape +5 and food web +4 (NGW2). EJ: the only scenario above 0.
+    // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
+    // Recreation*: marginally worse than today on every salinity/temperature
+    // threshold (mean +1.2 percentage points of exceedance), while winning on its
+    // unscored restoration metric.
     name: 'New Green Watershed',
     color: voting.scenario.newGreenWatershed,
-    scores: [5, 4, 4, 3],
+    scores: [4.5, -1, 1, -4, 4],
+    provisional: [true, true, false, false, false],
   },
   {
+    // Ecology: landscape +3, food web +1. EJ fell from +1 to 0 when the Oct 2026
+    // slides dropped the two seasonal drinking-water scores from its average.
+    // Recreation*: the same marginal loss on thresholds as NGW.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
-    scores: [5, 3, 2, -1],
+    scores: [2, -1, 0, 0, 2],
+    provisional: [true, true, false, false, false],
   },
   {
+    // Recreation*: tracks Business as Usual exactly on all five activities.
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
-    scores: [-3, 1, 4, 4],
+    scores: [0, 0, 0, -1, 0],
+    provisional: [true, true, false, false, false],
   },
   {
+    // Economy scores this 0 in the dry year and +1 in the wet; the app takes 0.
+    // Recreation*: clearly worst of the five scenarios measured, on every activity.
+    // EJ*: now "pending" for want of a water-age result; −1 is the mean of the two
+    // metrics it has (drinking water −2, flood risk 0), which is also what the
+    // Sept report published.
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [1, 4, -2, 0],
+    scores: [0, -3, -1, 0, 1],
+    provisional: [true, true, true, false, false],
   },
   {
-    name: 'Delta Tunnel',
+    // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
+    // withdrew the drinking-water numbers the Sept report published for it.
+    // Recreation*: "performed the worst of all six scenarios"; absent from every
+    // slide table. EJ*: mean of the four metric scores the Sept report gave
+    // (−3, −5, 0, +1). Economy*: salinity moves gross revenue by < 0.01%.
+    name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [-4, -3, -4, 5],
+    scores: [0, -3, -2, 0, -2],
+    provisional: [true, true, true, true, false],
   },
   {
     name: 'Business as Usual',
     color: voting.scenario.businessAsUsual,
-    scores: [0, 0, 0, 0],
+    scores: [0, 0, 0, 0, 0],
+    provisional: [true, true, false, false, false],
   },
 ]
 
 /** Short team names for the "<team> first" preset labels, in TEAMS order. */
-const PRESET_TEAM_NAMES = ['Ecology', 'Recreation', 'Justice', 'Economy']
+const PRESET_TEAM_NAMES = ['Ecology', 'Recreation', 'Justice', 'Economy', 'Eco-cultural']
 const FIRST_WEIGHT = 2
 const OTHERS_WEIGHT = 0.5
 
@@ -102,7 +145,7 @@ export function fmtScore(value: number): string {
 
 export const fmtWeight = (weight: number) => (weight === 0.5 ? '½' : `${weight}`)
 
-/** Diverging cell fill: green above baseline, red below, grey at 0. */
+/** Diverging cell fill: blue above baseline, orange below, grey at 0. */
 export function cellFill(score: number): string {
   if (score === 0) return voting.baseline
   const opacity = 0.18 + (Math.abs(score) / SCORE_MAX) * 0.62
@@ -131,14 +174,18 @@ export interface ScenarioStats extends Scenario {
   spanWidth: number
 }
 
+/** Scores a scenario actually has; unscored criteria are left out of every stat. */
+export const scored = (scores: Score[]): number[] => scores.filter((s) => s !== null)
+
 function withStats(scenario: Scenario): ScenarioStats {
-  const total = scenario.scores.reduce((a, b) => a + b, 0)
-  const min = Math.min(...scenario.scores)
-  const max = Math.max(...scenario.scores)
+  const values = scored(scenario.scores)
+  const total = values.reduce((a, b) => a + b, 0)
+  const min = Math.min(...values)
+  const max = Math.max(...values)
   return {
     ...scenario,
     total,
-    avg: total / scenario.scores.length,
+    avg: values.length ? total / values.length : 0,
     spanLeft: toPct(min),
     spanWidth: Math.max(2, ((max - min) / SCORE_MAX) * 50),
   }
@@ -151,9 +198,18 @@ export const RANKED: (ScenarioStats & { rank: number })[] = [...SCENARIO_STATS]
   .sort((a, b) => b.total - a.total)
   .map((scenario, i) => ({ ...scenario, rank: i + 1 }))
 
-function weightedAverage(scores: number[], weights: Weights): number {
-  const weightSum = weights.reduce((a, b) => a + b, 0) || 1
-  return scores.reduce((sum, score, i) => sum + score * weights[i], 0) / weightSum
+/** Weighted mean over the scored criteria only, renormalized to their weights. */
+function weightedAverage(scores: Score[], weights: Weights): number {
+  const weightSum = scores.reduce<number>(
+    (sum, score, i) => (score === null ? sum : sum + weights[i]),
+    0,
+  )
+  if (!weightSum) return 0
+  const weighted = scores.reduce<number>(
+    (sum, score, i) => (score === null ? sum : sum + score * weights[i]),
+    0,
+  )
+  return weighted / weightSum
 }
 
 export interface WeightedScenario extends ScenarioStats {

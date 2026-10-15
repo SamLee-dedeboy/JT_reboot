@@ -159,6 +159,16 @@ export const typography = {
     letterSpacing: '0.02em',
     textTransform: 'uppercase',
   },
+  // Inline emphasis inside a data-state sentence ("Comparing ALL SIX SCENARIOS on
+  // ECOLOGY"): the selected value, set at body2's size so it sits on the same line.
+  chartSentenceValue: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
+    lineHeight: 1.25,
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
   chartColumnHead: {
     fontFamily: fontBody,
     fontSize: '0.66rem',

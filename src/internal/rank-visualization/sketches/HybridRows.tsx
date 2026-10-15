@@ -82,6 +82,7 @@ export default function HybridRows() {
                     key={TEAMS[i].name}
                     score={score}
                     compact
+                    provisional={scenario.provisional[i]}
                     opacity={weightOpacity(weights[i])}
                   />
                 ))}
@@ -108,10 +109,10 @@ export default function HybridRows() {
               key={team.name}
               sx={{ display: 'grid', justifyItems: 'center', '& > *': { gridArea: '1 / 1' } }}
             >
-              <TeamKey index={i} shape="square" suffix={(j) => weightLabel(weights[j])} />
+              <TeamKey index={i} suffix={(j) => weightLabel(weights[j])} />
               {/* Invisible widest-case twin sizes the column to its largest label */}
               <Box aria-hidden sx={{ visibility: 'hidden' }}>
-                <TeamKey index={i} shape="square" suffix={() => widestWeightLabel} />
+                <TeamKey index={i} suffix={() => widestWeightLabel} />
               </Box>
             </Box>
           ))}

@@ -2,18 +2,23 @@
 import { Box, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import { cellFill, fmtScore } from '../data'
+import type { Score } from '../data'
 import { useTeams } from './teamPalette'
+import TeamIcon from './TeamIcon'
 
 /** Diverging score cell (matrix sketches). `opacity` ghosts down-weighted teams. */
 export function ScoreCell({
   score,
   opacity = 1,
   compact = false,
+  provisional = false,
   title,
 }: {
-  score: number
+  score: Score
   opacity?: number
   compact?: boolean
+  /** Stand-in value: outlined and asterisked so it never reads as reported. */
+  provisional?: boolean
   title?: string
 }) {
   return (
@@ -26,12 +31,16 @@ export function ScoreCell({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 1,
-        bgcolor: cellFill(score),
+        bgcolor: score === null ? 'transparent' : cellFill(score),
+        border: score === null || provisional ? 1 : 0,
+        borderStyle: 'dashed',
+        borderColor: provisional ? 'base.200' : 'border.default',
+        color: score === null ? 'base.300' : undefined,
         opacity,
         transition: 'opacity 200ms ease',
       }}
     >
-      {fmtScore(score)}
+      {score === null ? '—' : `${fmtScore(score)}${provisional ? '*' : ''}`}
     </Typography>
   )
 }
@@ -145,26 +154,27 @@ export function DeltaBadge({ delta }: { delta: number }) {
   )
 }
 
-/** One team's legend entry: swatch + name (+ optional suffix such as its weight). */
-export function TeamKey({
-  index,
-  shape = 'dot',
-  suffix,
-}: {
-  index: number
-  shape?: 'dot' | 'square'
-  suffix?: (index: number) => string
-}) {
+/** One team's legend entry: icon + name (+ optional suffix such as its weight). */
+export function TeamKey({ index, suffix }: { index: number; suffix?: (index: number) => string }) {
   const team = useTeams()[index]
   return (
-    <LegendItem swatch={<Swatch color={team.color} shape={shape} />}>
+    <LegendItem swatch={<TeamIcon team={team.key} size={14} />} color={team.color}>
       {team.name}
       {suffix ? ` ${suffix(index)}` : ''}
     </LegendItem>
   )
 }
 
-function LegendItem({ swatch, children }: { swatch: ReactNode; children: ReactNode }) {
+function LegendItem({
+  swatch,
+  color,
+  children,
+}: {
+  swatch: ReactNode
+  /** Tints the swatch/icon; the text stays in its own ink. */
+  color?: string
+  children: ReactNode
+}) {
   return (
     <Typography
       variant="controlLabel"
@@ -174,26 +184,12 @@ function LegendItem({ swatch, children }: { swatch: ReactNode; children: ReactNo
         gap: 0.75,
         whiteSpace: 'nowrap',
         color: 'base.100',
+        '& > :first-of-type': { color },
       }}
     >
       {swatch}
       {children}
     </Typography>
-  )
-}
-
-function Swatch({ color, shape = 'dot' }: { color: string; shape?: 'dot' | 'square' }) {
-  return (
-    <Box
-      component="span"
-      sx={{
-        flex: 'none',
-        width: 9,
-        height: 9,
-        borderRadius: shape === 'dot' ? '50%' : 0.5,
-        bgcolor: color,
-      }}
-    />
   )
 }
 
@@ -224,10 +220,14 @@ export function BallotPip({
   title,
 }: {
   color: string
-  score: number
+  score: Score
   size?: number
   title?: string
 }) {
+  // Not scored yet: hold the slot, draw nothing.
+  if (score === null) {
+    return <Box component="span" title={title} sx={{ width: size, height: size }} />
+  }
   if (score === 0) {
     return (
       <Box

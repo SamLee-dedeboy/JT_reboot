@@ -25,6 +25,7 @@ declare module '@mui/material/styles' {
     footerLogo: CSSProperties
     chartTitle: CSSProperties
     chartLabel: CSSProperties
+    chartSentenceValue: CSSProperties
     chartColumnHead: CSSProperties
     chartAxis: CSSProperties
     chartValue: CSSProperties
@@ -100,6 +101,7 @@ declare module '@mui/material/Typography' {
     footerLogo: true
     chartTitle: true
     chartLabel: true
+    chartSentenceValue: true
     chartColumnHead: true
     chartAxis: true
     chartValue: true

@@ -12,7 +12,9 @@ import SketchCard from '../components/SketchCard'
 import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, COLUMN_GAP, ROW_GAP, TRACK_HEIGHT, trackColumns } from '../components/layout'
 import { BallotPip, RankNumber, ScaleLabels } from '../components/ChartBits'
-import { RANKED, TEAMS, fmtScore, toPct } from '../data'
+import TeamIcon from '../components/TeamIcon'
+import { RANKED, TEAMS, fmtScore, scored, toPct } from '../data'
+import type { Score } from '../data'
 import type { ScenarioStats } from '../data'
 
 type RankedScenario = ScenarioStats & { rank: number }
@@ -53,13 +55,14 @@ function SpreadBand({
   show,
   variant,
 }: {
-  scores: number[]
+  scores: Score[]
   show: boolean
   /** 'row': outlined band on the overall row · 'column': full-height background behind ballots. */
   variant: 'row' | 'column'
 }) {
-  const minPos = toPct(Math.min(...scores))
-  const maxPos = toPct(Math.max(...scores))
+  const values = scored(scores)
+  const minPos = toPct(Math.min(...values))
+  const maxPos = toPct(Math.max(...values))
   if (maxPos === minPos) return null
   return (
     <Box
@@ -164,7 +167,8 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
     >
       {scenario.scores.map((score, i) => {
         const team = teams[i]
-        const pos = toPct(score)
+        const isProvisional = scenario.provisional[i]
+        const pos = score === null ? 50 : toPct(score)
         return (
           <Box
             key={team.name}
@@ -190,8 +194,15 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
                   color={team.color}
                   score={score}
                   size={10}
-                  title={`${team.name}: ${fmtScore(score)}`}
+                  title={`${team.name}: ${
+                    score === null
+                      ? 'not scored yet'
+                      : `${fmtScore(score)}${isProvisional ? ' (inferred, not the subteam’s own number)' : ''}`
+                  }`}
                 />
+              </Box>
+              <Box sx={{ display: 'flex', color: team.color }}>
+                <TeamIcon team={team.key} size={14} />
               </Box>
               {/* Name slot sized by an invisible copy of the longest team name, so the
                   scores sit just after the names and still line up in one column */}
@@ -212,7 +223,7 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
                   color: 'base.100',
                 }}
               >
-                {fmtScore(score)}
+                {score === null ? '—' : `${fmtScore(score)}${isProvisional ? '*' : ''}`}
               </Typography>
             </Box>
 
@@ -227,7 +238,7 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
               {/* Spread: a background column from the lowest to the highest ballot */}
               <SpreadBand scores={scenario.scores} show={showSpread} variant="column" />
               {/* A ballot of 0 draws no bar: the track stays empty */}
-              {score !== 0 && (
+              {score !== 0 && score !== null && (
                 <Box
                   sx={{
                     top: 'calc(50% - 4px)',
@@ -235,7 +246,11 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
                     borderRadius: 0.5,
                     left: `${Math.min(50, pos)}%`,
                     width: `${Math.abs(pos - 50)}%`,
-                    bgcolor: team.color,
+                    // Provisional: outline only, so it reads as a placeholder
+                    bgcolor: isProvisional ? 'transparent' : team.color,
+                    border: isProvisional ? 1 : 0,
+                    borderStyle: 'dashed',
+                    borderColor: team.color,
                   }}
                 />
               )}
