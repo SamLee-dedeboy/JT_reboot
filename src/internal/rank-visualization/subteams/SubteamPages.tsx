@@ -92,7 +92,7 @@ function SubteamTab({
         </Typography>
       </Box>
       <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-        {`reaches the score: ${reaches}`}
+        {`goes into the score: ${reaches}`}
       </Typography>
     </ButtonBase>
   )

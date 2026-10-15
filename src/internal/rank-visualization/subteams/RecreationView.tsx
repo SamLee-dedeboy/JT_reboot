@@ -79,7 +79,7 @@ export default function RecreationView() {
     <SubteamPage profile={SUBTEAM_PROFILES.recreation}>
       <Panel
         title="Summer against winter"
-        note="Share of days over each activity's threshold. Winter is worse than summer for every activity except boating and day use, where Calling on Reserves is the only scenario that beats today."
+        note="This shows the proportion of days exceeding each activity’s threshold. Threshold exceedance is higher in winter than in summer for every activity except boating and day use; for those two activities, Calling on Reserves is the only scenario with lower exceedance than the Business as Usual baseline."
       >
         <Box sx={{ display: 'grid', gap: 1.5 }}>
           {ACTIVITIES.map((activity, row) => (
@@ -116,8 +116,8 @@ export default function RecreationView() {
       </Panel>
 
       <Panel
-        title="Their own formula, run"
-        note="Page 391 defines Score = 5 − 10 × (days over threshold ÷ days in period) and the ranking sections beneath it are empty headings. Applied to the whole run it puts Business as Usual at 1.51 rather than 0, and all five scenarios inside a third of a point of each other."
+        title="Apply their formula"
+        note="Page 391 defines Score = 5 − 10 × (days exceeding the threshold ÷ days in period), but the ranking sections below it are empty headings. When applied to the whole run, the formula puts Business as Usual at 1.51 rather than 0, and all five scenarios are within a third of a point of each other."
       >
         <Box sx={{ overflowX: 'auto' }}>
           <Box
@@ -141,14 +141,14 @@ export default function RecreationView() {
           </Box>
         </Box>
         <Typography variant="body2" sx={{ color: 'base.300', mt: 1, maxWidth: '78ch' }}>
-          Rebase those means on Business as Usual and every scenario rounds to 0. That is the gap
-          between having measurements and having a score.
+          Rebase those means on Business as Usual and every scenario rounds to 0, so the
+          measurements do not yet produce a score.
         </Typography>
       </Panel>
 
       <Panel
         title="No map behind the score"
-        note="Recreation has four regions and an outline for each, but its activity figures are published Delta-wide: the report's per-region breakdown was never transcribed into the data, so there is nothing to place on a map yet. That is a gap in our transcription, not in their work."
+        note="Recreation has four regions and an outline for each, but its published activity values cover the Delta as a whole. The report also breaks them down by region, although those values were never transcribed into the data, so there is nothing to map yet: the team’s work includes the values, but our transcription does not."
       >
         <Box />
       </Panel>

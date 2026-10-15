@@ -28,15 +28,15 @@ import SubteamPages from './subteams/SubteamPages'
 const CONCEPTS = [
   { term: 'Ballot', definition: 'one subteam’s score for a scenario, −5 to +5' },
   { term: 'Baseline', definition: 'Business as Usual, today’s path, fixed at 0' },
-  { term: 'Overall', definition: 'the average of the scored ballots' },
-  { term: 'Spread', definition: 'highest minus lowest ballot: how much teams disagree' },
+  { term: 'Overall', definition: 'the mean of the scored ballots' },
+  { term: 'Range', definition: 'highest ballot minus lowest ballot: variation among subteams' },
 ]
 
 const STEP_1_TABS: StageTab[] = [
   {
     id: '1a',
     label: 'Ranked scoreboard',
-    note: 'Bars grow from the baseline to each overall score on the full −5 to +5 axis. The scale on the left groups scenarios by which side of today they land on. Each scenario unfolds into its five ballots (click a row to fold it); dashed, asterisked ballots are inferred rather than reported: the pip shows that team’s side of today — filled = better, hollow = worse, dash = the same — the dashed line through the ballots is their average (blue above today, orange below). Turn on Spread to shade each scenario’s range from its lowest to its highest ballot, box-plot style.',
+    note: 'Each bar starts at the Business as Usual baseline and ends at the overall score on the full −5 to +5 axis; the scale on the left groups scenarios by their position relative to that baseline. Click a scenario row to show or hide its five ballots. A dashed ballot with an asterisk was inferred rather than reported, and its pip shows the team’s difference from baseline: filled is above, hollow is below, and a dash is equal. The dashed line across the ballots shows their mean, in blue above the baseline and orange below it. Turn on Range to shade the interval from the lowest to the highest ballot, like a box plot.',
     content: <OverallRanking />,
   },
 ]
@@ -46,13 +46,13 @@ const STEP_2_TABS: StageTab[] = [
   {
     id: '2a',
     label: 'Weighted matrix',
-    note: 'Drag a slider to change a team’s weight; its column widens to match. Rows re-sort by the weighted score. A team at 0 fades out but its ballots stay on record. Switch Weights to Presets to pick a lens instead of setting each team.',
+    note: 'Drag a slider to change a team’s weight. Its column widens to match, and the rows sort again by weighted score. A team at 0 fades out, but its ballots remain in the record. Switch Weights to Presets to choose a lens instead of setting each team.',
     content: <WeightedMatrix />,
   },
   {
     id: '2b',
     label: 'Tug-of-war',
-    note: 'Set weights with the chips; dot size shows each team’s pull. The white bar is the weighted score; rows re-rank and ▲▼ marks movement from equal weights. Switch Weights to Presets to pick a lens instead of setting each team.',
+    note: 'Use the chips to set the weights; dot size shows each team’s relative weight, while the white bar shows the weighted score. The rows rank again, and ▲▼ marks movement from equal weights. Switch Weights to Presets to choose a lens instead of setting each team.',
     content: <WeightedTugOfWar />,
   },
 ]
@@ -62,13 +62,13 @@ const STEP_3_TABS: StageTab[] = [
   {
     id: '3a',
     label: 'Before / after',
-    note: 'Left: the equal-weight order. Right: the order under the chosen lens. Flat lines are robust; sloped lines are where the weighting decides.',
+    note: 'The left side shows the equal-weight order, and the right side shows the order under the chosen lens. Flat lines indicate unchanged rankings; sloped lines indicate where weighting changes the order.',
     content: <BeforeAfter />,
   },
   {
     id: '3b',
     label: 'Score shift',
-    note: 'The hollow dot is the equal-weight score and the white bar the weighted one; the connector shows how far and which way each score moves.',
+    note: 'The hollow dot shows the equal-weight score, and the white bar shows the weighted score; the line between them shows the magnitude and direction of the difference.',
     content: <ScoreShift />,
   },
 ]
@@ -81,19 +81,19 @@ const STEP_4_TABS: StageTab[] = [
   {
     id: '4a',
     label: 'Three axes',
-    note: 'The controls sit in a sticky sidebar on the left and the table beside them, so a click and its effect are in one screen. Read the sidebar top to bottom. “View” picks the kind of table you get. Over the table, “Now showing” states the whole position as one sentence — verb, what varies, the criterion, then the place and period — with the terms you chose set in caps and the pinned one in green. Under the divider, “You are at” is the path you are standing on (click a crumb to go back up; the trail at the right end shows Subteam › Metric › Measurement), “Drill into” is where you can go next, and the Scenario, Where and When rows each say on their right whether they change this view or not — a greyed row is a control that currently does nothing. All three dimensions are top-level here, so any of the four ways in reaches the same cell and re-anchoring never clears the rest. In the table, Relation says how a child relates to its parent, because drilling down is not always "what is inside this number"; only −5…+5 scores use the blue/orange scale, so a change of units is visible. Three bar states are deliberately distinct: a bar is a value, a white tick on the baseline is a measured zero, and a dashed empty track with “—” is no number at all. Pick "Look at one place & time" to see what every criterion measures at one slice — and how often the answer is nothing.',
+    note: 'The controls stay in a sidebar beside the table, so you can see each click take effect; read the sidebar from top to bottom. “View” chooses the table, while “Now showing” describes the current view in one sentence: what the table does, what changes, the criterion, the place, and the period. Your choices appear in caps, and the fixed choice is green. Below the divider, “You are at” shows your current path; click a crumb to move up, and use the trail at the right to follow Subteam › Metric › Measurement. “Drill into” lists the next choices. The Scenario, Where, and When rows indicate whether they affect the current view; grey rows do not. All three dimensions are top-level controls, so each of the four routes can reach the same cell without clearing the other choices when the fixed dimension changes. In the table, Relation indicates how a child connects to its parent, although drilling down does not always reveal what is included in a value. Only −5…+5 scores use the blue and orange scale, making changes in units visible. Bars have three states: a bar is a value, a white tick at the baseline is a measured zero, and a dashed empty track with “—” means there is no value. Choose "Look at one place & time" to compare what every criterion measures in one slice, including how often no result is available.',
     content: <DrillAxes />,
   },
   {
     id: '4b',
     label: 'Detail inside the view',
-    note: 'The same sidebar and the same reading order, one row shorter: Where & when is not a control here, it is a breakdown panel under the table with its own local controls, so the row only tells you whether this criterion has one. Two views instead of three. Cheaper to read, and the comparison it gives up is across criteria — EJ scores its drinking water three times by season and Recreation’s whole story is how late in the year stress lingers, but each calendar sits in its own panel with nothing to line them up.',
+    note: 'The sidebar follows the same order with one fewer row: Where & when is a panel below the table with its own local controls, while the sidebar row only indicates whether the criterion includes that breakdown. This design offers two views instead of three and is easier to read, but it cannot compare criteria by place and time. EJ scores its drinking water three times by season, while Recreation focuses on how late in the year stress continues; each calendar stays in its own panel, so they cannot be aligned.',
     content: <DrillNested />,
   },
   {
     id: '4c',
     label: 'Build the comparison',
-    note: 'The whole criterion tree stays on screen and you tick what you want to compare. There is no “where you are”, so a criterion in one subteam and a criterion in another can sit in the same table, and moving between them costs a tick instead of a walk up to the root and back down; typing in the filter flattens the tree to the matches, which is the direct jump. A parent row carries three separate things: the twisty opens it, the box ticks it, and “N parts” swaps the node for its children, because a total and its components rarely belong together. Scenarios, places and periods behave the same way — one value picked means fixed, two or more means that dimension becomes an axis, and nothing decides the shape of the table but the selection. Two guards replace a broken table: more than two dimensions varying has no two-dimensional form, and past ~160 cells a grid stops being readable. Columns from different subteams, or in different units, split into separate tables rather than sharing a scale they do not have.',
+    note: 'The criterion tree stays on screen; tick the items you want to compare. There is no “where you are” path, so criteria from different subteams can appear in the same table, and moving between them takes one tick instead of a trip to the root and back. Type in the filter to show only matches and jump directly to them. Each parent row has three controls: the arrow opens it, the box selects it, and “N parts” replaces it with its children, because a total and its parts rarely belong in the same comparison. Scenarios, places, and periods work the same way: pick one value to hold that dimension fixed, or pick two or more to make it an axis. Your selection alone sets the table’s shape, subject to one limit: more than two changing dimensions cannot fit in a two-dimensional table. Columns from different subteams or with different units appear in separate tables because they cannot share a scale.',
     content: <PivotTable />,
   },
 ]
@@ -116,12 +116,12 @@ const MODES: { key: Mode; label: string; note: string }[] = [
   {
     key: 'scenario',
     label: 'By scenario',
-    note: 'Which future ranks best, and how much the weighting decides it',
+    note: 'Which future ranks highest, and the degree to which the weights affect the result',
   },
   {
     key: 'subteam',
     label: 'By subteam',
-    note: 'What each criterion measured, and how much of it reaches a score',
+    note: 'What each criterion measured, and what goes into the score',
   },
 ]
 
@@ -150,7 +150,7 @@ export default function RankVisualization() {
                 step={1}
                 eyebrow="Equal weights"
                 title="The overall ranking"
-                intro="Five subteams scored six adaptation scenarios against Business as Usual, each from its own criterion. Counting every subteam equally gives one overall ranking. Scores come from the subteams’ Oct 2026 conference slides, falling back to their Sept 2026 reports. Values marked * are inferred, not the subteam’s own number: Ecology publishes no criterion score, so its column is the mean of its two metric ranks, and Recreation publishes none either, so its column is read off the threshold percentages it does publish. A Tunnel is unscored by Recreation, EJ and Economy — EJ withdrew its numbers for both A Tunnel and Calling on Reserves this round."
+                intro="Five subteams scored six adaptation scenarios relative to the Business as Usual baseline, each using its own criterion. If every subteam counts equally, their scores produce one overall ranking. The scores come from the subteams’ Oct 2026 conference slides or, when needed, their Sept 2026 reports; an asterisk marks an inferred value rather than one reported by the subteam. Ecology reports no criterion score, so its column uses the mean of its two metric ranks, while Recreation reports no score and its column is estimated from its published threshold percentages. Recreation, EJ and Economy did not score A Tunnel, and EJ withdrew its values for both A Tunnel and Calling on Reserves in this round."
                 extra={<StepOneKey />}
                 tabs={STEP_1_TABS}
               />
@@ -158,21 +158,21 @@ export default function RankVisualization() {
                 step={2}
                 eyebrow="Weights"
                 title="Changing whose voice counts"
-                intro="Give a team more or less weight and watch the overall scores and the ranking respond. Spread never moves: it describes the ballots, not the weighting."
+                intro="Give a team more or less weight and watch the overall scores and ranking change. The range remains constant because it describes the ballots, not the weights."
                 tabs={STEP_2_TABS}
               />
               <Step
                 step={3}
                 eyebrow="Sensitivity"
                 title="Does the weighting change the answer?"
-                intro="Compare a weighting with the equal-weight ranking from step 1. Scenarios that hold their place are robust; the ones that move are where the choice of weights decides."
+                intro="Compare your weights with the equal-weight ranking from step 1. Some scenarios retain their rank; when a scenario’s rank changes, the choice of weights affects the answer."
                 tabs={STEP_3_TABS}
               />
               <Step
                 step={4}
                 eyebrow="Depth"
                 title="Going deeper than one score"
-                intro="Every number the five subteams publish sits at one scenario, one point in the criterion tree (subteam → metric → entity) and, sometimes, one place and period. Both designs below pin one of those and let the others vary, which is what makes the four ways of exploring interchangeable. Each one states its whole position in a Now showing block, then separates the path you are standing on from the places you can go next. They also carry what a uniform drill-down would hide: a child can average into its parent, derive it, duplicate it, sit beside it without ever entering it, or never be scored. Ecology is the case to look at — its richest evidence, 8 species across 8 regions and 2 water years, is ranked per species and still enters no criterion score."
+                intro="Every value published by the five subteams belongs to one scenario and one position in the criterion tree: subteam → metric → entity; some also belong to one place and period. Both designs below hold one of those dimensions fixed and let the others change, making the four ways of exploring interchangeable. A Now showing block describes the current view, while the controls separate your current path from the places you can go next and reveal relationships that a standard drill-down would hide. A child can contribute to its parent’s mean, be used to derive or duplicate it, sit beside it without entering it, or never be scored. Ecology gives the clearest example: its richest evidence covers 8 species across 8 regions and 2 water years, and the team ranks each species, but those ranks never enter a criterion score."
                 tabs={STEP_4_TABS}
               />
             </>

@@ -59,13 +59,13 @@ const VIEW_OPTIONS = [
     key: 'criterion' as const,
     label: 'Compare scenarios',
     outcome:
-      'Pin one criterion. Every scenario becomes a row — and if that criterion is broken out by place or period, the panel underneath opens it up.',
+      'Choose one criterion to give each scenario a row; if results vary by place or period, the panel below shows that detail.',
   },
   {
     key: 'scenario' as const,
     label: 'Profile one scenario',
     outcome:
-      'Pin one scenario. Every criterion beneath where you are becomes a row, so you read one future across its parts.',
+      'Choose one scenario to give each criterion below your current place a row and see one future through its parts.',
   },
 ]
 
@@ -94,7 +94,7 @@ export default function DrillNested() {
               status={view === 'criterion' ? 'pinned' : undefined}
               deepestLevel={view === 'scenario' ? 'metric' : 'entity'}
               isChildClosed={view === 'scenario' ? (child) => !child.children : undefined}
-              closedNote="These are measurements — they are already the rows of this view. Switch to Compare scenarios to stand on one."
+              closedNote="These measurements already make up the rows in this view. Switch to Compare scenarios to choose one."
             />
             <ScenarioRow
               value={drill.scenario}
@@ -111,8 +111,8 @@ export default function DrillNested() {
             <FacetRow label="Where & when" inert status="in the panel below">
               <Typography variant="chartAxis" sx={{ color: 'base.100' }}>
                 {drill.node && (hasPlaces(drill.node) || hasPeriods(drill.node))
-                  ? 'This criterion is broken out — the panel under the table opens it.'
-                  : 'This criterion is one number for the whole Delta over the whole run.'}
+                  ? 'This criterion has results by place or period, which the panel below shows.'
+                  : 'This criterion has one value for the whole Delta over the whole run.'}
               </Typography>
             </FacetRow>
           </ControlPanel>
@@ -149,8 +149,8 @@ function sentenceFor(drill: Drill, view: 'scenario' | 'criterion'): Phrase[] {
   const tail = (): Phrase[] => {
     if (!node) return []
     if (headlineSlice) return [{ text: 'for' }, { text: headlineSlice, kind: 'value' }]
-    if (hasPlaces(node) || hasPeriods(node)) return [{ text: '— broken out in the panel below' }]
-    return [{ text: '— one number for the whole Delta over the whole run' }]
+    if (hasPlaces(node) || hasPeriods(node)) return [{ text: ', with details in the panel below' }]
+    return [{ text: ', with one value for the whole Delta over the whole run' }]
   }
 
   if (view === 'scenario') {
@@ -162,15 +162,21 @@ function sentenceFor(drill: Drill, view: 'scenario' | 'criterion'): Phrase[] {
       })()
     const leaf = node && !node.children
     return [
-      { text: leaf ? 'Showing' : 'Breaking' },
+      { text: 'Showing' },
       { text: SCENARIO_NAME[drill.scenario], kind: 'pinned' },
-      { text: leaf ? 'at' : node ? 'into the parts of' : 'into' },
+      { text: leaf ? 'for' : node ? 'across the parts of' : 'across' },
       node
         ? { text: node.label, kind: 'value', icon: mark }
         : { text: 'all five subteams', kind: 'value' },
       ...(value
         ? [
-            { text: leaf ? '—' : node?.unit === 'score' ? ', which scores' : ', which reads' },
+            {
+              text: leaf
+                ? ','
+                : node?.unit === 'score'
+                  ? ', with an overall score of'
+                  : ', with an overall value of',
+            },
             { text: value, kind: 'value' as const },
           ]
         : []),
@@ -181,7 +187,7 @@ function sentenceFor(drill: Drill, view: 'scenario' | 'criterion'): Phrase[] {
   return [
     { text: 'Comparing' },
     { text: 'all six scenarios', kind: 'value' },
-    { text: 'on' },
+    { text: 'for' },
     node
       ? { text: node.label, kind: 'pinned', icon: mark }
       : { text: 'each of the five subteams', kind: 'pinned' },
@@ -236,7 +242,7 @@ function ProfileView({ drill }: { drill: Drill }) {
             unit={row.node.unit}
             domain={domains.get(row.node.unit) ?? domainFor(row.node.unit, [row.value])}
             provenance={row.node.provenance}
-            gap={row.missing ? 'no number in the report' : undefined}
+            gap={row.missing ? 'no value in the report' : undefined}
             onClick={row.node.children ? () => drill.setNode(row.node.id) : undefined}
             slice={sliceCaption(row.node, row.slice)}
             team={mixedTeams ? row.node.team : undefined}
@@ -254,8 +260,8 @@ function CompareView({ drill }: { drill: Drill }) {
     return (
       <>
         <ViewNote>
-          Pick a subteam to compare the scenarios on it. Without a criterion in hand there is
-          nothing to break down, so this design shows no detail panel here.
+          Choose a subteam to compare its scores across scenarios, or choose a criterion to see a
+          detail panel.
         </ViewNote>
         <DrillHead first="Subteam" units="Overall score, −5…+5" />
         <Box sx={{ display: 'grid', rowGap: 0.75 }}>
@@ -343,8 +349,8 @@ function WithinView({ node, drill }: { node: CriterionNode; drill: Drill }) {
     return (
       <Panel title="Where and when">
         <Typography variant="body2" sx={{ color: 'base.100' }}>
-          This criterion is not broken out by place or period — it is one number for the whole Delta
-          over the whole run.
+          This criterion has one value for the whole Delta over the whole run, with no results by
+          place or period.
         </Typography>
       </Panel>
     )
@@ -354,7 +360,7 @@ function WithinView({ node, drill }: { node: CriterionNode; drill: Drill }) {
     return (
       <Panel
         title="Where and when"
-        note="The grid already spends both of its axes on region and month, so it holds one scenario. Switch scenarios in the sidebar."
+        note="The grid uses its two axes for region and month, so it can show only one scenario, which you can choose in the sidebar."
       >
         <WaterAgeGrid node={node} scenario={drill.scenario} />
       </Panel>
@@ -368,7 +374,7 @@ function WithinView({ node, drill }: { node: CriterionNode; drill: Drill }) {
       title="Where and when"
       note={
         axisIsPeriod && places.length > 0
-          ? 'Columns are periods; pick the place to hold fixed. Both controls belong to this panel only.'
+          ? 'Each column is a period. Choose one place to keep fixed. These controls affect only this panel.'
           : undefined
       }
     >

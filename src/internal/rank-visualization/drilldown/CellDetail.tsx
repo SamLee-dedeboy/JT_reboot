@@ -24,10 +24,10 @@ export function Provenance({ node }: { node?: CriterionNode }) {
   if (!node) return null
   return (
     <Box sx={{ display: 'grid', gap: 1, maxWidth: '78ch' }}>
-      <Typography variant="eyebrow">Where this comes from</Typography>
+      <Typography variant="eyebrow">Source</Typography>
       {sources.length === 0 ? (
         <Typography variant="body2" sx={{ color: 'base.300' }}>
-          No citation recorded for this one yet.
+          No source has been recorded yet.
         </Typography>
       ) : (
         sources.map((source, i) => (
@@ -136,7 +136,7 @@ export function CellDetail({
 
           {node.note && (
             <Box sx={{ display: 'grid', gap: 0.75, mt: 1 }}>
-              <Typography variant="eyebrow">Our reading</Typography>
+              <Typography variant="eyebrow">How we interpret it</Typography>
               <Typography variant="body2" sx={{ color: 'base.100' }}>
                 {node.note}
               </Typography>

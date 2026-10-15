@@ -300,7 +300,7 @@ export function SliceRow({
 }) {
   if (!supported || facets.length === 0) {
     return (
-      <FacetRow label={label} inert status="this criterion is one number">
+      <FacetRow label={label} inert status="this criterion has one value">
         <Typography variant="controlLabel" sx={{ color: 'base.300' }}>
           Not broken out here
         </Typography>
@@ -494,7 +494,7 @@ export function CriterionAxis({
       >
         {childNodes.length === 0 ? (
           <Typography variant="controlLabel" sx={{ color: 'base.300' }}>
-            This is a measurement — the bottom of the tree
+            This measurement is at the bottom of the tree
           </Typography>
         ) : allClosed ? (
           // A column of greyed rows nobody can click is worse than the dead end it
@@ -640,11 +640,11 @@ export function NothingToBreakDown({
         <Box component="span" sx={{ color: 'common.white' }}>
           {label}
         </Box>{' '}
-        is a measurement — the bottom of the tree. There is nothing inside it to break this scenario
-        into, so this view has no rows. Its value is in the sentence above.
+        is a measurement at the bottom of the tree and has no parts, so this view has no rows; its
+        value appears in the sentence above.
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-        <Pill active={false} onClick={onCompare} label="Compare all six scenarios on it" />
+        <Pill active={false} onClick={onCompare} label="Compare it across all six scenarios" />
         {onUp && upLabel && <Pill active={false} onClick={onUp} label={`Back up to ${upLabel}`} />}
       </Box>
     </Box>
@@ -684,8 +684,8 @@ export function NothingToCompare({
           {label}
         </Box>{' '}
         {childCount > 0
-          ? `carries no number of its own — the ${childCount} measurements inside it do. There is nothing to compare at this level.`
-          : 'is described in the reports and never scored, so there is no number to compare across scenarios.'}
+          ? `has no value at this level; the ${childCount} measurements inside it have values instead.`
+          : 'appears in the reports but was never scored, so there is no value to compare across scenarios.'}
       </Typography>
       {childCount > 0 && onDrill && (
         <Pill active={false} onClick={onDrill} label="Open the first measurement" />
@@ -1183,8 +1183,8 @@ export function WaterAgeGrid({ node, scenario }: { node: CriterionNode; scenario
         </Box>
       ))}
       <Typography variant="chartAxis" sx={{ mt: 0.5, color: 'base.100' }}>
-        Up from the midline = water gets younger · down = older, the harmful-algal-bloom direction ·
-        dotted = not covered by the report
+        Bars above the midline mean younger water, while bars below mean older water and a higher
+        risk of harmful algal blooms; dotted cells are not covered by the report.
       </Typography>
     </Box>
   )

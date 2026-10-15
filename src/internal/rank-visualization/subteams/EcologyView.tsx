@@ -88,7 +88,7 @@ export default function EcologyView() {
     <SubteamPage profile={SUBTEAM_PROFILES.ecology}>
       <Panel
         title="Where each species can live"
-        note="Share of days in the Feb–Jun window when salinity and temperature both sat inside a species' tolerance, by region. The same scenario, in a wet year and a dry one."
+        note="For each region, this shows the proportion of days from Feb–Jun when salinity and temperature were both within a species’ tolerance, comparing the same scenario in a wet year and a dry year."
       >
         <Choice
           label="Scenario"
@@ -164,7 +164,7 @@ export default function EcologyView() {
 
       <Panel
         title="The map behind no score"
-        note="Share of suitable days for one species, region by region, one map per scenario. Five of the eight regions have an outline; the three bay regions do not yet. The caption under every map is the same, and that is the point: this is the deepest evidence in the project, and it reaches no criterion score."
+        note="Each map shows the proportion of suitable days for one species by region, with one map for each scenario. Five of the eight regions have an outline; the three bay regions do not yet. Every map has the same caption because this detailed evidence does not enter a criterion score."
       >
         <Box sx={{ display: 'grid', gap: 0.75 }}>
           <Choice
@@ -189,14 +189,14 @@ export default function EcologyView() {
               : null
           }
           caption={() => 'no score'}
-          unitLabel="share of suitable days"
+          unitLabel="proportion of suitable days"
           changeToggle
         />
       </Panel>
 
       <Panel
-        title="What actually moves these numbers"
-        note="For each species, the widest swing any one region shows when the scenario changes, against the widest swing it shows when the water year changes. Their summary says the water year wins, and this is that claim measured."
+        title="What explains the variation in these values"
+        note="For each species, this compares the largest variation among scenarios in any one region with the largest variation between water years in any one region. The chart evaluates the team’s finding that variation between water years is greater."
       >
         <Box sx={{ display: 'grid', gap: 0.75 }}>
           {spreads.map(({ species, byScenario, byYear }) => (

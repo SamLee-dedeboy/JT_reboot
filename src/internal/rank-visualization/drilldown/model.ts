@@ -326,7 +326,7 @@ export const EDGE_NOTE: Record<EdgeKind, string> = {
   refines:
     'A finer setting of one scenario, not a component of the parent — it exists for that scenario only.',
   duplicates: 'This carries the same number as its siblings — splitting it adds nothing.',
-  beside: 'Evidence the subteam gathered that never enters the score above it.',
+  beside: 'Evidence the subteam gathered that does not go into the score above it.',
   unscored: 'Described in the report, never turned into a number.',
 }
 

@@ -33,11 +33,11 @@ export function SubteamPage({
           <Headline>{profile.measured}</Headline>
           <Prose>{profile.measuredNote}</Prose>
         </Beat>
-        <Beat label="What reaches the score">
+        <Beat label="What goes into the score">
           <Headline>{profile.reaches}</Headline>
           <Prose>
-            Everything else is evidence the criterion column never sees. That gap is the reason this
-            page exists.
+            Only this part of what the subteam measured goes into the criterion score. This page
+            shows everything else they measured.
           </Prose>
         </Beat>
       </Band>
@@ -191,8 +191,8 @@ function Verdict({ profile }: { profile: SubteamProfile }) {
         </Box>
       ) : (
         <Typography variant="body2" sx={{ maxWidth: '68ch' }}>
-          They publish no score, at any level. The column the comparison page shows for this
-          criterion is ours.
+          This team does not publish a score at any level, so the comparison page uses a value we
+          inferred for this criterion.
         </Typography>
       )}
 
@@ -254,8 +254,8 @@ function NotScored({ items }: { items: SubteamProfile['notScored'] }) {
           What is not scored
         </Typography>
         <Typography variant="body2" sx={{ maxWidth: '68ch' }}>
-          Nothing. Every metric this criterion defines produces a number, and the chain from
-          measurement to score holds end to end. It is the only one of the five that does.
+          Nothing. Every metric in this criterion produces a value. Each measurement feeds into the
+          score from start to finish; this is the only criterion of the five where that happens.
         </Typography>
       </Box>
     )

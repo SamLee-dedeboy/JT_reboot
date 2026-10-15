@@ -57,19 +57,19 @@ const VIEW_OPTIONS = [
     key: 'criterion' as const,
     label: 'Compare scenarios',
     outcome:
-      'Pin one criterion. Every scenario becomes a row, so you read one measurement across all six futures.',
+      'Choose one criterion to give each scenario a row and compare the same measurement across all six futures.',
   },
   {
     key: 'scenario' as const,
     label: 'Profile one scenario',
     outcome:
-      'Pin one scenario. Every criterion beneath where you are becomes a row, so you read one future across its parts.',
+      'Choose one scenario to give each criterion below your current place a row and see one future through its parts.',
   },
   {
     key: 'slice' as const,
     label: 'Look at one place & time',
     outcome:
-      'Pin a place and a period. Everything any subteam measures there is listed, whichever criterion it belongs to.',
+      'Choose a place and a period to list every measurement there, regardless of which criterion it belongs to.',
   },
 ]
 
@@ -108,7 +108,7 @@ export default function DrillAxes() {
               rootId={ALL_CRITERIA}
               status={
                 drill.focus === 'slice'
-                  ? 'sets which places are on offer'
+                  ? 'controls the available places'
                   : drill.focus === 'criterion'
                     ? 'pinned'
                     : undefined
@@ -118,7 +118,7 @@ export default function DrillAxes() {
               // land on an empty table.
               deepestLevel={drill.focus === 'scenario' ? 'metric' : 'entity'}
               isChildClosed={drill.focus === 'scenario' ? (child) => !child.children : undefined}
-              closedNote="These are measurements — they are already the rows of this view. Switch to Compare scenarios to stand on one."
+              closedNote="These measurements already make up the rows in this view. Switch to Compare scenarios to choose one."
             />
             <ScenarioRow
               value={drill.scenario}
@@ -180,7 +180,7 @@ function sentenceFor(drill: Drill, slice?: { place: string; period: string }): P
     const tail: Phrase[] = []
     if (where) tail.push({ text: 'across' }, { text: where, kind: 'value' })
     if (when) tail.push({ text: 'in' }, { text: when, kind: 'value' })
-    if (!where && !when && node) tail.push({ text: '— not broken out by place or period' })
+    if (!where && !when && node) tail.push({ text: ', with no breakdown by place or period' })
     return tail
   }
 
@@ -189,7 +189,7 @@ function sentenceFor(drill: Drill, slice?: { place: string; period: string }): P
     if (where) at.push({ text: 'at' }, { text: where, kind: 'pinned' })
     if (when) at.push({ text: 'in' }, { text: when, kind: 'pinned' })
     if (at.length === 0) {
-      return [{ text: 'Pick a place or a period on the left to look at one slice.' }]
+      return [{ text: 'Choose a place or period on the left to see one slice.' }]
     }
     return [
       { text: 'Showing' },
@@ -210,15 +210,21 @@ function sentenceFor(drill: Drill, slice?: { place: string; period: string }): P
     // A leaf has no parts, so the verb changes: you are reading it, not breaking it up.
     const leaf = node && !node.children
     return [
-      { text: leaf ? 'Showing' : 'Breaking' },
+      { text: 'Showing' },
       { text: SCENARIO_NAME[drill.scenario], kind: 'pinned' },
-      { text: leaf ? 'at' : node ? 'into the parts of' : 'into' },
+      { text: leaf ? 'for' : node ? 'across the parts of' : 'across' },
       node
         ? { text: node.label, kind: 'value', icon: mark }
         : { text: 'all five subteams', kind: 'value' },
       ...(value
         ? [
-            { text: leaf ? '—' : node?.unit === 'score' ? ', which scores' : ', which reads' },
+            {
+              text: leaf
+                ? ','
+                : node?.unit === 'score'
+                  ? ', with an overall score of'
+                  : ', with an overall value of',
+            },
             { text: value, kind: 'value' as const },
           ]
         : []),
@@ -229,7 +235,7 @@ function sentenceFor(drill: Drill, slice?: { place: string; period: string }): P
   return [
     { text: 'Comparing' },
     { text: 'all six scenarios', kind: 'value' },
-    { text: 'on' },
+    { text: 'for' },
     node
       ? { text: node.label, kind: 'pinned', icon: mark }
       : { text: 'each of the five subteams', kind: 'pinned' },
@@ -246,8 +252,8 @@ function WhereAtTheTop() {
   return (
     <FacetRow label="Where & when" inert status="pick a subteam first">
       <Typography variant="chartAxis" sx={{ color: 'base.100' }}>
-        Ecology uses 8 estuarine regions, EJ 5, Recreation 4 and eco-cultural 2, and the partitions
-        do not line up — so place becomes available once you choose a subteam, not before.
+        Ecology uses 8 estuarine regions, EJ uses 5, Recreation uses 4, and eco-cultural uses 2.
+        Because these regions do not align, choose a subteam before choosing a place.
       </Typography>
     </FacetRow>
   )
@@ -301,7 +307,7 @@ function ProfileView({ drill }: { drill: Drill }) {
             unit={row.node.unit}
             domain={domains.get(row.node.unit) ?? domainFor(row.node.unit, [row.value])}
             provenance={row.node.provenance}
-            gap={row.missing ? 'no number in the report' : undefined}
+            gap={row.missing ? 'no value in the report' : undefined}
             onClick={row.node.children ? () => drill.setNode(row.node.id) : undefined}
             slice={sliceCaption(row.node, row.slice)}
             team={mixedTeams ? row.node.team : undefined}
@@ -324,8 +330,8 @@ function CompareView({ drill }: { drill: Drill }) {
     return (
       <>
         <ViewNote>
-          Pick a subteam, a metric or an entity on the criterion axis to compare the scenarios on
-          it. Everything below is the overall score each subteam gives each scenario.
+          Choose a subteam, metric, or measurement to compare across scenarios; the rows below show
+          the overall score that each subteam gives each scenario.
         </ViewNote>
         <TeamOverview drill={drill} />
       </>
@@ -377,8 +383,8 @@ function CompareView({ drill }: { drill: Drill }) {
       {(inexact || slice.defaulted) && (
         <Typography variant="chartAxis" sx={{ display: 'block', mt: 1.5, color: 'base.300' }}>
           {slice.defaulted
-            ? 'This criterion only exists per place or period, so the view fell back to its first one. Pick above to move it.'
-            : 'This criterion does not resolve the whole slice; the values above fall back to what it does break out.'}
+            ? 'This criterion has results only by place or period, and the view shows the first one; choose another above.'
+            : 'This criterion does not cover the full selection. The values above use the parts it does cover.'}
         </Typography>
       )}
       {node.detail === 'waterAge' && (
@@ -461,8 +467,8 @@ function SliceView({ drill, place, period }: { drill: Drill; place: string; peri
     return (
       <ViewNote>
         {sliceLabel
-          ? 'No criterion in the tree is broken out along this slice. Only Ecology’s species niches (region × water year) and EJ’s water age (region × month) are cut by place at all, and they use different regions.'
-          : 'Choose a subteam first — the places on offer belong to whichever criterion you are standing in.'}
+          ? 'No criterion has results for this place and period. Only Ecology’s species niches (region × water year) and EJ’s water age (region × month) vary by place, and they use different regions.'
+          : 'Choose a subteam first. The available places depend on the criterion you choose.'}
       </ViewNote>
     )
   }
@@ -479,9 +485,9 @@ function SliceView({ drill, place, period }: { drill: Drill; place: string; peri
   return (
     <>
       <ViewNote>
-        {`${sliceLabel}: ${matches.length} measurement${matches.length === 1 ? '' : 's'}. `}
-        Everything the five subteams measure at exactly this place and period, whichever criterion
-        it belongs to. This is the view the other design cannot produce.
+        {`${sliceLabel}: ${matches.length} measurement${matches.length === 1 ? '' : 's'}; `}
+        this view lists everything the five subteams measure at this place and period across all
+        criteria, which the other design cannot show.
       </ViewNote>
       <Box sx={(theme) => ({ display: 'grid', rowGap: theme.jtSpacing.component.sm })}>
         {matches.map((node) => (

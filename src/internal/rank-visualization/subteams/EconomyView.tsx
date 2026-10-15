@@ -57,7 +57,7 @@ export default function EconomyView() {
     <SubteamPage profile={SUBTEAM_PROFILES.economy}>
       <Panel
         title="Both pathways, drawn to the same scale"
-        note="Change in annual farm revenue against a $1.107B base. Every bar uses the same axis, which is the only way to see the thing the criterion turns on."
+        note="This shows the difference in annual farm revenue from a $1.107B base, with every bar using the same axis to make clear which pathway determines the criterion."
       >
         <Box sx={{ display: 'grid', gap: 1.5 }}>
           <Group title="Salinity pathway">
@@ -72,16 +72,16 @@ export default function EconomyView() {
           </Group>
         </Box>
         <Typography variant="body2" sx={{ color: 'base.300', mt: 1.25, maxWidth: '78ch' }}>
-          The largest salinity effect anywhere is {money(-34_000)} in a dry year, which is 0.003% of
-          the base and about one eight-thousandth of the 50/50 restoration effect beneath it. This
-          is why the report scores each scenario on whichever effect dominates rather than forcing
-          both onto one percent scale.
+          The largest salinity effect anywhere is {money(-34_000)} in a dry year. That is 0.003% of
+          the base and about one eight-thousandth of the 50/50 restoration effect below it, so the
+          report scores each scenario using the dominant effect rather than forcing both effects
+          onto one percent scale.
         </Typography>
       </Panel>
 
       <Panel
         title="What the restoration intensities cost"
-        note="The three New Green Watershed levels are sub-scenarios rather than parts of the criterion, so they carry their own scores. These are the only Economy figures that map to a score by magnitude."
+        note="The three New Green Watershed levels are sub-scenarios rather than parts of the criterion, so each has its own score. These are the only Economy values whose magnitude directly determines a score."
       >
         <Box sx={{ display: 'grid', gap: 0.5 }}>
           {LAND_USE.map((row) => (
@@ -106,7 +106,7 @@ export default function EconomyView() {
 
       <Panel
         title="The map behind the score, dry year"
-        note="Change in value added by zone, 2020, the salinity pathway only. Three of the four zones have an outline; West Delta does not yet. The scores underneath are not read off this map, since Economy scores each scenario on whichever effect dominates and for New Green Watershed that is land conversion. Three of the sixteen zone figures could not be verified from the slide image."
+        note="This map shows the difference in value added from the Business as Usual baseline by zone in 2020 for the salinity pathway only. Three of the four zones have an outline; West Delta does not yet. The scores below do not come from this map because Economy scores each scenario using the dominant effect, and land conversion dominates New Green Watershed. Three of the sixteen zone values could not be verified from the slide image."
       >
         <RegionValues
           team="economy"
@@ -117,7 +117,7 @@ export default function EconomyView() {
               : null
           }
           caption={economyScore}
-          unitLabel="change in value added, $"
+          unitLabel="difference in value added from baseline, $"
         />
       </Panel>
     </SubteamPage>

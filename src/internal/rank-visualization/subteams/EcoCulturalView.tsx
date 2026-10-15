@@ -30,7 +30,7 @@ const UPLAND = [
 const ACCESS_LADDER = [
   {
     label: 'Tribal ownership',
-    note: 'Returns full ownership, stewardship and decision-making. Ranked highest by Tribal representatives at the third Tribal workshop.',
+    note: 'Returns full ownership, stewardship and decision-making. Tribal representatives ranked it highest at the third Tribal workshop.',
   },
   {
     label: 'Land trust partnership',
@@ -57,7 +57,7 @@ const TEK_CONDITIONS = [
   },
   {
     label: 'Unrestricted access',
-    note: 'Facilitated by the agreements above rather than granted case by case.',
+    note: 'The agreements above provide access without requiring case-by-case approval.',
   },
   {
     label: 'Site selection choice',
@@ -83,7 +83,7 @@ export default function EcoCulturalView() {
     <SubteamPage profile={SUBTEAM_PROFILES.ecoCultural}>
       <Panel
         title="Metric A, the one that is counted"
-        note="Restored acres under New Green Watershed at its 50/50 case. The in-Delta figures are published as totals; the upland ones are published as ranges, so a single upland number is a choice of sub-scenario rather than a measurement."
+        note="This shows restored acres under the New Green Watershed 50/50 case. The in-Delta values are published as totals, while the upland values are ranges, so a single upland value reflects a chosen sub-scenario rather than one measurement."
       >
         <Box
           sx={(theme) => ({
@@ -163,7 +163,7 @@ export default function EcoCulturalView() {
 
       <Panel
         title="Metric B, access to landscapes"
-        note="Not a quantity. The subteam's finding is the order itself, strongest first, and which instruments survive a change of landowner."
+        note="The subteam ranked these options from strongest to weakest. It also identified which agreements remain in force when the land changes owners."
       >
         <Box sx={{ display: 'grid', gap: 0.5 }}>
           {ACCESS_LADDER.map((rung, i) => (
@@ -193,7 +193,7 @@ export default function EcoCulturalView() {
 
       <Panel
         title="Metrics C and D, conditions and mechanisms"
-        note="Enabling conditions rather than outcomes, which is why no scenario scores on them. Workshop-derived material needs Tribal review before it is published, and specific cultural-practice sites are deliberately not mapped."
+        note="These metrics describe conditions that make the work possible, not outcomes. No scenario receives a score for them. Material from workshops needs Tribal review before publication. Specific cultural-practice sites are deliberately not mapped."
       >
         <Box
           sx={(theme) => ({

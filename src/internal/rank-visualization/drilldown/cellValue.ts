@@ -40,7 +40,7 @@ export function emptyReason(dim: Dim, key: string): string {
   if (dim !== 'criterion') return 'nothing measured here'
   const node = NODE_INDEX.get(key)
   if (!node) return 'nothing measured here'
-  if (node.children?.length) return `no number of its own · ${node.children.length} inside`
+  if (node.children?.length) return `no value here; ${node.children.length} measurements inside`
   if (node.provenance === 'unscored') return 'never scored'
   return 'not in this analysis'
 }

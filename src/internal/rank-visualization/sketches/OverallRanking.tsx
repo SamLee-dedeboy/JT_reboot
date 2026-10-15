@@ -423,7 +423,7 @@ export default function OverallRanking() {
               checked={showSpread}
               onChange={(event) => setShowSpread(event.target.checked)}
             />
-            <Typography variant="chartColumnHead">Spread</Typography>
+            <Typography variant="chartColumnHead">Range</Typography>
           </Box>
           <ScaleLabels labels={['−5', '0', '5']} />
           <Typography variant="chartColumnHead" sx={{ textAlign: 'right' }}>

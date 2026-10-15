@@ -110,13 +110,13 @@ export function RegionValues({
             onChange={setReading}
             options={[
               { key: 'level', label: 'the value' },
-              { key: 'change', label: 'change vs Business as Usual' },
+              { key: 'change', label: 'difference from the Business as Usual baseline' },
             ]}
           />
         )}
         <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
           {reading === 'change'
-            ? `fill: change vs Business as Usual, up to ±${fmtValue(max, unit)}`
+            ? `fill: difference from baseline, up to ±${fmtValue(max, unit)}`
             : `fill: ${unitLabel}, up to ${fmtValue(max, unit)}`}
           {unmapped > 0 &&
             ` · ${unmapped} dashed ${unmapped === 1 ? 'region has' : 'regions have'} no value to place`}
@@ -167,7 +167,7 @@ export function RegionValues({
                     <title>
                       {entry
                         ? `${shape.name}: ${value === null ? 'no value' : fmtValue(value, unit)}${
-                            reading === 'change' ? ' vs Business as Usual' : ''
+                            reading === 'change' ? ' (difference from baseline)' : ''
                           }`
                         : `${shape.name}: no value to place`}
                     </title>

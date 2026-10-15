@@ -81,7 +81,7 @@ export default function WeightedMatrix() {
           </Box>
         ))}
         <Typography variant="chartColumnHead" sx={{ alignSelf: 'end', textAlign: 'center', pb: 1 }}>
-          Spread
+          Range
         </Typography>
         <Typography variant="chartColumnHead" sx={{ alignSelf: 'end', textAlign: 'center', pb: 1 }}>
           Wtd.

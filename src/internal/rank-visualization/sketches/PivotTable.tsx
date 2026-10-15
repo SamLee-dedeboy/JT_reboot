@@ -356,7 +356,7 @@ function SliceDimension({
     return (
       <FacetRow label={DIM_LABEL[dim]} inert status="not broken out">
         <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-          The ticked criteria are not cut along this.
+          The selected criteria do not use this breakdown.
         </Typography>
       </FacetRow>
     )
@@ -589,9 +589,9 @@ function TooManyAxes({ pivot }: { pivot: Pivot }) {
       })}
     >
       <Typography variant="body2" sx={{ maxWidth: '62ch' }}>
-        {pivot.varying.length} things are varying —{' '}
-        {pivot.varying.map((dim) => DIM_LABEL[dim].toLowerCase()).join(', ')}. A table has two axes,
-        so narrow one of them to a single choice.
+        {pivot.varying.length} things vary:{' '}
+        {pivot.varying.map((dim) => DIM_LABEL[dim].toLowerCase()).join(', ')}. Because a table has
+        two axes, narrow one of these to a single choice.
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
         {pivot.varying.map((dim) => (
@@ -815,7 +815,7 @@ function Matrix({ pivot }: { pivot: Pivot }) {
                 {dead.length > 0 && (
                   <Typography variant="body2" sx={{ maxWidth: '68ch' }}>
                     {groups.length > 0
-                      ? 'Also ticked, with nothing to compare: '
+                      ? 'Also selected, but with nothing to compare: '
                       : 'Nothing to compare here: '}
                     {dead
                       .map((key) => `${labelFor(pivot, colDim, key)} (${emptyReason(colDim, key)})`)
@@ -830,7 +830,7 @@ function Matrix({ pivot }: { pivot: Pivot }) {
       </LayoutGroup>
       {anyInferred && (
         <Typography variant="chartAxis" sx={{ display: 'block', mt: 1, color: 'base.300' }}>
-          * our number, not the subteam&rsquo;s
+          * calculated here, not by the subteam
         </Typography>
       )}
       {/* Under the table, not over it. A note only exists once the reader has
@@ -890,7 +890,7 @@ function MatrixBlock({
     <Box sx={{ display: 'grid', gap: 0.5 }}>
       {showUnit && (
         <Typography variant="chartColumnHead" component="div" sx={{ color: 'base.300' }}>
-          measured in {unitHeading(unit).toLowerCase()}
+          Unit: {unitHeading(unit).toLowerCase()}
         </Typography>
       )}
       {/* Past a handful of columns the grid scrolls sideways rather than squeezing
@@ -988,11 +988,11 @@ function MatrixBlock({
                       node={cell.node}
                       inferred={cell.inferred}
                       onClick={() => onInspect(coords(rowKey, colKey))}
-                      title={`Where ${labelFor(pivot, rowDim, rowKey)} under ${labelFor(
+                      title={`Show the source for ${labelFor(pivot, rowDim, rowKey)} under ${labelFor(
                         pivot,
                         colDim,
                         colKey,
-                      )} comes from`}
+                      )}`}
                     />
                   )
                 })}

@@ -55,8 +55,8 @@ export default function EjView() {
   return (
     <SubteamPage profile={SUBTEAM_PROFILES.environmentalJustice}>
       <Panel
-        title="From 39,659 readings to one number"
-        note="Each step is a real reduction the subteam makes, and each is defensible. Laid end to end they are also the reason a single criterion score carries so little of what was actually measured."
+        title="From 39,659 readings to one value"
+        note="Each step reduces the data using a method the subteam can defend; by the final step, one criterion score contains little of what the team measured."
       >
         <Box
           sx={{
@@ -92,7 +92,7 @@ export default function EjView() {
 
       <Panel
         title="The map behind the score"
-        note="Share of the run over 1,050 µS/cm in each vulnerability class, one map per scenario. The score under each map is one point per percentage point against Business as Usual, so the change reading and the caption are the same quantity: this is the tightest link between a map and a rank anywhere on the page. Click a class to see where its number came from."
+        note="Each map shows the proportion of the run exceeding 1,050 µS/cm in each vulnerability class, with one map for each scenario. The score below a map differs by one point for each percentage point of difference from the Business as Usual baseline, so the difference view and the caption show the same quantity. No other map on this page connects so directly to a rank; click a class to see the source of its value."
       >
         <Choice label="Period" value={period} onChange={setPeriod} options={PERIODS} />
         <RegionValues
@@ -104,14 +104,14 @@ export default function EjView() {
               : null
           }
           caption={score}
-          unitLabel="share of run over threshold"
+          unitLabel="proportion of run exceeding the threshold"
           changeToggle
         />
       </Panel>
 
       <Panel
         title="Who carries the exceedance"
-        note="Share of the run above the 1,050 µS/cm drinking-water threshold, by vulnerability class. The highest-vulnerability zone reads zero under every scenario and in both seasons, which is a finding rather than missing data."
+        note="This shows the proportion of the run exceeding the 1,050 µS/cm drinking-water threshold for each vulnerability class. The highest-vulnerability zone has zero exceedance under every scenario and in both seasons; these are measured zeros."
       >
         <Box sx={{ overflowX: 'auto' }}>
           <Box
