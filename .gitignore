@@ -43,3 +43,6 @@ __pycache__/
 
 # Offline basemap Overpass downloads (scripts/build-offline-basemap.mjs)
 .cache/
+
+# macOS Finder duplicates ("foo 2.tsx") must never land in the repo
+* 2.*
