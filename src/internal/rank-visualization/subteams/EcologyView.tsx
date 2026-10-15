@@ -12,15 +12,34 @@ import { ECOLOGY_NICHE, ECOLOGY_REGIONS, ECOLOGY_SPECIES } from '../drilldown/ec
 import type { EcologyRegionKey, EcologySpeciesKey } from '../drilldown/ecologyNiche'
 import { SCENARIO_NAME } from '../drilldown/model'
 import { SUBTEAM_PROFILES } from './profiles'
+import { RegionValues } from './RegionValues'
 import { Choice, Panel, SubteamPage } from './SubteamFrame'
 
 const SCENARIOS = ['bau', 'em', 'ngw', 'bf', 'cor'] as const
 type NicheScenario = (typeof SCENARIOS)[number]
 
+const YEARS_FACET = [
+  { key: '2019' as const, label: '2019 · wet' },
+  { key: '2020' as const, label: '2020 · dry' },
+]
+
 const YEARS = [
   { key: 'wet' as const, label: '2019 · wet' },
   { key: 'dry' as const, label: '2020 · dry' },
 ]
+
+/**
+ * Shapefile region → the key the niche data stores it under. Five of the eight
+ * data regions have an outline; "Suisun Marsh" has an outline and no data key,
+ * because the report folds it into Suisun Bay.
+ */
+const REGION_KEY: Record<string, string> = {
+  'Suisun Bay': 'suisunBay',
+  Confluence: 'confluence',
+  Central: 'centralDelta',
+  'South Delta': 'southDelta',
+  'North Delta': 'northDelta',
+}
 
 const cell = (species: EcologySpeciesKey, scenario: NicheScenario, region: EcologyRegionKey) =>
   ECOLOGY_NICHE[species]?.[scenario]?.[region]
@@ -42,6 +61,8 @@ function Share({ value }: { value: number | undefined }) {
 
 export default function EcologyView() {
   const [scenario, setScenario] = useState<NicheScenario>('ngw')
+  const [mapSpecies, setMapSpecies] = useState<EcologySpeciesKey>(ECOLOGY_SPECIES[0].key)
+  const [mapYear, setMapYear] = useState<'2019' | '2020'>('2019')
 
   // The claim under test: for one species and region, how much does changing the
   // scenario move the share, and how much does changing the water year?
@@ -139,6 +160,38 @@ export default function EcologyView() {
             </Box>
           ))}
         </Box>
+      </Panel>
+
+      <Panel
+        title="The map behind no score"
+        note="Share of suitable days for one species, region by region, one map per scenario. Five of the eight regions have an outline; the three bay regions do not yet. The caption under every map is the same, and that is the point: this is the deepest evidence in the project, and it reaches no criterion score."
+      >
+        <Box sx={{ display: 'grid', gap: 0.75 }}>
+          <Choice
+            label="Species"
+            value={mapSpecies}
+            onChange={setMapSpecies}
+            options={ECOLOGY_SPECIES.map((species) => ({ key: species.key, label: species.label }))}
+          />
+          <Choice label="Water year" value={mapYear} onChange={setMapYear} options={YEARS_FACET} />
+        </Box>
+        <RegionValues
+          team="ecology"
+          scenarios={[...SCENARIOS]}
+          coordsFor={(region, scenario) =>
+            REGION_KEY[region]
+              ? {
+                  criterion: `eco-niche-${mapSpecies}`,
+                  scenario,
+                  place: REGION_KEY[region],
+                  period: mapYear,
+                }
+              : null
+          }
+          caption={() => 'no score'}
+          unitLabel="share of suitable days"
+          changeToggle
+        />
       </Panel>
 
       <Panel

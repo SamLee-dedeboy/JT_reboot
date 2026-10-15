@@ -6,10 +6,13 @@
 // is a negative one and therefore invisible on a ranking: the most vulnerable
 // communities never cross the threshold at all.
 import { Box, Typography } from '@mui/material'
-import { SCENARIO_NAME } from '../drilldown/model'
+import { useState } from 'react'
+import { valueAt } from '../drilldown/cellValue'
+import { ANY, SCENARIO_NAME, fmtValue } from '../drilldown/model'
 import type { ScenarioKey } from '../drilldown/model'
 import { SUBTEAM_PROFILES } from './profiles'
-import { Panel, SubteamPage } from './SubteamFrame'
+import { RegionValues } from './RegionValues'
+import { Choice, Panel, SubteamPage } from './SubteamFrame'
 
 const SCEN: ScenarioKey[] = ['bau', 'bf', 'em', 'ngw', 'cor', 'tunnel']
 
@@ -22,6 +25,19 @@ const CLASSES = [
 
 const ALL_POINTS = [9, 9, 7, 7, 11, 12]
 
+/** Shapefile class name → the entity node that holds its exceedance figures. */
+const CLASS_NODE: Record<string, string> = {
+  Moderate: 'ej-drinking-moderate',
+  High: 'ej-drinking-high',
+  Highest: 'ej-drinking-highest',
+}
+
+const PERIODS = [
+  { key: 'run' as const, label: 'Whole run' },
+  { key: 'wet' as const, label: 'Wet season' },
+  { key: 'dry' as const, label: 'Dry season' },
+]
+
 const FUNNEL = [
   { n: '39,659', label: 'daily measurements', note: '49 points × 793 days' },
   { n: '3', label: 'vulnerability classes', note: 'moderate 10, high 36, highest 3' },
@@ -30,6 +46,12 @@ const FUNNEL = [
 ]
 
 export default function EjView() {
+  const [period, setPeriod] = useState<'run' | 'wet' | 'dry'>('run')
+  // The drinking-water metric score for this period: what the row of maps became.
+  const score = (scenario: ScenarioKey) => {
+    const cell = valueAt({ criterion: 'ej-drinking', scenario, place: ANY, period })
+    return cell.value === null ? 'pending' : fmtValue(cell.value, 'score')
+  }
   return (
     <SubteamPage profile={SUBTEAM_PROFILES.environmentalJustice}>
       <Panel
@@ -66,6 +88,25 @@ export default function EjView() {
             </Box>
           ))}
         </Box>
+      </Panel>
+
+      <Panel
+        title="The map behind the score"
+        note="Share of the run over 1,050 µS/cm in each vulnerability class, one map per scenario. The score under each map is one point per percentage point against Business as Usual, so the change reading and the caption are the same quantity: this is the tightest link between a map and a rank anywhere on the page. Click a class to see where its number came from."
+      >
+        <Choice label="Period" value={period} onChange={setPeriod} options={PERIODS} />
+        <RegionValues
+          team="environmentalJustice"
+          scenarios={SCEN}
+          coordsFor={(region, scenario) =>
+            CLASS_NODE[region]
+              ? { criterion: CLASS_NODE[region], scenario, place: ANY, period }
+              : null
+          }
+          caption={score}
+          unitLabel="share of run over threshold"
+          changeToggle
+        />
       </Panel>
 
       <Panel

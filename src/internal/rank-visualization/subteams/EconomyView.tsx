@@ -6,7 +6,11 @@
 // on one percent scale. Drawing them to the same scale is the point: the salinity
 // bars are invisible, and that invisibility is the finding.
 import { Box, Typography } from '@mui/material'
+import { valueAt } from '../drilldown/cellValue'
+import { ANY, fmtValue } from '../drilldown/model'
+import type { ScenarioKey } from '../drilldown/model'
 import { SUBTEAM_PROFILES } from './profiles'
+import { RegionValues } from './RegionValues'
 import { Panel, SubteamPage } from './SubteamFrame'
 
 const BASE = 1_107_300_000
@@ -27,6 +31,19 @@ const LAND_USE = [
 ]
 
 const WIDEST = 504_500_000
+
+/** Shapefile agency → the zone key. West Delta has values and no outline yet. */
+const ZONE_KEY: Record<string, string> = {
+  'North Delta Water Agency': 'north',
+  'Central Delta Water Agency': 'central',
+  'South Delta Water Agency': 'south',
+}
+const ZONE_SCENARIOS: ScenarioKey[] = ['ngw', 'em', 'bf', 'cor', 'bau']
+
+const economyScore = (scenario: ScenarioKey) => {
+  const cell = valueAt({ criterion: 'economy', scenario, place: ANY, period: ANY })
+  return cell.value === null ? 'pending' : fmtValue(cell.value, 'score')
+}
 
 const money = (value: number) => {
   const abs = Math.abs(value)
@@ -85,6 +102,23 @@ export default function EconomyView() {
             </Box>
           ))}
         </Box>
+      </Panel>
+
+      <Panel
+        title="The map behind the score, dry year"
+        note="Change in value added by zone, 2020, the salinity pathway only. Three of the four zones have an outline; West Delta does not yet. The scores underneath are not read off this map, since Economy scores each scenario on whichever effect dominates and for New Green Watershed that is land conversion. Three of the sixteen zone figures could not be verified from the slide image."
+      >
+        <RegionValues
+          team="economy"
+          scenarios={ZONE_SCENARIOS}
+          coordsFor={(region, scenario) =>
+            ZONE_KEY[region]
+              ? { criterion: 'econ-value-zones', scenario, place: ZONE_KEY[region], period: ANY }
+              : null
+          }
+          caption={economyScore}
+          unitLabel="change in value added, $"
+        />
       </Panel>
     </SubteamPage>
   )

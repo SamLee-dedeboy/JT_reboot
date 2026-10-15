@@ -145,6 +145,13 @@ export default function RecreationView() {
           between having measurements and having a score.
         </Typography>
       </Panel>
+
+      <Panel
+        title="No map behind the score"
+        note="Recreation has four regions and an outline for each, but its activity figures are published Delta-wide: the report's per-region breakdown was never transcribed into the data, so there is nothing to place on a map yet. That is a gap in our transcription, not in their work."
+      >
+        <Box />
+      </Panel>
     </SubteamPage>
   )
 }

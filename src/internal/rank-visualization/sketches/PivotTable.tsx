@@ -20,7 +20,7 @@
 // down to a single value, so the thing you clicked is still where you clicked it
 // and the rest animate away around it. Every narrowing is listed above the table
 // with its way back. A gesture nobody can reverse is a trapdoor.
-import { Box, ButtonBase, Dialog, InputBase, Typography } from '@mui/material'
+import { Box, ButtonBase, InputBase, Typography } from '@mui/material'
 import { LayoutGroup, motion } from 'framer-motion'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
@@ -33,7 +33,6 @@ import {
   DrillRow,
   FacetRow,
   NowShowing,
-  ProvenanceChip,
   TeamMark,
   ViewNote,
 } from '../drilldown/DrillBits'
@@ -49,17 +48,14 @@ import {
   ANY,
   DRILL_SCENARIOS,
   SCENARIO_NAME,
-  DOC_LABEL,
   TEAM_BY_KEY,
-  cellProvenance,
-  effectiveSlice,
   fmtValue,
   isSigned,
-  sliceKey,
-  resolve,
 } from '../drilldown/model'
 import type { CriterionNode, Facet, ScenarioKey, Unit } from '../drilldown/model'
-import { NODE_INDEX, sourcesFor } from '../drilldown/tree'
+import { NODE_INDEX } from '../drilldown/tree'
+import { CellDetail, Provenance } from '../drilldown/CellDetail'
+import { emptyReason, valueAt } from '../drilldown/cellValue'
 import { DIM_LABEL, DIM_PLURAL, LEVEL_PLURAL, MAX_AXES, usePivot } from '../drilldown/usePivot'
 import type { Dim, Pivot } from '../drilldown/usePivot'
 
@@ -535,189 +531,7 @@ function Pick({
   )
 }
 
-/**
- * Where the number came from, under the single value a cell click lands on.
- *
- * The note above it is ours, written to explain. This is the document: what the
- * subteam published, verbatim, and where to find it. The two are kept apart on
- * purpose, because the whole argument of this page is which numbers are theirs.
- */
-function Provenance({ node }: { node?: CriterionNode }) {
-  const sources = node ? sourcesFor(node.id) : []
-  if (!node) return null
-  return (
-    <Box sx={{ display: 'grid', gap: 1, maxWidth: '78ch' }}>
-      <Typography variant="eyebrow">Where this comes from</Typography>
-      {sources.length === 0 ? (
-        <Typography variant="body2" sx={{ color: 'base.300' }}>
-          No citation recorded for this one yet.
-        </Typography>
-      ) : (
-        sources.map((source, i) => (
-          <Box
-            key={i}
-            sx={{
-              display: 'grid',
-              gap: 0.4,
-              pl: 1.5,
-              borderLeft: 2,
-              borderColor: source.doc === 'ours' ? 'primary.main' : 'border.strong',
-            }}
-          >
-            <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-              {DOC_LABEL[source.doc]}
-            </Typography>
-            <Typography variant="chartLabel" sx={{ display: 'block' }}>
-              {source.where}
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'base.100' }}>
-              {source.doc === 'ours' ? source.quote : `\u201c${source.quote}\u201d`}
-            </Typography>
-          </Box>
-        ))
-      )}
-    </Box>
-  )
-}
-
-/**
- * One cell's paper trail, over the table rather than in place of it.
- *
- * Narrowing is what rearranges the table; asking where a number came from should
- * not, because the reader is in the middle of reading a row and wants to keep
- * their place. So this opens and closes and leaves the grid untouched.
- */
-function CellDetail({
-  pivot,
-  coords,
-  onClose,
-}: {
-  pivot: Pivot
-  coords: Record<Dim, string> | null
-  onClose: () => void
-}) {
-  const cell = coords ? valueAt(coords) : undefined
-  const node = cell?.node
-  return (
-    <Dialog
-      open={!!coords}
-      onClose={onClose}
-      maxWidth="sm"
-      fullWidth
-      slotProps={{
-        paper: {
-          sx: (theme) => ({
-            // The same surface the sketch card uses, so the panel reads as part of
-            // this page. MUI's default paper is light, and its elevation overlay
-            // tints whatever you put underneath, so both are turned off.
-            backgroundImage: 'none',
-            bgcolor: 'base.700',
-            color: 'base.50',
-            border: 1,
-            borderColor: 'border.default',
-            borderRadius: 2,
-            p: theme.jtSpacing.component.md,
-          }),
-        },
-        backdrop: { sx: { bgcolor: 'translucent.700' } },
-      }}
-    >
-      {coords && node && (
-        <Box sx={{ display: 'grid', gap: 1.25 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
-            <TeamMark team={node.team} size={13} />
-            <Typography variant="chartTitle" component="h2">
-              {node.label}
-            </Typography>
-          </Box>
-
-          <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-            {describeCoords(pivot, coords, node)}
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, flexWrap: 'wrap' }}>
-            <Typography variant="numberArticle" component="div">
-              {cell.value === null ? '—' : fmtValue(cell.value, cell.unit)}
-            </Typography>
-            <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-              {/* A node with numbers elsewhere is not a node with no number: saying
-                  "no number of its own" about Env. Justice under A Tunnel blames
-                  the metric for a gap that belongs to one scenario. */}
-              {cell.value !== null
-                ? unitHeading(cell.unit).toLowerCase()
-                : Object.keys(node.values).length === 0
-                  ? emptyReason('criterion', node.id)
-                  : 'no result published for this scenario'}
-            </Typography>
-            <Box sx={{ ml: 'auto' }}>
-              <ProvenanceChip
-                provenance={cell.inferred ? 'inferred' : node.provenance}
-                absent={cell.value === null}
-              />
-            </Box>
-          </Box>
-
-          {/* The citation leads. It is what the reader clicked for, and putting our
-              own commentary in front of it makes them read us before the source. */}
-          <Provenance node={node} />
-
-          {node.note && (
-            <Box sx={{ display: 'grid', gap: 0.75, mt: 1 }}>
-              <Typography variant="eyebrow">Our reading</Typography>
-              <Typography variant="body2" sx={{ color: 'base.100' }}>
-                {node.note}
-              </Typography>
-            </Box>
-          )}
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 0.5 }}>
-            <Chip label="Close" picked={false} onClick={onClose} />
-          </Box>
-        </Box>
-      )}
-    </Dialog>
-  )
-}
-
-/** The full coordinate in words, since a cell on its own does not say where it sits. */
-function describeCoords(pivot: Pivot, coords: Record<Dim, string>, node: CriterionNode): string {
-  const slice = effectiveSlice(node, coords.place, coords.period)
-  const parts = [SCENARIO_NAME[coords.scenario as ScenarioKey]]
-  if (slice.place !== ANY) parts.push(labelOf(pivot.placeFacets, slice.place))
-  if (slice.period !== ANY) parts.push(labelOf(pivot.periodFacets, slice.period))
-  return parts.join(' · ')
-}
-
 // ---------- the result ----------
-
-interface Cell {
-  value: number | null
-  missing: boolean
-  unit: Unit
-  node?: CriterionNode
-  /** True where this number is ours rather than the subteam's. */
-  inferred?: boolean
-}
-
-function valueAt(coords: Record<Dim, string>): Cell {
-  const node = NODE_INDEX.get(coords.criterion)
-  if (!node) return { value: null, missing: true, unit: 'score' }
-  // Every node resolves the slice on its own terms. Without this a criterion keyed
-  // by region and year never matches the unsliced lookup, so every cell read as a
-  // dash and changing Where or When appeared to do nothing.
-  const slice = effectiveSlice(node, coords.place, coords.period)
-  const scenario = coords.scenario as ScenarioKey
-  const resolved = resolve(node, scenario, slice.place, slice.period)
-  return {
-    value: resolved.value,
-    missing: resolved.missing,
-    unit: node.unit,
-    node,
-    inferred:
-      cellProvenance(node, scenario, resolved.value, sliceKey(slice.place, slice.period)) ===
-      'inferred',
-  }
-}
 
 function labelFor(pivot: Pivot, dim: Dim, key: string): string {
   if (dim === 'scenario') return SCENARIO_NAME[key as ScenarioKey]
@@ -744,16 +558,6 @@ function coverageNote(node: CriterionNode | undefined, colDim: Dim, colKeys: str
   return names.length <= 2
     ? `${names.join(' and ')} only`
     : `${held.length} of ${colKeys.length} scenarios`
-}
-
-/** Why a row or column came back empty; the reasons differ and both matter. */
-function emptyReason(dim: Dim, key: string): string {
-  if (dim !== 'criterion') return 'nothing measured here'
-  const node = NODE_INDEX.get(key)
-  if (!node) return 'nothing measured here'
-  if (node.children?.length) return `no number of its own · ${node.children.length} inside`
-  if (node.provenance === 'unscored') return 'never scored'
-  return 'not in this analysis'
 }
 
 /**
@@ -1036,7 +840,7 @@ function Matrix({ pivot }: { pivot: Pivot }) {
       <ViewNote below>
         {pivot.selectedNodes.length === 1 ? pivot.selectedNodes[0].note : undefined}
       </ViewNote>
-      <CellDetail pivot={pivot} coords={inspect} onClose={() => setInspect(null)} />
+      <CellDetail coords={inspect} onClose={() => setInspect(null)} />
     </>
   )
 }
