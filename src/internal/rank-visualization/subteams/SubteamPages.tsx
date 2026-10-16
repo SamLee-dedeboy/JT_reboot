@@ -30,25 +30,50 @@ export default function SubteamPages() {
   const View = VIEWS[team]
 
   return (
-    <Box sx={(theme) => ({ px: theme.jtSpacing.page.x, py: theme.jtSpacing.section.sm })}>
-      <Box sx={{ maxWidth: DRILL_CARD_WIDTH, display: 'grid', gap: 3 }}>
+    <Box
+      sx={(theme) => ({
+        px: theme.jtSpacing.page.x,
+        py: theme.jtSpacing.section.sm,
+        // The internal layout spaces prose with a margin under every <p>; these
+        // pages space with grid gaps, and chart labels are <p>s too, so the margin
+        // would shift every label off its cell.
+        '&& p': { mb: 0 },
+      })}
+    >
+      <Box
+        sx={(theme) => ({
+          maxWidth: DRILL_CARD_WIDTH,
+          display: 'grid',
+          gap: theme.jtSpacing.section.xs,
+        })}
+      >
+        {/* One strip, five segments: the team is the page, so the switch reads as tabs. */}
         <Box
           component="nav"
           aria-label="Subteam"
-          sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(5, 1fr)' },
+            gap: 0.5,
+            p: 0.5,
+            borderRadius: 2,
+            bgcolor: 'base.700',
+            border: 1,
+            borderColor: 'border.subtle',
+          }}
         >
           {TEAMS.map((entry) => (
             <SubteamTab
               key={entry.key}
               team={entry.key}
               name={entry.name}
-              reaches={SUBTEAM_PROFILES[entry.key].reaches}
+              topic={SUBTEAM_PROFILES[entry.key].topic}
               active={entry.key === team}
               onClick={() => setTeam(entry.key)}
             />
           ))}
         </Box>
-        <View />
+        <View key={team} />
       </Box>
     </Box>
   )
@@ -57,42 +82,44 @@ export default function SubteamPages() {
 function SubteamTab({
   team,
   name,
-  reaches,
+  topic,
   active,
   onClick,
 }: {
   team: TeamKey
   name: string
-  reaches: string
+  topic: string
   active: boolean
   onClick: () => void
 }) {
   return (
     <ButtonBase
       onClick={onClick}
-      aria-pressed={active}
+      role="tab"
+      aria-selected={active}
       sx={{
         display: 'grid',
-        gap: 0.2,
+        gap: 0.5,
         justifyItems: 'start',
+        alignContent: 'start',
         textAlign: 'left',
-        px: 1.25,
-        py: 0.9,
-        borderRadius: 1,
-        border: 1,
-        borderColor: active ? 'primary.main' : 'border.default',
-        bgcolor: active ? 'translucent.100' : 'transparent',
-        '&:hover, &.Mui-focusVisible': { borderColor: 'primary.main' },
+        px: 1.5,
+        py: 1.25,
+        borderRadius: 1.5,
+        bgcolor: active ? 'translucent.200' : 'transparent',
+        boxShadow: active ? 'inset 0 -2px 0 0 currentColor' : 'none',
+        color: active ? 'primary.main' : 'base.100',
+        '&:hover, &.Mui-focusVisible': { bgcolor: 'translucent.100' },
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <TeamMark team={team} size={13} />
-        <Typography variant="chartLabel" sx={{ color: active ? 'common.white' : 'base.100' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+        <TeamMark team={team} size={14} />
+        <Typography variant="chartLabel" sx={{ color: active ? 'base.50' : 'base.100' }}>
           {name}
         </Typography>
       </Box>
-      <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-        {`goes into the score: ${reaches}`}
+      <Typography variant="body2" sx={{ color: active ? 'base.50' : 'base.100' }}>
+        {topic}
       </Typography>
     </ButtonBase>
   )

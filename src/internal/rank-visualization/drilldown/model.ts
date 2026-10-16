@@ -1,12 +1,10 @@
-// Shared model for the two drill-down designs (4a, 4b).
+// Shared model for the drill-down (4c) and the by-subteam pages.
 //
 // A number on this page is always a cell in three dimensions:
 //   scenario  ×  criterion path (subteam → metric → entity)  ×  slice (place, period)
 // The four drill-down intents the design has to support — scenario-, subteam-,
 // metric- and entity-driven — are not four flows. They are which dimension is
-// pinned while the others vary, so both designs share this one selection state and
-// differ only in whether the slice is a top-level axis (4a) or lives inside a
-// metric view (4b).
+// pinned while the others vary, which is why one selection state serves them all.
 import { SCENARIOS, TEAMS } from '../data'
 import type { Score, TeamKey } from '../data'
 
@@ -260,9 +258,6 @@ export function cellProvenance(
 }
 
 /** True where this node is broken out along the given axis at all. */
-export const hasPlaces = (node: CriterionNode) => node.places.some((p) => p.key !== ANY)
-export const hasPeriods = (node: CriterionNode) => node.periods.some((p) => p.key !== ANY)
-
 export const TEAM_BY_KEY = Object.fromEntries(TEAMS.map((team) => [team.key, team])) as Record<
   TeamKey,
   (typeof TEAMS)[number]
@@ -316,18 +311,6 @@ export const EDGE_LABEL: Record<EdgeKind, string> = {
   duplicates: 'same number',
   beside: 'beside the score',
   unscored: 'not scored',
-}
-
-/** One line explaining the edge, for the reading note / tooltip. */
-export const EDGE_NOTE: Record<EdgeKind, string> = {
-  averages: 'The parent score is the mean of this and its siblings.',
-  measures: 'One of the measurements the metric above is made of.',
-  derives: 'The parent score is calculated from this by a stated rule.',
-  refines:
-    'A finer setting of one scenario, not a component of the parent — it exists for that scenario only.',
-  duplicates: 'This carries the same number as its siblings — splitting it adds nothing.',
-  beside: 'Evidence the subteam gathered that does not go into the score above it.',
-  unscored: 'Described in the report, never turned into a number.',
 }
 
 export const PROVENANCE_LABEL: Record<Provenance, string> = {

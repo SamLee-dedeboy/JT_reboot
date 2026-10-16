@@ -1,17 +1,22 @@
-// Economy's middle: two pathways that cannot share an axis.
+// Economy's evidence: two pathways that cannot share an axis.
 //
 // Salinity moves the farm economy by tens of thousands of dollars; land conversion
 // moves it by hundreds of millions. Four orders of magnitude apart, which is why
 // the report scores "whichever effect actually dominates" rather than putting both
 // on one percent scale. Drawing them to the same scale is the point: the salinity
 // bars are invisible, and that invisibility is the finding.
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
+import type { ReactNode } from 'react'
 import { valueAt } from '../drilldown/cellValue'
 import { ANY, fmtValue } from '../drilldown/model'
 import type { ScenarioKey } from '../drilldown/model'
 import { SUBTEAM_PROFILES } from './profiles'
+import { REGION_DATA_KEY } from './regionKeys'
 import { RegionValues } from './RegionValues'
-import { Panel, SubteamPage } from './SubteamFrame'
+import { ColumnHead, Legend, Panel, RowHead, SubteamPage } from './SubteamFrame'
+import { cellFill } from '../data'
+import { DifferenceFromToday, MetricCards } from './aids'
+import { RegionMap } from './RegionMap'
 
 const BASE = 1_107_300_000
 
@@ -27,22 +32,17 @@ const SALINITY = [
 const LAND_USE = [
   { label: 'New Green Watershed, 25/75', value: -212_400_000, score: -3 },
   { label: 'New Green Watershed, 50/50', value: -282_500_000, score: -4 },
-  { label: 'New Green Watershed, full MW', value: -504_500_000, score: -5 },
+  { label: 'New Green Watershed, full managed wetland', value: -504_500_000, score: -5 },
 ]
 
 const WIDEST = 504_500_000
 
-/** Shapefile agency → the zone key. West Delta has values and no outline yet. */
-const ZONE_KEY: Record<string, string> = {
-  'North Delta Water Agency': 'north',
-  'Central Delta Water Agency': 'central',
-  'South Delta Water Agency': 'south',
-}
+const ZONE_KEY = REGION_DATA_KEY.economy ?? {}
 const ZONE_SCENARIOS: ScenarioKey[] = ['ngw', 'em', 'bf', 'cor', 'bau']
 
 const economyScore = (scenario: ScenarioKey) => {
   const cell = valueAt({ criterion: 'economy', scenario, place: ANY, period: ANY })
-  return cell.value === null ? 'pending' : fmtValue(cell.value, 'score')
+  return cell.value === null ? 'not scored' : fmtValue(cell.value, 'score')
 }
 
 const money = (value: number) => {
@@ -53,13 +53,50 @@ const money = (value: number) => {
 }
 
 export default function EconomyView() {
+  const theme = useTheme()
   return (
-    <SubteamPage profile={SUBTEAM_PROFILES.economy}>
+    <SubteamPage
+      profile={SUBTEAM_PROFILES.economy}
+      aidWide
+      aid={
+        <Box sx={{ display: 'grid', gap: 2.5 }}>
+          <MetricCards
+            metrics={[
+              {
+                label: 'Gross revenue',
+                counted: true,
+                items: [
+                  'Dollar sales from Delta farms in a year',
+                  'Difference from Business as Usual',
+                ],
+              },
+              {
+                label: 'Jobs',
+                counted: true,
+                items: [
+                  'Farm jobs plus the jobs they support',
+                  'Difference from Business as Usual',
+                ],
+              },
+              {
+                label: 'Value added',
+                counted: true,
+                items: [
+                  'Wages, business income and taxes, roughly farm GDP',
+                  'Difference from Business as Usual',
+                ],
+              },
+            ]}
+          />
+          <DifferenceFromToday map={<RegionMap active="economy" labels={false} />} />
+        </Box>
+      }
+    >
       <Panel
-        title="Both pathways, drawn to the same scale"
-        note="This shows the difference in annual farm revenue from a $1.107B base, with every bar using the same axis to make clear which pathway determines the criterion."
+        title="Two ways a scenario changes farm revenue, drawn to one scale"
+        intro="Saltier irrigation water lowers crop yields: the **salinity pathway**. Restoring farmland to wetland takes it out of production: the **land-use pathway**. Each bar is the **change in annual gross farm revenue** from today’s $1.107 billion, and every bar uses the same axis. The salinity bars are ==too small to see==, which is the point: the largest salinity effect anywhere is **−$34,000** in a dry year, 0.003% of the base and about **one eight-thousandth** of the 50/50 restoration effect."
       >
-        <Box sx={{ display: 'grid', gap: 1.5 }}>
+        <Box sx={{ display: 'grid', gap: 2 }}>
           <Group title="Salinity pathway">
             {SALINITY.map((row) => (
               <Bar key={row.label} {...row} />
@@ -71,42 +108,66 @@ export default function EconomyView() {
             ))}
           </Group>
         </Box>
-        <Typography variant="body2" sx={{ color: 'base.300', mt: 1.25, maxWidth: '78ch' }}>
-          The largest salinity effect anywhere is {money(-34_000)} in a dry year. That is 0.003% of
-          the base and about one eight-thousandth of the 50/50 restoration effect below it, so the
-          report scores each scenario using the dominant effect rather than forcing both effects
-          onto one percent scale.
-        </Typography>
+        <Legend
+          items={[
+            { swatch: theme.chart.voting.below, label: 'Revenue falls' },
+            { swatch: theme.chart.voting.above, label: 'Revenue rises' },
+          ]}
+          note="A bar too thin to see is drawn as a hairline."
+        />
       </Panel>
 
       <Panel
-        title="What the restoration intensities cost"
-        note="The three New Green Watershed levels are sub-scenarios rather than parts of the criterion, so each has its own score. These are the only Economy values whose magnitude directly determines a score."
+        title="How much restoration, and what it costs in revenue"
+        intro="New Green Watershed was run at **three restoration intensities**, from the lightest (25/75) to the heaviest (full managed wetland). Each is a sub-scenario with **its own score**, and these are the ==only Economy values whose size directly sets a score==."
       >
-        <Box sx={{ display: 'grid', gap: 0.5 }}>
-          {LAND_USE.map((row) => (
-            <Box
-              key={row.label}
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: '240px 110px 1fr' },
-                gap: 1,
-                alignItems: 'center',
-              }}
-            >
-              <Typography variant="chartLabel">{row.label}</Typography>
-              <Typography variant="chartValue">{money(row.value)}</Typography>
-              <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-                {`${Math.round((Math.abs(row.value) / BASE) * 1000) / 10}% of the base · scores ${row.score}`}
-              </Typography>
-            </Box>
-          ))}
+        <Box sx={{ overflowX: 'auto', overflowY: 'hidden' }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '300px 1fr 1fr 1fr',
+              columnGap: 2,
+              rowGap: 0.75,
+              minWidth: 640,
+              alignItems: 'center',
+            }}
+          >
+            <ColumnHead>Intensity</ColumnHead>
+            <ColumnHead>Revenue change</ColumnHead>
+            <ColumnHead>Share of today’s revenue</ColumnHead>
+            <ColumnHead>Score</ColumnHead>
+            {LAND_USE.map((row) => (
+              <Box key={row.label} sx={{ display: 'contents' }}>
+                <RowHead>{row.label}</RowHead>
+                <Typography variant="body2" sx={{ color: 'base.50' }}>
+                  <Box component="strong">{money(row.value)}</Box>
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'base.100' }}>
+                  {`${Math.round((Math.abs(row.value) / BASE) * 1000) / 10}%`}
+                </Typography>
+                <Box
+                  sx={(theme) => ({
+                    justifySelf: 'start',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 0.4,
+                    bgcolor: cellFill(row.score),
+                    color: theme.palette.common.white,
+                  })}
+                >
+                  <Typography variant="body2" sx={{ color: 'inherit' }}>
+                    <Box component="strong">{fmtValue(row.score, 'score')}</Box>
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
         </Box>
       </Panel>
 
       <Panel
-        title="The map behind the score, dry year"
-        note="This map shows the difference in value added from the Business as Usual baseline by zone in 2020 for the salinity pathway only. Three of the four zones have an outline; West Delta does not yet. The scores below do not come from this map because Economy scores each scenario using the dominant effect, and land conversion dominates New Green Watershed. Three of the sixteen zone values could not be verified from the slide image."
+        title="The salinity pathway on the map, dry year"
+        intro="Each map colours the three outlined zones by the **change in value added** from Business as Usual in 2020, for the **salinity pathway only**; West Delta has no outline yet. The score beneath each map is the criterion score, and ==it does not come from this map==: Economy scores each scenario on its dominant effect, and for New Green Watershed that is land conversion. Three of the sixteen zone values could not be verified from the slide image."
       >
         <RegionValues
           team="economy"
@@ -117,17 +178,19 @@ export default function EconomyView() {
               : null
           }
           caption={economyScore}
-          unitLabel="difference in value added from baseline, $"
+          unitLabel="Change in value added from Business as Usual"
         />
       </Panel>
     </SubteamPage>
   )
 }
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+function Group({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <Box sx={{ display: 'grid', gap: 0.5 }}>
-      <Typography variant="chartColumnHead">{title}</Typography>
+    <Box sx={{ display: 'grid', gap: 0.6 }}>
+      <Typography variant="body2" sx={{ color: 'base.50' }}>
+        <Box component="strong">{title}</Box>
+      </Typography>
       {children}
     </Box>
   )
@@ -139,15 +202,13 @@ function Bar({ label, value }: { label: string; value: number }) {
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: '240px 1fr 92px' },
+        gridTemplateColumns: { xs: '1fr', sm: '300px 1fr 100px' },
         gap: 1,
         alignItems: 'center',
       }}
     >
-      <Typography variant="chartAxis" noWrap>
-        {label}
-      </Typography>
-      <Box sx={{ height: 14, bgcolor: 'translucent.100', borderRadius: 0.4 }}>
+      <RowHead>{label}</RowHead>
+      <Box sx={{ height: 16, bgcolor: 'translucent.100', borderRadius: 0.4 }}>
         <Box
           sx={(theme) => ({
             height: '100%',
@@ -158,7 +219,7 @@ function Bar({ label, value }: { label: string; value: number }) {
           })}
         />
       </Box>
-      <Typography variant="chartAxis" sx={{ textAlign: 'right' }}>
+      <Typography variant="body2" sx={{ color: 'base.50', textAlign: 'right' }}>
         {money(value)}
       </Typography>
     </Box>

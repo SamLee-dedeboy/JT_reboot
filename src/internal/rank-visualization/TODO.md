@@ -210,13 +210,15 @@ Both are preliminary: the numbers move, the stories are settled.
       are also ticked, so Species-specific modeling nests under Ecology. Subteam
       grouping headers are suppressed when a subteam is itself ticked — that row is
       the heading.
-- [ ] Try 4c and confirm the tree is the right primary control before polishing it.
-- [ ] Decide between 4a (three axes), 4b (detail inside the view) and 4c (pivot). 4c is
-      strictly more powerful and strictly more demanding; the real question is whether
-      this is a tool for people who know what they want to ask, or for people who need
-      to be shown. Worth putting to the subteams.
-- [ ] If 4c wins, consider keeping 4a's three views as _presets_ that set a selection
-      pattern rather than modes — guided entry, full freedom after the first click.
+- [x] 4c won (16 Oct 2026). 4a and 4b removed, with `useDrill.ts` and the DrillBits
+      pieces only they used. Step 4 is a single design now.
+- [x] 4c redesigned to the 10 Oct geography notes: places are offered only while every
+      ticked criterion belongs to one subteam (the row says why otherwise), and where
+      that subteam has outlines (Ecology, Economy) several places are drawn as one map
+      per scenario instead of taking a table axis. `subteams/regionKeys.ts` holds the
+      shapefile-name → place-key map both modes share.
+- [ ] EJ's three drinking-water classes are criterion nodes, not places, so 4c cannot
+      map them; the by-subteam page does. Fold them into a place facet, or leave it.
 - [ ] Then: design options for drilling into a subteam or a scenario
 - [ ] Check what can be shown publicly (see eco-cultural note below)
 

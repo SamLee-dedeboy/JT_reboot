@@ -393,6 +393,7 @@ export default function OverallRanking() {
   const [showSpread, setShowSpread] = useState(false)
   // Every breakdown starts open; each row then opens and closes on its own.
   const [open, setOpen] = useState<Set<string>>(() => new Set(RANKED.map((s) => s.name)))
+  const allOpen = open.size === RANKED.length
   const toggle = (name: string) =>
     setOpen((current) => {
       const next = new Set(current)
@@ -413,17 +414,33 @@ export default function OverallRanking() {
             alignItems: 'end',
           }}
         >
-          {/* Spread switch lives on the chart it controls, above the scenario names */}
-          <Box
-            component="label"
-            sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
-          >
-            <Switch
-              size="small"
-              checked={showSpread}
-              onChange={(event) => setShowSpread(event.target.checked)}
-            />
-            <Typography variant="chartColumnHead">Range</Typography>
+          {/* Both switches live on the chart they control, above the scenario names.
+              Ballots opens or closes every row at once; a row still toggles on its own. */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', columnGap: 2 }}>
+            <Box
+              component="label"
+              sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+            >
+              <Switch
+                size="small"
+                checked={allOpen}
+                onChange={(event) =>
+                  setOpen(event.target.checked ? new Set(RANKED.map((s) => s.name)) : new Set())
+                }
+              />
+              <Typography variant="chartColumnHead">Ballots</Typography>
+            </Box>
+            <Box
+              component="label"
+              sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+            >
+              <Switch
+                size="small"
+                checked={showSpread}
+                onChange={(event) => setShowSpread(event.target.checked)}
+              />
+              <Typography variant="chartColumnHead">Range</Typography>
+            </Box>
           </Box>
           <ScaleLabels labels={['−5', '0', '5']} />
           <Typography variant="chartColumnHead" sx={{ textAlign: 'right' }}>

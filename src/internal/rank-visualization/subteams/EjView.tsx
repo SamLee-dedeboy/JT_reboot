@@ -1,4 +1,5 @@
-// EJ's middle: the funnel, and the null result the score erases.
+// EJ's evidence: the funnel, who carries the exceedance, and the maps behind the
+// score.
 //
 // This is the only criterion whose chain holds from measurement to score, so the
 // honest shape is the collapse itself: 39,659 daily readings, three vulnerability
@@ -9,14 +10,25 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { valueAt } from '../drilldown/cellValue'
 import { ANY, SCENARIO_NAME, fmtValue } from '../drilldown/model'
+import { cellFill } from '../data'
 import type { ScenarioKey } from '../drilldown/model'
 import { SUBTEAM_PROFILES } from './profiles'
 import { RegionValues } from './RegionValues'
-import { Choice, Panel, SubteamPage } from './SubteamFrame'
+import {
+  Choice,
+  ColumnHead,
+  DivergingLegend,
+  HeatCell,
+  Panel,
+  ScaleLegend,
+  SubteamPage,
+} from './SubteamFrame'
+import { ClassBar, Funnel, MetricCards, ThresholdDays } from './aids'
+import { signedPct } from './rich'
 
 const SCEN: ScenarioKey[] = ['bau', 'bf', 'em', 'ngw', 'cor', 'tunnel']
 
-/** Share of the run over 1,050 µS/cm, by vulnerability class, in SCEN order. */
+/** Proportion of the run over 1,050 µS/cm, by vulnerability class, in SCEN order. */
 const CLASSES = [
   { label: 'Moderate', points: 10, run: [6, 5, 4, 4, 11, 13] },
   { label: 'High', points: 36, run: [10, 10, 8, 8, 11, 13] },
@@ -40,59 +52,166 @@ const PERIODS = [
 
 const FUNNEL = [
   { n: '39,659', label: 'daily measurements', note: '49 points × 793 days' },
-  { n: '3', label: 'vulnerability classes', note: 'moderate 10, high 36, highest 3' },
+  { n: '3', label: 'vulnerability classes', note: 'moderate 10, high 36, highest 3 points' },
   { n: '3', label: 'metric scores', note: 'drinking water, flood risk, water age' },
   { n: '1', label: 'criterion score', note: 'the mean of the three, rounded' },
 ]
 
 export default function EjView() {
   const [period, setPeriod] = useState<'run' | 'wet' | 'dry'>('run')
+  const [reading, setReading] = useState<'level' | 'change'>('level')
+  // Difference mode: each scenario's proportion minus Business as Usual's for the
+  // same class. More days over the threshold is the worse outcome, so a rise is
+  // orange and a fall blue, on a ramp whose ends are the largest gaps shown.
+  const rows = [...CLASSES, { label: 'All 49 points', points: 49, run: ALL_POINTS }]
+  const diffMax = Math.max(
+    0.01,
+    ...rows.flatMap((row) => row.run.map((value) => Math.abs(value - row.run[0]))),
+  )
+  const shownScenarios = reading === 'change' ? SCEN.filter((key) => key !== 'bau') : SCEN
   // The drinking-water metric score for this period: what the row of maps became.
   const score = (scenario: ScenarioKey) => {
     const cell = valueAt({ criterion: 'ej-drinking', scenario, place: ANY, period })
-    return cell.value === null ? 'pending' : fmtValue(cell.value, 'score')
+    return cell.value === null ? 'not scored' : fmtValue(cell.value, 'score')
   }
+  const columns = `220px repeat(${shownScenarios.length}, minmax(88px, 1fr))`
+
   return (
-    <SubteamPage profile={SUBTEAM_PROFILES.environmentalJustice}>
-      <Panel
-        title="From 39,659 readings to one value"
-        note="Each step reduces the data using a method the subteam can defend; by the final step, one criterion score contains little of what the team measured."
-      >
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: 'repeat(4, 1fr)' },
-            gap: 1,
-          }}
-        >
-          {FUNNEL.map((step, i) => (
-            <Box
-              key={step.label}
-              sx={{
-                display: 'grid',
-                gap: 0.3,
-                alignContent: 'start',
-                p: 1.25,
-                borderRadius: 1,
-                bgcolor: 'translucent.100',
-                opacity: 1 - i * 0.12,
-              }}
-            >
-              <Typography variant="numberArticle" component="div">
-                {step.n}
-              </Typography>
-              <Typography variant="chartLabel">{step.label}</Typography>
-              <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-                {step.note}
-              </Typography>
-            </Box>
-          ))}
+    <SubteamPage
+      profile={SUBTEAM_PROFILES.environmentalJustice}
+      aidWide
+      aid={
+        <Box sx={{ display: 'grid', gap: 2.5 }}>
+          <MetricCards
+            metrics={[
+              {
+                label: 'Salinity impacts to drinking water',
+                counted: true,
+                items: [
+                  'Proportion of days over 1,050 µS/cm',
+                  'By vulnerability class, for the run and each season',
+                  'Scored',
+                ],
+              },
+              {
+                label: 'Flood risk',
+                counted: false,
+                items: ['Expected change in flood risk, none to significant', 'Scored'],
+              },
+              {
+                label: 'Water age and temperature',
+                counted: false,
+                items: ['Change in water age where water reaches 19 °C', 'Scored'],
+              },
+            ]}
+          />
+          <ThresholdDays />
+          <ClassBar
+            heading="49 intake points, by the vulnerability of the community each serves"
+            groups={CLASSES.map((row) => ({ label: row.label.toLowerCase(), count: row.points }))}
+            caption="The class is set by 14 socioeconomic indicators; the evidence below is read per class."
+          />
         </Box>
+      }
+      method={
+        <Panel
+          title="From 39,659 readings to one score"
+          intro="Each step reduces the data in a way the subteam can defend. By the last step **one criterion score** holds very little of what was measured, which is why the evidence below shows the steps in between."
+        >
+          <Funnel steps={FUNNEL} />
+        </Panel>
+      }
+    >
+      <Panel
+        title="Who is over the drinking-water threshold, and how often"
+        intro="Each cell is the **proportion of the whole run** on which a class’s intake points were over 1,050 µS/cm. The **highest-vulnerability class is at zero** under every scenario: these are ==measured zeros==, not missing data. The bottom row pools all 49 points. Switch to the **difference from Business as Usual** to see what a scenario changes."
+      >
+        <Choice
+          label="Show"
+          value={reading}
+          onChange={setReading}
+          options={[
+            { key: 'level', label: 'the value' },
+            { key: 'change', label: 'the difference from Business as Usual' },
+          ]}
+        />
+        <Box sx={{ overflowX: 'auto', overflowY: 'hidden' }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: columns,
+              gap: 0.4,
+              minWidth: 760,
+              alignItems: 'center',
+            }}
+          >
+            <Box />
+            {shownScenarios.map((key) => (
+              <ColumnHead key={key}>{SCENARIO_NAME[key]}</ColumnHead>
+            ))}
+            {rows.map((row, r) => {
+              const pooled = r === CLASSES.length
+              return (
+                <Box key={row.label} sx={{ display: 'contents' }}>
+                  <Typography variant="body2" sx={{ color: 'base.50', alignSelf: 'center' }}>
+                    {pooled ? (
+                      <Box component="strong">{row.label}</Box>
+                    ) : (
+                      `${row.label} (${row.points} points)`
+                    )}
+                  </Typography>
+                  {SCEN.map((key, i) => {
+                    if (reading === 'change') {
+                      if (key === 'bau') return null
+                      const diff = row.run[i] - row.run[0]
+                      return (
+                        <HeatCell
+                          key={key}
+                          value={diff}
+                          max={1}
+                          tone="salinity.teal"
+                          fill={diff === 0 ? undefined : cellFill((-diff / diffMax) * 5)}
+                          text={signedPct(diff)}
+                          title={`${row.label}: ${row.run[0]}% under Business as Usual, ${row.run[i]}% here`}
+                        />
+                      )
+                    }
+                    return (
+                      <HeatCell
+                        key={key}
+                        value={row.run[i]}
+                        max={14}
+                        tone="salinity.teal"
+                        text={`${row.run[i]}%`}
+                      />
+                    )
+                  })}
+                </Box>
+              )
+            })}
+          </Box>
+        </Box>
+        {reading === 'change' ? (
+          <DivergingLegend
+            label="Difference from Business as Usual, not a score: the gap between the two percentages. Hover a cell for both values."
+            min={`−${diffMax}%`}
+            max={`+${diffMax}%`}
+            note="Orange: more days over the threshold than today, the worse outcome; blue: fewer. The ends of the ramp are the largest gaps on this grid."
+          />
+        ) : (
+          <ScaleLegend
+            tone="salinity.teal"
+            label="Days over 1,050 µS/cm"
+            min="0%"
+            max="14%"
+            zero="measured zero"
+          />
+        )}
       </Panel>
 
       <Panel
-        title="The map behind the score"
-        note="Each map shows the proportion of the run exceeding 1,050 µS/cm in each vulnerability class, with one map for each scenario. The score below a map differs by one point for each percentage point of difference from the Business as Usual baseline, so the difference view and the caption show the same quantity. No other map on this page connects so directly to a rank; click a class to see the source of its value."
+        title="The same numbers on the map, and the score they became"
+        intro="The three shapes are the **three vulnerability classes**. Each map colours them by the proportion over the threshold under one scenario, and the number beneath is the **drinking-water metric score** that row of values became: ==one point for each percentage point== of difference from Business as Usual. No other map on this page connects so directly to a score."
       >
         <Choice label="Period" value={period} onChange={setPeriod} options={PERIODS} />
         <RegionValues
@@ -104,81 +223,10 @@ export default function EjView() {
               : null
           }
           caption={score}
-          unitLabel="proportion of run exceeding the threshold"
+          unitLabel="Proportion of days over the threshold"
           changeToggle
         />
       </Panel>
-
-      <Panel
-        title="Who carries the exceedance"
-        note="This shows the proportion of the run exceeding the 1,050 µS/cm drinking-water threshold for each vulnerability class. The highest-vulnerability zone has zero exceedance under every scenario and in both seasons; these are measured zeros."
-      >
-        <Box sx={{ overflowX: 'auto' }}>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: `180px repeat(${SCEN.length}, minmax(84px, 1fr))`,
-              gap: 0.4,
-              minWidth: 720,
-            }}
-          >
-            <Box />
-            {SCEN.map((key) => (
-              <Typography key={key} variant="chartAxis" sx={{ color: 'base.300' }} noWrap>
-                {SCENARIO_NAME[key]}
-              </Typography>
-            ))}
-
-            {CLASSES.map((row) => (
-              <ClassRow key={row.label} {...row} />
-            ))}
-
-            <Typography variant="chartLabel" sx={{ alignSelf: 'center' }}>
-              All 49 points
-            </Typography>
-            {ALL_POINTS.map((value, i) => (
-              <Typography key={i} variant="chartValue" sx={{ alignSelf: 'center' }}>
-                {value}%
-              </Typography>
-            ))}
-          </Box>
-        </Box>
-      </Panel>
     </SubteamPage>
-  )
-}
-
-function ClassRow({ label, points, run }: { label: string; points: number; run: number[] }) {
-  const silent = run.every((value) => value === 0)
-  return (
-    <>
-      <Box sx={{ alignSelf: 'center' }}>
-        <Typography variant="chartLabel">{label}</Typography>
-        <Typography variant="chartAxis" sx={{ display: 'block', color: 'base.300' }}>
-          {points} points
-        </Typography>
-      </Box>
-      {run.map((value, i) => (
-        <Box
-          key={i}
-          sx={{
-            height: 26,
-            display: 'flex',
-            alignItems: 'center',
-            px: 0.6,
-            borderRadius: 0.4,
-            border: silent ? 1 : 0,
-            borderStyle: 'dashed',
-            borderColor: 'border.default',
-            bgcolor: silent ? 'transparent' : 'salinity.pink',
-            opacity: silent ? 1 : 0.2 + (value / 14) * 0.8,
-          }}
-        >
-          <Typography variant="chartAxis" sx={{ color: silent ? 'base.300' : 'common.white' }}>
-            {value}%
-          </Typography>
-        </Box>
-      ))}
-    </>
   )
 }

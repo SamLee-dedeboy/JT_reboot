@@ -1045,19 +1045,6 @@ function index(node: CriterionNode, parent?: string) {
 }
 CRITERION_TREE.forEach((team) => index(team))
 
-/** Root-to-node path, so any node can be reached and re-anchored in any order. */
-export function pathTo(id: string): CriterionNode[] {
-  const path: CriterionNode[] = []
-  let current: string | undefined = id
-  while (current) {
-    const node = NODE_INDEX.get(current)
-    if (!node) break
-    path.unshift(node)
-    current = PARENT_OF.get(current)
-  }
-  return path
-}
-
 /** The whole tree flattened in display order, with depth, for the picker. */
 export interface FlatNode {
   node: CriterionNode
@@ -1074,11 +1061,6 @@ export const FLAT_TREE: FlatNode[] = (() => {
   CRITERION_TREE.forEach((team) => walk(team, 0))
   return out
 })()
-
-/** Every node at a level, for the "all subteams" and metric-driven listings. */
-export function nodesAtLevel(level: CriterionNode['level']): CriterionNode[] {
-  return [...NODE_INDEX.values()].filter((node) => node.level === level)
-}
 
 // ---------- where each number came from ----------
 //

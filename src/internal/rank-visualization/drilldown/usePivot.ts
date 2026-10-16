@@ -9,10 +9,18 @@
 //
 // Every dimension holds a set: one value selected means fixed, two or more means
 // that dimension is an axis of the comparison.
+//
+// Place is the exception, twice over. The five subteams drew different boundaries,
+// so a place in one criterion is not a place in another and the control only
+// offers places while every ticked criterion belongs to one subteam. And where
+// that subteam has outlines, several places are drawn as a map rather than
+// tabulated, so place never takes a table axis there.
 import { useCallback, useMemo, useState } from 'react'
 import { ANY, SCENARIO_KEYS, effectiveSlice } from './model'
 import type { CriterionNode, Facet, ScenarioKey } from './model'
 import { CRITERION_TREE, FLAT_TREE, NODE_INDEX } from './tree'
+import { hasRegionMap } from '../subteams/regionKeys'
+import type { PivotPreset } from './presets'
 
 export type Dim = 'scenario' | 'criterion' | 'place' | 'period'
 
@@ -39,8 +47,19 @@ export const LEVEL_PLURAL: Record<CriterionNode['level'], string> = {
   entity: 'measurements',
 }
 
-/** Union of the facets the ticked criteria offer, in first-seen order. */
+/** The one subteam every ticked criterion belongs to, or null where they span several. */
+export function soleTeam(nodes: CriterionNode[]): CriterionNode['team'] | null {
+  const teams = new Set(nodes.map((node) => node.team))
+  return teams.size === 1 ? nodes[0].team : null
+}
+
+/**
+ * Union of the facets the ticked criteria offer, in first-seen order. Places are
+ * only pooled within one subteam: pooled across two they would put regions nobody
+ * compared into one row of chips.
+ */
 function unionFacets(nodes: CriterionNode[], axis: 'places' | 'periods'): Facet[] {
+  if (axis === 'places' && !soleTeam(nodes)) return []
   const seen = new Map<string, Facet>()
   for (const node of nodes) {
     for (const facet of node[axis]) {
@@ -162,11 +181,18 @@ export function usePivot() {
   }
 
   const varying = (Object.keys(selection) as Dim[]).filter((dim) => selection[dim].length > 1)
-  const cells = varying.reduce((n, dim) => n * selection[dim].length, 1)
+  const team = soleTeam(selectedNodes)
+  /** Several places, and a subteam whose outlines can hold them: drawn, not tabulated. */
+  const mapped = selection.place.length > 1 && !!team && hasRegionMap(team)
+  /** The dimensions that still need a table axis once the map has taken place. */
+  const tableVarying = mapped ? varying.filter((dim) => dim !== 'place') : varying
+  const cells = tableVarying.reduce((n, dim) => n * selection[dim].length, 1)
 
   // Criterion labels are the long ones, so they take the rows by default; the swap
   // is then a real choice rather than a workaround for an arbitrary ordering.
-  const ordered = [...varying].sort((a, b) => (a === 'criterion' ? -1 : b === 'criterion' ? 1 : 0))
+  const ordered = [...tableVarying].sort((a, b) =>
+    a === 'criterion' ? -1 : b === 'criterion' ? 1 : 0,
+  )
   const axes = swapped ? [...ordered].reverse() : ordered
 
   /** How many of a node's ancestors are also ticked — its indent in the table. */
@@ -235,6 +261,50 @@ export function usePivot() {
     [axes, raw, setDim],
   )
 
+  /**
+   * Jump to a saved configuration. Every dimension is set in one batch, so the
+   * reconcile that follows the criteria sees the preset's places and periods
+   * rather than the previous selection's. Ancestors of a ticked node are opened
+   * so the tree shows what the preset chose.
+   */
+  const applyPreset = useCallback(
+    (preset: PivotPreset) => {
+      setStash({})
+      setHeldAxes(null)
+      setFilter('')
+      setSwapped(!!preset.swapped)
+      setScenarios([...preset.scenarios])
+      setPlaces(preset.places ?? [])
+      setPeriods(preset.periods ?? [])
+      const ancestors = new Set<string>()
+      for (const id of preset.criteria) {
+        let parent = FLAT_TREE.find((row) => row.node.id === id)?.parentId
+        while (parent) {
+          ancestors.add(parent)
+          parent = FLAT_TREE.find((row) => row.node.id === parent)?.parentId
+        }
+      }
+      setExpanded([...ancestors])
+      commit([...preset.criteria])
+    },
+    [commit],
+  )
+
+  /** True while the selection is exactly what the preset set, so its chip can show it. */
+  const matchesPreset = (preset: PivotPreset) => {
+    const same = (a: string[], b: string[]) =>
+      a.length === b.length && a.every((key) => b.includes(key))
+    return (
+      same(criteria, preset.criteria) &&
+      same(scenarios, preset.scenarios) &&
+      // A preset that leaves a slice unset accepts whatever single value the
+      // reconcile settled on, since it never asked for an axis there.
+      (preset.places ? same(places, preset.places) : places.length <= 1) &&
+      (preset.periods ? same(periods, preset.periods) : periods.length <= 1) &&
+      swapped === !!preset.swapped
+    )
+  }
+
   const isolated = (Object.keys(stash) as Dim[]).filter((dim) => stash[dim]?.length)
   // Held roles lapse on their own once nothing is narrowed, so there is no state
   // to clear and no way for a stale pair of axes to outlive the thing it explains.
@@ -242,6 +312,8 @@ export function usePivot() {
 
   return {
     criteria,
+    applyPreset,
+    matchesPreset,
     tickedDepth,
     isolate,
     isolated,
@@ -263,6 +335,9 @@ export function usePivot() {
     periodFacets,
     selection,
     varying,
+    tableVarying,
+    team,
+    mapped,
     axes: liveAxes,
     cells,
     swapped,

@@ -1,8 +1,7 @@
 // Scales, geometry and unit labels for the drill-down views. Kept out of
 // DrillBits.tsx so that file exports components only.
 import type { Score } from '../data'
-import { ANY } from './model'
-import type { CriterionNode, Facet, Unit } from './model'
+import type { Facet, Unit } from './model'
 
 /** Row grid: label · edge · bar · value · provenance. */
 export const DRILL_ROW_COLUMNS = '1fr 118px minmax(140px, 2fr) 104px 86px'
@@ -42,7 +41,7 @@ export function unitHeading(unit: Unit) {
     case 'score':
       return 'Score, −5…+5'
     case 'share':
-      return 'Share of days'
+      return 'Proportion of days'
     case 'acres':
       return 'Acres'
     case 'dollars':
@@ -56,17 +55,4 @@ export function unitHeading(unit: Unit) {
     default:
       return 'Qualitative ladder'
   }
-}
-
-/** Caption naming the slice a row's value came from, when the node required one. */
-export function sliceCaption(
-  node: CriterionNode,
-  slice: { place: string; period: string; defaulted: boolean },
-) {
-  if (!slice.defaulted) return undefined
-  const parts = [
-    slice.place === ANY ? null : labelOf(node.places, slice.place),
-    slice.period === ANY ? null : labelOf(node.periods, slice.period),
-  ].filter(Boolean)
-  return parts.length ? `${parts.join(' · ')} (default)` : undefined
 }

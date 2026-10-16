@@ -6,9 +6,16 @@
 // a walk up to the root and back down. Typing in the filter flattens the tree to
 // the matches, which is the direct jump.
 //
-// Scenarios, places and periods work the same way: one value selected means that
+// Scenarios and periods work the same way: one value selected means that
 // dimension is fixed, two or more means it is an axis. Nothing decides the shape
 // of the table except the selection itself.
+//
+// Place is different, because the five subteams drew different boundaries. A
+// region in one criterion is not a region in another, so places are only offered
+// while every ticked criterion belongs to one subteam; across subteams the row
+// says why it is empty. And within a subteam that has outlines, several places
+// are not a table axis at all: they are drawn, one map per scenario, with the
+// criterion down the side. A map carries the geography a column header cannot.
 //
 // The table is also a control. A column header narrows to that scenario and a row
 // label to that criterion. A cell does something else: it has no children and no
@@ -56,6 +63,9 @@ import type { CriterionNode, Facet, ScenarioKey, Unit } from '../drilldown/model
 import { NODE_INDEX } from '../drilldown/tree'
 import { CellDetail, Provenance } from '../drilldown/CellDetail'
 import { emptyReason, valueAt } from '../drilldown/cellValue'
+import { REGION_DATA_KEY } from '../subteams/regionKeys'
+import { RegionValues } from '../subteams/RegionValues'
+import { PIVOT_PRESETS } from '../drilldown/presets'
 import { DIM_LABEL, DIM_PLURAL, LEVEL_PLURAL, MAX_AXES, usePivot } from '../drilldown/usePivot'
 import type { Dim, Pivot } from '../drilldown/usePivot'
 
@@ -92,6 +102,7 @@ export default function PivotTable() {
         controls={<Controls pivot={pivot} />}
         view={
           <>
+            <Story pivot={pivot} />
             {/* Everything above the table is height-stable. The sentence rewraps and
                 the narrowing bar comes and goes, and either one shifting the grid
                 down undoes the continuity the click gestures are built on. */}
@@ -117,6 +128,7 @@ export default function PivotTable() {
  * still showing it as a single row or column.
  */
 function roleOf(pivot: Pivot, dim: Dim): string {
+  if (dim === 'place' && pivot.mapped) return 'on the map'
   const index = pivot.axes.indexOf(dim)
   if (index === 0) return 'rows'
   if (index === 1) return 'columns'
@@ -124,9 +136,10 @@ function roleOf(pivot: Pivot, dim: Dim): string {
 }
 
 function Controls({ pivot }: { pivot: Pivot }) {
-  const tooMany = pivot.varying.length > MAX_AXES
+  const tooMany = pivot.tableVarying.length > MAX_AXES
   return (
     <ControlPanel>
+      <Presets pivot={pivot} />
       <CriterionTree pivot={pivot} />
 
       <FacetRow
@@ -154,6 +167,11 @@ function Controls({ pivot }: { pivot: Pivot }) {
         onToggle={pivot.togglePlace}
         onAll={pivot.setAllPlaces}
         role={roleOf(pivot, 'place')}
+        why={
+          pivot.team
+            ? undefined
+            : 'The subteams drew different boundaries, so places compare within one subteam only.'
+        }
       />
       <SliceDimension
         dim="period"
@@ -174,6 +192,82 @@ function Controls({ pivot }: { pivot: Pivot }) {
         </FacetRow>
       )}
     </ControlPanel>
+  )
+}
+
+/**
+ * Saved configurations, each a finding. The chips only choose; the finding
+ * itself is told beside the result, where the reader is looking.
+ */
+function Presets({ pivot }: { pivot: Pivot }) {
+  const active = PIVOT_PRESETS.find((preset) => pivot.matchesPreset(preset))
+  return (
+    <FacetRow
+      label="Presets"
+      status={active ? `${activeIndex(pivot) + 1} of ${PIVOT_PRESETS.length}` : 'custom'}
+    >
+      {PIVOT_PRESETS.map((preset) => (
+        <Chip
+          key={preset.key}
+          label={preset.label}
+          title={preset.finding}
+          picked={active?.key === preset.key}
+          onClick={() => pivot.applyPreset(preset)}
+        />
+      ))}
+    </FacetRow>
+  )
+}
+
+function activeIndex(pivot: Pivot): number {
+  return PIVOT_PRESETS.findIndex((preset) => pivot.matchesPreset(preset))
+}
+
+/**
+ * The finding, told above the result like a caption in a data story: a running
+ * number, the title, the sentence, and a way to the next one. It exists only while
+ * the view is a preset; edit anything and it goes, because the view is no longer
+ * the finding.
+ */
+function Story({ pivot }: { pivot: Pivot }) {
+  const index = activeIndex(pivot)
+  if (index < 0) return null
+  const preset = PIVOT_PRESETS[index]
+  const prev = PIVOT_PRESETS[index - 1]
+  const next = PIVOT_PRESETS[index + 1]
+  return (
+    <Box
+      sx={(theme) => ({
+        display: 'grid',
+        gap: 1,
+        pb: theme.jtSpacing.component.md,
+        mb: theme.jtSpacing.component.sm,
+        borderBottom: 1,
+        borderColor: 'border.default',
+      })}
+    >
+      <Box
+        sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 1 }}
+      >
+        <Typography variant="eyebrow">
+          Finding {index + 1} of {PIVOT_PRESETS.length}
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Mini
+            label="← previous"
+            onClick={() => prev && pivot.applyPreset(prev)}
+            disabled={!prev}
+          />
+          <Mini label="next →" onClick={() => next && pivot.applyPreset(next)} disabled={!next} />
+        </Box>
+      </Box>
+      <Typography variant="h4" component="h3" sx={{ color: 'common.white' }}>
+        {preset.label}
+      </Typography>
+      <Typography variant="body1" sx={{ maxWidth: '62ch', color: 'base.50' }}>
+        {preset.finding}
+      </Typography>
+    </Box>
   )
 }
 
@@ -344,6 +438,7 @@ function SliceDimension({
   onToggle,
   onAll,
   role,
+  why,
 }: {
   dim: Dim
   facets: Facet[]
@@ -351,12 +446,18 @@ function SliceDimension({
   onToggle: (key: string) => void
   onAll: (all: boolean) => void
   role: string
+  /** A reason the row is empty that is not "nothing measured here". */
+  why?: string
 }) {
   if (facets.length === 0) {
     return (
-      <FacetRow label={DIM_LABEL[dim]} inert status="not broken out">
+      <FacetRow
+        label={DIM_LABEL[dim]}
+        inert
+        status={why ? 'one subteam at a time' : 'not broken out'}
+      >
         <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-          The selected criteria do not use this breakdown.
+          {why ?? 'The selected criteria do not use this breakdown.'}
         </Typography>
       </FacetRow>
     )
@@ -376,11 +477,23 @@ function SliceDimension({
   )
 }
 
-function Chip({ label, picked, onClick }: { label: string; picked: boolean; onClick: () => void }) {
+function Chip({
+  label,
+  picked,
+  onClick,
+  title,
+}: {
+  label: string
+  picked: boolean
+  onClick: () => void
+  /** Shown on hover, for a chip whose label cannot say what it does. */
+  title?: string
+}) {
   return (
     <ButtonBase
       onClick={onClick}
       aria-pressed={picked}
+      title={title}
       sx={{
         typography: 'controlLabel',
         px: 1.1,
@@ -409,11 +522,21 @@ function AllOne({ onAll, onOne }: { onAll: () => void; onOne: () => void }) {
   )
 }
 
-function Mini({ label, onClick }: { label: string; onClick: () => void }) {
+function Mini({
+  label,
+  onClick,
+  disabled = false,
+}: {
+  label: string
+  onClick: () => void
+  disabled?: boolean
+}) {
   return (
     <ButtonBase
       onClick={onClick}
+      disabled={disabled}
       sx={{
+        opacity: disabled ? 0.35 : 1,
         typography: 'chartAxis',
         px: 0.75,
         py: 0.4,
@@ -568,9 +691,75 @@ function coverageNote(node: CriterionNode | undefined, colDim: Dim, colKeys: str
  * two-dimensional form at all; too many cells merely needs scrolling.
  */
 function Result({ pivot }: { pivot: Pivot }) {
-  if (pivot.varying.length > MAX_AXES) return <TooManyAxes pivot={pivot} />
+  if (pivot.tableVarying.length > MAX_AXES) return <TooManyAxes pivot={pivot} />
+  if (pivot.mapped) return <MapRows pivot={pivot} />
   if (pivot.axes.length === 2) return <Matrix pivot={pivot} />
   return <Listing pivot={pivot} />
+}
+
+/**
+ * Several places within one subteam, drawn rather than tabulated: one row per
+ * ticked criterion, one map per scenario, the period held fixed. Regions the
+ * reader left unticked stay in the frame as dashed outlines, so the map does
+ * not change shape as the selection does.
+ */
+function MapRows({ pivot }: { pivot: Pivot }) {
+  const team = pivot.team!
+  const keyOf = REGION_DATA_KEY[team] ?? {}
+  const scenarios = pivot.selection.scenario as ScenarioKey[]
+  const period = pivot.selection.period[0]
+  const picked = new Set(pivot.places)
+  const nodes = pivot.selectedNodes
+  // A parent declares the facets its children fill, so having places is not the
+  // same as holding a value at one. Only nodes with something to draw get a row.
+  const placed = nodes.filter((node) =>
+    node.places.some(
+      (facet) =>
+        facet.key !== ANY &&
+        picked.has(facet.key) &&
+        scenarios.some(
+          (scenario) =>
+            valueAt({ criterion: node.id, scenario, place: facet.key, period }).value !== null,
+        ),
+    ),
+  )
+  const unplaced = nodes.filter((node) => !placed.includes(node))
+  return (
+    <Box sx={(theme) => ({ display: 'grid', rowGap: theme.jtSpacing.component.lg })}>
+      {placed.map((node) => (
+        <Box key={node.id} sx={{ display: 'grid', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+            <TeamMark team={node.team} />
+            <Typography variant="chartTitle" component="div">
+              {node.label}
+            </Typography>
+          </Box>
+          <RegionValues
+            team={team}
+            scenarios={scenarios}
+            coordsFor={(region, scenario) => {
+              const place = keyOf[region]
+              return place && picked.has(place)
+                ? { criterion: node.id, scenario, place, period }
+                : null
+            }}
+            unitLabel={unitHeading(node.unit)}
+            changeToggle={!isSigned(node)}
+          />
+        </Box>
+      ))}
+      {unplaced.length > 0 && (
+        <Typography variant="body2" sx={{ maxWidth: '68ch' }}>
+          {placed.length > 0 ? 'Also selected, but with nothing to draw: ' : 'Nothing to draw: '}
+          {unplaced
+            .map((node) => `${node.label} (${emptyReason('criterion', node.id)})`)
+            .join('; ')}
+          .
+        </Typography>
+      )}
+      <ViewNote below>{nodes.length === 1 ? nodes[0].note : undefined}</ViewNote>
+    </Box>
+  )
 }
 
 /** Three dimensions varying has no honest two-dimensional form; offer the way out. */
@@ -589,12 +778,12 @@ function TooManyAxes({ pivot }: { pivot: Pivot }) {
       })}
     >
       <Typography variant="body2" sx={{ maxWidth: '62ch' }}>
-        {pivot.varying.length} things vary:{' '}
-        {pivot.varying.map((dim) => DIM_LABEL[dim].toLowerCase()).join(', ')}. Because a table has
-        two axes, narrow one of these to a single choice.
+        {pivot.tableVarying.length} things vary:{' '}
+        {pivot.tableVarying.map((dim) => DIM_LABEL[dim].toLowerCase()).join(', ')}. Because a table
+        has two axes, narrow one of these to a single choice.
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-        {pivot.varying.map((dim) => (
+        {pivot.tableVarying.map((dim) => (
           <Chip
             key={dim}
             label={`Narrow ${DIM_LABEL[dim].toLowerCase()}`}
@@ -1035,7 +1224,10 @@ function HeatCell({
   /** Marks the value with the page's asterisk: our number, not the subteam's. */
   inferred?: boolean
 }) {
-  const span = unit === 'share' ? 1 : max || 1
+  // Shade against the block's own largest value, proportions included. The number
+  // carries the absolute reading; the shade is there so a pattern across the
+  // block shows, and on a 0…100% scale a 5%-against-50% contrast would not.
+  const span = max || 1
   const strength = value === null ? 0 : Math.min(1, Math.abs(value) / span)
   /**
    * A measurement that is a change against Business as Usual gets the score's own

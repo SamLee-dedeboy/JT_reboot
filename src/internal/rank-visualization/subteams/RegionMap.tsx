@@ -1,127 +1,63 @@
-// How each subteam cut up the same estuary.
+// The outline each subteam drew, with the other subteams' behind it.
 //
-// The comparison only works if every team is drawn in one frame, so all four stay
-// on screen and the active one comes forward while the others drop to a hairline.
-// Switching subteams then reads as the boundaries moving rather than as four
-// separate maps, which is the finding: five teams, five defensible ways of
-// dividing the Delta, almost none of them coincident.
-//
-// Eco-cultural has no outline here. Its geography is historic Tribal territory and
-// specific cultural-practice sites are deliberately not mapped, so the panel says
-// that rather than drawing a shape nobody agreed to publish.
-//
-// THE OUTLINES ARE NOT JOINED TO THE NUMBERS. The shapefile's region names do not
-// match the keys the data arrays use (regionShapes.ts lists every gap), so this is
-// a comparison layer beside the values, not a lookup onto them. Only EJ's three
-// vulnerability classes line up exactly; see TODO.md before plotting values here.
+// Four teams published a geography: Ecology's estuarine subregions, Recreation's
+// four regions, EJ's vulnerability classes and Economy's water-agency zones. They
+// do not line up, and the disagreement is a finding, so the map always shows all
+// four and brings the active team's forward. Eco-cultural has no outline and says
+// why. Colour here is deliberately neutral: this page keeps hue for values.
 import { Box, Typography, useTheme } from '@mui/material'
 import { TEAMS } from '../data'
 import type { TeamKey } from '../data'
 import { TeamMark } from '../drilldown/DrillBits'
-import { useTeams } from '../components/teamPalette'
 import { REGION_SHAPES, REGION_VIEWBOX, WATERWAY_PATH } from './regionShapes'
 import type { RegionShape } from './regionShapes'
 
 const TEAM_ORDER: TeamKey[] = ['ecology', 'recreation', 'environmentalJustice', 'economy']
 
-export function RegionMap({ active }: { active: TeamKey }) {
-  const teams = useTeams()
-  const colorOf = (team: TeamKey) => teams.find((entry) => entry.key === team)?.color ?? ''
+export function RegionMap({ active, labels = true }: { active: TeamKey; labels?: boolean }) {
+  const theme = useTheme()
   const mine = REGION_SHAPES.filter((shape) => shape.team === active)
   const others = TEAM_ORDER.filter((team) => team !== active)
 
   if (mine.length === 0) return <NoOutline active={active} />
 
   return (
-    <Box sx={{ display: 'grid', gap: 1 }}>
-      <Box
-        component="svg"
-        viewBox={`0 0 ${REGION_VIEWBOX.width} ${REGION_VIEWBOX.height}`}
-        role="img"
-        aria-label={`Delta regions drawn using ${TEAMS.find((t) => t.key === active)?.name} boundaries, with other subteam boundaries behind them`}
-        sx={{ width: '100%', maxWidth: 420, height: 'auto', display: 'block' }}
-      >
-        <path d={WATERWAY_PATH} fill="currentColor" opacity={0.1} />
+    <Box
+      component="svg"
+      viewBox={`0 0 ${REGION_VIEWBOX.width} ${REGION_VIEWBOX.height}`}
+      role="img"
+      aria-label={`Delta regions drawn using ${TEAMS.find((t) => t.key === active)?.name} boundaries, with other subteam boundaries behind them`}
+      sx={{ width: '100%', maxWidth: 420, height: 'auto', display: 'block' }}
+    >
+      <path d={WATERWAY_PATH} fill="currentColor" opacity={0.1} />
 
-        {/* Everyone else, as hairlines, so the active cut is read against them. */}
-        {others.map((team) =>
-          REGION_SHAPES.filter((shape) => shape.team === team).map((shape, i) => (
-            <path
-              key={`${team}-${i}`}
-              d={shape.d}
-              fill="none"
-              stroke={colorOf(team)}
-              strokeWidth={2.2}
-              strokeDasharray="6 5"
-              opacity={0.55}
-            />
-          )),
-        )}
-
-        {mine.map((shape, i) => (
+      {/* Everyone else, as dashed hairlines, so the active cut is read against them. */}
+      {others.map((team) =>
+        REGION_SHAPES.filter((shape) => shape.team === team).map((shape, i) => (
           <path
-            key={`${active}-${i}`}
+            key={`${team}-${i}`}
             d={shape.d}
-            fill={colorOf(active)}
-            fillOpacity={0.16}
-            stroke={colorOf(active)}
-            strokeWidth={3}
-            strokeLinejoin="round"
+            fill="none"
+            stroke={theme.palette.base[400]}
+            strokeWidth={2}
+            strokeDasharray="6 5"
           />
-        ))}
+        )),
+      )}
 
-        {mine.map((shape, i) => (
-          <Label key={`label-${active}-${i}`} shape={shape} />
-        ))}
-      </Box>
-
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.25 }}>
-        {TEAM_ORDER.map((team) => (
-          <Box key={team} sx={{ display: 'flex', alignItems: 'center', gap: 0.4 }}>
-            <Box
-              sx={{
-                width: 14,
-                height: 3,
-                borderRadius: 2,
-                bgcolor: colorOf(team),
-                opacity: team === active ? 1 : 0.4,
-              }}
-            />
-            <Typography
-              variant="chartAxis"
-              sx={{ color: team === active ? 'base.50' : 'base.300' }}
-            >
-              {TEAMS.find((entry) => entry.key === team)?.name}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-    </Box>
-  )
-}
-
-/** Named regions for the active team, so the outline has labels to read against. */
-export function RegionList({ active }: { active: TeamKey }) {
-  const names = REGION_SHAPES.filter((shape) => shape.team === active).map((shape) => shape.name)
-  if (names.length === 0) return null
-  return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-      {names.map((name) => (
-        <Typography
-          key={name}
-          variant="chartAxis"
-          sx={{
-            px: 0.8,
-            py: 0.3,
-            borderRadius: 999,
-            border: 1,
-            borderColor: 'border.default',
-            color: 'base.100',
-          }}
-        >
-          {name}
-        </Typography>
+      {mine.map((shape, i) => (
+        <path
+          key={`${active}-${i}`}
+          d={shape.d}
+          fill={theme.palette.base[50]}
+          fillOpacity={0.12}
+          stroke={theme.palette.base[50]}
+          strokeWidth={3}
+          strokeLinejoin="round"
+        />
       ))}
+
+      {labels && mine.map((shape, i) => <Label key={`label-${active}-${i}`} shape={shape} />)}
     </Box>
   )
 }
@@ -134,13 +70,14 @@ function NoOutline({ active }: { active: TeamKey }) {
         gap: 0.75,
         p: theme.jtSpacing.component.md,
         maxWidth: 420,
+        alignContent: 'start',
         borderRadius: 1,
         border: 1,
         borderStyle: 'dashed',
         borderColor: 'border.default',
       })}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
         <TeamMark team={active} size={13} />
         <Typography variant="chartLabel">No boundary to draw</Typography>
       </Box>
@@ -166,11 +103,11 @@ function splitName(name: string): string[] {
 }
 
 /** The region's name, set inside its fattest part with a dark halo so it reads over any fill. */
-function Label({ shape }: { shape: RegionShape }) {
+export function Label({ shape, size = LABEL_SIZE }: { shape: RegionShape; size?: number }) {
   const theme = useTheme()
   const [x, y] = shape.label
   const lines = splitName(shape.name)
-  const first = lines.length === 1 ? 0 : -LABEL_SIZE * 0.6
+  const first = lines.length === 1 ? 0 : -size * 0.6
   return (
     <text
       x={x}
@@ -178,16 +115,16 @@ function Label({ shape }: { shape: RegionShape }) {
       textAnchor="middle"
       dominantBaseline="middle"
       fontFamily={theme.typography.fontFamily}
-      fontSize={LABEL_SIZE}
+      fontSize={size}
       fill={theme.palette.base[50]}
       stroke={theme.palette.base[900]}
-      strokeWidth={5}
+      strokeWidth={size / 4}
       strokeLinejoin="round"
       paintOrder="stroke"
       pointerEvents="none"
     >
       {lines.map((line, i) => (
-        <tspan key={i} x={x} dy={i === 0 ? first : LABEL_SIZE * 1.15}>
+        <tspan key={i} x={x} dy={i === 0 ? first : size * 1.15}>
           {line}
         </tspan>
       ))}

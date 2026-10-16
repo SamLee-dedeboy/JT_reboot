@@ -1,4 +1,4 @@
-// Eco-cultural's middle: one quantity, and three things that are not quantities.
+// Eco-cultural's evidence: one quantity, and three things that are not quantities.
 //
 // This is the criterion that most resists the shape of the other four. Only metric
 // A produces acres; B, C and D are described because the subteam judged them not
@@ -11,7 +11,8 @@
 // before it is published anywhere.
 import { Box, Typography } from '@mui/material'
 import { SUBTEAM_PROFILES } from './profiles'
-import { Panel, SubteamPage } from './SubteamFrame'
+import { Legend, Panel, RowHead, SubteamPage } from './SubteamFrame'
+import { AcreStrip, MetricCards } from './aids'
 
 /** Restored acres under New Green Watershed's 50/50 case, as published. */
 const IN_DELTA = [
@@ -74,16 +75,58 @@ const SOVEREIGNTY = [
   'Data sovereignty under CARE',
 ]
 
+const acres = (value: number) => `${value.toLocaleString('en-US')} ac`
+
 export default function EcoCulturalView() {
   const inDeltaTotal = IN_DELTA.reduce((sum, row) => sum + row.acres, 0)
   const uplandLow = UPLAND.reduce((sum, row) => sum + row.low, 0)
   const uplandHigh = UPLAND.reduce((sum, row) => sum + row.high, 0)
 
   return (
-    <SubteamPage profile={SUBTEAM_PROFILES.ecoCultural}>
+    <SubteamPage
+      profile={SUBTEAM_PROFILES.ecoCultural}
+      aidWide
+      aid={
+        <Box sx={{ display: 'grid', gap: 2.5 }}>
+          <MetricCards
+            metrics={[
+              {
+                label: 'A. Restored habitat',
+                counted: true,
+                items: [
+                  'In the Delta: managed wetland, wet-soil agriculture (rice), tidal wetland',
+                  'In the upper watershed: managed wetland, meadow, floodplain',
+                ],
+              },
+              {
+                label: 'B. Access to landscapes',
+                counted: false,
+              },
+              {
+                label: 'C. Indigenous science and TEK',
+                counted: false,
+              },
+              {
+                label: 'D. Sovereignty and governance',
+                counted: false,
+              },
+            ]}
+          />
+          <AcreStrip
+            types={[
+              {
+                group: 'In the Delta',
+                names: 'managed wetland, wet-soil agriculture (rice), tidal wetland',
+              },
+              { group: 'In the upper watershed', names: 'managed wetland, meadow, floodplain' },
+            ]}
+          />
+        </Box>
+      }
+    >
       <Panel
-        title="Metric A, the one that is counted"
-        note="This shows restored acres under the New Green Watershed 50/50 case. The in-Delta values are published as totals, while the upland values are ranges, so a single upland value reflects a chosen sub-scenario rather than one measurement."
+        title="Restored habitat, the one metric with a number"
+        intro="**Acres restored** under New Green Watershed’s 50/50 case. The in-Delta figures are **totals**. The upland figures are **ranges**, because nine upland sub-scenarios sit inside them; a single upland value would reflect a chosen sub-scenario rather than one measurement. The comparison page uses the **low end**, the minimal-restoration case."
       >
         <Box
           sx={(theme) => ({
@@ -92,19 +135,19 @@ export default function EcoCulturalView() {
             gap: theme.jtSpacing.gap.lg,
           })}
         >
-          <Box sx={{ display: 'grid', gap: 0.5, alignContent: 'start' }}>
-            <Typography variant="chartColumnHead">
-              In-Delta · {inDeltaTotal.toLocaleString('en-US')} ac
+          <Box sx={{ display: 'grid', gap: 0.75, alignContent: 'start' }}>
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              <Box component="strong">In-Delta, {acres(inDeltaTotal)} in total</Box>
             </Typography>
             {IN_DELTA.map((row) => (
-              <Box key={row.label} sx={{ display: 'grid', gap: 0.3 }}>
+              <Box key={row.label} sx={{ display: 'grid', gap: 0.4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
-                  <Typography variant="chartAxis">{row.label}</Typography>
-                  <Typography variant="chartValue">
-                    {row.acres.toLocaleString('en-US')} ac
+                  <RowHead>{row.label}</RowHead>
+                  <Typography variant="body2" sx={{ color: 'base.50' }}>
+                    <Box component="strong">{acres(row.acres)}</Box>
                   </Typography>
                 </Box>
-                <Box sx={{ height: 8, bgcolor: 'translucent.100', borderRadius: 0.4 }}>
+                <Box sx={{ height: 10, bgcolor: 'translucent.100', borderRadius: 0.4 }}>
                   <Box
                     sx={{
                       height: '100%',
@@ -118,23 +161,24 @@ export default function EcoCulturalView() {
             ))}
           </Box>
 
-          <Box sx={{ display: 'grid', gap: 0.5, alignContent: 'start' }}>
-            <Typography variant="chartColumnHead">
-              Upper watershed · {uplandLow.toLocaleString('en-US')} to{' '}
-              {uplandHigh.toLocaleString('en-US')} ac
+          <Box sx={{ display: 'grid', gap: 0.75, alignContent: 'start' }}>
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              <Box component="strong">
+                Upper watershed, {acres(uplandLow)} to {acres(uplandHigh)} in total
+              </Box>
             </Typography>
             {UPLAND.map((row) => (
-              <Box key={row.label} sx={{ display: 'grid', gap: 0.3 }}>
+              <Box key={row.label} sx={{ display: 'grid', gap: 0.4 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1 }}>
-                  <Typography variant="chartAxis">{row.label}</Typography>
-                  <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-                    {row.low.toLocaleString('en-US')} to {row.high.toLocaleString('en-US')}
+                  <RowHead>{row.label}</RowHead>
+                  <Typography variant="body2" sx={{ color: 'base.50' }}>
+                    {row.low.toLocaleString('en-US')} to {acres(row.high)}
                   </Typography>
                 </Box>
                 <Box
                   sx={{
                     position: 'relative',
-                    height: 8,
+                    height: 10,
                     bgcolor: 'translucent.100',
                     borderRadius: 0.4,
                   }}
@@ -153,17 +197,17 @@ export default function EcoCulturalView() {
                 </Box>
               </Box>
             ))}
-            <Typography variant="chartAxis" sx={{ color: 'base.300', mt: 0.3 }}>
-              Nine upland sub-scenarios sit inside those ranges. The comparison page shows the low
-              end, which is the minimal-restoration case.
-            </Typography>
           </Box>
         </Box>
+        <Legend
+          items={[{ swatch: 'salinity.teal', label: 'Acres restored' }]}
+          note="A solid bar is a published total; a paler band is the range between the lightest and heaviest sub-scenario."
+        />
       </Panel>
 
       <Panel
-        title="Metric B, access to landscapes"
-        note="The subteam ranked these options from strongest to weakest. It also identified which agreements remain in force when the land changes owners."
+        title="Access to landscapes, from strongest to weakest"
+        intro="The team’s second metric is ==not a quantity but a ranking== of the agreements that give a Tribe access to land. It also identified which of them **remain in force when the land changes owners**."
       >
         <Box sx={{ display: 'grid', gap: 0.5 }}>
           {ACCESS_LADDER.map((rung, i) => (
@@ -171,18 +215,20 @@ export default function EcoCulturalView() {
               key={rung.label}
               sx={{
                 display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: '28px 240px 1fr' },
+                gridTemplateColumns: { xs: '1fr', sm: '32px 260px 1fr' },
                 gap: 1,
                 alignItems: 'baseline',
-                py: 0.6,
+                py: 0.75,
                 borderTop: i === 0 ? 0 : 1,
                 borderColor: 'border.default',
               }}
             >
-              <Typography variant="chartValue" sx={{ color: 'base.300' }}>
-                {i + 1}
+              <Typography variant="body2" sx={{ color: 'base.100' }}>
+                <Box component="strong">{i + 1}</Box>
               </Typography>
-              <Typography variant="chartLabel">{rung.label}</Typography>
+              <Typography variant="body2" sx={{ color: 'base.50' }}>
+                <Box component="strong">{rung.label}</Box>
+              </Typography>
               <Typography variant="body2" sx={{ color: 'base.100' }}>
                 {rung.note}
               </Typography>
@@ -192,8 +238,8 @@ export default function EcoCulturalView() {
       </Panel>
 
       <Panel
-        title="Metrics C and D, conditions and mechanisms"
-        note="These metrics describe conditions that make the work possible, not outcomes. No scenario receives a score for them. Material from workshops needs Tribal review before publication. Specific cultural-practice sites are deliberately not mapped."
+        title="What Indigenous science needs, and what sovereignty looks like"
+        intro="The third and fourth metrics describe **conditions that make the work possible, not outcomes**, so ==no scenario receives a score== for them. Material from workshops needs Tribal review before publication, and specific cultural-practice sites are deliberately not mapped."
       >
         <Box
           sx={(theme) => ({
@@ -202,19 +248,25 @@ export default function EcoCulturalView() {
             gap: theme.jtSpacing.gap.lg,
           })}
         >
-          <Box sx={{ display: 'grid', gap: 0.75, alignContent: 'start' }}>
-            <Typography variant="chartColumnHead">Indigenous science and TEK</Typography>
+          <Box sx={{ display: 'grid', gap: 1, alignContent: 'start' }}>
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              <Box component="strong">Conditions for Indigenous science and TEK</Box>
+            </Typography>
             {TEK_CONDITIONS.map((item) => (
               <Box key={item.label} sx={{ display: 'grid', gap: 0.2 }}>
-                <Typography variant="chartLabel">{item.label}</Typography>
+                <Typography variant="body2" sx={{ color: 'base.50' }}>
+                  {item.label}
+                </Typography>
                 <Typography variant="body2" sx={{ color: 'base.100' }}>
                   {item.note}
                 </Typography>
               </Box>
             ))}
           </Box>
-          <Box sx={{ display: 'grid', gap: 0.4, alignContent: 'start' }}>
-            <Typography variant="chartColumnHead">Sovereignty and governance</Typography>
+          <Box sx={{ display: 'grid', gap: 0.5, alignContent: 'start' }}>
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              <Box component="strong">Sovereignty and governance</Box>
+            </Typography>
             {SOVEREIGNTY.map((item) => (
               <Typography key={item} variant="body2" sx={{ color: 'base.100' }}>
                 {item}
