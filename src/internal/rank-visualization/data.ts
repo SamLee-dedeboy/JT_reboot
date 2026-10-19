@@ -63,9 +63,9 @@ export const SCENARIOS: Scenario[] = [
   {
     // Ecology: landscape +5 and food web +4 (NGW2). EJ: the only scenario above 0.
     // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
-    // Recreation*: marginally worse than today on every salinity/temperature
-    // threshold (mean +1.2 percentage points of exceedance), while winning on its
-    // unscored restoration metric.
+    // Recreation*: −1 for every salinity activity bar day use and boating (0); the
+    // mean of its four activity scores, which the subteam now publishes by region
+    // and season (18 Oct 2026 workbooks). Wins on its unscored restoration metric.
     name: 'New Green Watershed',
     color: voting.scenario.newGreenWatershed,
     scores: [4.5, -1, 1, -4, 4],
@@ -74,14 +74,14 @@ export const SCENARIOS: Scenario[] = [
   {
     // Ecology: landscape +3, food web +1. EJ fell from +1 to 0 when the Oct 2026
     // slides dropped the two seasonal drinking-water scores from its average.
-    // Recreation*: the same marginal loss on thresholds as NGW.
+    // Recreation*: the same activity scores as NGW, so the same mean.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
     scores: [2, -1, 0, 0, 2],
     provisional: [true, true, false, false, false],
   },
   {
-    // Recreation*: tracks Business as Usual exactly on all five activities.
+    // Recreation*: 0 on every activity, Delta-wide.
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
     scores: [0, 0, 0, -1, 0],
@@ -89,24 +89,25 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     // Economy scores this 0 in the dry year and +1 in the wet; the app takes 0.
-    // Recreation*: clearly worst of the five scenarios measured, on every activity.
+    // Recreation*: −2 on three activities and −4 on angling, mean −2.5; second
+    // worst after A Tunnel.
     // EJ*: now "pending" for want of a water-age result; −1 is the mean of the two
     // metrics it has (drinking water −2, flood risk 0), which is also what the
     // Sept report published.
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [0, -3, -1, 0, 1],
+    scores: [0, -2.5, -1, 0, 1],
     provisional: [true, true, true, false, false],
   },
   {
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
     // withdrew the drinking-water numbers the Sept report published for it.
-    // Recreation*: "performed the worst of all six scenarios"; absent from every
-    // slide table. EJ*: mean of the four metric scores the Sept report gave
+    // Recreation*: now measured, −4 on three activities and −5 on angling, mean −4;
+    // worst of the six. EJ*: mean of the four metric scores the Sept report gave
     // (−3, −5, 0, +1). Economy*: salinity moves gross revenue by < 0.01%.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0, -3, -2, 0, -2],
+    scores: [0, -4, -2, 0, -2],
     provisional: [true, true, true, true, false],
   },
   {

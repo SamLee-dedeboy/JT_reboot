@@ -107,7 +107,7 @@ export function LimitDays() {
           over all squares
         </>
       }
-      scale="The team did this for 793 days at 32 points, for five activities, and reports it for the whole run, the summer and the winter."
+      scale="The team did this for 793 days at 32 points, for four activities, and reports it by region for the whole run, the wet seasons and the dry seasons."
     />
   )
 }

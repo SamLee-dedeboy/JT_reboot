@@ -35,8 +35,10 @@ Both are preliminary: the numbers move, the stories are settled.
 - [x] Eco-cultural upland restoration rebased (montane forests dropped)
 - [x] Economy zone-level value added added to the tree; scores unchanged
 - [x] Ecology scores unchanged; species metric is now ranked per species
-- [ ] Ask Recreation to confirm the derived column, or publish its own score — this is
-      the largest single change and it reverses the previous reading
+- [x] Recreation now publishes a −5…+5 score per activity, region and season (Isaac's
+      18 Oct 2026 workbooks); the criterion column is the mean of the four salinity
+      activity scores: B&F 0, Eco Machine −1, NGW −1, COR −2.5, A Tunnel −4. Still
+      ours at the criterion level; ask whether they want that mean or something else
 - [ ] Ask EJ whether dropping the seasonal drinking-water scores was intended; it is the
       only reason Eco Machine moved
 - [ ] Ecology's slide ranks use a Feb 1 – Jun 1 window; `ecologyNiche.ts` holds the
@@ -340,14 +342,39 @@ Both are preliminary: the numbers move, the stories are settled.
 The by-subteam map draws `subteam_regions.shp` (Yun-Hsin, Oct 2026) as a comparison
 layer. Its names are **not** the keys the values sit under, so nothing is joined yet:
 
-| Team         | Shapefile                                           | Data keys                                                                | Lines up                  |
-| ------------ | --------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------- |
-| Ecology      | Suisun Bay, Suisun Marsh, Confluence, Central, N, S | 8 `ECOLOGY_REGIONS` incl. South/Central/San Pablo Bay                    | 5 of 8 (Marsh has no key) |
-| Recreation   | Suisun Bay, Confluence, North, South                | suisunMarsh, centralDelta, northDelta, southDelta — not stored per place | nothing to plot           |
-| EJ           | Moderate, High, Highest                             | the three drinking-water classes                                         | **all 3, exactly**        |
-| Economy      | North, Central, South Delta Water Agency            | north, central, south, west                                              | 3 of 4 (no West Delta)    |
-| Eco-cultural | absent by design                                    | inDelta, upper                                                           | n/a                       |
+| Team         | Shapefile                                           | Data keys                                                       | Lines up                             |
+| ------------ | --------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------ |
+| Ecology      | Suisun Bay, Suisun Marsh, Confluence, Central, N, S | 8 `ECOLOGY_REGIONS` incl. South/Central/San Pablo Bay           | 5 of 8 (Marsh has no key)            |
+| Recreation   | Suisun Bay, Confluence, North, South                | suisun, centralDelta, northDelta, southDelta (18 Oct workbooks) | 4 of 4 if Confluence = Central Delta |
+| EJ           | Moderate, High, Highest                             | the three drinking-water classes                                | **all 3, exactly**                   |
+| Economy      | North, Central, South Delta Water Agency            | north, central, south, west                                     | 3 of 4 (no West Delta)               |
+| Eco-cultural | absent by design                                    | inDelta, upper                                                  | n/a                                  |
 
 - [ ] Ask Yun-Hsin for: West Delta; EJ's 5 water-age hotspots; Ecology's three bay regions;
       and which shapefile name maps to which data key.
 - [ ] Regenerate with `python3 scripts/build-subteam-regions.py` after the shapefile changes.
+
+## Recreation data drop — 19 Oct 2026
+
+Isaac Sanchez's "Activity Blind Data Recreation" (18 Oct): eight workbooks, copied to
+`research/criteria-stories/Recreation/data-2026-10-18/` (untracked). Loaded into the
+page via `scripts/build-recreation-thresholds.py` → `drilldown/recreationThresholds.ts`:
+
+- **RMA Salinity**: per activity (day use & boating, birding, waterfowl, angling) a −5…+5
+  score and the % of days over threshold, by region (Delta-wide, Suisun, Central, North,
+  South) and period (whole run, wet, dry), all six scenarios including A Tunnel. In the
+  tree as `rec-salinity` → activity → `…-days`.
+- **RMA Temperature**: same shape, five activity rows (cold-water day use added), four
+  scenarios; COR and A Tunnel pending. In the tree as `rec-temperature`, beside the score.
+- **Not loaded**: the SLR salinity/temperature pair (sea-level-rise variants of four
+  scenarios, a different baseline) and the tiered-outflow pair (excluded by decision).
+- **Not loaded, under discussion**: "NGW – In Delta Land Uses" values ecosystem benefits
+  per island in $/acre/yr for three restoration sub-scenarios. Jeff Jenkins (18 Oct)
+  questions the Suisun Marsh figure (one total across categories, low for its acreage);
+  Isaac flags a ~150-acre gap against BDSC slide 56 for Brett to rule on. Hold until
+  the thread settles.
+- [ ] Confirm the shapefile's "Confluence" is the workbook's Central Delta (nine stations,
+      Pittsburg to Franks Tract). `subteams/regionKeys.ts` assumes it.
+- [ ] `RecreationView` still draws the Oct slides' summer/winter activity table from its
+      own hard-coded arrays; move it onto `rec-salinity-*` (whole run / wet / dry).
+- [ ] Rerun the generator when Isaac sends the pending temperature runs or revised data.

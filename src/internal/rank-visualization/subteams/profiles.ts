@@ -139,26 +139,26 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       'The subteam studied how **salinity and water temperature** affect the **number and timing of visitors** to water-dependent recreation, measuring these effects at parks and wildlife reserves across four Delta regions.',
     measured: 'Days over an activity’s limit',
     measuredNote:
-      'The team took daily salinity and temperature at ==32 points== for **793 days**. For each of **five activities** it set a **limit** above which the water is no longer suitable, then counted the **proportion of days over that limit**. Salinity is given in **µS/cm**, a measure of how salty water is: higher is saltier, and the drinking-water threshold used elsewhere on this site is 1,050 µS/cm. A higher proportion means more days lost, so **lower is better**.',
-    reaches: 'nothing yet',
+      'The team took daily salinity and temperature at ==32 points== for **793 days**. For each of **four activities** (day use and boating share a limit) it set a **salinity limit** above which the water is no longer suitable, then counted the **proportion of days over that limit**, with a separate temperature limit per activity. Salinity is given in **µS/cm**, a measure of how salty water is: higher is saltier, and the drinking-water threshold used elsewhere on this site is 1,050 µS/cm. A higher proportion means more days lost, so **lower is better**.',
+    reaches: 'four activity scores',
     reachesNote:
-      'The team published the proportions above but ==never turned them into a score==, so the comparison page uses a value **we inferred** for this criterion.',
+      'Since 18 Oct 2026 the team scores ==each activity itself==, by region and by season, on its own scale: one point per percentage point of days over the threshold against Business as Usual. It still publishes no criterion score, so the comparison page uses the **mean of the four salinity activity scores**, which we calculate.',
     places: {
-      count: '4 Delta regions, 32 points',
+      count: '4 Delta regions + Delta-wide, 32 points',
       regions: [
-        { name: 'West Delta', drawn: true },
-        { name: 'North Delta', drawn: true },
+        { name: 'Suisun Marsh', drawn: true },
         { name: 'Central Delta', drawn: true },
+        { name: 'North Delta', drawn: true },
         { name: 'South Delta', drawn: true },
       ],
       order: 'West to south',
       basis:
-        'The boundaries follow tidal geography, salinity and hydrological differences (Andrews et al. 2017). They also reflect regional access and roads (Delta Plan 2013) and “natural regional aesthetic and winding waterways” (Olmsted Jr. 1929). The report breaks the activity values down by region, but those regional values are not yet in this page’s data, so **the charts below are Delta-wide**.',
+        'The boundaries follow tidal geography, salinity and hydrological differences (Andrews et al. 2017). They also reflect regional access and roads (Delta Plan 2013) and “natural regional aesthetic and winding waterways” (Olmsted Jr. 1929). The team’s 18 Oct 2026 workbooks give every activity’s score and exceedance **by region**: Delta-wide, Suisun Marsh, Central Delta, North Delta and South Delta.',
     },
-    rule: 'Page 391 defines **Score −5 to 5 = 5 − 10 × (days exceeding threshold ÷ total days in that period)**, but the team **never applies the formula**, and the ranking sections below it are empty headings.',
-    ruleWhere: 'Sept report, p.391',
+    rule: 'The 18 Oct 2026 workbooks score every activity, region and season: **one point per percentage point** of days over the limit against Business as Usual, **±5 at five points or more**. The Sept report’s earlier formula (5 − 10 × the proportion of days over) was never applied.',
+    ruleWhere: 'RMA Salinity Scenarios Analyzed.xlsx, OVERALL (18 Oct 2026)',
     finding:
-      'Every scenario has ==more days over the limit in winter than in summer==. **Calling on Reserves** has the most in both seasons, except for **boating and day use**, where it is the only scenario with fewer winter days over the limit than Business as Usual.',
+      'Exceedance is concentrated in ==Suisun Marsh and the Central Delta==; the North and South Delta sit at 0% for every activity. **A Tunnel** scores worst, −2 to −5 across Suisun Marsh and the Central Delta, with **Calling on Reserves** second, while Bolster & Fortify is effectively Business as Usual. Wet seasons cross the limits more often than dry ones.',
     findings: [
       {
         label: 'Business as Usual',
@@ -182,7 +182,7 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       },
       {
         label: 'A Tunnel',
-        text: '“Performed the worst of all six scenarios in what we measured, with salinity-driven ==botulism risk lingering into January and February== when every other scenario has already cleared.” It was not published in the activity tables.',
+        text: '“Performed the worst of all six scenarios in what we measured, with salinity-driven ==botulism risk lingering into January and February== when every other scenario has already cleared.” The 18 Oct workbooks bear it out: −3 to −5 Delta-wide on every activity, and the only scenario that pushes South Delta day use and boating over the limit in wet seasons.',
       },
       {
         label: 'Two stories',
@@ -192,20 +192,16 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
     scoreboard: {
       criterion: 'recreation',
       metrics: [
-        { label: 'Overall use', id: 'rec-overall' },
-        { label: 'Seasonal use', id: 'rec-seasonal' },
+        { label: 'Salinity thresholds', id: 'rec-salinity' },
+        { label: 'Temperature thresholds', id: 'rec-temperature' },
         { label: 'Restoration', id: 'rec-restoration' },
         { label: 'Recreation economy', id: 'rec-economy' },
       ],
     },
     notScored: [
       {
-        label: 'Overall use',
-        why: 'The team published percentages for all five activities but did not calculate a score.',
-      },
-      {
-        label: 'Seasonal use',
-        why: 'The team published summer and winter percentages but did not calculate a score.',
+        label: 'Temperature thresholds',
+        why: 'The team scores these the same way as salinity, but every Delta-wide score is 0 and only Suisun Marsh moves, by a point either way. Calling on Reserves and A Tunnel are still pending, so the metric sits beside the criterion score rather than in it.',
       },
       {
         label: 'Restoration',

@@ -64,7 +64,7 @@ export type Provenance = 'reported' | 'inferred' | 'unscored'
  * the quote, because there is nothing to quote.
  */
 export interface Source {
-  doc: 'slides' | 'report' | 'ours'
+  doc: 'slides' | 'report' | 'data' | 'ours'
   /** Slide title, table number or section heading — how a reader would find it. */
   where: string
   /** Verbatim from the document, or the rule where `doc` is 'ours'. */
@@ -74,6 +74,7 @@ export interface Source {
 export const DOC_LABEL: Record<Source['doc'], string> = {
   slides: 'BDSC 2026 conference slides · Oct 2026',
   report: 'The Story Behind the Criterion · Sept 2026',
+  data: 'Subteam data files · Oct 2026',
   ours: 'Ours — not published by the subteam',
 }
 

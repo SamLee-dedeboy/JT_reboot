@@ -18,6 +18,13 @@
 // node's note wherever it changed.
 import { ECOLOGY_NICHE, ECOLOGY_REGIONS, ECOLOGY_SPECIES } from './ecologyNiche'
 import { WATER_AGE_GRID, WATER_AGE_MONTHS, WATER_AGE_REGIONS } from './ejWaterAge'
+import {
+  REC_SALINITY_DAYS,
+  REC_SALINITY_SCORES,
+  REC_TEMPERATURE_DAYS,
+  REC_TEMPERATURE_SCORES,
+} from './recreationThresholds'
+import type { RecActivityKey, RecTable } from './recreationThresholds'
 import { ANY, sliceKey } from './model'
 import type { CriterionNode, Facet, ScenarioKey, SliceValues, Source } from './model'
 
@@ -242,115 +249,169 @@ const ECOLOGY: CriterionNode = {
 
 const REC_PLACES: Facet[] = [
   { key: 'delta', label: 'Delta-wide' },
-  { key: 'suisunMarsh', label: 'Suisun Marsh' },
+  { key: 'suisun', label: 'Suisun Marsh' },
   { key: 'centralDelta', label: 'Central Delta' },
   { key: 'northDelta', label: 'North Delta' },
   { key: 'southDelta', label: 'South Delta' },
 ]
 
-interface ActivitySpec {
-  key: string
+/** Whole run, wet seasons, dry seasons: the same cut Recreation and EJ both use. */
+const SEASONS = ['run', 'wet', 'dry']
+const SEASON_FACETS: Facet[] = [
+  { key: 'run', label: 'Whole run' },
+  { key: 'wet', label: 'Wet season' },
+  { key: 'dry', label: 'Dry season' },
+]
+
+interface RecActivitySpec {
+  key: RecActivityKey
   label: string
-  threshold: string
+  /** The salinity threshold, where the activity has one. */
+  salinity?: string
+  /** The temperature threshold, where the activity has one. */
+  temperature?: string
   season: string
-  /** % of the whole run over this activity's threshold, in SCENARIO order below. */
-  run: (number | null)[]
-  /** % over the threshold in summer, then winter, in the same order. */
-  summer: (number | null)[]
-  winter: (number | null)[]
 }
 
-/** Scenario order for the activity tables: NGW, Eco Machine, B&F, COR, A Tunnel, BAU. */
-const ACTIVITY_ORDER: ScenarioKey[] = ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau']
-
-const ACTIVITIES: ActivitySpec[] = [
+/** The activities as the 18 Oct 2026 workbooks group them: day use and boating share a threshold. */
+const REC_ACTIVITIES: RecActivitySpec[] = [
+  {
+    key: 'dayUseBoating',
+    label: 'Day use and boating',
+    salinity: '1,000 µS/cm, the lowest threshold',
+    temperature: '19 °C eases harmful algal bloom expansion',
+    season: 'In-season May–Sep',
+  },
   {
     key: 'birding',
     label: 'Birding',
-    threshold: '2,640 µS/cm raises avian botulism risk',
+    salinity: '2,640 µS/cm raises avian botulism risk',
+    temperature: '20 °C for wetland bird species',
     season: 'Fall migration Aug–Oct, spring Apr–Jun, winter Oct–Apr',
-    run: [39.2, 39, 38, 44, null, 38],
-    summer: [41, 40, 40, 48, null, 40],
-    winter: [44, 44, 41, 49, null, 41],
-  },
-  {
-    key: 'angling',
-    label: 'Angling',
-    threshold: '9,130 µS/cm, the recreation fishery habitat threshold',
-    season: 'In-season May–Sep',
-    run: [7.5, 7.5, 5.5, 9, null, 5.5],
-    summer: [8, 8, 5, 8, null, 5],
-    winter: [7, 7, 6, 10, null, 6],
-  },
-  {
-    key: 'boating',
-    label: 'Boating',
-    threshold: '1,000 µS/cm; 19 °C eases harmful algal bloom expansion',
-    season: 'In-season May–Sep',
-    run: [53.7, 53.6, 53.1, 53.1, null, 53.1],
-    summer: [61, 61, 60.5, 62, null, 60.5],
-    winter: [67.5, 67.5, 66, 65, null, 66],
-  },
-  {
-    key: 'dayUse',
-    label: 'State park day use',
-    threshold: '1,000 µS/cm; below 18 °C too cold, above 31 °C too warm',
-    season: 'In-season May–Sep',
-    run: [58.2, 58.2, 57, 58, null, 57],
-    summer: [61, 61, 60.5, 62, null, 60.5],
-    winter: [67.5, 67.5, 66, 65, null, 66],
   },
   {
     key: 'waterfowl',
     label: 'Waterfowl hunting',
-    threshold: '3,600 µS/cm for sub-lethal effects',
+    salinity: '3,600 µS/cm for sub-lethal effects',
+    temperature: '23 °C',
     season: 'Brooding Apr–Jul, hunting Oct–Feb',
-    run: [22.2, 22.3, 21, 25, null, 21],
-    summer: [32.6, 32.7, 32, 38, null, 32],
-    winter: [37, 38, 34, 43, null, 34],
+  },
+  {
+    key: 'angling',
+    label: 'Angling',
+    salinity: '9,130 µS/cm, the recreation fishery habitat threshold and the highest',
+    temperature: '18.42 °C',
+    season: 'In-season May–Sep',
+  },
+  {
+    key: 'dayUseCold',
+    label: 'Day use, cold water',
+    temperature: 'below 18 °C is too cold for day use',
+    season: 'In-season May–Sep',
   },
 ]
 
-const RUN_PERIOD: Facet[] = [{ key: 'run', label: 'Whole run' }]
-const REC_SEASONS: Facet[] = [
-  { key: 'summer', label: 'Summer' },
-  { key: 'winter', label: 'Winter' },
-]
+const REC_SALINITY_ACTIVITIES = REC_ACTIVITIES.filter((spec) => spec.salinity)
+
+/** One activity's table as node values: region × period under each scenario. */
+function recValues(
+  table: RecTable<number | null>,
+  activity: RecActivityKey,
+): Partial<Record<ScenarioKey, SliceValues>> {
+  const values: Partial<Record<ScenarioKey, SliceValues>> = {}
+  for (const [scenario, byRegion] of Object.entries(table[activity] ?? {})) {
+    const series: SliceValues = {}
+    for (const [region, byPeriod] of Object.entries(byRegion)) {
+      for (const [period, value] of Object.entries(byPeriod)) {
+        series[sliceKey(region, period)] = value
+      }
+    }
+    values[scenario as ScenarioKey] = series
+  }
+  return values
+}
 
 /**
- * One activity under one of Recreation's two threshold metrics. Values are the
- * share of days over that activity's salinity threshold, so lower is better —
- * which is why Eco Machine and New Green Watershed read slightly worse than today.
+ * The mean of several activities' scores at every region and period — ours, since
+ * the subteam scores activities and stops there. A scenario missing from any
+ * activity is left out rather than averaged over fewer.
  */
-function activityNode(metric: string, activity: ActivitySpec, seasonal: boolean): CriterionNode {
-  const values: Partial<Record<ScenarioKey, SliceValues>> = {}
-  ACTIVITY_ORDER.forEach((scenario, i) => {
-    if (seasonal) {
-      if (activity.summer[i] === null) return
-      values[scenario] = {
-        [sliceKey(ANY, 'summer')]: (activity.summer[i] ?? 0) / 100,
-        [sliceKey(ANY, 'winter')]: (activity.winter[i] ?? 0) / 100,
-      }
-    } else {
-      if (activity.run[i] === null) return
-      values[scenario] = { [sliceKey(ANY, 'run')]: (activity.run[i] ?? 0) / 100 }
+function recMean(
+  table: RecTable<number | null>,
+  activities: RecActivityKey[],
+): Partial<Record<ScenarioKey, SliceValues>> {
+  const perActivity = activities.map((activity) => recValues(table, activity))
+  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
+  for (const scenario of Object.keys(perActivity[0] ?? {}) as ScenarioKey[]) {
+    if (!perActivity.every((values) => values[scenario])) continue
+    const series: SliceValues = {}
+    for (const key of Object.keys(perActivity[0][scenario] ?? {})) {
+      const parts = perActivity.map((values) => values[scenario]?.[key] ?? null)
+      series[key] = parts.some((part) => part === null)
+        ? null
+        : Math.round(
+            (parts.reduce<number>((sum, part) => sum + (part ?? 0), 0) / parts.length) * 100,
+          ) / 100
     }
-  })
+    out[scenario] = series
+  }
+  return out
+}
+
+function recActivityNode(
+  metric: 'salinity' | 'temperature',
+  spec: RecActivitySpec,
+  scores: RecTable<number | null>,
+  days: RecTable<number | null>,
+): CriterionNode {
+  const id = `rec-${metric}-${spec.key}`
+  const threshold = metric === 'salinity' ? spec.salinity : spec.temperature
   return {
-    id: `${metric}-${activity.key}`,
-    label: activity.label,
+    id,
+    label: spec.label,
     level: 'entity',
     team: 'recreation',
-    edge: 'measures',
+    edge: 'averages',
     provenance: 'reported',
-    unit: 'share',
-    betterHigher: false,
-    note: `${activity.threshold}. ${activity.season}. A Tunnel is absent from every published table.`,
+    unit: 'score',
+    betterHigher: true,
+    note: `The subteam’s own score for this activity, by region and period: one point per percentage point of days over the threshold against Business as Usual, ±5 at five points or more. Threshold: ${threshold}. ${spec.season}.`,
     places: REC_PLACES,
-    periods: seasonal ? REC_SEASONS : RUN_PERIOD,
-    values,
+    periods: SEASON_FACETS,
+    values: recValues(scores, spec.key),
+    children: [
+      {
+        id: `${id}-days`,
+        label: 'Days over the threshold',
+        level: 'entity',
+        team: 'recreation',
+        edge: 'derives',
+        provenance: 'reported',
+        unit: 'share',
+        betterHigher: false,
+        note: `Proportion of days whose daily mean crosses the ${metric} threshold (${threshold}), at 32 points in 4 regions, Oct 2018–Dec 2020. The score above is read from this.`,
+        places: REC_PLACES,
+        periods: SEASON_FACETS,
+        values: recValues(days, spec.key),
+      },
+    ],
   }
 }
+
+const REC_SALINITY_KEYS = REC_SALINITY_ACTIVITIES.map((spec) => spec.key)
+const REC_SALINITY_MEAN = recMean(REC_SALINITY_SCORES, REC_SALINITY_KEYS)
+const REC_TEMPERATURE_MEAN = recMean(
+  REC_TEMPERATURE_SCORES,
+  REC_ACTIVITIES.map((spec) => spec.key),
+)
+
+/** The criterion score: the salinity metric's Delta-wide, whole-run mean, lifted to a flat value. */
+const REC_CRITERION: Partial<Record<ScenarioKey, SliceValues>> = Object.fromEntries(
+  Object.entries(REC_SALINITY_MEAN).map(([scenario, series]) => [
+    scenario,
+    { [sliceKey(ANY, ANY)]: series?.[sliceKey('delta', 'run')] ?? null },
+  ]),
+)
 
 const RECREATION: CriterionNode = {
   id: 'recreation',
@@ -360,40 +421,44 @@ const RECREATION: CriterionNode = {
   provenance: 'inferred',
   unit: 'score',
   betterHigher: true,
-  note: 'Neither source gives a criterion score, so these values come from the Oct 2026 slides. They show the mean difference in threshold exceedance across the five activities from the Business as Usual baseline, replacing earlier stand-ins based on report text that gave Eco Machine and New Green Watershed slightly higher scores.',
+  note: 'The subteam now scores each activity itself, by region and by season (its 18 Oct 2026 workbooks), but publishes no criterion score. This value is the mean of its four salinity activity scores, Delta-wide, whole run: Bolster & Fortify 0, Eco Machine −1, New Green Watershed −1, Calling on Reserves −2.5, A Tunnel −4. Temperature scores are 0 Delta-wide for every scenario and are left out.',
   places: NO_FACET,
   periods: NO_FACET,
-  values: flat({ ngw: -1, em: -1, bf: 0, cor: -3, tunnel: -3, bau: 0 }),
+  values: REC_CRITERION,
   children: [
     {
-      id: 'rec-overall',
-      label: 'Overall use',
+      id: 'rec-salinity',
+      label: 'Salinity thresholds',
       level: 'metric',
       team: 'recreation',
-      edge: 'unscored',
-      provenance: 'reported',
-      unit: 'share',
-      betterHigher: false,
-      note: 'Proportion of the whole run exceeding each activity’s threshold across 32 points and 4 recreation regions. The values are available, and the report defines a −5…+5 formula, but it was never applied.',
+      edge: 'derives',
+      provenance: 'inferred',
+      unit: 'score',
+      betterHigher: true,
+      note: 'The mean of the four activity scores at each region and period; the criterion score is its Delta-wide, whole-run value. Exceedance concentrates in Suisun Marsh and the Central Delta, while the North and South Delta sit at 0% for every activity. A Tunnel is the worst scenario, −2 to −5 in Suisun Marsh and the Central Delta, and Calling on Reserves the second worst. Bolster & Fortify scores 0 everywhere but one cell.',
       places: REC_PLACES,
-      periods: RUN_PERIOD,
-      values: {},
-      children: ACTIVITIES.map((activity) => activityNode('rec-overall', activity, false)),
+      periods: SEASON_FACETS,
+      values: REC_SALINITY_MEAN,
+      children: REC_SALINITY_ACTIVITIES.map((spec) =>
+        recActivityNode('salinity', spec, REC_SALINITY_SCORES, REC_SALINITY_DAYS),
+      ),
     },
     {
-      id: 'rec-seasonal',
-      label: 'Seasonal use',
+      id: 'rec-temperature',
+      label: 'Temperature thresholds',
       level: 'metric',
       team: 'recreation',
-      edge: 'unscored',
-      provenance: 'reported',
-      unit: 'share',
-      betterHigher: false,
-      note: 'This splits the same five activities into summer and winter. Every scenario has higher threshold exceedance in winter than in summer, and Calling on Reserves has the highest exceedance in both seasons except for boating and day use; for those two, it is the only scenario with lower exceedance than the Business as Usual baseline in winter.',
+      edge: 'beside',
+      provenance: 'inferred',
+      unit: 'score',
+      betterHigher: true,
+      note: 'The same construction against temperature thresholds, for the four scenarios run so far; Calling on Reserves and A Tunnel are pending. Every Delta-wide score is 0 and Suisun Marsh is the only region that moves (±1), so this metric is kept beside the criterion score rather than in it. Dry seasons drive the crossings; cold water matters only for day use, in wet seasons.',
       places: REC_PLACES,
-      periods: REC_SEASONS,
-      values: {},
-      children: ACTIVITIES.map((activity) => activityNode('rec-seasonal', activity, true)),
+      periods: SEASON_FACETS,
+      values: REC_TEMPERATURE_MEAN,
+      children: REC_ACTIVITIES.map((spec) =>
+        recActivityNode('temperature', spec, REC_TEMPERATURE_SCORES, REC_TEMPERATURE_DAYS),
+      ),
     },
     {
       id: 'rec-restoration',
@@ -418,7 +483,7 @@ const RECREATION: CriterionNode = {
       provenance: 'unscored',
       unit: 'score',
       betterHigher: true,
-      note: 'Also new are visitor-sector earnings 2001–2023 by water-year type: earnings are +19.6% in critical years and +20.3% in wet years, but −21.8% in dry and −27.5% in above-normal years. Earnings are therefore lowest in the middle rather than at the extremes; this is narrative only, and no scenario is scored.',
+      note: 'Also new are visitor-sector earnings 2001–2023 by water-year type: earnings are +19.6% in critical years and +20.3% in wet years, but −21.8% in dry and −27.5% in above-normal years. Earnings are therefore lowest in the middle rather than at the extremes; this is narrative only, and no scenario is scored. An island-by-island valuation of ecosystem benefits under New Green Watershed arrived on 18 Oct 2026 and is under discussion within the subteam, so it is not loaded here yet.',
       places: NO_FACET,
       periods: NO_FACET,
       values: {},
@@ -427,13 +492,6 @@ const RECREATION: CriterionNode = {
 }
 
 // ---------- EJ and vulnerable communities ----------
-
-const SEASONS = ['run', 'wet', 'dry']
-const SEASON_FACETS: Facet[] = [
-  { key: 'run', label: 'Whole run' },
-  { key: 'wet', label: 'Wet season' },
-  { key: 'dry', label: 'Dry season' },
-]
 
 /** One vulnerability class: exceedance of 1,050 µS/cm, by season. */
 function vulnerabilityNode(
@@ -1136,19 +1194,26 @@ const SOURCES: Record<string, Source[]> = {
         'Score -5 to 5 = 5 - 10 × (days exceeding threshold / total days in that period (month))',
     },
   ],
-  'rec-overall': [
+  'rec-salinity': [
     {
-      doc: 'slides',
-      where: 'Scenario Ranking: Salinity + Temperature (% of -5 to 5)',
+      doc: 'data',
+      where: 'RMA Salinity Scenarios Analyzed.xlsx · OVERALL · Notes 2',
       quote:
-        'Bird Watching, Angling, SP Day Use, Boating, Waterfowl Hunting — one whole-run percentage per activity per scenario; A Tunnel (Pending).',
+        'Scenario rankings (-5 to 5 vs BAU) reflect that BAF is effectively the same as BAU, scoring at 0, except for one instance for Central Delta Day use (Total Run). Tunnel performs the worst, scoring -2 to -5 across both Suisun Marsh and the Central Delta, and is the only scenario that pushes Southern Delta boating and day uses over the threshold during wet seasons (84%) or greater than a -5 move on the charts. Calling on Reserves (COR) is the second worst scenario across Suisun and the Central Delta, but having one surprising movement of (+2) in the wet seasons.',
+    },
+    {
+      doc: 'ours',
+      where: 'Mean of the four activity scores',
+      quote:
+        'The criterion score is the mean of day use and boating, birding, waterfowl and angling, Delta-wide, whole run.',
     },
   ],
-  'rec-seasonal': [
+  'rec-temperature': [
     {
-      doc: 'slides',
-      where: 'Results — one Performance Ranking table per activity',
-      quote: '% Mean, Summer and Winter, for each of the five activities.',
+      doc: 'data',
+      where: 'RMA Temperature Scenarios Analyzed.xlsx · Overall · Notes 2',
+      quote:
+        'RMA scenario -5 to 5 rankings show that all four models are evenly distributed across most breakdowns, Delta-wide and regional, with notable exceptions: ECO and NGW performing well in Suisun Marsh, with a 1% increase for Day use and Boating Total Run, and in dry seasons. Likewise, they showed positive moves for birding and angling during wet seasons. Negative moves of (-1%) during the dry season also appear in Suisun Marsh, making it the only region affected under the -5 to 5 scoring scenario, with both waterfowl and Angling performing worse than BAU.',
     },
   ],
   'rec-restoration': [
@@ -1321,24 +1386,26 @@ const SOURCE_PREFIXES: [string, Source[]][] = [
     ],
   ],
   [
-    'rec-overall-',
+    'rec-salinity-',
     [
       {
-        doc: 'slides',
-        where: 'Scenario Ranking: Salinity + Temperature (% of -5 to 5)',
+        doc: 'data',
+        where:
+          'RMA Salinity Scenarios Analyzed.xlsx · OVERALL · TOTAL RUN, WET SEASON and DRY SEASON SCORES; % EXCEEDANCES by scenario',
         quote:
-          'Bird Watching 38 / 38 / 39 / 39.2 / 44; Angling 5.5 / 5.5 / 7.5 / 7.5 / 9; SP Day Use 57 / 57 / 58.2 / 58.2 / 58; Boating 53.1 / 53.1 / 53.6 / 53.7 / 53.1; Waterfowl Hunting 21 / 21 / 22.3 / 22.2 / 25 (BAU / B&F / Eco Machine / NGW / COR)',
+          'Ranking / Scale: 5 greater than or equal to 5% less; 4 4% less; 3 3% less; 2 2% less; 1 1% less; 0 No change from baseline; -1 1% more than baseline; -2 2% more; -3 3% more; -4 4% more; -5 greater than or equal to 5% more',
       },
     ],
   ],
   [
-    'rec-seasonal-',
+    'rec-temperature-',
     [
       {
-        doc: 'slides',
-        where: 'Results — Performance Ranking, one table per activity',
+        doc: 'data',
+        where:
+          'RMA Temperature Scenarios Analyzed.xlsx · Overall · TOTAL RUN, WET SEASON and DRY SEASON SCORES; % EXCEEDANCES by scenario',
         quote:
-          '% Mean Summer and Winter per scenario, for Birdwatcher Sightings, Angler participation, Marina boaters, State Parks Day Use and Waterfowl hunting.',
+          'Dry seasons drive dangerous threshold-crossing days for activities and recreation important species alike. Cold water, by contrast, applies only to day use (<18C) and crosses threshold days across four exceedance models during the wet seasons, Delta-wide at over 90% rates.',
       },
     ],
   ],

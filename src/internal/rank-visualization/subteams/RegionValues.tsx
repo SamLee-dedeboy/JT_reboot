@@ -37,6 +37,8 @@ export interface RegionValuesProps {
   unitLabel: string
   /** Offer the difference-from-baseline reading as well as the value. */
   changeToggle?: boolean
+  /** Treat a value we inferred as no value: for screens the public sees. */
+  hideInferred?: boolean
 }
 
 const SCORE_SPAN = 5
@@ -52,6 +54,7 @@ export function RegionValues({
   caption,
   unitLabel,
   changeToggle,
+  hideInferred,
 }: RegionValuesProps) {
   const theme = useTheme()
   const shapes = REGION_SHAPES.filter((shape) => shape.team === team)
@@ -64,11 +67,13 @@ export function RegionValues({
     for (const scenario of scenarios) {
       for (const shape of shapes) {
         const coords = coordsFor(shape.name, scenario)
-        out.set(`${scenario}|${shape.name}`, coords ? { coords, cell: valueAt(coords) } : null)
+        const cell = coords ? valueAt(coords) : null
+        const shown = cell && hideInferred && cell.inferred ? { ...cell, value: null } : cell
+        out.set(`${scenario}|${shape.name}`, coords && shown ? { coords, cell: shown } : null)
       }
     }
     return out
-  }, [coordsFor, scenarios, shapes])
+  }, [coordsFor, scenarios, shapes, hideInferred])
 
   const at = (scenario: ScenarioKey, region: string) => grid.get(`${scenario}|${region}`)
   const reads = (scenario: ScenarioKey, region: string): number | null => {
@@ -94,8 +99,15 @@ export function RegionValues({
   // teams put no scale on differences, so none is invented here. A level keeps the
   // team's own unit: a signed metric uses the score palette at its value, a
   // proportion fills from 0 to its maximum.
+  // A score is already on the −5…+5 scale, so it takes that palette directly; a
+  // difference or a measurement is placed against the largest value shown.
+  const isScore = unit === 'score'
+  const anyValue = scenarios.some((scenario) =>
+    shapes.some((shape) => reads(scenario, shape.name) !== null),
+  )
   const fillFor = (value: number | null): { fill: string; opacity: number } | null => {
     if (value === null) return null
+    if (isScore && reading === 'level') return { fill: cellFill(value), opacity: 1 }
     const strength = Math.min(1, Math.abs(value) / max)
     if (diverging) {
       return { fill: cellFill(direction * Math.sign(value) * strength * SCORE_SPAN), opacity: 1 }
@@ -189,46 +201,56 @@ export function RegionValues({
       </Box>
 
       {/* One legend for the row: the scale the fills share, then the dashed case. */}
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 1.5 }}>
-        {reading !== 'change' && (
-          <Typography variant="body2" sx={{ color: 'base.50' }}>
-            {unitLabel}
-          </Typography>
-        )}
-        {reading === 'change' ? (
-          <DivergingLegend
-            label="Difference from Business as Usual: the gap between the two values. Hover a region for both."
-            min={`−${unsigned(fmtValue(max, unit))}`}
-            max={`+${unsigned(fmtValue(max, unit))}`}
-            note="Orange is worse than today, blue better. The ends of the ramp are the largest gaps on these maps."
-          />
-        ) : (
-          <Typography variant="body2" sx={{ color: 'base.100' }}>
-            {diverging ? `−${unsigned(fmtValue(max, unit))}` : fmtValue(0, unit)}{' '}
-            {diverging
-              ? [-1, -0.5, 0, 0.5, 1].map((step) => (
-                  <Swatch key={step} tone={cellFill(direction * step * SCORE_SPAN)} />
-                ))
-              : SWATCH_STEPS.map((step) => (
-                  <Swatch
-                    key={step}
-                    tone={theme.palette.salinity.teal}
-                    opacity={0.12 + step * 0.88}
-                  />
-                ))}{' '}
-            {diverging ? `+${unsigned(fmtValue(max, unit))}` : fmtValue(max, unit)}
-            {diverging ? ', orange is worse, blue is better' : ''}
-          </Typography>
-        )}
-        {unmapped > 0 && (
-          <Typography variant="body2" sx={{ color: 'base.100' }}>
-            <Swatch dashed /> no value to place
-          </Typography>
-        )}
+      {!anyValue ? (
         <Typography variant="body2" sx={{ color: 'base.100' }}>
-          Click a region to see where its value comes from.
+          No published value to place on these maps yet.
         </Typography>
-      </Box>
+      ) : (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 1.5 }}>
+          {reading !== 'change' && (
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              {unitLabel}
+            </Typography>
+          )}
+          {reading === 'change' ? (
+            <DivergingLegend
+              label="Difference from Business as Usual: the gap between the two values. Hover a region for both."
+              min={`−${unsigned(fmtValue(max, unit))}`}
+              max={`+${unsigned(fmtValue(max, unit))}`}
+              note="Orange is worse than today, blue better. The ends of the ramp are the largest gaps on these maps."
+            />
+          ) : (
+            <Typography variant="body2" sx={{ color: 'base.100' }}>
+              {isScore ? '−5' : diverging ? `−${unsigned(fmtValue(max, unit))}` : fmtValue(0, unit)}{' '}
+              {diverging
+                ? [-1, -0.5, 0, 0.5, 1].map((step) => (
+                    <Swatch key={step} tone={cellFill(direction * step * SCORE_SPAN)} />
+                  ))
+                : SWATCH_STEPS.map((step) => (
+                    <Swatch
+                      key={step}
+                      tone={theme.palette.salinity.teal}
+                      opacity={0.12 + step * 0.88}
+                    />
+                  ))}{' '}
+              {isScore
+                ? '+5'
+                : diverging
+                  ? `+${unsigned(fmtValue(max, unit))}`
+                  : fmtValue(max, unit)}
+              {diverging ? ', orange is worse, blue is better' : ''}
+            </Typography>
+          )}
+          {unmapped > 0 && (
+            <Typography variant="body2" sx={{ color: 'base.100' }}>
+              <Swatch dashed /> no value to place
+            </Typography>
+          )}
+          <Typography variant="body2" sx={{ color: 'base.100' }}>
+            Click a region to see where its value comes from.
+          </Typography>
+        </Box>
+      )}
 
       <CellDetail coords={inspect} onClose={() => setInspect(null)} />
     </Box>

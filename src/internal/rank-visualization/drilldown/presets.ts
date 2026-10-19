@@ -70,18 +70,18 @@ export const PIVOT_PRESETS: PivotPreset[] = [
     periods: ['2020'],
   },
   {
-    key: 'recreation-cor',
-    label: 'Reserves cost recreation',
+    key: 'recreation-scores',
+    label: 'Tunnel and Reserves cost recreation',
     finding:
-      'Calling on Reserves puts the most days over the salinity limit for every activity. Birding is affected most. It goes from 38% of days today to 44% under Reserves.',
+      'Recreation now scores each activity itself. Delta-wide, Bolster & Fortify sits at 0 and the two restoration scenarios at 0 to −2. A Tunnel scores −3 to −5 on every activity, and Calling on Reserves −2 to −4.',
     criteria: [
-      'rec-overall-birding',
-      'rec-overall-angling',
-      'rec-overall-boating',
-      'rec-overall-dayUse',
-      'rec-overall-waterfowl',
+      'rec-salinity-dayUseBoating',
+      'rec-salinity-birding',
+      'rec-salinity-waterfowl',
+      'rec-salinity-angling',
     ],
-    scenarios: ['ngw', 'em', 'bf', 'cor', 'bau'],
+    scenarios: ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau'],
+    places: ['delta'],
     periods: ['run'],
   },
   {
