@@ -24,6 +24,11 @@ const Watershed = lazy(() => import('../internal/Watershed'))
 const RankVisualization = lazy(() => import('../internal/rank-visualization/RankVisualization'))
 const BreakoutPage = lazy(() => import('../internal/rank-visualization/breakout/BreakoutPage'))
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
+const SiteMapPage = lazy(() => import('../internal/site-map/SiteMapPage'))
+const TeamMethodologyPage = lazy(
+  () => import('../features/scenarios/evaluation/TeamMethodologyPage'),
+)
+const TeamScenarioPage = lazy(() => import('../features/scenarios/evaluation/TeamScenarioPage'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
 
@@ -36,6 +41,11 @@ export default function AppRouter() {
       <Route path="/scenarios/key-parameters" element={<KeyParametersPage />} />
       <Route path="/scenarios/results" element={<Results />} />
       <Route path="/scenarios/:scenarioSlug/results" element={<Results />} />
+      <Route
+        path="/scenarios/:scenarioSlug/results/:teamId"
+        element={deferred(<TeamScenarioPage />)}
+      />
+      <Route path="/scenarios/evaluation/:teamId" element={deferred(<TeamMethodologyPage />)} />
       <Route path="/scenarios/:scenarioSlug" element={<IntroductionPage />} />
       <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
       <Route path="/pages/service-learning" element={<ServiceLearning />} />
@@ -65,6 +75,7 @@ export default function AppRouter() {
       <Route path="/pages/breakout" element={deferred(<BreakoutPage />)} />
       <Route path="/pages/breakout/:team" element={deferred(<BreakoutPage />)} />
       <Route path="/pages/co-design-timeline" element={<CoDesignTimelinePage />} />
+      <Route path="/pages/site-map" element={deferred(<SiteMapPage />)} />
       <Route path="/design-system" element={<DesignSystem />} />
     </Routes>
   )

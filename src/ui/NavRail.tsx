@@ -8,6 +8,7 @@ export interface NavRailItem {
   id: string
   label: string
   disabled?: boolean
+  indent?: boolean
 }
 
 const HOME_SECTIONS: NavRailItem[] = [
@@ -40,9 +41,7 @@ export default function NavRail({
   sx,
 }: NavRailProps) {
   const [active, setActive] = useState(items[0]?.id ?? '')
-  const observedActiveId = items.some((item) => item.id === active)
-    ? active
-    : (items[0]?.id ?? '')
+  const observedActiveId = items.some((item) => item.id === active) ? active : (items[0]?.id ?? '')
   const activeId = activeItemId ?? observedActiveId
   useEffect(() => {
     if (activeItemId !== undefined) return
@@ -103,6 +102,11 @@ export default function NavRail({
               boxSizing: 'border-box',
               width: (theme) => theme.spacing(1.125),
               height: (theme) => theme.spacing(1.125),
+              ...(s.indent && {
+                width: (theme) => theme.spacing(0.75),
+                height: (theme) => theme.spacing(0.75),
+                borderWidth: 1,
+              }),
               borderRadius: '50%',
               border: '2px solid',
               borderColor:
@@ -125,9 +129,7 @@ export default function NavRail({
           <Box
             className="rail-label"
             sx={{
-              typography: 'eyebrow',
-              fontSize: (theme) => theme.typography.captionSmall.fontSize,
-              letterSpacing: (theme) => theme.typography.numberBadge.letterSpacing,
+              typography: s.indent ? 'captionSmall' : 'eyebrow',
               color: on ? 'primary.main' : 'common.white',
               transition: 'color 200ms ease',
               whiteSpace: 'nowrap',
@@ -150,6 +152,9 @@ export default function NavRail({
               justifyContent: variant === 'home' ? 'flex-start' : 'flex-end',
               gap: (theme) => theme.jtSpacing.gap.sm,
               paddingBlock: (theme) => theme.jtSpacing.component.xs / 2,
+              paddingInlineStart: s.indent
+                ? (theme) => theme.spacing(theme.jtSpacing.component.md)
+                : 0,
               backgroundColor: 'transparent',
               border: 'none',
               cursor: s.disabled ? 'default' : 'pointer',

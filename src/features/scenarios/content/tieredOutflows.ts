@@ -12,7 +12,14 @@ export const tieredOutflowsScenario: ScenarioContent = {
       title: 'Why Delta outflow matters',
       paragraphs: [
         'The Sacramento and San Joaquin Rivers carry freshwater into the Delta, where it meets salty ocean water from San Francisco Bay. The balance between these water flows decides how far saltwater reaches inland.',
-        'Changes in Delta freshwater outflow can affect water quality, habitat conditions, and freshwater availability, creating competing needs among different water users and ecosystems.',
+      ],
+    },
+    {
+      title: 'More outflow, a fresher Delta',
+      navigationLabel: '30% increase in outflow',
+      paragraphs: [
+        'Increasing the amount of freshwater flowing through the Delta generally pushes saltwater farther toward the ocean, potentially reducing salinity in the Delta.',
+        'We explored a 30% increase in Delta outflow relative to current operations, through reductions in exports. While increasing outflow could help reduce salinity in parts of the Delta, sustaining higher flows can be challenging and can have tradeoffs, especially during droughts when water is also needed elsewhere in California.',
       ],
     },
     {
@@ -20,21 +27,14 @@ export const tieredOutflowsScenario: ScenarioContent = {
       navigationLabel: '10% decrease in outflow',
       paragraphs: [
         'Reducing freshwater outflow allows saltwater to move farther inland, potentially intensifying existing challenges for Delta communities, ecosystems, and water users.',
-        'We explore a 10% decrease in Delta outflow relative to current operations. While reducing outflow may leave more water available for other parts of California, it could worsen salinity conditions in parts of the Delta.',
+        'We explored a 10% decrease in Delta outflow relative to current operations to understand how it would create saltier conditions in the Delta’s waterways. If Delta outflows are reduced in the future (via changes in policy, increased upstream uses, or reduced supplies), it will lead to increased salinity in the Delta.',
       ],
     },
     {
-      title: 'More outflow, a fresher Delta',
-      navigationLabel: '30% increase in outflow',
+      title: 'Other Flow Changes to the Delta',
       paragraphs: [
-        'Increasing freshwater outflow generally pushes saltwater farther toward the ocean, potentially improving salinity conditions in the Delta.',
-        'We explore a 30% increase in Delta outflow relative to current operations. While increasing outflow could help reduce salinity in parts of the Delta, sustaining higher flows can be challenging, especially during droughts when water is also needed elsewhere in California.',
-      ],
-    },
-    {
-      title: 'Beyond changing outflow',
-      paragraphs: [
-        'Changing Delta outflow involves difficult trade-offs between competing water needs.',
+        'Changing how much water flows through the Delta involves difficult trade-offs between competing water needs. Outcomes also depend on how water flows are increased, such as by changes in upstream uses and reservoir release, or by reductions in water exports from the Delta. Our modeled variations in Delta outflow were limited to changes in exports. Reductions in upstream uses to increase flows could be modelled in future efforts.',
+        'The seasonal timing of changes in flows is also a critical factor for outcomes. Two of our other project scenarios also explore these timed changes in flow: A Tunnel and Calling on Reserves.',
         'What other strategies could help manage salinity and protect ecosystems, communities, and water users in the Delta? Explore alternative scenarios to see how different approaches might reshape salinity conditions in the Delta.',
       ],
     },
@@ -45,4 +45,3 @@ export const tieredOutflowsScenario: ScenarioContent = {
     'Places where modeled salinity differs from current operations',
   ],
 }
-

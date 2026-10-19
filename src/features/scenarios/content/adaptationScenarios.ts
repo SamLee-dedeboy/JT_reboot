@@ -7,14 +7,14 @@ export const adaptationScenarios: ScenarioContent[] = [
     title: 'Eco Machine',
     image: '/images/scenarios/eco-machine-2.JPG',
     summary:
-      'Tidal restoration becomes working green infrastructure—reshaping water movement while creating habitat, recreation, and eco-cultural opportunities.',
+      'Implementing tidal wetland restoration where it can reduce salinity intrusion, while also creating ecological, eco-cultural, recreational and community benefits.',
     story: [
       {
-        title: 'What if restoration could help manage salinity?',
+        title: 'Where can restoration be implemented in the Delta to help manage salinity?',
         navigationLabel: 'Motivation',
         paragraphs: [
-          'Tides naturally carry salt water from San Francisco Bay into the Delta. Freshwater flowing downstream helps resist that movement, but drought and sea level rise can allow salinity to travel farther inland, affecting ecosystems, communities, agriculture, and freshwater supplies.',
-          "Restoration is often discussed as a way to rebuild habitat. But the shape of the Delta's landscape also influences how tidal water moves and where salt travels. Eco Machine asks whether strategically designed restoration could help manage salinity while providing ecological and community benefits.",
+          'Each day, tides carry salt water from San Francisco Bay into the Delta. Freshwater flowing downstream helps resist that movement, but drought and sea level rise can allow salinity to travel farther inland, affecting ecosystems, communities, agriculture, and freshwater supplies.',
+          "The shape of the Delta's landscapes and waterways also heavily influence how tidal water moves and where salt travels. These flow patterns can be intentionally altered by reconnecting and rebuilding tidal wetlands within the Delta. The Eco Machine scenario explores where tidal restoration could be implemented to manage salinity while providing ecological and community benefits.",
         ],
       },
       {
@@ -27,15 +27,16 @@ export const adaptationScenarios: ScenarioContent[] = [
           {
             title: 'Suisun Marsh: Redirecting tidal energy',
             summary:
-              'Around Grizzly Island, restored tidal wetlands could direct more tidal energy toward Suisun Bay rather than farther inland. The scenario examines whether this change could reduce salinity intrusion while expanding marsh habitat and access to the landscape.',
+              'By restoring tidal connections in Suisun Marsh, tidal energy is directed more toward Suisun Marsh, rather than farther inland and into the central Delta. The scenario examines whether this marsh conversion (from managed wetlands to tidal wetlands) could reduce salinity intrusion while expanding marsh habitat and access to the landscape.',
             paragraphs: [],
             mapSelectionKey: 'suisun-marsh',
           },
           {
             title: 'Franks Tract: Reshaping water pathways',
             summary:
-              'Franks Tract is a former Delta island that has remained flooded since its levees failed in the 1930s. Located in the central Delta, this large open-water area plays an important role in salinity intrusion. Vegetated landforms based on a community-informed restoration design could interrupt a pathway for salinity intrusion while supporting recreation and community use.',
+              'Franks Tract is a subsided and former Delta island that has been flooded since its levees failed in the 1930s. Today it is a unique State Park offering a variety of water-based recreational opportunities, such as boating and fishing. But given its location in the central Delta, this large open-water area is a primary source of salinity intrusion.',
             paragraphs: [
+              'By building a set of landforms within the Tract, salty water would be mostly blocked from entering further into the Delta. These islands would be created by mounding up earth with the tract, primarily by dredging, which would also create deeper areas that are more navigable for boaters. The island masses would be built up to sea level to become tidal wetlands. These wetlands would be shaped and arranged in the center of the tract to preserve open water areas near adjacent homes on Bethel Island, and to create new recreational features (such as beaches and sheltered coves) while also diversifying and creating new habitat for a range of aquatic and terrestrial species.',
               'The scenario draws on Franks Tract Futures, a 2019–2020 public planning effort that brought together communities and experts to develop a multi-benefit restoration design.',
             ],
             mapSelectionKey: 'franks-tract',
@@ -43,7 +44,14 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
-        title: 'Restoration as Working Green Infrastructure',
+        title: 'Eco-cultural opportunities',
+        navigationLabel: 'Eco-cultural',
+        paragraphs: [
+          'The new wetlands and restored habitats for both Suisun Marsh and Franks Tract would also offer potential opportunities for eco-cultural restoration and Indigenous stewardship, which would be integrated into planning and design.',
+        ],
+      },
+      {
+        title: 'Restoration as Multi-Benefit, Landscape Infrastructure',
         navigationLabel: 'Key Takeaway',
         paragraphs: [
           'Restoration could do more than rebuild habitat. By changing how tidal water moves through the Delta, strategically designed wetlands and landforms could complement existing water infrastructure and help manage salinity.',
@@ -206,15 +214,14 @@ export const adaptationScenarios: ScenarioContent[] = [
     number: '04',
     title: 'Calling on Reserves',
     image: '/images/scenarios/calling-on-reserves.jpg',
-    summary:
-      'Adjusting when and how much water is released from upstream reservoirs could help manage Delta salinity and preserve water supplies for future droughts.',
+    summary: 'Adjusting the timing and amount of water released from large dam reservoirs.',
     story: [
       {
-        title: 'What if reservoir release timing can help manage Delta salinity?',
+        title: 'How can changes in reservoir operations help manage Delta salinity?',
         navigationLabel: 'Motivation',
         paragraphs: [
           'Upstream reservoirs capture and store freshwater for communities, agriculture, and ecosystems. Water managers decide when to hold that water and when to release it downstream, balancing immediate needs against future shortages. These decisions become especially difficult during prolonged droughts, when water supplies are limited and future conditions are uncertain.',
-          'Holding water in reserve can help protect against future shortages. Releasing it can increase freshwater flows into the Delta, help resist salinity intrusion, and support habitats that depend on seasonal river flows.',
+          'Holding water in reserve can help protect against future shortages. Releasing it can increase freshwater flows into the Delta, help resist salinity intrusion, and support species that depend on seasonal river flows.',
           'Calling on Reserves asks whether changing reservoir operations — the timing and amount of water released — could better balance these competing water needs.',
         ],
       },
@@ -222,7 +229,23 @@ export const adaptationScenarios: ScenarioContent[] = [
         title: 'Rethinking reservoir releases',
         navigationLabel: 'Design Approach',
         paragraphs: [
-          'Calling on Reserves focuses on Shasta Reservoir, a major reservoir in the Sacramento River watershed.',
+          'Calling on Reserves focuses on modeling a specific reservoir as an example, which is Shasta Dam and Reservoir, the largest reservoir in the Sacramento River watershed with a capacity of 4,552,000 acre-feet.',
+        ],
+        subsections: [
+          {
+            title: 'When and how much water is released',
+            paragraphs: [
+              'The overall goal of this modeled scenario is to increase year-to-year carryover storage in Shasta Reservoir by 20% (from current standards) by reducing demand and timing releases in ways that most benefit fish. This is done through reductions to Central Valley Project (CVP) contractor allocations - including Settlement, Exchange, and ag service contractors north and south of the Delta. The model’s logic used for these reductions is based on the U.S. Bureau of Reclamation’s “modified natural hydrograph, Alt 3 scenario” to adjust CVP allocations in response to a target Shasta storage. The increase in carryover is considered a target and not a guarantee since there is inherent uncertainty in the hydrologic forecasts that are part of complex allocation procedures. Changing CVP allocations affects many other parts of the state’s water infrastructure delivery system as the balancing among reservoirs (Trinity, Shasta, and Folsom) will shift, the timing and volume of releases and river flows for deliveries will change, and the coordinating operating agreement (COA) balance between Central Valley Project and State Water Project may change.',
+              'In addition, the higher Shasta storage leading into a wet winter season can lead to more frequent or larger (or both) flood releases from Shasta. These spills may show up as additional Delta inflow. Reduced allocations may show up as reduced export pumping. These factors together can affect salinity in different parts of the Delta.',
+            ],
+          },
+        ],
+      },
+      {
+        title: 'Eco-cultural benefits',
+        navigationLabel: 'Eco-cultural',
+        paragraphs: [
+          'Dam releases that attempt to functionally mimic more natural yearly flows and hydrographs can improve conditions and survival for migratory fish such as salmon, and additional reservoir storage can help support adequate river flows for fish during droughts.',
         ],
       },
       {
@@ -246,19 +269,19 @@ export const adaptationScenarios: ScenarioContent[] = [
     title: 'Bolster and Fortify',
     image: '/images/scenarios/bolster-fortify-2.JPG',
     summary:
-      'Engineered gates and reinforced levees create a more controlled freshwater corridor through the Delta toward the southern pumping plants.',
+      'Engineered gates and reinforced levees create a more controlled and reliable freshwater corridor through the Delta connected to the southern pumping plants.',
     story: [
       {
         title: 'What if we could create a more reliable freshwater corridor?',
         navigationLabel: 'Motivation',
         paragraphs: [
-          'Freshwater travels through a network of Delta channels toward the southern pumping plants, supplying water to communities and agriculture across California. During drought, reduced river flows can allow salinity to move farther inland, threatening the quality of water moving through this system.',
-          'Much of this network also runs alongside deeply subsided islands, where water in the channels sits high above the surrounding land. A levee failure could flood communities and farmland, and threaten the pathways that move freshwater south.',
+          'Freshwater supplies currently travel through a network of Delta channels, supplying water to in-Delta communities and for export to other regions and urban areas across California. During droughts, reduced river flows can allow salinity to move farther inland, impacting water quality as it moves through this system. Also, rising sea levels will continue to push tides and salty water further into the Delta.',
+          'Much of the Delta’s leveed waterways run alongside deeply subsided islands, where water in the channels sits high above the surrounding land. A levee failure could flood communities and farmland, and threaten the pathways that move freshwater south.',
           'Bolster and Fortify explores whether targeted infrastructure improvements could make freshwater delivery more reliable while limiting salinity intrusion during drought.',
         ],
       },
       {
-        title: 'Creating a controlled freshwater corridor',
+        title: 'Creating a managed freshwater corridor',
         navigationLabel: 'Design Approach',
         paragraphs: [
           'Bolster and Fortify focuses on a proposed Through-Delta Corridor that guides freshwater from the San Joaquin River through Old River toward Clifton Court Forebay and the southern pumping plants.',
@@ -266,18 +289,18 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
         highlights: [
           {
-            title: 'Operable gates at Franks Tract',
+            title: 'Reconstruct levees to hold back saltwater',
+            summary:
+              'Franks Tract has remained flooded since its levees failed in the 1930s and is a primary pathway for salinity intrusion into the Delta. Rebuilding the degraded levees on the eastern edges of the tract, together with operable gates, will effectively block salty tidal water from entering the freshwater corridor.',
+            paragraphs: [],
+            mapSelectionKey: 'reconstructed-levees',
+          },
+          {
+            title: 'Install operable gates at Franks Tract',
             summary:
               'Two operable salinity-control gates are proposed near the northeastern and southeastern corners of Franks Tract. During drought, these gates could limit saltwater movement to protect freshwater quality along the corridor.',
             paragraphs: [],
             mapSelectionKey: 'operable-gates',
-          },
-          {
-            title: 'Reconstructed levees to direct freshwater',
-            summary:
-              'Franks Tract has remained flooded since its levees failed in the 1930s. Reconstructing selected levees within the tract, together with the operable gates, could help establish a more defined freshwater pathway.',
-            paragraphs: [],
-            mapSelectionKey: 'reconstructed-levees',
           },
           {
             title: 'Fortify the Old River corridor',
@@ -289,11 +312,11 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
-        title: 'A more engineered Delta',
+        title: 'Further engineering the Delta',
         navigationLabel: 'Key Takeaway',
         paragraphs: [
           'Bolster and Fortify explores a future in which engineered infrastructure provides greater control over freshwater movement through the Delta.',
-          'However, greater control comes with trade-offs. Gates and levees can change water circulation and conditions beyond the protected corridor, while construction, maintenance, and long-term operations require substantial investment.',
+          'However, greater control comes with trade-offs. Gates can change water circulation and water quality beyond the protected corridor and impede boating navigation, while construction, maintenance, and long-term operations require substantial investment.',
           'The scenario asks whether that control can provide lasting reliability — and whether the benefits justify the costs, disruptions, and unequal effects that a protected corridor could create elsewhere in the Delta.',
         ],
       },

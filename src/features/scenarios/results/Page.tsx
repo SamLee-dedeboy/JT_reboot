@@ -1,13 +1,4 @@
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import {
-  Box,
-  Button,
-  Container,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from '@mui/material'
+import { Box, Container, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
@@ -21,9 +12,9 @@ import {
   slrScenarioSlugs,
   tieredOutflowsScenario,
 } from '../content'
-import EvaluationFramework from './EvaluationFramework'
 import { FamilyNavigation, OutflowTabs, type ResultFamily } from './Navigation'
 import Overview from './Overview'
+import ScenarioResults from './ScenarioResults'
 
 const explorerScenarioKeys: Record<string, string> = {
   'eco-machine': 'ecomachine',
@@ -104,73 +95,66 @@ export default function Page() {
           <StoryTabs currentSlug={scenarioSlug} destination="results" />
         )}
 
-        <Container
-          maxWidth="lg"
-          sx={{ py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl } }}
-        >
-          {isOverview ? (
+        {isOverview ? (
+          <Container
+            maxWidth={false}
+            sx={{
+              width: '90dvw',
+              px: 0,
+              py: 0,
+            }}
+          >
             <Overview />
-          ) : (
-            <Stack spacing={jtSpacing.section.xl}>
+          </Container>
+        ) : (
+          <Container
+            maxWidth="lg"
+            sx={{ py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl } }}
+          >
+            <Stack spacing={jtSpacing.section.lg}>
               <Box component="section" aria-labelledby="scenario-result-title">
-                <Stack spacing={jtSpacing.gap.md} sx={{ alignItems: 'flex-start' }}>
-                  <Typography id="scenario-result-title" variant="h2">
-                    {resultTitle}
-                  </Typography>
-                  <Typography variant="body1" sx={{ color: 'base.100', maxWidth: '78ch' }}>
-                    {resultSummary}
-                  </Typography>
-
-                  {isAdaptation && (
-                    <Stack spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                      <Typography variant="navigationLabel" component="p">
-                        Sea-level condition
-                      </Typography>
-                      {slrAvailable ? (
-                        <ToggleButtonGroup
-                          exclusive
-                          value={seaLevelRise ? 'slr' : 'present'}
-                          aria-label="Sea-level condition"
-                        >
-                          <ToggleButton
-                            component={Link}
-                            to={`/scenarios/${scenarioSlug}/results`}
-                            value="present"
-                          >
-                            Present-day conditions
-                          </ToggleButton>
-                          <ToggleButton
-                            component={Link}
-                            to={`/scenarios/${scenarioSlug}/results?seaLevelRise=true`}
-                            value="slr"
-                          >
-                            +2 ft sea-level rise
-                          </ToggleButton>
-                        </ToggleButtonGroup>
-                      ) : (
-                        <Typography variant="body2" sx={{ color: 'base.200' }}>
-                          Two-foot sea-level-rise results are not currently available for this
-                          scenario.
-                        </Typography>
-                      )}
-                    </Stack>
-                  )}
-
-                  <Button
-                    component={Link}
-                    to={explorerHref}
-                    variant="contained"
-                    endIcon={<ArrowForwardIcon />}
+                <Typography id="scenario-result-title" variant="h2">
+                  {resultTitle}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
+                >
+                  {resultSummary}
+                </Typography>
+                {isAdaptation && slrAvailable && (
+                  <ToggleButtonGroup
+                    exclusive
+                    value={seaLevelRise ? 'slr' : 'present'}
+                    aria-label="Sea-level condition"
+                    sx={{ mt: jtSpacing.component.lg }}
                   >
-                    Open modeling explorer
-                  </Button>
-                </Stack>
+                    <ToggleButton
+                      component={Link}
+                      to={`/scenarios/${scenarioSlug}/results`}
+                      value="present"
+                    >
+                      Present-day conditions
+                    </ToggleButton>
+                    <ToggleButton
+                      component={Link}
+                      to={`/scenarios/${scenarioSlug}/results?seaLevelRise=true`}
+                      value="slr"
+                    >
+                      +2 ft sea-level rise
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                )}
               </Box>
-
-              <EvaluationFramework />
+              <ScenarioResults
+                scenarioSlug={scenarioSlug ?? ''}
+                scenarioTitle={resultTitle ?? ''}
+                outflowVariation={isOutflow ? variation.id : undefined}
+                explorerHref={explorerHref}
+              />
             </Stack>
-          )}
-        </Container>
+          </Container>
+        )}
       </Box>
       <Footer />
     </>

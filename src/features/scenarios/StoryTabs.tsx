@@ -18,10 +18,18 @@ const orderedScenarios = scenarioOrder
 export default function StoryTabs({
   currentSlug,
   destination = 'story',
+  teamId,
 }: {
   currentSlug: string
   destination?: 'story' | 'results'
+  /** With `destination="results"`, keeps the visitor on this team's results. */
+  teamId?: string
 }) {
+  const hrefFor = (slug: string) =>
+    destination === 'results'
+      ? `/scenarios/${slug}/results${teamId ? `/${teamId}` : ''}`
+      : `/scenarios/${slug}`
+
   return (
     <Box
       component="nav"
@@ -64,7 +72,7 @@ export default function StoryTabs({
               <Box
                 key={scenario.slug}
                 component={Link}
-                to={`/scenarios/${scenario.slug}${destination === 'results' ? '/results' : ''}`}
+                to={hrefFor(scenario.slug)}
                 aria-current={active ? 'page' : undefined}
                 sx={{
                   display: 'grid',

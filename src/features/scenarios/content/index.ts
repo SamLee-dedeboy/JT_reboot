@@ -17,6 +17,8 @@ export {
   slrScenarioSlugs,
 } from './results'
 export { tieredOutflowsScenario } from './tieredOutflows'
+export { teamReports } from './evaluationReports'
+export type { ScenarioFinding, TeamReport } from './evaluationReports'
 export type { ScenarioChapter, ScenarioContent } from './types'
 
 export const scenarios = [baselineScenario, tieredOutflowsScenario, ...adaptationScenarios]

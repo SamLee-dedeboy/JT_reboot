@@ -80,4 +80,15 @@ export const chart = {
     zeroLine: palette.base[300],
     well: palette.translucent[500],
   },
+  // Internal site map: navbar menu edges vs. in-page links between routes.
+  siteMap: {
+    menuEdge: palette.base[300],
+    linkEdge: palette.accent.blue,
+    dynamicEdge: palette.accent.purple,
+    plannedEdge: palette.base[400],
+    selected: palette.brand.primaryGreen,
+    warning: palette.accent.orange,
+    nodeSurface: palette.base[700],
+    nodeBorder: palette.border.default,
+  },
 } as const
