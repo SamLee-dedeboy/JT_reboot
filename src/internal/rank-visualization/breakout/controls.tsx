@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
 import { TEAMS } from '../data'
 import type { TeamKey } from '../data'
-import { focusRing } from './styles'
+import { focusRing, pageX } from './styles'
 
 /** The team switcher: the evaluation pages' numbered bar, stuck to the top of the screen. */
 export function TableTabs({ current }: { current: TeamKey }) {
@@ -30,13 +30,13 @@ export function TableTabs({ current }: { current: TeamKey }) {
       }}
     >
       <Box
-        sx={(theme) => ({
-          px: theme.jtSpacing.page.x,
+        sx={{
+          px: pageX,
           display: 'flex',
           overflowX: 'auto',
           scrollbarWidth: 'none',
           '&::-webkit-scrollbar': { display: 'none' },
-        })}
+        }}
       >
         <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ flex: '0 0 auto' }}>
           {TEAMS.map((team, index) => {
@@ -45,7 +45,7 @@ export function TableTabs({ current }: { current: TeamKey }) {
               <Box
                 key={team.key}
                 component={Link}
-                to={`/pages/breakout/${team.key}`}
+                to={{ pathname: '/pages/breakout', search: `?team=${team.key}` }}
                 aria-current={active ? 'page' : undefined}
                 sx={{
                   display: 'flex',

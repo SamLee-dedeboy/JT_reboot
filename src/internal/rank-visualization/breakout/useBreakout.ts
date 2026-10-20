@@ -69,6 +69,9 @@ function startNodes(root: CriterionNode): string[] {
   return [root.id, ...(root.children ?? []).filter(isRanked).map((row) => row.id)]
 }
 
+/** An entity row's height against a ranking row's: the detail sits lower and tighter. */
+export const ENTITY_ROW = 0.7
+
 /**
  * The most rows any team's table can show with every ranking score open (Economy:
  * its score, three metrics and their thirteen entities). Every table reserves this
@@ -81,7 +84,7 @@ export const DENSEST_TABLE_ROWS = Math.max(
       1 +
       (root.children ?? [])
         .filter(isRanked)
-        .reduce((n, row) => n + 1 + (row.children?.length ?? 0), 0),
+        .reduce((n, row) => n + 1 + (row.children?.length ?? 0) * ENTITY_ROW, 0),
   ),
 )
 

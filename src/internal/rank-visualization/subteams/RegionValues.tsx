@@ -12,7 +12,7 @@
 // is a cell: it has a criterion, a scenario, a place and a period, which is
 // exactly what the provenance modal takes.
 import { Box, Typography, useTheme } from '@mui/material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { cellFill } from '../data'
 import type { TeamKey } from '../data'
 import { CellDetail } from '../drilldown/CellDetail'
@@ -24,6 +24,14 @@ import { REGION_SHAPES, REGION_VIEWBOX, WATERWAY_PATH } from './regionShapes'
 import { Choice, DivergingLegend, Swatch } from './SubteamFrame'
 
 type Reading = 'level' | 'change'
+
+/** The two ends of a panel's colour scale, worse first, for a legend drawn elsewhere. */
+export interface MapScale {
+  worse: string
+  better: string
+  /** What the colour measures and which way is better. */
+  note: string
+}
 
 export interface RegionValuesProps {
   team: TeamKey
@@ -50,6 +58,21 @@ export interface RegionValuesProps {
   sameStyleForChange?: boolean
   /** Print each region's number on it, so the map reads without hovering. */
   showValues?: boolean
+  /**
+   * Colour a measurement on the −5…+5 score palette: its range on these maps spread
+   * across it, the better end blue (the lower end, where less is better). A
+   * difference runs out from neutral at no change.
+   */
+  scoreScale?: boolean
+  /** Hear the scale's two ends, so the caller's own legend can give them. */
+  onScale?: (scale: MapScale | null) => void
+  /**
+   * With scoreScale, colour each region by the score its own rule gives it: one
+   * point per this much change against Business as Usual in the same region,
+   * rounded and capped at ±5 (0.01 for a share scored per percentage point). The
+   * baseline itself is 0. Without it the panel's range is spread over the palette.
+   */
+  scorePerPoint?: number
 }
 
 const SCORE_SPAN = 5
@@ -72,6 +95,9 @@ export function RegionValues({
   fit,
   sameStyleForChange,
   showValues,
+  scoreScale,
+  onScale,
+  scorePerPoint,
 }: RegionValuesProps) {
   const theme = useTheme()
   const shapes = REGION_SHAPES.filter((shape) => shape.team === team)
@@ -123,10 +149,23 @@ export function RegionValues({
   const anyValue = scenarios.some((scenario) =>
     shapes.some((shape) => reads(scenario, shape.name) !== null),
   )
+  const shown = scenarios.flatMap((scenario) =>
+    shapes.map((shape) => reads(scenario, shape.name)).filter((v): v is number => v !== null),
+  )
+  const lo = shown.length ? Math.min(...shown) : 0
+  const hi = shown.length ? Math.max(...shown) : 0
+  /** A value's place on the score palette: −5 the worse end, +5 the better. */
+  const scoreOf = (value: number) =>
+    reading === 'change'
+      ? direction * (value / max) * SCORE_SPAN
+      : hi > lo
+        ? direction * (((value - lo) / (hi - lo)) * 2 - 1) * SCORE_SPAN
+        : 0
   const fillFor = (value: number | null): { fill: string; opacity: number } | null => {
     if (value === null) return null
     if (isScore && (reading === 'level' || sameStyleForChange))
       return { fill: cellFill(value), opacity: 1 }
+    if (scoreScale) return { fill: cellFill(scoreOf(value)), opacity: 1 }
     if (sameStyleForChange) {
       const share = Math.min(1, Math.abs(value) / max)
       return { fill: theme.palette.salinity.teal, opacity: 0.12 + share * 0.88 }
@@ -138,12 +177,56 @@ export function RegionValues({
     return { fill: theme.palette.salinity.teal, opacity: 0.12 + strength * 0.88 }
   }
 
+  // The team's own rule: the region's change from Business as Usual, in points.
+  const ruled = !!scoreScale && !isScore && scorePerPoint !== undefined
+  const ruleScore = (scenario: ScenarioKey, region: string): number | null => {
+    const here = at(scenario, region)?.cell.value ?? null
+    const base = at('bau', region)?.cell.value ?? null
+    if (here === null || base === null || scorePerPoint === undefined) return null
+    const points = Math.round((direction * (here - base)) / scorePerPoint)
+    return Math.max(-SCORE_SPAN, Math.min(SCORE_SPAN, points))
+  }
+  const paintAt = (scenario: ScenarioKey, region: string, value: number | null) => {
+    if (!ruled) return fillFor(value)
+    const score = ruleScore(scenario, region)
+    return score === null ? null : { fill: cellFill(score), opacity: 1 }
+  }
+
   /** A region's number as printed on it: as published, or signed against the baseline. */
   const mapText = (value: number) => {
     if (reading !== 'change') return fmtValue(value, unit)
-    if (value === 0) return '0'
-    return `${value > 0 ? '+' : '−'}${unsigned(fmtValue(Math.abs(value), unit))}`
+    // A change that rounds to nothing is the unit's plain zero ("0%"), unsigned.
+    const zero = unsigned(fmtValue(0, unit))
+    const text = unsigned(fmtValue(Math.abs(value), unit))
+    return text === zero ? zero : `${value > 0 ? '+' : '−'}${text}`
   }
+  const scale: MapScale | null = !anyValue
+    ? null
+    : isScore
+      ? { worse: '−5', better: '+5', note: 'score, −5 to +5' }
+      : ruled
+        ? {
+            worse: '−5',
+            better: '+5',
+            note: `score: +1 per percentage point ${direction > 0 ? 'above' : 'below'} Business as Usual, ±5 at most`,
+          }
+        : reading === 'change'
+          ? {
+              worse: mapText(-direction * max),
+              better: mapText(direction * max),
+              note: `change in ${unitLabel}, ${direction > 0 ? 'more' : 'less'} is better`,
+            }
+          : {
+              worse: mapText(direction > 0 ? lo : hi),
+              better: mapText(direction > 0 ? hi : lo),
+              note: `${unitLabel}, ${direction > 0 ? 'more' : 'less'} is better`,
+            }
+  const scaleKey = scale ? `${scale.worse}|${scale.better}|${scale.note}` : ''
+  useEffect(() => {
+    if (onScale) onScale(scaleKey ? scale : null)
+    // The key stands for the scale; the object itself is new each render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scaleKey, onScale])
   const unmapped = shapes.filter((shape) => !coordsFor(shape.name, scenarios[0])).length
   const outline = theme.palette.base[200]
 
@@ -152,7 +235,13 @@ export function RegionValues({
       sx={{
         display: 'grid',
         gap: 1.25,
-        ...(fit ? { height: 1, minHeight: 0, gridTemplateRows: 'minmax(0, 1fr)' } : {}),
+        ...(fit
+          ? {
+              height: 1,
+              minHeight: 0,
+              gridTemplateRows: 'minmax(0, 1fr)',
+            }
+          : {}),
       }}
     >
       {changeToggle && (
@@ -242,7 +331,7 @@ export function RegionValues({
                   {shapes.map((shape) => {
                     const entry = at(scenario, shape.name)
                     const value = reads(scenario, shape.name)
-                    const paint = fillFor(value)
+                    const paint = paintAt(scenario, shape.name, value)
                     return (
                       <path
                         key={shape.name}

@@ -2,8 +2,8 @@
 //
 // This is 4C's data model behind a different shell. The host starts on their own
 // criterion with every scenario showing, and has four moves: pick scenarios, pick
-// a place, pick a period, open a metric into its parts; and three ways to look,
-// table, chart or map. Everything is set large for a projector, and every number
+// a place, pick a period, open a metric into its parts; and two ways to look,
+// table or map. Everything is set large for a projector, and every number
 // on screen is one the subteam published: a value we inferred shows as a
 // placeholder, never as a number. Pinned views and their notes stay on the
 // laptop, offline, and export as a Markdown file for the report-out. Teams with
@@ -14,10 +14,11 @@
 // bordered translucent panels, with no site navbar so the table owns the screen.
 // The table itself keeps the 4C cell design. Scenarios always sit in one fixed
 // order and fade when switched off; ranking scores (−5…+5) are set apart from the
-// details beneath them, in the table and the charts alike.
+// details beneath them.
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import DownloadIcon from '@mui/icons-material/Download'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
 import PushPinIcon from '@mui/icons-material/PushPin'
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined'
@@ -27,17 +28,16 @@ import {
   ButtonBase,
   Chip,
   IconButton,
+  Popover,
   Stack,
-  Tab,
-  Tabs,
   TextField,
   Typography,
   useTheme,
 } from '@mui/material'
 import { motion, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { evaluationCardSx } from '../../../features/scenarios/evaluation/styles'
 import { jtSpacing } from '../../../theme'
 import { TEAMS, cellFill } from '../data'
@@ -46,17 +46,19 @@ import { CellDetail } from '../drilldown/CellDetail'
 import { rankAt, valueAt } from '../drilldown/cellValue'
 import type { Coords } from '../drilldown/cellValue'
 import { ANY, SCENARIO_NAME, fmtValue, inClimate } from '../drilldown/model'
-import type { Climate, CriterionNode, Facet, ScenarioKey } from '../drilldown/model'
+import type { Climate, CriterionNode, ScenarioKey } from '../drilldown/model'
 import { RegionValues } from '../subteams/RegionValues'
+import type { MapScale } from '../subteams/RegionValues'
 import { REGION_DATA_KEY } from '../subteams/regionKeys'
 import { Swatch } from '../subteams/SubteamFrame'
-import { DetailMatrix, ScoreGrid } from './Charts'
-import { FADED, SCENARIO_SHORT, periodGroups, periodShade } from './chartKit'
+import { FADED, relaxedExtent } from './chartKit'
 import type { Point } from './chartKit'
 import { MeasureRow, RailGroup, Segmented, SetChip, StageChip, TableTabs } from './controls'
 import type { SegmentOption } from './controls'
-import { focusRing } from './styles'
-import { BREAKOUT_SCENARIOS, DENSEST_TABLE_ROWS, useBreakout } from './useBreakout'
+import { RANKING_DEFINITIONS, UI } from './labels'
+import { focusRing, pageX } from './styles'
+import { useElementSize } from './useElementSize'
+import { BREAKOUT_SCENARIOS, DENSEST_TABLE_ROWS, ENTITY_ROW, useBreakout } from './useBreakout'
 import type { Breakout, Pin, View } from './useBreakout'
 
 const TEAM_KEYS = TEAMS.map((team) => team.key)
@@ -67,7 +69,7 @@ const TEAM_KEYS = TEAMS.map((team) => team.key)
  */
 const HOST_INTRO: Partial<Record<TeamKey, string>> = {}
 
-const PLACEHOLDER = 'awaiting subteam'
+const PLACEHOLDER = UI.awaiting
 
 /** A Box that Motion can animate: the table's label and cells. */
 const MotionBox = motion.create(Box)
@@ -81,84 +83,16 @@ const EASE = [0.2, 0, 0, 1] as const
  */
 const SHOW_PINS = false
 
+/** The one breakout page: every team's table behind the tab bar, the team in `?team=`. */
 export default function BreakoutPage() {
-  const { team: param } = useParams()
-  const team = TEAM_KEYS.includes(param as TeamKey) ? (param as TeamKey) : null
+  const [params] = useSearchParams()
+  const param = params.get('team')
+  const team = TEAM_KEYS.includes(param as TeamKey) ? (param as TeamKey) : TEAM_KEYS[0]
   return (
     // No site navbar or footer: the table owns the screen it is projected on.
     <Box component="main" sx={{ minHeight: '100dvh', bgcolor: 'base.800', color: 'common.white' }}>
-      {team ? <Table team={team} key={team} /> : <Picker />}
+      <Table team={team} key={team} />
     </Box>
-  )
-}
-
-/** The picker's heading: eyebrow and display title, as the evaluation pages open. */
-function PickerHeader() {
-  return (
-    <Box
-      component="header"
-      sx={(theme) => ({
-        px: theme.jtSpacing.page.x,
-        pt: theme.jtSpacing.section.md,
-        pb: theme.jtSpacing.section.xs,
-      })}
-    >
-      <Stack spacing={jtSpacing.gap.md} sx={{ maxWidth: '90ch' }}>
-        <Typography variant="eyebrow" component="p">
-          Breakout tables
-        </Typography>
-        <Typography variant="h1">Pick a table</Typography>
-        <Typography variant="bodyLarge" sx={{ color: 'base.50' }}>
-          Each subteam hosts a table. Open yours on the laptop that drives the screen.
-        </Typography>
-      </Stack>
-    </Box>
-  )
-}
-
-function Picker() {
-  return (
-    <>
-      <PickerHeader />
-      {/* One card per table, numbered as the tab bar numbers them. */}
-      <Box
-        sx={(theme) => ({
-          px: theme.jtSpacing.page.x,
-          pb: theme.jtSpacing.section.lg,
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(5, 1fr)' },
-          gap: jtSpacing.gap.md,
-        })}
-      >
-        {TEAMS.map((entry, index) => (
-          <Box
-            key={entry.key}
-            component={Link}
-            to={`/pages/breakout/${entry.key}`}
-            sx={{
-              ...evaluationCardSx,
-              display: 'grid',
-              gap: jtSpacing.gap.sm,
-              color: 'common.white',
-              textDecoration: 'none',
-              borderTop: 3,
-              borderTopColor: entry.color,
-              transition: 'border-color 160ms ease, background-color 160ms ease',
-              '&:hover': { bgcolor: 'translucent.200', borderColor: 'primary.main' },
-              '&:focus-visible': focusRing,
-            }}
-          >
-            <Typography variant="numberBadge" component="span">
-              {String(index + 1).padStart(2, '0')}
-            </Typography>
-            <Typography variant="cardTitle" component="h2">
-              {entry.name}
-            </Typography>
-            <Typography variant="captionSmall">Open this table</Typography>
-          </Box>
-        ))}
-      </Box>
-    </>
   )
 }
 
@@ -167,6 +101,8 @@ function Table({ team }: { team: TeamKey }) {
   const name = TEAMS.find((entry) => entry.key === team)?.name ?? ''
   const [inspect, setInspect] = useState<Coords | null>(null)
   const canMap = mapItems(state, team).length > 0
+  // The map's colour ends, heard from the map so the one legend can give them.
+  const [mapScale, setMapScale] = useState<MapScale | null>(null)
   const view: View = state.view === 'map' && !canMap ? 'table' : state.view
 
   return (
@@ -191,7 +127,7 @@ function Table({ team }: { team: TeamKey }) {
       {/* What is on screen, in one glance from the back row, and the host's opening words. */}
       <Stack
         spacing={jtSpacing.gap.sm}
-        sx={(theme) => ({ px: theme.jtSpacing.page.x, pt: theme.jtSpacing.component.sm })}
+        sx={(theme) => ({ px: pageX, pt: theme.jtSpacing.component.sm })}
       >
         {/* The tab bar names the table on screen; this names it for screen readers. */}
         <Typography
@@ -215,18 +151,24 @@ function Table({ team }: { team: TeamKey }) {
       <Box
         sx={(theme) => ({
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '300px minmax(0, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: '240px minmax(0, 1fr)',
+            xl: '300px minmax(0, 1fr)',
+          },
           gap: theme.jtSpacing.gap.lg,
           alignItems: { xs: 'start', md: 'stretch' },
           minHeight: 0,
-          px: theme.jtSpacing.page.x,
+          px: pageX,
           py: theme.jtSpacing.component.md,
         })}
       >
-        <Rail state={state} />
+        <Rail state={state} places={!NO_PLACES.includes(team)} />
         <Box
           sx={{
             ...evaluationCardSx,
+            // Tighter on a laptop, where the table needs the width.
+            p: { md: 1.5, xl: 2.5 },
             minWidth: 0,
             minHeight: 0,
             display: 'grid',
@@ -245,9 +187,10 @@ function Table({ team }: { team: TeamKey }) {
               flexWrap: { xs: 'wrap', md: 'nowrap' },
             }}
           >
-            {/* The view switch leads the row; the legend for that view follows it. */}
-            <ViewSwitch state={state} canMap={canMap} view={view} />
-            <LegendBar state={state} view={view} />
+            {/* The view switch leads the row, where there is a map to switch to; the
+                legend for that view follows it. */}
+            {canMap && <ViewSwitch state={state} view={view} />}
+            <LegendBar state={state} view={view} mapScale={mapScale} />
           </Box>
           <Box
             role="region"
@@ -255,9 +198,7 @@ function Table({ team }: { team: TeamKey }) {
             sx={{ minHeight: { xs: 480, md: 0 }, overflow: 'hidden' }}
           >
             {view === 'map' ? (
-              <Maps state={state} team={team} />
-            ) : view === 'chart' ? (
-              <Charts state={state} />
+              <Maps state={state} team={team} onScale={setMapScale} />
             ) : (
               <Matrix state={state} onInspect={setInspect} />
             )}
@@ -286,17 +227,17 @@ function Sentence({ state }: { state: Breakout }) {
   )
   return (
     <Typography variant="bodyLarge" component="p" sx={{ color: 'base.100' }}>
-      {state.reading === 'change' ? 'Difference from Business as Usual for ' : 'Comparing '}
-      {em(n === 6 ? 'all six scenarios' : `${n} scenario${n === 1 ? '' : 's'}`)}
+      {state.reading === 'change' ? UI.comparingChange : UI.comparing}
+      {em(n === 6 ? UI.allScenarios : `${n} scenario${n === 1 ? '' : 's'}`)}
       {state.climate === 'slr' && (
         <>
           {', '}
-          {em('with sea level rise')}
+          {em(UI.withSeaLevelRise)}
           {', '}
         </>
       )}
       {' on '}
-      {em(names.length <= 2 ? names.join(' and ') : `${names.length} measures`)}
+      {em(names.length <= 2 ? names.join(' and ') : `${names.length} metrics`)}
       {placeLabel && (
         <>
           {' in '}
@@ -333,7 +274,7 @@ function HostIntro({ team }: { team: TeamKey }) {
       }}
     >
       <Typography variant="caption" sx={{ color: 'base.300' }}>
-        Opening paragraph for this table: {PLACEHOLDER}.
+        {UI.openingPlaceholder}
       </Typography>
     </Box>
   )
@@ -342,7 +283,13 @@ function HostIntro({ team }: { team: TeamKey }) {
 // ---------- the rail ----------
 
 /** The controls, compact, scrolling inside the work area so they never push the page past one screen. */
-function Rail({ state }: { state: Breakout }) {
+/**
+ * Teams whose rail offers no place to pick: Eco-cultural's In-Delta / upper
+ * watershed split is a note on restored acres, not a place to filter the table by.
+ */
+const NO_PLACES: TeamKey[] = ['ecoCultural']
+
+function Rail({ state, places }: { state: Breakout; places: boolean }) {
   // A place that stands for everywhere: Delta-wide, or EJ's all 49 points.
   const wide = state.placeFacets.find((f) => /^delta-wide$/i.test(f.label) || f.key === 'all')
   // "Whole run" only where a row on screen has one; otherwise the first period is
@@ -358,40 +305,41 @@ function Rail({ state }: { state: Breakout }) {
       sx={{
         minHeight: 0,
         overflowY: { md: 'auto' },
-        pr: { md: 1 },
-        scrollbarWidth: 'thin',
+        // It scrolls when it is longer than the screen, without a bar beside it.
+        scrollbarWidth: 'none',
+        '&::-webkit-scrollbar': { display: 'none' },
       }}
     >
       {state.slrStatus && (
-        <RailGroup title="Sea level">
+        <RailGroup title={UI.seaLevel}>
           <Segmented<Climate>
-            label="Sea level"
+            label={UI.seaLevel}
             tone="secondary"
             value={state.climate}
             onChange={state.setClimate}
             options={[
-              { value: 'current', label: 'Current' },
+              { value: 'current', label: UI.current },
               {
                 value: 'slr',
-                label: 'Sea level rise',
+                label: UI.seaLevelRise,
                 disabled: state.slrStatus !== 'loaded',
               },
             ]}
           />
           {state.slrStatus !== 'loaded' && (
             <Typography variant="captionSmall" sx={{ color: 'base.300' }}>
-              This team’s sea-level-rise runs are not loaded yet.
+              {UI.seaLevelNotLoaded}
             </Typography>
           )}
         </RailGroup>
       )}
 
       <RailGroup
-        title="Scenarios"
+        title={UI.scenarios}
         action={
           // Everything that can be on is on: five while the baseline is locked, else six.
           state.scenarios.length < BREAKOUT_SCENARIOS.length - (state.baselineLocked ? 1 : 0)
-            ? { label: 'All', onClick: state.setAllScenarios }
+            ? { label: UI.allOn, onClick: state.setAllScenarios }
             : undefined
         }
       >
@@ -408,33 +356,32 @@ function Rail({ state }: { state: Breakout }) {
         </Box>
         {state.baselineLocked && (
           <Typography variant="captionSmall" sx={{ color: 'base.200' }}>
-            Business as Usual is the baseline every deviation is measured from, so it stays off
-            while deviations are shown.
+            {UI.baselineLocked}
           </Typography>
         )}
       </RailGroup>
 
-      <RailGroup title="SHOW">
+      <RailGroup title={UI.show}>
         <Segmented
-          label="Show"
+          label={UI.show}
           value={state.reading}
           onChange={state.setReading}
           options={[
-            { value: 'level', label: 'Absolute values' },
-            { value: 'change', label: 'Deviation from baseline' },
+            { value: 'level', label: UI.absoluteValues },
+            { value: 'change', label: UI.deviation },
           ]}
         />
       </RailGroup>
 
-      {state.placeFacets.length > 0 && (
-        <RailGroup title="PLACES">
+      {places && state.placeFacets.length > 0 && (
+        <RailGroup title={UI.places}>
           <Segmented
             label="Place"
             value={placeValue}
             onChange={state.setPlace}
             columns={2}
             options={[
-              ...(wide ? [] : [{ value: ANY, label: 'All together' }]),
+              ...(wide ? [] : [{ value: ANY, label: UI.allPlaces }]),
               ...state.placeFacets.map((facet) => ({ value: facet.key, label: facet.label })),
             ]}
           />
@@ -442,31 +389,24 @@ function Rail({ state }: { state: Breakout }) {
       )}
 
       {state.periodFacets.length > 0 && (
-        <RailGroup title="TIME PERIODS">
+        <RailGroup title={UI.timePeriods}>
           <Segmented
             label="Period"
             value={periodValue}
             onChange={state.setPeriod}
             columns={2}
             options={[
-              ...(state.hasWholeRun
-                ? [{ value: ANY, label: 'Whole run · Oct 2018 – Dec 2020' }]
-                : []),
+              ...(state.hasWholeRun ? [{ value: ANY, label: UI.wholeRun }] : []),
               ...state.periodFacets.map((facet) => ({ value: facet.key, label: facet.label })),
-            ].map((option) => ({ ...option, disabled: state.view === 'chart' }))}
+            ]}
           />
-          {state.view === 'chart' && (
-            <Typography variant="captionSmall" sx={{ color: 'base.200' }}>
-              Charts set every period side by side.
-            </Typography>
-          )}
         </RailGroup>
       )}
 
-      <RailGroup title="METRICS">
+      <RailGroup title={UI.metrics}>
         <Box sx={{ borderBottom: 1, borderColor: 'border.subtle' }}>
           <MeasureRow
-            label={`${state.root.label}: the score`}
+            label={UI.teamScore(state.root.label)}
             on={state.nodes.includes(state.root.id)}
             onToggle={() => state.toggleNode(state.root.id)}
           />
@@ -502,14 +442,11 @@ function MetricRows({ metric, state }: { metric: CriterionNode; state: Breakout 
   )
 }
 
-/** Table, chart or map: the rail's segmented tray, compact, with an icon apiece, leading the legend row. */
-function ViewSwitch({ state, canMap, view }: { state: Breakout; canMap: boolean; view: View }) {
+/** Table or map: the rail's segmented tray, compact, with an icon apiece, leading the legend row. */
+function ViewSwitch({ state, view }: { state: Breakout; view: View }) {
   const views: SegmentOption<View>[] = [
-    { value: 'table', label: 'Table', icon: <TableRowsOutlinedIcon fontSize="small" /> },
-    { value: 'chart', label: 'Chart', icon: <BarChartOutlinedIcon fontSize="small" /> },
-    ...(canMap
-      ? [{ value: 'map' as View, label: 'Map', icon: <MapOutlinedIcon fontSize="small" /> }]
-      : []),
+    { value: 'table', label: UI.table, icon: <TableRowsOutlinedIcon fontSize="small" /> },
+    { value: 'map', label: UI.map, icon: <MapOutlinedIcon fontSize="small" /> },
   ]
   return (
     <Box sx={{ flex: 'none' }}>
@@ -538,7 +475,7 @@ function read(
   // A row scored per species or per activity has no number of its own: its
   // entities carry the ranks, and the row says so.
   if (cell.value === null && node.entityNoun && Object.keys(node.values).length === 0)
-    return { value: null as number | null, why: `per ${node.entityNoun}` }
+    return { value: null as number | null, why: UI.perEntity(node.entityNoun) }
   if (cell.value === null) {
     // Under sea level rise a scenario with no run at all is a different gap from a
     // number never scored: Calling on Reserves and A Tunnel were not run with it.
@@ -550,15 +487,15 @@ function read(
     const why =
       climate !== 'slr'
         ? series === undefined && Object.keys(cell.node?.values ?? {}).length > 0
-          ? 'not run'
-          : 'not scored'
+          ? UI.notRun
+          : UI.notScored
         : !series
           ? anySlr
-            ? 'not run with SLR'
-            : 'no SLR result'
+            ? UI.notRunWithSlr
+            : UI.noSlrResult
           : Object.keys(series).some((key) => key.startsWith(`${place}|`))
-            ? 'both years only'
-            : 'not scored'
+            ? UI.bothYearsOnly
+            : UI.notScored
     return { value: null as number | null, why }
   }
   if (cell.inferred) return { value: null as number | null, why: PLACEHOLDER }
@@ -567,11 +504,20 @@ function read(
 
 /** A measure's unit, said once: the Show switch and the sentence say when it is a difference. */
 function unitWord(node: CriterionNode): string {
-  return node.unit === 'score'
-    ? 'score, −5 to +5'
-    : node.unit === 'share'
-      ? 'proportion of days'
-      : node.unit
+  switch (node.unit) {
+    case 'score':
+      return 'score, −5 to +5'
+    case 'share':
+      // EJ counts water-quality readings; everyone else counts days.
+      return /^readings/i.test(node.label) ? 'share of readings' : 'proportion of days'
+    case 'usd':
+    case 'dollars':
+      return 'dollars'
+    case 'ladder':
+      return 'change in water age'
+    default:
+      return node.unit
+  }
 }
 
 /** Ranking scores sit on the −5…+5 scale; everything else is a detail beneath them. */
@@ -582,10 +528,15 @@ function splitRows(nodes: CriterionNode[]) {
   return { scores: nodes.filter(isScore), details: nodes.filter((node) => !isScore(node)) }
 }
 
-/** A difference in the row's own unit, with an explicit sign. */
+/**
+ * A difference in the row's own unit, with an explicit sign. A difference that
+ * rounds to nothing reads as the unit's plain zero ("0%"), never "+0%" or "−0%".
+ */
 function signed(value: number, unit: CriterionNode['unit']): string {
-  const text = fmtValue(Math.abs(value), unit).replace(/^[+\-−]\s*/, '')
-  return value === 0 ? '0' : `${value > 0 ? '+' : '−'}${text}`
+  const strip = (text: string) => text.replace(/^[+\-−]\s*/, '')
+  const zero = strip(fmtValue(0, unit))
+  const text = strip(fmtValue(Math.abs(value), unit))
+  return text === zero ? zero : `${value > 0 ? '+' : '−'}${text}`
 }
 
 /** One value as the Show switch asks for it: as published, or less Business as Usual. */
@@ -630,12 +581,7 @@ function SectionLabel({ children, aside }: { children: ReactNode; aside?: string
   )
 }
 
-/** The key to the short scenario codes on the chart axes. */
-const CODE_KEY = BREAKOUT_SCENARIOS.map(
-  (key) => `${SCENARIO_SHORT[key]} ${SCENARIO_NAME[key]}`,
-).join(' · ')
-
-const RANKING_HEADING = 'Ranking scores · −5 to +5'
+const RANKING_HEADING = UI.rankingHeading
 
 /**
  * A row label: two lines where rows have room for them, one line in a long table,
@@ -653,27 +599,32 @@ const labelLines = (lines: 1 | 2) =>
  * The legend for whichever view is open, after the view switch. A difference is
  * drawn in the same colours as a value, so one key serves both readings.
  */
-function LegendBar({ state, view }: { state: Breakout; view: View }) {
+function LegendBar({
+  state,
+  view,
+  mapScale,
+}: {
+  state: Breakout
+  view: View
+  mapScale: MapScale | null
+}) {
   const theme = useTheme()
-  const diff = state.reading === 'change'
   const { scores, details } = splitRows(state.selectedNodes)
-  const shared = view === 'chart' ? chartModel(state).shared : null
   const item = (key: string, label: string, body: ReactNode) => (
     <Box
       key={key}
       sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flex: 'none', whiteSpace: 'nowrap' }}
     >
       {label && (
-        <Typography variant="chartLabel" sx={{ color: 'base.100' }}>
+        <Typography variant="caption" sx={{ color: 'base.100' }}>
           {label}
         </Typography>
       )}
       {body}
     </Box>
   )
-  const caption = (text: string) => <Typography variant="captionSmall">{text}</Typography>
+  const caption = (text: string) => <Typography variant="caption">{text}</Typography>
   const steps = [-5, -3, -1, 0, 1, 3, 5]
-  const largest = `${diff ? 'largest change' : 'largest'} ${view === 'map' ? 'on map' : 'in row'}`
   return (
     <Box
       sx={{
@@ -687,11 +638,27 @@ function LegendBar({ state, view }: { state: Breakout; view: View }) {
         rowGap: 0.75,
       }}
     >
+      {view === 'map' &&
+        mapScale &&
+        item(
+          'map',
+          '',
+          <>
+            {caption(mapScale.worse)}
+            {steps.map((step) => (
+              <Swatch key={step} tone={cellFill(step)} />
+            ))}
+            {caption(mapScale.better)}
+            <Typography variant="caption" sx={{ color: 'base.200' }}>
+              {mapScale.note}
+            </Typography>
+          </>,
+        )}
       {scores.length > 0 &&
-        view !== 'chart' &&
+        view !== 'map' &&
         item(
           'scores',
-          'Scores',
+          UI.legendScores,
           <>
             {caption('−5')}
             {steps.map((step) => (
@@ -701,33 +668,14 @@ function LegendBar({ state, view }: { state: Breakout; view: View }) {
           </>,
         )}
       {details.length > 0 &&
-        view !== 'chart' &&
+        view !== 'map' &&
         item(
           'details',
-          'Details',
+          UI.legendDetails,
           <>
-            {caption('0')}
-            {[0.2, 0.4, 0.6, 0.8, 1].map((step) => (
-              <Swatch
-                key={step}
-                tone={theme.palette.salinity.teal}
-                opacity={0.12 + step * (view === 'map' ? 0.88 : 0.5)}
-              />
-            ))}
-            {caption(largest)}
-          </>,
-        )}
-      {shared &&
-        item(
-          'bars',
-          'Bars',
-          <>
-            {shared.map((group, i) => (
-              <Box key={group.key} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Swatch tone={periodShade(theme, i)} />
-                {caption(group.label)}
-              </Box>
-            ))}
+            <Typography variant="caption" sx={{ color: 'primary.main' }}>
+              {UI.bestInRow}
+            </Typography>
           </>,
         )}
       {item(
@@ -735,7 +683,7 @@ function LegendBar({ state, view }: { state: Breakout; view: View }) {
         '',
         <>
           <Swatch dashed />
-          {caption('no value')}
+          {caption(UI.noValue)}
         </>,
       )}
       {state.scenarios.length < BREAKOUT_SCENARIOS.length &&
@@ -746,7 +694,7 @@ function LegendBar({ state, view }: { state: Breakout; view: View }) {
             <Box component="span" sx={{ opacity: FADED }}>
               <Swatch tone={theme.palette.base[50]} />
             </Box>
-            {caption('scenario switched off')}
+            {caption(UI.switchedOff)}
           </>,
         )}
     </Box>
@@ -764,6 +712,9 @@ const scoreText = (value: number) => (value > 0 ? `+${value}` : value < 0 ? `−
 function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coords) => void }) {
   const diff = state.reading === 'change'
   const active = state.scenarios
+  // In deviation view Business as Usual is locked off and fades like any scenario
+  // switched off; its own text stays plain white (see Cell's `baseline`).
+  const lit = (scenario: ScenarioKey) => active.includes(scenario)
   const rows = state.rows.map((row) => {
     const cells = BREAKOUT_SCENARIOS.map((scenario) => {
       const point = pointAt(state, row.node, scenario, state.period)
@@ -789,10 +740,42 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
           : undefined
       return { ...point, rank: row.depth === 1 ? rankAt(coords) : null, summary }
     })
-    const max = Math.max(0.000001, ...cells.map((c) => Math.abs(c.value ?? 0)))
-    return { ...row, cells, max }
+    // The row's best value, named in green, as it reads on screen: two values that
+    // both print "6%" are both the best. Best is the highest, or the lowest where
+    // less is better (days over a threshold, an invasive species, saltier water).
+    // A row that reads the same throughout has none.
+    const unit = row.node.unit
+    const shown = (v: number) => (diff && unit !== 'score' ? signed(v, unit) : fmtValue(v, unit))
+    const held = cells
+      .filter((c) => !(diff && c.scenario === 'bau'))
+      .map((c) => c.value)
+      .filter((v): v is number => v !== null)
+    const best = row.node.betterHigher ? Math.max(...held) : Math.min(...held)
+    const highest = new Set(held.map(shown)).size > 1 ? shown(best) : null
+    return { ...row, cells, shown, highest }
   })
   const anyPlaceholder = rows.some((row) => row.cells.some((c) => c.why === PLACEHOLDER))
+  // Scores whose entities are drawn as bars: each column a horizontal bar chart,
+  // one axis for the whole block so the columns compare.
+  const [barred, setBarred] = useState<string[]>([])
+  const toggleBars = (id: string) =>
+    setBarred((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  const scoreOf = (index: number) => rows.slice(0, index + 1).findLast((r) => r.depth === 0)?.node
+  // A block that mixes units (dollars and jobs) gets one axis per unit.
+  const extents = new Map(
+    rows
+      .filter((row) => row.depth === 0 && barred.includes(row.node.id))
+      .flatMap((row) => {
+        const entities = rows.filter((r, i) => r.depth === 1 && scoreOf(i) === row.node)
+        return [...new Set(entities.map((r) => r.node.unit))].map((unit) => {
+          const values = entities
+            .filter((r) => r.node.unit === unit)
+            .flatMap((r) => r.cells.map((c) => c.value).filter((v): v is number => v !== null))
+          const ceiling = unit === 'share' && !diff ? 1 : undefined
+          return [`${row.node.id}|${unit}`, relaxedExtent(values, ceiling)] as const
+        })
+      }),
+  )
   const reduceMotion = useReducedMotion()
   // An opened score's entities arrive one after another, sliding down from it;
   // every item keeps its place animated, so the rows below glide out of the way.
@@ -815,13 +798,14 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
   // Rows share the height as if this table had the densest team's row count; a
   // filler track takes the share of the rows this table does not have. A table
   // longer than that fills the card and its rows shrink instead.
-  const spare = Math.max(0, DENSEST_TABLE_ROWS - rows.length)
+  const weight = rows.reduce((n, row) => n + (row.depth === 1 ? ENTITY_ROW : 1), 0)
+  const spare = Math.max(0, Math.round((DENSEST_TABLE_ROWS - weight) * 100) / 100)
   // At that density a row is too short for a two-line label.
   const lines = Math.max(rows.length, DENSEST_TABLE_ROWS) > 9 ? 1 : 2
   const template = [
     'auto',
     'auto',
-    ...rows.map(() => 'minmax(0, 1fr)'),
+    ...rows.map((row) => `minmax(0, ${row.depth === 1 ? ENTITY_ROW : 1}fr)`),
     ...(spare > 0 ? [`minmax(0, ${spare}fr)`] : []),
     'auto',
   ].join(' ')
@@ -831,7 +815,10 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
       sx={{
         height: 1,
         display: 'grid',
-        gridTemplateColumns: `minmax(0, 2.2fr) repeat(${BREAKOUT_SCENARIOS.length}, minmax(0, 1fr))`,
+        gridTemplateColumns: {
+          md: `minmax(0, 2.4fr) repeat(${BREAKOUT_SCENARIOS.length}, minmax(0, 1fr))`,
+          xl: `minmax(0, 2.2fr) repeat(${BREAKOUT_SCENARIOS.length}, minmax(0, 1fr))`,
+        },
         gridTemplateRows: template,
         columnGap: 1,
         // Spacing lives inside each row, so a table's gaps do not depend on its row count.
@@ -845,7 +832,7 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
           variant="chartTitle"
           sx={{
             alignSelf: 'end',
-            opacity: active.includes(scenario) ? 1 : FADED,
+            opacity: lit(scenario) ? 1 : FADED,
             transition: 'opacity 200ms ease',
           }}
         >
@@ -855,9 +842,12 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
       <Box sx={{ gridColumn: '1 / -1', pt: 0.75, pb: 0.375 }}>
         <SectionLabel>{RANKING_HEADING}</SectionLabel>
       </Box>
-      {rows.map(({ node, depth, open, cells, max }, rowIndex) => {
+      {rows.map(({ node, depth, open, cells, shown, highest }, rowIndex) => {
         const ranked = node.unit === 'score'
         const canOpen = depth === 0 && node.level !== 'team' && !!node.children?.length
+        const extent =
+          depth === 1 ? extents.get(`${scoreOf(rowIndex)?.id}|${node.unit}`) : undefined
+        const bars = barred.includes(node.id)
         return (
           <Box key={node.id} sx={{ display: 'contents' }}>
             {/* A ranking score in the heading face, with its opener; an entity carries its unit. */}
@@ -869,8 +859,9 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
                 display: 'flex',
                 alignItems: 'center',
                 gap: 0.5,
-                py: 0.375,
-                pl: depth === 1 ? 3.5 : 0,
+                py: depth === 1 ? 0.25 : 0.375,
+                // Entities sit well in from their score, under its label.
+                pl: depth === 1 ? { md: 5, xl: 10 } : 0,
               }}
             >
               {depth === 0 && (
@@ -885,6 +876,7 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
                       : undefined
                   }
                   sx={{
+                    p: 0.25,
                     color: open ? 'primary.main' : 'base.100',
                     visibility: canOpen ? 'visible' : 'hidden',
                   }}
@@ -907,7 +899,7 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
                     title={node.label}
                     sx={labelLines(lines)}
                   >
-                    {node.level === 'team' ? `${node.label}: the score` : node.label}
+                    {node.level === 'team' ? UI.teamScore(node.label) : node.label}
                   </Typography>
                 ) : (
                   <>
@@ -915,7 +907,11 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
                       <Typography
                         variant="body1"
                         title={node.label}
-                        sx={{ ...labelLines(lines), color: depth === 1 ? 'base.50' : 'base.100' }}
+                        sx={{
+                          ...labelLines(lines),
+                          typography: { md: 'body2', xl: 'body1' },
+                          color: depth === 1 ? 'base.50' : 'base.100',
+                        }}
                       >
                         {lifeStage(node.label).name}
                       </Typography>
@@ -931,21 +927,49 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
                   </>
                 )}
               </Box>
+              {/* What the score is based on and how it is ranked, on demand. */}
+              {depth === 0 && RANKING_DEFINITIONS[node.id] && <RankingInfo node={node} />}
+              {/* An open score can draw its entities as bars, column by column. */}
+              {open && (
+                <IconButton
+                  size="small"
+                  onClick={() => toggleBars(node.id)}
+                  aria-pressed={bars}
+                  aria-label={`${bars ? 'Show values' : 'Show bars'} for what ${node.label} is based on`}
+                  title={bars ? UI.showValues : UI.showAsBars}
+                  sx={{
+                    p: 0.25,
+                    ml: 'auto',
+                    flex: 'none',
+                    color: bars ? 'primary.main' : 'base.100',
+                    bgcolor: bars ? 'translucent.primaryGreen' : 'transparent',
+                  }}
+                >
+                  <BarChartOutlinedIcon fontSize="small" sx={{ transform: 'rotate(90deg)' }} />
+                </IconButton>
+              )}
             </MotionBox>
             {cells.map((cell) => (
               <MotionBox
                 key={cell.scenario}
-                {...motionFor(depth, order[rowIndex], active.includes(cell.scenario) ? 1 : FADED)}
-                sx={{ minHeight: 0, display: 'grid', py: 0.375 }}
+                {...motionFor(depth, order[rowIndex], lit(cell.scenario) ? 1 : FADED)}
+                sx={{ minHeight: 0, display: 'grid', py: depth === 1 ? 0.25 : 0.375 }}
               >
                 <Cell
+                  bar={extent}
                   value={cell.value}
                   why={cell.why}
                   summary={cell.summary}
                   rank={cell.rank}
                   unit={node.unit}
                   score={ranked}
-                  strength={cell.value === null ? 0 : Math.abs(cell.value) / max}
+                  top={
+                    !ranked &&
+                    cell.value !== null &&
+                    !(diff && cell.scenario === 'bau') &&
+                    shown(cell.value) === highest
+                  }
+                  baseline={diff && cell.scenario === 'bau'}
                   signedText={diff}
                   onClick={
                     cell.value !== null && !diff
@@ -966,44 +990,120 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
         )
       })}
       {spare > 0 && <Box aria-hidden sx={{ gridColumn: '1 / -1' }} />}
-      <Typography
-        variant="captionSmall"
-        noWrap
-        sx={{ gridColumn: '1 / -1', color: 'base.200', pt: 0.5 }}
-      >
-        Open a score to see what it is based on. Click a number for its source.
-        {anyPlaceholder && ` “${PLACEHOLDER}” marks a number the team has not published yet.`}
-        {state.climate === 'slr' &&
-          ' These are the sea-level-rise runs, compared with their own Business as Usual.'}
+      {/* Wraps on a narrow screen rather than being cut off. */}
+      <Typography variant="caption" sx={{ gridColumn: '1 / -1', color: 'base.200', pt: 0.5 }}>
+        {UI.footnote}
+        {anyPlaceholder && UI.footnotePlaceholder}
+        {state.climate === 'slr' && UI.footnoteSeaLevelRise}
       </Typography>
     </Box>
   )
 }
 
 /**
+ * The info button beside a ranking score, and the card it opens: what the score is
+ * based on and how the team turns that into −5…+5, from labels.ts.
+ */
+function RankingInfo({ node }: { node: CriterionNode }) {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const definition = RANKING_DEFINITIONS[node.id]
+  const title = node.level === 'team' ? UI.teamScore(node.label) : node.label
+  return (
+    <>
+      <IconButton
+        size="small"
+        onClick={(event) => setAnchor(event.currentTarget)}
+        aria-label={UI.aboutScore(title)}
+        aria-haspopup="dialog"
+        aria-expanded={!!anchor}
+        sx={{ p: 0.25, flex: 'none', color: anchor ? 'primary.main' : 'base.200' }}
+      >
+        <InfoOutlinedIcon fontSize="small" />
+      </IconButton>
+      <Popover
+        open={!!anchor}
+        anchorEl={anchor}
+        onClose={() => setAnchor(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        slotProps={{
+          paper: {
+            role: 'dialog',
+            'aria-label': UI.aboutScore(title),
+            sx: {
+              maxWidth: 400,
+              p: 2,
+              bgcolor: 'base.700',
+              border: 1,
+              borderColor: 'border.default',
+              borderRadius: 1,
+            },
+          },
+        }}
+      >
+        <Stack spacing={jtSpacing.gap.sm}>
+          <Typography variant="chartTitle" component="h3">
+            {title}
+          </Typography>
+          <Box>
+            <Typography variant="caption" component="p" sx={{ color: 'base.200' }}>
+              {UI.basedOn}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              {definition.basedOn}
+            </Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" component="p" sx={{ color: 'base.200' }}>
+              {UI.howScored}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'base.50' }}>
+              {definition.rule}
+            </Typography>
+          </Box>
+          {definition.note && (
+            <Typography variant="caption" component="p" sx={{ color: 'base.200' }}>
+              {definition.note}
+            </Typography>
+          )}
+        </Stack>
+      </Popover>
+    </>
+  )
+}
+
+/**
  * One cell. A score takes the −5…+5 palette at its value, whether that value is the
- * score or its difference from Business as Usual; an entity's value is teal by its
- * size against the row's largest, with its own rank as a badge where it has one. A
- * row scored per entity shows the range of its entities' ranks instead.
+ * score or its difference from Business as Usual. A detail is plain text, green where
+ * it is the row's best, or a bar on its block's axis when the block is drawn as
+ * bars; its own rank rides beside it as a badge. A row scored per entity shows the
+ * range of its entities' ranks instead.
  */
 function Cell({
+  bar,
   value,
   why,
   summary,
   rank,
   unit,
   score,
-  strength,
+  top,
+  baseline,
   signedText,
   onClick,
 }: {
+  /** Draw the value as a bar on this axis instead of as text. */
+  bar?: { lo: number; hi: number }
   value: number | null
   why: string
   summary?: string
   rank?: number | null
   unit: CriterionNode['unit']
   score: boolean
-  strength: number
+  /** The row's best value: named in green. */
+  top?: boolean
+  /** Business as Usual in deviation view: plain white, neither dimmed nor green. */
+  baseline?: boolean
   signedText: boolean
   onClick?: () => void
 }) {
@@ -1011,6 +1111,52 @@ function Cell({
   const fill = empty || !score ? undefined : cellFill(value)
   // A detail at zero (no acres, no change) is background, so it recedes.
   const quiet = !empty && !score && value === 0
+  const text = empty
+    ? (summary ?? why)
+    : signedText && unit !== 'score'
+      ? signed(value, unit)
+      : fmtValue(value, unit)
+  const badge = rank !== null && rank !== undefined && (
+    <Box
+      component="span"
+      title={`Rank ${scoreText(rank)}`}
+      sx={{
+        position: 'relative',
+        flex: 'none',
+        px: 0.75,
+        borderRadius: 0.5,
+        bgcolor: cellFill(rank),
+        color: 'common.white',
+      }}
+    >
+      <Typography variant="chartValue" component="span" sx={{ color: 'inherit' }}>
+        {scoreText(rank)}
+      </Typography>
+    </Box>
+  )
+
+  if (bar && !empty) {
+    // The bar runs in the room the rank badge leaves.
+    const reach = Math.min(1, Math.max(0, (value - bar.lo) / (bar.hi - bar.lo)))
+    return (
+      <ButtonBase
+        disabled={!onClick}
+        onClick={onClick}
+        sx={{
+          justifyContent: 'flex-start',
+          gap: 0.75,
+          height: 1,
+          minHeight: 0,
+          borderRadius: 0.6,
+          '&.Mui-focusVisible': focusRing,
+        }}
+      >
+        <BarTrack reach={reach} text={text} quiet={quiet} />
+        {badge}
+      </ButtonBase>
+    )
+  }
+
   return (
     <ButtonBase
       disabled={!onClick}
@@ -1021,140 +1167,98 @@ function Cell({
         gap: 0.5,
         height: 1,
         minHeight: 0,
-        px: 1.25,
+        px: { md: 0.75, xl: 1.25 },
         borderRadius: 0.6,
         border: empty && !summary ? 1 : 0,
         borderStyle: 'dashed',
         borderColor: 'border.default',
-        bgcolor: fill ?? (summary || quiet ? 'translucent.100' : 'transparent'),
-        color: (empty && !summary) || quiet ? 'base.300' : fill ? 'common.white' : 'base.50',
+        bgcolor: fill ?? (summary || !empty ? 'translucent.100' : 'transparent'),
+        color:
+          // The best value is green even at zero: no added water age is the best there is.
+          baseline && !empty
+            ? 'base.50'
+            : top
+              ? 'primary.main'
+              : (empty && !summary) || quiet
+                ? 'base.300'
+                : fill
+                  ? 'common.white'
+                  : 'base.50',
         overflow: 'hidden',
         '&.Mui-focusVisible': focusRing,
       }}
     >
-      {!empty && !fill && !quiet && (
-        <Box
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            bgcolor: 'salinity.teal',
-            opacity: 0.12 + strength * 0.5,
-          }}
-        />
-      )}
       <Typography
         variant={score && !empty ? 'chartValueLarge' : 'body2'}
         noWrap
         sx={{ position: 'relative', color: 'inherit' }}
       >
-        {empty
-          ? (summary ?? why)
-          : signedText && unit !== 'score'
-            ? signed(value, unit)
-            : fmtValue(value, unit)}
+        {text}
       </Typography>
-      {rank !== null && rank !== undefined && (
-        <Box
-          component="span"
-          title={`Rank ${scoreText(rank)}`}
-          sx={{
-            position: 'relative',
-            flex: 'none',
-            px: 0.75,
-            borderRadius: 0.5,
-            bgcolor: cellFill(rank),
-            color: 'common.white',
-          }}
-        >
-          <Typography variant="chartValue" component="span" sx={{ color: 'inherit' }}>
-            {scoreText(rank)}
-          </Typography>
-        </Box>
-      )}
+      {badge}
     </ButtonBase>
   )
 }
 
-/** A measure's title over its map: a ranking score in the heading face, a detail with its unit. */
-function MeasureHeading({ node }: { node: CriterionNode }) {
-  if (isScore(node))
-    return (
-      <Typography variant="chartTitle" component="h3" noWrap>
-        {node.level === 'team' ? `${node.label}: the score` : node.label}
-      </Typography>
-    )
-  return (
-    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: jtSpacing.gap.sm, minWidth: 0 }}>
-      <Typography variant="body1" component="h3" sx={{ color: 'common.white' }} noWrap>
-        {node.label}
-      </Typography>
-      <Typography variant="body2" sx={{ color: 'base.300' }} noWrap>
-        {unitWord(node)}
-      </Typography>
-    </Box>
-  )
-}
-
-/** Every chart's periods and points, and the periods the legend can show for all of them. */
-function chartModel(state: Breakout) {
-  const build = (node: CriterionNode) => {
-    // A chart sets every period side by side, whichever one the rail has picked.
-    const groups = periodGroups(node, ANY, (key) =>
-      BREAKOUT_SCENARIOS.some(
-        (scenario) => read(node, scenario, state.place, key, state.climate).value !== null,
-      ),
-    )
-    const points = BREAKOUT_SCENARIOS.flatMap((scenario) =>
-      groups.map((group) => pointAt(state, node, scenario, group.key)),
-    )
-    return { node, groups, points }
-  }
-  // Scores with a number of their own get a chart each; a row scored per entity
-  // has none, so its open entities speak for it in the matrix below.
-  const scores = state.rows.filter(
-    (row) => row.depth === 0 && isScore(row.node) && Object.keys(row.node.values).length > 0,
-  )
-  const details = state.rows.filter((row) => row.depth === 1 || !isScore(row.node))
-  const scoreCharts = scores.map((row) => build(row.node))
-  const detailRows = details.map((row) => build(row.node))
-  const grouped = [...scoreCharts, ...detailRows].filter((m) => m.groups.length > 1)
-  const labels = (groups: Facet[]) => groups.map((g) => g.label).join('|')
-  // One key in the legend when every grouped chart splits the same way; else each its own.
-  const shared =
-    grouped.length > 0 && grouped.every((m) => labels(m.groups) === labels(grouped[0].groups))
-      ? grouped[0].groups
-      : null
-  return { scoreCharts, detailRows, shared }
-}
-
 /**
- * Ranking scores first, packed side by side for the overview; then the details as
- * rows of small bars under the same six columns. The two share the card's height
- * in proportion to how much each has to show.
+ * A bar and its number. The number goes just past the bar's end where it fits
+ * there, inside the bar's end where it fits there instead, and otherwise as a
+ * dark pill at the cell's roomier edge, so it never runs out of the cell.
  */
-function Charts({ state }: { state: Breakout }) {
-  const { scoreCharts, detailRows, shared } = chartModel(state)
-  const scoreWeight = scoreCharts.length > 0 ? 2 + Math.ceil(scoreCharts.length / 3) * 2 : 0
-  const detailWeight = detailRows.length > 0 ? 2 + detailRows.length : 0
-  const template = [
-    ...(scoreWeight ? ['auto', `minmax(0, ${scoreWeight}fr)`] : []),
-    ...(detailWeight ? ['auto', `minmax(0, ${detailWeight}fr)`] : []),
-  ].join(' ')
+function BarTrack({ reach, text, quiet }: { reach: number; text: string; quiet: boolean }) {
+  const { ref: trackRef, width: trackWidth } = useElementSize<HTMLDivElement>()
+  const { ref: labelRef, width: labelWidth } = useElementSize<HTMLSpanElement>()
+  const roomPast = (1 - reach) * trackWidth
+  const roomIn = reach * trackWidth
+  // The measured width is the text alone; its padding adds 0.5 spacing each side.
+  const need = labelWidth + 8
+  const place: 'past' | 'inside' | 'pill' =
+    need <= roomPast ? 'past' : need <= roomIn ? 'inside' : 'pill'
   return (
-    <Box sx={{ height: 1, display: 'grid', gridTemplateRows: template, rowGap: 1 }}>
-      {scoreCharts.length > 0 && <SectionLabel aside={CODE_KEY}>{RANKING_HEADING}</SectionLabel>}
-      {scoreCharts.length > 0 && (
-        <ScoreGrid charts={scoreCharts} active={state.scenarios} showKeys={!shared} />
-      )}
-      {detailRows.length > 0 && <SectionLabel>Details</SectionLabel>}
-      {detailRows.length > 0 && (
-        <DetailMatrix
-          rows={detailRows.map((row) => ({ ...row, unitLabel: unitWord(row.node) }))}
-          active={state.scenarios}
-          diff={state.reading === 'change'}
-          showKeys={!shared}
-        />
-      )}
+    <Box
+      ref={trackRef}
+      sx={{ position: 'relative', flex: '1 1 auto', alignSelf: 'stretch', minWidth: 0 }}
+    >
+      <Box
+        aria-hidden
+        sx={{
+          position: 'absolute',
+          left: 0,
+          top: '14%',
+          bottom: '14%',
+          width: `${reach * 100}%`,
+          bgcolor: 'base.100',
+          borderRadius: 0.4,
+          transition: 'width 300ms ease',
+        }}
+      />
+      <Typography
+        ref={labelRef}
+        component="span"
+        variant="body2"
+        noWrap
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          px: 0.5,
+          // Past the bar's end, or inside it; where neither has room, a dark pill pinned
+          // to the roomier edge, readable over the bar or beside it.
+          ...(place === 'past'
+            ? { left: `${reach * 100}%`, color: quiet ? 'base.300' : 'base.50' }
+            : place === 'inside'
+              ? { right: `${(1 - reach) * 100}%`, color: 'base.900' }
+              : {
+                  ...(roomIn > roomPast ? { left: 0 } : { right: 0 }),
+                  maxWidth: '100%',
+                  bgcolor: 'base.900',
+                  borderRadius: 0.5,
+                  color: 'base.50',
+                }),
+        }}
+      >
+        {text}
+      </Typography>
     </Box>
   )
 }
@@ -1177,131 +1281,162 @@ const MAP_REGION_KEY: Partial<Record<TeamKey, Record<string, string>>> = {
   environmentalJustice: { Moderate: 'moderate', High: 'high', Highest: 'highest' },
 }
 
+/** One measure the map can draw, under the ranking score it belongs to. */
+interface MapItem {
+  node: CriterionNode
+  score: CriterionNode
+}
+
 /**
- * Every measure the map can draw, with the score it sits under. A score held only
- * per entity has nothing of its own to map, so its entities stand in for it, open
- * or closed.
+ * Every measure the map can draw, whatever is open in the table: each ranking
+ * score on screen with numbers by place, and each of its entities that has them.
  */
-function mapItems(state: Breakout, team: TeamKey) {
+/** Teams whose map shows only the measures under a score, not the score's own map. */
+const MAP_ENTITIES_ONLY: TeamKey[] = ['environmentalJustice']
+
+function mapItems(state: Breakout, team: TeamKey): MapItem[] {
   if (!MAP_REGION_KEY[team]) return []
+  const ownMap = !MAP_ENTITIES_ONLY.includes(team)
   const mapped = (node: CriterionNode) =>
     node.places[0]?.key !== ANY &&
     Object.keys(inClimate(node, state.climate).values).some((key) => !key.startsWith(`${ANY}|`))
-  const entityOnly = (node?: CriterionNode) =>
-    !!node?.entityNoun && Object.keys(node.values).length === 0
-  const rows = state.rows
-  return rows.flatMap((row, index) => {
-    const node = row.node
-    if (row.depth === 1) {
-      // An open part of a score with numbers of its own; an entity-only score's
-      // entities are already in, from the score's own row.
-      const parent = rows.slice(0, index).findLast((r) => r.depth === 0)?.node
-      return !entityOnly(parent) && mapped(node) ? [{ node, parent }] : []
-    }
-    if (entityOnly(node))
-      return (node.children ?? []).filter(mapped).map((child) => ({ node: child, parent: node }))
-    return mapped(node) ? [{ node, parent: undefined as CriterionNode | undefined }] : []
-  })
+  return state.rows
+    .filter((row) => row.depth === 0 && row.node.level !== 'team')
+    .flatMap(({ node }) => [
+      ...(ownMap && mapped(node) ? [{ node, score: node }] : []),
+      ...(node.children ?? []).filter(mapped).map((child) => ({ node: child, score: node })),
+    ])
 }
 
-function Maps({ state, team }: { state: Breakout; team: TeamKey }) {
+/** Teams whose map picks a score first, then a measure under it, in two rows of tabs. */
+const NESTED_MAP_TABS: TeamKey[] = ['recreation', 'economy']
+
+/**
+ * Mapped measures as tabs, life stages together. Nested, a score's own tab sits
+ * among its entities as "The score"; flat, every measure of the team is one row
+ * and a score's tab carries its name.
+ */
+function entityTabs(items: MapItem[], score: CriterionNode | null) {
+  return items
+    .filter((item) => score === null || item.score === score)
+    .reduce<{ name: string; items: MapItem[] }[]>((out, item) => {
+      const own = item.node === item.score
+      const name = own
+        ? score
+          ? UI.mapScoreTab
+          : item.node.label
+        : lifeStage(item.node.label).name
+      const tab = out.find((t) => t.name === name)
+      if (tab) tab.items.push(item)
+      else out.push({ name, items: [item] })
+      return out
+    }, [])
+}
+
+/**
+ * One measure's six maps at a time, picked by tabs: for Recreation and Economy a
+ * row for the ranking score, then one for the measure under it; for the others one
+ * row of every measure (a species with its life stages as chips).
+ */
+function Maps({
+  state,
+  team,
+  onScale,
+}: {
+  state: Breakout
+  team: TeamKey
+  onScale: (scale: MapScale | null) => void
+}) {
   const keys = MAP_REGION_KEY[team] ?? {}
   const items = mapItems(state, team)
-  // A species' life stages share one tab and are picked by chip.
-  // Grouped under their score too: salinity and temperature share activity names.
-  const groups = items.reduce<{ key: string; name: string; items: typeof items }[]>((out, item) => {
-    const { name } = lifeStage(item.node.label)
-    const key = `${item.parent?.id ?? ''}|${name}`
-    const group = out.find((g) => g.key === key)
-    if (group) group.items.push(item)
-    else out.push({ key, name, items: [item] })
-    return out
-  }, [])
-  // Tabs from more than one score say which score each belongs to.
-  const manyScores = new Set(items.map((item) => item.parent?.id)).size > 1
+  const scores = [...new Set(items.map((item) => item.score))]
   const [picked, setPicked] = useState<string | null>(null)
   const active = items.find((item) => item.node.id === picked) ?? items[0]
   const dimmed = BREAKOUT_SCENARIOS.filter((scenario) => !state.scenarios.includes(scenario))
+  useEffect(() => {
+    if (!active) onScale(null)
+  }, [active, onScale])
   if (!active) return null
   const { node } = active
-  const groupIndex = groups.findIndex((g) => g.items.includes(active))
+  const nested = NESTED_MAP_TABS.includes(team)
+  const scoreIndex = scores.indexOf(active.score)
+  const tabs = entityTabs(items, nested ? active.score : null)
+  const tabIndex = tabs.findIndex((t) => t.items.includes(active))
   const stage = lifeStage(node.label).stage
-  /** Open another species on the life stage already showing, where it has one. */
-  const openGroup = (index: number) => {
-    const next = groups[index].items
-    setPicked((next.find((i) => lifeStage(i.node.label).stage === stage) ?? next[0]).node.id)
+  /** Open a tab on the life stage already showing, where it has one. */
+  const openTab = (tab: { items: MapItem[] }) =>
+    setPicked(
+      (tab.items.find((i) => lifeStage(i.node.label).stage === stage) ?? tab.items[0]).node.id,
+    )
+  /** Open another score on the same measure (Birding to Birding), where it has one. */
+  const openScore = (index: number) => {
+    const next = entityTabs(items, scores[index])
+    openTab(next.find((t) => t.name === tabs[tabIndex].name) ?? next[0])
   }
-  // One measure's six maps at a time; the rest wait behind their tabs.
+  // The score tray shows for the nested teams; the measure tray always shows, so
+  // the map is always named, except where it would only repeat the score; the
+  // life-stage tray shows for a species with stages.
+  const measureTray = !nested || tabs.length > 1 || active.node !== active.score
+  const stages = lifeStage(tabs[tabIndex].items[0].node.label).stage ? tabs[tabIndex].items : []
   return (
     <Box
       sx={{
         height: 1,
         display: 'grid',
-        gridTemplateRows: items.length > 1 ? 'auto auto minmax(0, 1fr)' : 'auto minmax(0, 1fr)',
-        rowGap: 1,
+        gridTemplateRows: 'auto minmax(0, 1fr)',
+        rowGap: 2,
         // Room for the outlines of the maps.
         pb: 0.75,
       }}
     >
-      {groups.length > 1 && (
-        <Tabs
-          value={groupIndex}
-          onChange={(_, next: number) => openGroup(next)}
-          variant="scrollable"
-          allowScrollButtonsMobile
-          aria-label="Mapped measures"
-        >
-          {groups.map((g, index) => (
-            <Tab
-              key={g.key}
-              id={`map-tab-${index}`}
-              aria-controls="map-panel"
-              label={
-                <Box
-                  component="span"
-                  sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.xs }}
-                >
-                  {manyScores && g.items[0].parent
-                    ? `${g.items[0].parent.label}: ${g.name}`
-                    : g.name}
-                  {/* A species' life stages ride in its tab; a stage opens that tab on it. */}
-                  {lifeStage(g.items[0].node.label).stage &&
-                    g.items.map((item) => (
-                      <Box
-                        key={item.node.id}
-                        component="span"
-                        onClick={(event) => {
-                          event.stopPropagation()
-                          setPicked(item.node.id)
-                        }}
-                        sx={{ display: 'inline-flex', cursor: 'pointer' }}
-                      >
-                        <StageChip
-                          label={capitalise(lifeStage(item.node.label).stage ?? item.node.label)}
-                          on={item === active}
-                        />
-                      </Box>
-                    ))}
-                </Box>
-              }
-            />
-          ))}
-        </Tabs>
-      )}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.sm, minWidth: 0 }}>
-        {active.parent && (
-          <Typography variant="chartTitle" component="p" noWrap sx={{ flex: 'none' }}>
-            {active.parent.label}
-          </Typography>
-        )}
-        <MeasureHeading node={node} />
-      </Box>
+      {/* What is mapped: one row of trays, in the rail's segmented style. */}
       <Box
-        id="map-panel"
-        role={groups.length > 1 ? 'tabpanel' : undefined}
-        aria-labelledby={groups.length > 1 ? `map-tab-${groupIndex}` : undefined}
-        sx={{ minHeight: 0, display: 'grid' }}
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 1.5,
+          minWidth: 0,
+        }}
       >
+        {nested && (
+          <Box sx={{ flex: '0 1 auto', minWidth: 0 }}>
+            <Segmented
+              label={UI.mapScorePicker}
+              value={String(scoreIndex)}
+              onChange={(next) => openScore(Number(next))}
+              options={scores.map((score, index) => ({ value: String(index), label: score.label }))}
+              dense
+            />
+          </Box>
+        )}
+        {measureTray && (
+          <Box sx={{ flex: '0 1 auto', minWidth: 0 }}>
+            <Segmented
+              label={UI.mapMeasurePicker}
+              value={String(tabIndex)}
+              onChange={(next) => openTab(tabs[Number(next)])}
+              options={tabs.map((tab, index) => ({ value: String(index), label: tab.name }))}
+              dense
+            />
+          </Box>
+        )}
+        {stages.length > 0 && (
+          <Box sx={{ flex: 'none' }}>
+            <Segmented
+              label={UI.lifeStagePicker}
+              value={active.node.id}
+              onChange={setPicked}
+              options={stages.map((item) => ({
+                value: item.node.id,
+                label: capitalise(lifeStage(item.node.label).stage ?? item.node.label),
+              }))}
+              dense
+            />
+          </Box>
+        )}
+      </Box>
+      <Box id="map-panel" sx={{ minHeight: 0, display: 'grid' }}>
         <RegionValues
           key={node.id}
           team={team}
@@ -1309,6 +1444,10 @@ function Maps({ state, team }: { state: Breakout; team: TeamKey }) {
           dimmed={dimmed}
           reading={state.reading}
           sameStyleForChange
+          scoreScale
+          // A share is scored one point per percentage point against Business as Usual.
+          scorePerPoint={node.unit === 'share' ? 0.01 : undefined}
+          onScale={onScale}
           hideLegend
           fit
           coordsFor={(region, scenario) =>
@@ -1350,7 +1489,7 @@ function Pins({ state, name }: { state: Breakout; name: string }) {
       component="section"
       aria-label="Pinned views"
       sx={(theme) => ({
-        px: theme.jtSpacing.page.x,
+        px: pageX,
         py: theme.jtSpacing.section.xs,
         bgcolor: 'base.700',
         borderTop: 1,
@@ -1424,7 +1563,7 @@ function summarise(p: Pin, state: Breakout): string {
 }
 
 function pinToMarkdown(p: Pin, state: Breakout): string[] {
-  const how = p.view === 'map' ? ' (on the map)' : p.view === 'chart' ? ' (as a chart)' : ''
+  const how = p.view === 'map' ? ' (on the map)' : ''
   const head = `## ${summarise(p, state)}${how}`
   const lines = [head, '', p.note ? `> ${p.note}` : '', '']
   const header = ['measure', ...p.scenarios.map((s) => SCENARIO_NAME[s])]

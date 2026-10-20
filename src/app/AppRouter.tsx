@@ -73,7 +73,6 @@ export default function AppRouter() {
       <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
       <Route path="/pages/rank-visualization" element={deferred(<RankVisualization />)} />
       <Route path="/pages/breakout" element={deferred(<BreakoutPage />)} />
-      <Route path="/pages/breakout/:team" element={deferred(<BreakoutPage />)} />
       <Route path="/pages/co-design-timeline" element={<CoDesignTimelinePage />} />
       <Route path="/pages/site-map" element={deferred(<SiteMapPage />)} />
       <Route path="/design-system" element={<DesignSystem />} />

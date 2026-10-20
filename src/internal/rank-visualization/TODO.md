@@ -382,7 +382,7 @@ page via `scripts/build-recreation-thresholds.py` → `drilldown/recreationThres
 
 ## Sea level rise — 19 Oct 2026
 
-The breakout table (`/pages/breakout/:team`) has a **Sea level** switch, Current / Sea
+The breakout table (`/pages/breakout`, team in `?team=`) has a **Sea level** switch, Current / Sea
 level rise. A node's SLR run lives on `node.slr` (values, and facets where they differ);
 `inClimate()` in `drilldown/model.ts` swaps it in. A node without one reads "no SLR
 result"; a scenario missing from a node's run reads "not run with SLR". Differences are

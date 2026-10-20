@@ -11,6 +11,7 @@
 import { ANY, sliceKey } from '../drilldown/model'
 import type { CriterionNode, Facet, ScenarioKey, SliceValues, Source } from '../drilldown/model'
 import { NODE_INDEX, sourcesFor } from '../drilldown/tree'
+import { MEASURE_LABELS } from './labels'
 
 const node = (id: string): CriterionNode => {
   const found = NODE_INDEX.get(id)
@@ -139,6 +140,9 @@ const SPECIES_RANKS: Record<string, Partial<Record<ScenarioKey, [number, number]
   egeria: { em: [0, 1], ngw: [0, 1], cor: [0, 2] },
 }
 
+/** The species whose ranks the slides reverse: less habitat for them is better. */
+const INVASIVE = new Set(['largemouthBass', 'overbiteClam', 'egeria'])
+
 function speciesRanks(key: string): Partial<Record<ScenarioKey, SliceValues>> {
   const out: Partial<Record<ScenarioKey, SliceValues>> = {}
   for (const scenario of ['bau', 'em', 'ngw', 'bf', 'cor'] as ScenarioKey[]) {
@@ -157,6 +161,8 @@ function ecologyTree(): CriterionNode {
       {
         ranks: speciesRanks(key),
         sources: [...sourcesFor(base.id), SLIDES],
+        // For an invasive species, less suitable habitat is the better outcome.
+        betterHigher: !INVASIVE.has(key),
       },
       ECOLOGY_PERIOD_LABEL,
     )
@@ -386,6 +392,7 @@ export const BREAKOUT_TREE: CriterionNode[] = [
 // Register every row so the shared value lookup, the cell detail and the maps can
 // find them by id like any pivot node.
 function register(n: CriterionNode) {
+  n.label = MEASURE_LABELS[n.id] ?? n.label
   NODE_INDEX.set(n.id, n)
   n.children?.forEach(register)
 }
