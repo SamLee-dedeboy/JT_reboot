@@ -4,7 +4,8 @@
 // subteam's −5…+5 score by region and period, and the proportion of days over the
 // activity's threshold that the score was read from. Source: the OVERALL sheets of
 // "RMA Salinity Scenarios Analyzed.xlsx" and "RMA Temperature Scenarios
-// Analyzed.xlsx" (Isaac Sanchez, 18 Oct 2026). Scores follow the workbook's own
+// Analyzed.xlsx" (Isaac Sanchez, 18 Oct 2026), and of the matching "RMA SLR …
+// Analyzed.xlsx" pair for the sea-level-rise runs. Scores follow the workbook's own
 // scale: one point per percentage point of exceedance against Business as Usual,
 // ±5 at five points or more. Temperature has no values for Calling on Reserves or
 // A Tunnel yet (marked pending in the workbook).
@@ -2440,6 +2441,2000 @@ export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {
       southDelta: {
         run: 0.4198,
         wet: 0.0388,
+        dry: 0.7957,
+      },
+    },
+  },
+}
+
+// Sea level rise: four scenarios, each scored against the SLR run's own Business as
+// Usual. Calling on Reserves and A Tunnel were not run with sea level rise.
+export const REC_SLR_SALINITY_SCORES: RecTable<number | null> = {
+  dayUseBoating: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: -1,
+        dry: -1,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: -3,
+        wet: -2,
+        dry: -3,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 1,
+        wet: 0,
+        dry: 1,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: -2,
+        wet: -3,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 1,
+        dry: 1,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 3,
+        wet: 1,
+        dry: 2,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: -2,
+        wet: -3,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 1,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 2,
+        wet: 2,
+        dry: 1,
+      },
+    },
+  },
+  birding: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: -1,
+        dry: 1,
+      },
+      suisun: {
+        run: -4,
+        wet: -5,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 3,
+        wet: 2,
+        dry: 4,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: -1,
+        dry: 1,
+      },
+      suisun: {
+        run: -4,
+        wet: -5,
+        dry: -2,
+      },
+      centralDelta: {
+        run: 3,
+        wet: 2,
+        dry: 3,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+  waterfowl: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: -1,
+        dry: 0,
+      },
+      suisun: {
+        run: -3,
+        wet: -5,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 1,
+        wet: 1,
+        dry: 1,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: -1,
+        dry: 0,
+      },
+      suisun: {
+        run: -3,
+        wet: -5,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 1,
+        wet: 1,
+        dry: 1,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+  angling: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: -2,
+        wet: -3,
+        dry: -2,
+      },
+      suisun: {
+        run: -5,
+        wet: -5,
+        dry: -5,
+      },
+      centralDelta: {
+        run: 1,
+        wet: 1,
+        dry: 1,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: -2,
+        wet: -3,
+        dry: -2,
+      },
+      suisun: {
+        run: -5,
+        wet: -5,
+        dry: -5,
+      },
+      centralDelta: {
+        run: 1,
+        wet: 1,
+        dry: 1,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+}
+
+export const REC_SLR_SALINITY_DAYS: RecTable<number | null> = {
+  dayUseBoating: {
+    bau: {
+      delta: {
+        run: 0.3218,
+        wet: 0.3204,
+        dry: 0.2782,
+      },
+      suisun: {
+        run: 0.8206,
+        wet: 0.8503,
+        dry: 0.7606,
+      },
+      centralDelta: {
+        run: 0.3785,
+        wet: 0.3619,
+        dry: 0.2963,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0364,
+        wet: 0.0213,
+        dry: 0.0167,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.3255,
+        wet: 0.3284,
+        dry: 0.2833,
+      },
+      suisun: {
+        run: 0.8209,
+        wet: 0.8507,
+        dry: 0.7609,
+      },
+      centralDelta: {
+        run: 0.4042,
+        wet: 0.386,
+        dry: 0.3221,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0234,
+        wet: 0.0256,
+        dry: 0.0088,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.3191,
+        wet: 0.3221,
+        dry: 0.276,
+      },
+      suisun: {
+        run: 0.8432,
+        wet: 0.8853,
+        dry: 0.7746,
+      },
+      centralDelta: {
+        run: 0.3737,
+        wet: 0.3516,
+        dry: 0.2911,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0113,
+        wet: 0.0067,
+        dry: 0.0015,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.3203,
+        wet: 0.3218,
+        dry: 0.278,
+      },
+      suisun: {
+        run: 0.843,
+        wet: 0.8849,
+        dry: 0.7746,
+      },
+      centralDelta: {
+        run: 0.3765,
+        wet: 0.3519,
+        dry: 0.2966,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0129,
+        wet: 0.0058,
+        dry: 0.0033,
+      },
+    },
+  },
+  birding: {
+    bau: {
+      delta: {
+        run: 0.2406,
+        wet: 0.2323,
+        dry: 0.2165,
+      },
+      suisun: {
+        run: 0.7364,
+        wet: 0.7452,
+        dry: 0.6831,
+      },
+      centralDelta: {
+        run: 0.2009,
+        wet: 0.1635,
+        dry: 0.1627,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.241,
+        wet: 0.2329,
+        dry: 0.2161,
+      },
+      suisun: {
+        run: 0.7366,
+        wet: 0.7455,
+        dry: 0.6831,
+      },
+      centralDelta: {
+        run: 0.2022,
+        wet: 0.1653,
+        dry: 0.1612,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.2402,
+        wet: 0.2426,
+        dry: 0.2096,
+      },
+      suisun: {
+        run: 0.7738,
+        wet: 0.813,
+        dry: 0.6964,
+      },
+      centralDelta: {
+        run: 0.1662,
+        wet: 0.14,
+        dry: 0.1263,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.2409,
+        wet: 0.2423,
+        dry: 0.2112,
+      },
+      suisun: {
+        run: 0.774,
+        wet: 0.8113,
+        dry: 0.6984,
+      },
+      centralDelta: {
+        run: 0.1687,
+        wet: 0.1403,
+        dry: 0.1299,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+  },
+  waterfowl: {
+    bau: {
+      delta: {
+        run: 0.2107,
+        wet: 0.2085,
+        dry: 0.1903,
+      },
+      suisun: {
+        run: 0.6996,
+        wet: 0.7031,
+        dry: 0.6452,
+      },
+      centralDelta: {
+        run: 0.1274,
+        wet: 0.1163,
+        dry: 0.1032,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.2117,
+        wet: 0.2086,
+        dry: 0.1913,
+      },
+      suisun: {
+        run: 0.6996,
+        wet: 0.7031,
+        dry: 0.6452,
+      },
+      centralDelta: {
+        run: 0.1309,
+        wet: 0.1169,
+        dry: 0.1069,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.214,
+        wet: 0.2179,
+        dry: 0.1898,
+      },
+      suisun: {
+        run: 0.7281,
+        wet: 0.7524,
+        dry: 0.6578,
+      },
+      centralDelta: {
+        run: 0.1136,
+        wet: 0.1059,
+        dry: 0.0902,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.214,
+        wet: 0.2176,
+        dry: 0.1901,
+      },
+      suisun: {
+        run: 0.7273,
+        wet: 0.751,
+        dry: 0.6574,
+      },
+      centralDelta: {
+        run: 0.1145,
+        wet: 0.1062,
+        dry: 0.0914,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+  },
+  angling: {
+    bau: {
+      delta: {
+        run: 0.1183,
+        wet: 0.105,
+        dry: 0.0994,
+      },
+      suisun: {
+        run: 0.4176,
+        wet: 0.3777,
+        dry: 0.3593,
+      },
+      centralDelta: {
+        run: 0.0496,
+        wet: 0.0374,
+        dry: 0.034,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.1188,
+        wet: 0.1058,
+        dry: 0.0995,
+      },
+      suisun: {
+        run: 0.4193,
+        wet: 0.3808,
+        dry: 0.36,
+      },
+      centralDelta: {
+        run: 0.0497,
+        wet: 0.0377,
+        dry: 0.0337,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.1391,
+        wet: 0.1312,
+        dry: 0.1188,
+      },
+      suisun: {
+        run: 0.5087,
+        wet: 0.4894,
+        dry: 0.445,
+      },
+      centralDelta: {
+        run: 0.0426,
+        wet: 0.0314,
+        dry: 0.0267,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.1393,
+        wet: 0.1306,
+        dry: 0.1195,
+      },
+      suisun: {
+        run: 0.5079,
+        wet: 0.4866,
+        dry: 0.4457,
+      },
+      centralDelta: {
+        run: 0.0439,
+        wet: 0.0317,
+        dry: 0.0288,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+  },
+}
+
+export const REC_SLR_TEMPERATURE_SCORES: RecTable<number | null> = {
+  dayUseBoating: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+  birding: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+  waterfowl: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+  angling: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: -1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+  dayUseCold: {
+    bau: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    em: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      suisun: {
+        run: 0,
+        wet: 0,
+        dry: 1,
+      },
+      centralDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      northDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+      southDelta: {
+        run: 0,
+        wet: 0,
+        dry: 0,
+      },
+    },
+  },
+}
+
+export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {
+  dayUseCold: {
+    bau: {
+      delta: {
+        run: 0.5355,
+        wet: 0.9195,
+        dry: 0.1525,
+      },
+      suisun: {
+        run: 0.5181,
+        wet: 0.8938,
+        dry: 0.1434,
+      },
+      centralDelta: {
+        run: 0.529,
+        wet: 0.9184,
+        dry: 0.1406,
+      },
+      northDelta: {
+        run: 0.5618,
+        wet: 0.9744,
+        dry: 0.1503,
+      },
+      southDelta: {
+        run: 0.5399,
+        wet: 0.9068,
+        dry: 0.174,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.5354,
+        wet: 0.9195,
+        dry: 0.1523,
+      },
+      suisun: {
+        run: 0.5181,
+        wet: 0.8938,
+        dry: 0.1434,
+      },
+      centralDelta: {
+        run: 0.529,
+        wet: 0.9187,
+        dry: 0.1403,
+      },
+      northDelta: {
+        run: 0.5616,
+        wet: 0.974,
+        dry: 0.1503,
+      },
+      southDelta: {
+        run: 0.5397,
+        wet: 0.9068,
+        dry: 0.1736,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.5345,
+        wet: 0.9196,
+        dry: 0.1505,
+      },
+      suisun: {
+        run: 0.5152,
+        wet: 0.8959,
+        dry: 0.1356,
+      },
+      centralDelta: {
+        run: 0.5282,
+        wet: 0.9166,
+        dry: 0.1409,
+      },
+      northDelta: {
+        run: 0.562,
+        wet: 0.9749,
+        dry: 0.1503,
+      },
+      southDelta: {
+        run: 0.5397,
+        wet: 0.9068,
+        dry: 0.1736,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.5345,
+        wet: 0.9196,
+        dry: 0.1504,
+      },
+      suisun: {
+        run: 0.515,
+        wet: 0.8959,
+        dry: 0.1352,
+      },
+      centralDelta: {
+        run: 0.528,
+        wet: 0.9169,
+        dry: 0.1403,
+      },
+      northDelta: {
+        run: 0.562,
+        wet: 0.9749,
+        dry: 0.1503,
+      },
+      southDelta: {
+        run: 0.5397,
+        wet: 0.9065,
+        dry: 0.174,
+      },
+    },
+  },
+  birding: {
+    bau: {
+      delta: {
+        run: 0.3689,
+        wet: 0.0116,
+        dry: 0.7252,
+      },
+      suisun: {
+        run: 0.3658,
+        wet: 0.013,
+        dry: 0.7176,
+      },
+      centralDelta: {
+        run: 0.3767,
+        wet: 0.0061,
+        dry: 0.7462,
+      },
+      northDelta: {
+        run: 0.3413,
+        wet: 0.0009,
+        dry: 0.6808,
+      },
+      southDelta: {
+        run: 0.3824,
+        wet: 0.0231,
+        dry: 0.7407,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.3692,
+        wet: 0.0118,
+        dry: 0.7257,
+      },
+      suisun: {
+        run: 0.3659,
+        wet: 0.013,
+        dry: 0.7179,
+      },
+      centralDelta: {
+        run: 0.3776,
+        wet: 0.0073,
+        dry: 0.7468,
+      },
+      northDelta: {
+        run: 0.342,
+        wet: 0.0009,
+        dry: 0.6821,
+      },
+      southDelta: {
+        run: 0.382,
+        wet: 0.0225,
+        dry: 0.7404,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.368,
+        wet: 0.0104,
+        dry: 0.7246,
+      },
+      suisun: {
+        run: 0.3625,
+        wet: 0.0082,
+        dry: 0.7158,
+      },
+      centralDelta: {
+        run: 0.3774,
+        wet: 0.007,
+        dry: 0.7468,
+      },
+      northDelta: {
+        run: 0.3404,
+        wet: 0.0009,
+        dry: 0.679,
+      },
+      southDelta: {
+        run: 0.3818,
+        wet: 0.0222,
+        dry: 0.7404,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.3682,
+        wet: 0.0103,
+        dry: 0.7251,
+      },
+      suisun: {
+        run: 0.3629,
+        wet: 0.0082,
+        dry: 0.7165,
+      },
+      centralDelta: {
+        run: 0.3774,
+        wet: 0.0064,
+        dry: 0.7474,
+      },
+      northDelta: {
+        run: 0.3409,
+        wet: 0.0009,
+        dry: 0.6799,
+      },
+      southDelta: {
+        run: 0.3818,
+        wet: 0.0222,
+        dry: 0.7404,
+      },
+    },
+  },
+  waterfowl: {
+    bau: {
+      delta: {
+        run: 0.124,
+        wet: 0.0,
+        dry: 0.2477,
+      },
+      suisun: {
+        run: 0.0498,
+        wet: 0.0,
+        dry: 0.0994,
+      },
+      centralDelta: {
+        run: 0.1339,
+        wet: 0.0,
+        dry: 0.2675,
+      },
+      northDelta: {
+        run: 0.0675,
+        wet: 0.0,
+        dry: 0.1348,
+      },
+      southDelta: {
+        run: 0.2178,
+        wet: 0.0,
+        dry: 0.435,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.1242,
+        wet: 0.0,
+        dry: 0.2481,
+      },
+      suisun: {
+        run: 0.0501,
+        wet: 0.0,
+        dry: 0.1001,
+      },
+      centralDelta: {
+        run: 0.1354,
+        wet: 0.0,
+        dry: 0.2705,
+      },
+      northDelta: {
+        run: 0.0675,
+        wet: 0.0,
+        dry: 0.1348,
+      },
+      southDelta: {
+        run: 0.2168,
+        wet: 0.0,
+        dry: 0.4329,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.1233,
+        wet: 0.0,
+        dry: 0.2462,
+      },
+      suisun: {
+        run: 0.0489,
+        wet: 0.0,
+        dry: 0.0977,
+      },
+      centralDelta: {
+        run: 0.1335,
+        wet: 0.0,
+        dry: 0.2665,
+      },
+      northDelta: {
+        run: 0.0668,
+        wet: 0.0,
+        dry: 0.1334,
+      },
+      southDelta: {
+        run: 0.2169,
+        wet: 0.0,
+        dry: 0.4332,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.1235,
+        wet: 0.0,
+        dry: 0.2468,
+      },
+      suisun: {
+        run: 0.0491,
+        wet: 0.0,
+        dry: 0.098,
+      },
+      centralDelta: {
+        run: 0.1335,
+        wet: 0.0,
+        dry: 0.2665,
+      },
+      northDelta: {
+        run: 0.0679,
+        wet: 0.0,
+        dry: 0.1357,
+      },
+      southDelta: {
+        run: 0.2169,
+        wet: 0.0,
+        dry: 0.4332,
+      },
+    },
+  },
+  angling: {
+    bau: {
+      delta: {
+        run: 0.447,
+        wet: 0.0634,
+        dry: 0.8295,
+      },
+      suisun: {
+        run: 0.4617,
+        wet: 0.0873,
+        dry: 0.835,
+      },
+      centralDelta: {
+        run: 0.4531,
+        wet: 0.0612,
+        dry: 0.844,
+      },
+      northDelta: {
+        run: 0.4207,
+        wet: 0.0169,
+        dry: 0.8233,
+      },
+      southDelta: {
+        run: 0.4454,
+        wet: 0.0755,
+        dry: 0.8142,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.447,
+        wet: 0.0634,
+        dry: 0.8295,
+      },
+      suisun: {
+        run: 0.4617,
+        wet: 0.0873,
+        dry: 0.835,
+      },
+      centralDelta: {
+        run: 0.4533,
+        wet: 0.0615,
+        dry: 0.844,
+      },
+      northDelta: {
+        run: 0.4207,
+        wet: 0.0169,
+        dry: 0.8233,
+      },
+      southDelta: {
+        run: 0.4452,
+        wet: 0.0752,
+        dry: 0.8142,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.4476,
+        wet: 0.0632,
+        dry: 0.8309,
+      },
+      suisun: {
+        run: 0.4626,
+        wet: 0.0839,
+        dry: 0.8402,
+      },
+      centralDelta: {
+        run: 0.454,
+        wet: 0.0624,
+        dry: 0.8446,
+      },
+      northDelta: {
+        run: 0.4207,
+        wet: 0.0169,
+        dry: 0.8233,
+      },
+      southDelta: {
+        run: 0.4458,
+        wet: 0.0764,
+        dry: 0.8142,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.4474,
+        wet: 0.063,
+        dry: 0.8308,
+      },
+      suisun: {
+        run: 0.4624,
+        wet: 0.0839,
+        dry: 0.8398,
+      },
+      centralDelta: {
+        run: 0.4536,
+        wet: 0.0618,
+        dry: 0.8443,
+      },
+      northDelta: {
+        run: 0.4207,
+        wet: 0.0169,
+        dry: 0.8233,
+      },
+      southDelta: {
+        run: 0.4458,
+        wet: 0.0764,
+        dry: 0.8142,
+      },
+    },
+  },
+  dayUseBoating: {
+    bau: {
+      delta: {
+        run: 0.4197,
+        wet: 0.0428,
+        dry: 0.7956,
+      },
+      suisun: {
+        run: 0.4251,
+        wet: 0.0575,
+        dry: 0.7917,
+      },
+      centralDelta: {
+        run: 0.4288,
+        wet: 0.0438,
+        dry: 0.8127,
+      },
+      northDelta: {
+        run: 0.3919,
+        wet: 0.0068,
+        dry: 0.776,
+      },
+      southDelta: {
+        run: 0.4244,
+        wet: 0.0527,
+        dry: 0.7951,
+      },
+    },
+    bf: {
+      delta: {
+        run: 0.4198,
+        wet: 0.0429,
+        dry: 0.7957,
+      },
+      suisun: {
+        run: 0.4251,
+        wet: 0.0575,
+        dry: 0.7917,
+      },
+      centralDelta: {
+        run: 0.4292,
+        wet: 0.0447,
+        dry: 0.8127,
+      },
+      northDelta: {
+        run: 0.3919,
+        wet: 0.0073,
+        dry: 0.7755,
+      },
+      southDelta: {
+        run: 0.4242,
+        wet: 0.0518,
+        dry: 0.7957,
+      },
+    },
+    em: {
+      delta: {
+        run: 0.4206,
+        wet: 0.0428,
+        dry: 0.7973,
+      },
+      suisun: {
+        run: 0.4268,
+        wet: 0.0551,
+        dry: 0.7975,
+      },
+      centralDelta: {
+        run: 0.4302,
+        wet: 0.0457,
+        dry: 0.8136,
+      },
+      northDelta: {
+        run: 0.3917,
+        wet: 0.0073,
+        dry: 0.775,
+      },
+      southDelta: {
+        run: 0.4247,
+        wet: 0.0527,
+        dry: 0.7957,
+      },
+    },
+    ngw: {
+      delta: {
+        run: 0.4205,
+        wet: 0.0425,
+        dry: 0.7975,
+      },
+      suisun: {
+        run: 0.4268,
+        wet: 0.0551,
+        dry: 0.7975,
+      },
+      centralDelta: {
+        run: 0.4299,
+        wet: 0.0444,
+        dry: 0.8142,
+      },
+      northDelta: {
+        run: 0.3917,
+        wet: 0.0073,
+        dry: 0.775,
+      },
+      southDelta: {
+        run: 0.4247,
+        wet: 0.0527,
         dry: 0.7957,
       },
     },

@@ -17,16 +17,23 @@
 // renames several of them against the Sept report; the old name is recorded in the
 // node's note wherever it changed.
 import { ECOLOGY_NICHE, ECOLOGY_REGIONS, ECOLOGY_SPECIES } from './ecologyNiche'
+import type { EcologySpeciesKey } from './ecologyNiche'
 import { WATER_AGE_GRID, WATER_AGE_MONTHS, WATER_AGE_REGIONS } from './ejWaterAge'
 import {
   REC_SALINITY_DAYS,
   REC_SALINITY_SCORES,
+  REC_SLR_SALINITY_DAYS,
+  REC_SLR_SALINITY_SCORES,
+  REC_SLR_TEMPERATURE_DAYS,
+  REC_SLR_TEMPERATURE_SCORES,
   REC_TEMPERATURE_DAYS,
   REC_TEMPERATURE_SCORES,
 } from './recreationThresholds'
 import type { RecActivityKey, RecTable } from './recreationThresholds'
+import { ECOLOGY_SLR_DELTA, ECOLOGY_SLR_REGION, EJ_SLR_DRINKING } from './seaLevelRise'
 import { ANY, sliceKey } from './model'
-import type { CriterionNode, Facet, ScenarioKey, SliceValues, Source } from './model'
+import type { ClimateRun, CriterionNode, Facet, ScenarioKey, SliceValues, Source } from './model'
+import type { TeamKey } from '../data'
 
 const NO_FACET: Facet[] = [{ key: ANY, label: 'Not broken out' }]
 
@@ -63,6 +70,51 @@ const ECO_PLACES: Facet[] = [
   ...ECOLOGY_REGIONS.map((region) => ({ key: region.key, label: region.label })),
 ]
 
+// ---------- Sea level rise ----------
+
+/**
+ * Which teams' tables can switch to the sea-level-rise runs. 'pending' shows the
+ * switch disabled, for a team whose SLR runs have arrived but are not loaded yet.
+ */
+export const SLR_STATUS: Partial<Record<TeamKey, 'loaded' | 'pending'>> = {
+  ecology: 'loaded',
+  environmentalJustice: 'loaded',
+  recreation: 'loaded',
+}
+
+/** Ecology pools its sea-level-rise regions over both years; the period says so. */
+const ECO_SLR_PERIODS: Facet[] = [...YEARS, { key: 'both', label: '2019–20 together' }]
+
+const ECO_SLR_SOURCES: Source[] = [
+  {
+    doc: 'data',
+    where: 'Sea Level Rise Scenario Analysis - Eco, 15 Oct 2026 · Results and Results part 2',
+    quote:
+      'Overall scenario proportions of days, under the sea level rise scenarios. … The top value in each cell is the proportion of suitable days between 2019 and 2020, and the bottom number is the number of consecutive days.',
+  },
+]
+
+function ecologySlr(species: EcologySpeciesKey): ClimateRun {
+  const values: Partial<Record<ScenarioKey, SliceValues>> = {}
+  const regions = ECOLOGY_SLR_REGION[species]
+  for (const [scenario, [wet, dry]] of Object.entries(ECOLOGY_SLR_DELTA[species])) {
+    const series: SliceValues = {
+      [sliceKey('delta', '2019')]: wet,
+      [sliceKey('delta', '2020')]: dry,
+    }
+    for (const [region, value] of Object.entries(regions[scenario as keyof typeof regions])) {
+      series[sliceKey(region, 'both')] = value
+    }
+    values[scenario as ScenarioKey] = series
+  }
+  return {
+    periods: ECO_SLR_PERIODS,
+    values,
+    note: 'With sea level rise, against its own Business as Usual. Delta-wide is split by water year; each region is one number for 2019 and 2020 together. Calling on Reserves and A Tunnel were not run with sea level rise.',
+    sources: ECO_SLR_SOURCES,
+  }
+}
+
 /** One species: the full region × water year cube from the report's own tables. */
 function speciesNode(species: (typeof ECOLOGY_SPECIES)[number]): CriterionNode {
   const values: Partial<Record<ScenarioKey, SliceValues>> = {}
@@ -87,6 +139,7 @@ function speciesNode(species: (typeof ECOLOGY_SPECIES)[number]): CriterionNode {
     places: ECO_PLACES,
     periods: YEARS,
     values,
+    slr: ecologySlr(species.key),
   }
 }
 
@@ -119,6 +172,12 @@ const ECOLOGY: CriterionNode = {
       places: ECO_PLACES,
       periods: YEARS,
       values: {},
+      slr: {
+        periods: ECO_SLR_PERIODS,
+        values: {},
+        note: 'The sea-level-rise analysis covers the same eight species, under four scenarios. Open this metric to read them.',
+        sources: ECO_SLR_SOURCES,
+      },
       children: ECOLOGY_SPECIES.map(speciesNode),
     },
     {
@@ -358,11 +417,37 @@ function recMean(
   return out
 }
 
+const REC_SLR_NOTE =
+  'With sea level rise, against the SLR run’s own Business as Usual: the same activities, regions and periods for Business as Usual, Bolster & Fortify, Eco Machine and New Green Watershed. Calling on Reserves and A Tunnel were not run with sea level rise.'
+
+function recSlrSources(metric: 'salinity' | 'temperature'): Source[] {
+  const book =
+    metric === 'salinity' ? 'RMA SLR Salinity Analyzed.xlsx' : 'RMA SLR Temperature Analyzed.xlsx'
+  return [
+    {
+      doc: 'data',
+      where: `${book} · OVERALL · TOTAL RUN, WET SEASON and DRY SEASON SCORES; % EXCEEDANCES by scenario`,
+      quote:
+        'Ranking / Scale: 5 greater than or equal to 5% less; … 0 No change from baseline; … -5 greater than or equal to 5% more',
+    },
+  ]
+}
+
+/** An SLR run for a Recreation node, in the same region × period slices as today's. */
+function recSlr(
+  metric: 'salinity' | 'temperature',
+  values: Partial<Record<ScenarioKey, SliceValues>>,
+): ClimateRun {
+  return { values, note: REC_SLR_NOTE, sources: recSlrSources(metric) }
+}
+
 function recActivityNode(
   metric: 'salinity' | 'temperature',
   spec: RecActivitySpec,
   scores: RecTable<number | null>,
   days: RecTable<number | null>,
+  slrScores: RecTable<number | null>,
+  slrDays: RecTable<number | null>,
 ): CriterionNode {
   const id = `rec-${metric}-${spec.key}`
   const threshold = metric === 'salinity' ? spec.salinity : spec.temperature
@@ -379,6 +464,7 @@ function recActivityNode(
     places: REC_PLACES,
     periods: SEASON_FACETS,
     values: recValues(scores, spec.key),
+    slr: recSlr(metric, recValues(slrScores, spec.key)),
     children: [
       {
         id: `${id}-days`,
@@ -393,6 +479,7 @@ function recActivityNode(
         places: REC_PLACES,
         periods: SEASON_FACETS,
         values: recValues(days, spec.key),
+        slr: recSlr(metric, recValues(slrDays, spec.key)),
       },
     ],
   }
@@ -405,13 +492,24 @@ const REC_TEMPERATURE_MEAN = recMean(
   REC_ACTIVITIES.map((spec) => spec.key),
 )
 
-/** The criterion score: the salinity metric's Delta-wide, whole-run mean, lifted to a flat value. */
-const REC_CRITERION: Partial<Record<ScenarioKey, SliceValues>> = Object.fromEntries(
-  Object.entries(REC_SALINITY_MEAN).map(([scenario, series]) => [
-    scenario,
-    { [sliceKey(ANY, ANY)]: series?.[sliceKey('delta', 'run')] ?? null },
-  ]),
+const REC_SLR_SALINITY_MEAN = recMean(REC_SLR_SALINITY_SCORES, REC_SALINITY_KEYS)
+const REC_SLR_TEMPERATURE_MEAN = recMean(
+  REC_SLR_TEMPERATURE_SCORES,
+  REC_ACTIVITIES.map((spec) => spec.key),
 )
+
+/** The criterion score: the salinity metric's Delta-wide, whole-run mean, lifted to a flat value. */
+function recCriterion(
+  mean: Partial<Record<ScenarioKey, SliceValues>>,
+): Partial<Record<ScenarioKey, SliceValues>> {
+  return Object.fromEntries(
+    Object.entries(mean).map(([scenario, series]) => [
+      scenario,
+      { [sliceKey(ANY, ANY)]: series?.[sliceKey('delta', 'run')] ?? null },
+    ]),
+  )
+}
+const REC_CRITERION = recCriterion(REC_SALINITY_MEAN)
 
 const RECREATION: CriterionNode = {
   id: 'recreation',
@@ -425,6 +523,7 @@ const RECREATION: CriterionNode = {
   places: NO_FACET,
   periods: NO_FACET,
   values: REC_CRITERION,
+  slr: recSlr('salinity', recCriterion(REC_SLR_SALINITY_MEAN)),
   children: [
     {
       id: 'rec-salinity',
@@ -439,8 +538,16 @@ const RECREATION: CriterionNode = {
       places: REC_PLACES,
       periods: SEASON_FACETS,
       values: REC_SALINITY_MEAN,
+      slr: recSlr('salinity', REC_SLR_SALINITY_MEAN),
       children: REC_SALINITY_ACTIVITIES.map((spec) =>
-        recActivityNode('salinity', spec, REC_SALINITY_SCORES, REC_SALINITY_DAYS),
+        recActivityNode(
+          'salinity',
+          spec,
+          REC_SALINITY_SCORES,
+          REC_SALINITY_DAYS,
+          REC_SLR_SALINITY_SCORES,
+          REC_SLR_SALINITY_DAYS,
+        ),
       ),
     },
     {
@@ -456,8 +563,16 @@ const RECREATION: CriterionNode = {
       places: REC_PLACES,
       periods: SEASON_FACETS,
       values: REC_TEMPERATURE_MEAN,
+      slr: recSlr('temperature', REC_SLR_TEMPERATURE_MEAN),
       children: REC_ACTIVITIES.map((spec) =>
-        recActivityNode('temperature', spec, REC_TEMPERATURE_SCORES, REC_TEMPERATURE_DAYS),
+        recActivityNode(
+          'temperature',
+          spec,
+          REC_TEMPERATURE_SCORES,
+          REC_TEMPERATURE_DAYS,
+          REC_SLR_TEMPERATURE_SCORES,
+          REC_SLR_TEMPERATURE_DAYS,
+        ),
       ),
     },
     {
@@ -495,7 +610,7 @@ const RECREATION: CriterionNode = {
 
 /** One vulnerability class: exceedance of 1,050 µS/cm, by season. */
 function vulnerabilityNode(
-  key: string,
+  key: keyof typeof EJ_SLR_DRINKING,
   label: string,
   points: number,
   by: Partial<Record<ScenarioKey, (number | null)[]>>,
@@ -514,6 +629,29 @@ function vulnerabilityNode(
     places: NO_FACET,
     periods: SEASON_FACETS,
     values: byPeriod(SEASONS, by),
+    slr: ejSlr(key),
+  }
+}
+
+/**
+ * The SLR workbook splits by water year where the report split by season, so the
+ * periods change with the climate rather than pretending a year is a season.
+ */
+const EJ_SLR_PERIODS: Facet[] = [{ key: 'run', label: 'Whole run' }, ...YEARS]
+
+function ejSlr(key: keyof typeof EJ_SLR_DRINKING): ClimateRun {
+  return {
+    periods: EJ_SLR_PERIODS,
+    values: byPeriod(['run', '2019', '2020'], EJ_SLR_DRINKING[key]),
+    note: 'With sea level rise, against its own Business as Usual: the share of SAFER points over 1,050 µS/cm for the whole run and each water year. Calling on Reserves and A Tunnel were not run with sea level rise, and no score was published for these runs.',
+    sources: [
+      {
+        doc: 'data',
+        where: 'SLR COMM.xlsx · OVERALL - SLR (SAFER POINTS) · TOTAL, WY 19, WY 20',
+        quote:
+          '% moderate exceedances … % high exceedances … % highest exceedances … % TOTAL EXCEEDANCES',
+      },
+    ],
   }
 }
 
@@ -595,6 +733,7 @@ const EJ: CriterionNode = {
             tunnel: [0.12, 0.17, 0.07],
             bau: [0.09, 0.1, 0.07],
           }),
+          slr: ejSlr('all'),
         },
         vulnerabilityNode(
           'moderate',

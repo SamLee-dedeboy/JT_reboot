@@ -5,11 +5,18 @@ Reads the OVERALL sheet of the salinity and temperature workbooks Isaac Sanchez
 sent on 18 Oct 2026 ("Activity Blind Data Recreation"). Each holds, per activity,
 the subteam's own -5..+5 score by region and period, and the proportion of days
 over that activity's threshold the score was read from. The workbooks live
-outside the repo (research/ is untracked); pass their paths:
+outside the repo (research/ is untracked); pass their paths, and optionally the
+sea-level-rise pair after them:
 
   python3 -I scripts/build-recreation-thresholds.py \
       "research/criteria-stories/Recreation/data-2026-10-18/RMA Salinity Scenarios Analyzed.xlsx" \
-      "research/criteria-stories/Recreation/data-2026-10-18/RMA Temperature Scenarios Analyzed.xlsx"
+      "research/criteria-stories/Recreation/data-2026-10-18/RMA Temperature Scenarios Analyzed.xlsx" \
+      "research/criteria-stories/Recreation/data-2026-10-18/RMA SLR Salinity Analyzed.xlsx" \
+      "research/criteria-stories/Recreation/data-2026-10-18/RMA SLR Temperature Analyzed.xlsx"
+
+The SLR workbooks share the OVERALL layout for four scenarios (Business as Usual,
+Bolster and Fortify, Eco Machine, New Green Watershed), each scored against the
+SLR run's own Business as Usual.
 """
 import json
 import sys
@@ -37,6 +44,7 @@ ACTIVITY = {
     "WATERFOWL": "waterfowl",
     "ANGLING": "angling",
     "DAY USE": "dayUseCold",
+    "DAY USE (<18C)": "dayUseCold",
 }
 PERIODS = ["run", "wet", "dry"]
 
@@ -93,9 +101,14 @@ def ts_object(obj, indent=0):
     return json.dumps(obj, indent=2)
 
 
-def main(salinity_path, temperature_path):
+def main(salinity_path, temperature_path, slr_salinity_path=None, slr_temperature_path=None):
     sal_scores, sal_days, sal_scen = read_overall(salinity_path)
     tmp_scores, tmp_days, tmp_scen = read_overall(temperature_path)
+    slr = {"scores": {}, "days": {}, "tscores": {}, "tdays": {}}
+    if slr_salinity_path and slr_temperature_path:
+        slr["scores"], slr["days"], slr_sal_scen = read_overall(slr_salinity_path)
+        slr["tscores"], slr["tdays"], slr_tmp_scen = read_overall(slr_temperature_path)
+        print("SLR salinity scenarios:", slr_sal_scen, "| SLR temperature scenarios:", slr_tmp_scen)
     # Temperature: Calling on Reserves and A Tunnel are marked pending in the
     # workbook (their sheets say so and their exceedance blocks are all zero).
     for table in (tmp_scores, tmp_days):
@@ -108,7 +121,8 @@ def main(salinity_path, temperature_path):
 // subteam's −5…+5 score by region and period, and the proportion of days over the
 // activity's threshold that the score was read from. Source: the OVERALL sheets of
 // "RMA Salinity Scenarios Analyzed.xlsx" and "RMA Temperature Scenarios
-// Analyzed.xlsx" (Isaac Sanchez, 18 Oct 2026). Scores follow the workbook's own
+// Analyzed.xlsx" (Isaac Sanchez, 18 Oct 2026), and of the matching "RMA SLR …
+// Analyzed.xlsx" pair for the sea-level-rise runs. Scores follow the workbook's own
 // scale: one point per percentage point of exceedance against Business as Usual,
 // ±5 at five points or more. Temperature has no values for Calling on Reserves or
 // A Tunnel yet (marked pending in the workbook).
@@ -130,12 +144,25 @@ export const REC_SALINITY_DAYS: RecTable<number | null> = {ts_object(sal_days)}
 export const REC_TEMPERATURE_SCORES: RecTable<number | null> = {ts_object(tmp_scores)}
 
 export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {ts_object(tmp_days)}
+
+// Sea level rise: four scenarios, each scored against the SLR run's own Business as
+// Usual. Calling on Reserves and A Tunnel were not run with sea level rise.
+export const REC_SLR_SALINITY_SCORES: RecTable<number | null> = {ts_object(slr["scores"])}
+
+export const REC_SLR_SALINITY_DAYS: RecTable<number | null> = {ts_object(slr["days"])}
+
+export const REC_SLR_TEMPERATURE_SCORES: RecTable<number | null> = {ts_object(slr["tscores"])}
+
+export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {ts_object(slr["tdays"])}
 """
-    with open(OUT, "w") as f:
+    # The header holds "−" and "…": write UTF-8 whatever the platform's codepage.
+    with open(OUT, "w", encoding="utf-8") as f:
         f.write(body)
     print("wrote", OUT, "| salinity scenarios:", sal_scen, "| temperature scenarios:", tmp_scen)
     print("salinity activities:", list(sal_scores), "| temperature activities:", list(tmp_scores))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    if len(sys.argv) not in (3, 5):
+        sys.exit(__doc__)
+    main(*sys.argv[1:])

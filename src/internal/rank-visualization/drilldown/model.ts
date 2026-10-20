@@ -139,7 +139,62 @@ export interface CriterionNode {
   inferredSlices?: string[]
   /** Rich grid with its own renderer, where one scalar would misreport the source. */
   detail?: 'waterAge'
+  /**
+   * The same measure from the subteam's sea-level-rise runs, where one exists. Its
+   * slices can differ from today's: Ecology pools its regions over both years.
+   */
+  slr?: ClimateRun
+  /** Citations that replace the id lookup; set on a sea-level-rise view. */
+  sources?: Source[]
+  /**
+   * The entity's own −5…+5 rank, beside its value in its own unit: a species'
+   * suitability rank, an activity's score. Same slice keys as `values`.
+   */
+  ranks?: Partial<Record<ScenarioKey, SliceValues>>
+  /** What this row's children are, for a row scored per child: "species", "activity". */
+  entityNoun?: string
   children?: CriterionNode[]
+}
+
+/** Which model runs a number comes from: today's sea level, or with sea level rise. */
+export type Climate = 'current' | 'slr'
+
+export interface ClimateRun {
+  places?: Facet[]
+  periods?: Facet[]
+  values: Partial<Record<ScenarioKey, SliceValues>>
+  ranks?: Partial<Record<ScenarioKey, SliceValues>>
+  note: string
+  sources: Source[]
+}
+
+const SLR_VIEWS = new WeakMap<CriterionNode, CriterionNode>()
+
+/**
+ * The node as one climate sees it. Under sea level rise a node without a run of its
+ * own has no values at all, so every cell reads as not run rather than falling back
+ * to today's number.
+ */
+export function inClimate(node: CriterionNode, climate: Climate): CriterionNode {
+  if (climate === 'current') return node
+  const cached = SLR_VIEWS.get(node)
+  if (cached) return cached
+  const run = node.slr
+  const view: CriterionNode = run
+    ? {
+        ...node,
+        places: run.places ?? node.places,
+        periods: run.periods ?? node.periods,
+        values: run.values,
+        ranks: run.ranks,
+        note: run.note,
+        sources: run.sources,
+        inferredFor: undefined,
+        inferredSlices: undefined,
+      }
+    : { ...node, values: {}, ranks: undefined }
+  SLR_VIEWS.set(node, view)
+  return view
 }
 
 export const sliceKey = (place: string, period: string) => `${place}|${period}`
@@ -185,25 +240,32 @@ export function resolve(
 export function effectiveSlice(node: CriterionNode, place: string, period: string) {
   // Prefer a facet the node actually holds data for. Picking the first one blindly
   // landed upland habitats on "In-Delta", where every scenario reads empty.
-  const holds = (axis: 'place' | 'period', key: string) =>
+  const holds = (axis: 'place' | 'period', key: string, at?: string) =>
     Object.values(node.values).some((series) =>
-      Object.keys(series ?? {}).some(
-        (sliceId) => sliceId.split('|')[axis === 'place' ? 0 : 1] === key,
-      ),
+      Object.keys(series ?? {}).some((sliceId) => {
+        const [p, t] = sliceId.split('|')
+        return axis === 'place' ? p === key : t === key && (at === undefined || p === at)
+      }),
     )
   /**
    * A node that is not cut along this axis resolves to ANY whatever is selected,
    * and one that is cut along it never keeps a key from somebody else's geography:
    * carrying a water-age month onto an eco-cultural acreage printed "in 2020-10".
    */
-  const resolve1 = (list: Facet[], axis: 'place' | 'period', selected: string) => {
+  const resolve1 = (list: Facet[], axis: 'place' | 'period', selected: string, at?: string) => {
     const real = list.filter((facet) => facet.key !== ANY)
     if (real.length === 0) return ANY
     if (real.some((facet) => facet.key === selected)) return selected
-    return (real.find((facet) => holds(axis, facet.key)) ?? real[0]).key
+    // A period the chosen place actually has, before one held anywhere: Ecology's
+    // sea-level-rise regions exist only for both years pooled, not for 2019.
+    return (
+      real.find((facet) => at !== undefined && holds(axis, facet.key, at)) ??
+      real.find((facet) => holds(axis, facet.key)) ??
+      real[0]
+    ).key
   }
   const resolvedPlace = resolve1(node.places, 'place', place)
-  const resolvedPeriod = resolve1(node.periods, 'period', period)
+  const resolvedPeriod = resolve1(node.periods, 'period', period, resolvedPlace)
   return {
     place: resolvedPlace,
     period: resolvedPeriod,
