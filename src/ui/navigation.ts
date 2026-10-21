@@ -68,6 +68,7 @@ export const navItems: NavItem[] = [
       { label: 'Rank Visualization', href: '/pages/rank-visualization' },
       { label: 'Breakout Tables', href: '/pages/breakout' },
       { label: 'Co-Design Timeline', href: '/pages/co-design-timeline' },
+      { label: 'Tribal Stewardship Spectrum', href: '/pages/tribal-stewardship-spectrum' },
       { label: 'Site Map', href: '/pages/site-map' },
     ],
   },

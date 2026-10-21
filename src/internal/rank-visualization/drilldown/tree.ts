@@ -581,13 +581,14 @@ const RECREATION: CriterionNode = {
       level: 'metric',
       team: 'recreation',
       edge: 'unscored',
-      provenance: 'unscored',
+      provenance: 'reported',
       unit: 'acres',
       betterHigher: true,
-      note: 'New since the report, this compares accessible acres from wetland restoration with the CVJV 2020 habitat deficits of 21,454 shorebird and 21,336 waterfowl acres. New Green Watershed exceeds them by +264% at 0.25MW, +483% at 0.5MW, and +1,166% at Full MW, which is why Recreation favours it; the measure is not scored and does not affect the score above.',
+      note: 'Restored wetland acres in the Delta, from Recreation’s restoration workbook (Oct 2026). Eco Machine restores Suisun Marsh (41,914 ac) and Franks Tract (1,380 ac). New Green Watershed adds managed wetland on Delta islands on top of those; the 50/50 primary is shown, with the 25/75 and full versions below. Upland restoration outside the Delta would add 66,159 acres at the lower bound and 857,967 at the upper. Every version exceeds the CVJV 2020 deficits of 21,454 shorebird and 21,336 waterfowl acres, which is why Recreation favours New Green Watershed. Not scored.',
       places: NO_FACET,
       periods: NO_FACET,
-      values: flat({ ngw: 102982, em: null, bf: 0, cor: 0, tunnel: 0, bau: 0 }),
+      values: flat({ ngw: 146276, em: 43294, bf: 0, cor: 0, tunnel: 0, bau: 0 }),
+      children: recRestorationLevels('rec-restoration', 'acres', 292109, 146276, 99580),
     },
     {
       id: 'rec-economy',
@@ -595,13 +596,22 @@ const RECREATION: CriterionNode = {
       level: 'metric',
       team: 'recreation',
       edge: 'unscored',
-      provenance: 'unscored',
-      unit: 'score',
+      provenance: 'reported',
+      unit: 'dollars',
       betterHigher: true,
-      note: 'Also new are visitor-sector earnings 2001–2023 by water-year type: earnings are +19.6% in critical years and +20.3% in wet years, but −21.8% in dry and −27.5% in above-normal years. Earnings are therefore lowest in the middle rather than at the extremes; this is narrative only, and no scenario is scored. An island-by-island valuation of ecosystem benefits under New Green Watershed arrived on 18 Oct 2026 and is under discussion within the subteam, so it is not loaded here yet.',
+      note: 'The yearly value of the recreation that restored wetland supports, in 2025 dollars: recreational fishing ($283.15 per acre), amenity and recreation ($372.49) and recreational hunting ($93.12), from Brander and Schuyt (2004) adjusted by the CPI. Eco Machine counts Suisun Marsh and Franks Tract; New Green Watershed counts those and its restored islands, at the 50/50 primary. Separately, visitor-sector earnings 2001–2023 run +19.6% in critical years and +20.3% in wet years but −21.8% in dry and −27.5% in above-normal years. Not scored.',
       places: NO_FACET,
       periods: NO_FACET,
-      values: {},
+      values: flat({ ngw: 109.526, em: 32.417, bf: 0, cor: 0, tunnel: 0, bau: 0 }),
+      children: [
+        recService('fishing', 'Recreational fishing', 12.259, 41.418),
+        recService('amenity', 'Amenity and recreation', 16.127, 54.486),
+        recService('hunting', 'Recreational hunting', 4.032, 13.621),
+        ...recRestorationLevels('rec-economy', 'dollars', 218.72, 109.526, 74.562).filter(
+          (level) => !level.id.endsWith('-half'),
+        ),
+        recService('all', 'All ten wetland services', 74.077, 250.281),
+      ],
     },
   ],
 }
@@ -981,6 +991,53 @@ function restorationLevels(
 
 const ECONOMY_SCORES = { ngw: -4, em: 0, bf: -1, cor: 0, tunnel: null, bau: 0 }
 
+/** New Green Watershed's three restoration versions, for Recreation's restoration rows. */
+function recRestorationLevels(
+  metric: string,
+  unit: 'acres' | 'dollars',
+  full: number,
+  half: number,
+  quarter: number,
+): CriterionNode[] {
+  const levels: [string, string, number][] = [
+    ['full', 'New Green Watershed, full restoration', full],
+    ['half', 'New Green Watershed, 50/50 · the primary', half],
+    ['quarter', 'New Green Watershed, 25/75', quarter],
+  ]
+  return levels.map(([key, label, value]) => ({
+    id: `${metric}-${key}`,
+    label,
+    level: 'entity',
+    team: 'recreation',
+    edge: 'refines',
+    provenance: 'reported',
+    unit,
+    betterHigher: true,
+    note: 'One version of New Green Watershed, counted with Eco Machine’s Suisun Marsh and Franks Tract; the row above uses the 50/50 primary.',
+    places: NO_FACET,
+    periods: NO_FACET,
+    values: { ngw: { [sliceKey(ANY, ANY)]: value } },
+  }))
+}
+
+/** One ecosystem service's yearly value, $M (2025): Eco Machine and New Green Watershed's 50/50. */
+function recService(key: string, label: string, em: number, ngw: number): CriterionNode {
+  return {
+    id: `rec-economy-${key}`,
+    label,
+    level: 'entity',
+    team: 'recreation',
+    edge: 'derives',
+    provenance: 'reported',
+    unit: 'dollars',
+    betterHigher: true,
+    note: 'Yearly value in 2025 dollars on the restored acres: per-acre values from Brander and Schuyt (2004), adjusted by the CPI. New Green Watershed is the 50/50 primary, counted with Eco Machine’s acres.',
+    places: NO_FACET,
+    periods: NO_FACET,
+    values: flat({ ngw, em, bf: 0, cor: 0, tunnel: 0, bau: 0 }),
+  }
+}
+
 const ECONOMY: CriterionNode = {
   id: 'economy',
   label: 'Economy',
@@ -1357,6 +1414,13 @@ const SOURCES: Record<string, Source[]> = {
   ],
   'rec-restoration': [
     {
+      doc: 'data',
+      where:
+        'Restoration Scenarios NGW and ECO.xlsx (Recreation, Oct 2026) · Restoration ($) Combined and Habitat Restoration (Acres)',
+      quote:
+        'Totals ECO (Suisun + Franks) Excluding NGW … Totals summed (ECO + NGW) In-Delta … Sources: 2000 Wetland Functions: Brander, L., & Schuyt, K. (2004). The economic values of the world’s wetlands.',
+    },
+    {
       doc: 'slides',
       where: 'Restoration — Waterfowl & Shorebird Seasonal Wetland Deficits',
       quote:
@@ -1364,6 +1428,13 @@ const SOURCES: Record<string, Source[]> = {
     },
   ],
   'rec-economy': [
+    {
+      doc: 'data',
+      where:
+        'Restoration Scenarios NGW and ECO.xlsx (Recreation, Oct 2026) · Restoration ($) Combined and Habitat Restoration (Acres)',
+      quote:
+        'Totals ECO (Suisun + Franks) Excluding NGW … Totals summed (ECO + NGW) In-Delta … Sources: 2000 Wetland Functions: Brander, L., & Schuyt, K. (2004). The economic values of the world’s wetlands.',
+    },
     {
       doc: 'slides',
       where: 'Results — Visitor-sector Earnings by Water Year',
@@ -1491,6 +1562,8 @@ const SOURCES: Record<string, Source[]> = {
 
 /** Families built by a generator; every sibling shares the table it came from. */
 const SOURCE_PREFIXES: [string, Source[]][] = [
+  ['rec-economy-', [SOURCES['rec-economy'][0]]],
+  ['rec-restoration-', [SOURCES['rec-restoration'][0]]],
   [
     'eco-niche-',
     [

@@ -25,6 +25,7 @@ const RankVisualization = lazy(() => import('../internal/rank-visualization/Rank
 const BreakoutPage = lazy(() => import('../internal/rank-visualization/breakout/BreakoutPage'))
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
 const SiteMapPage = lazy(() => import('../internal/site-map/SiteMapPage'))
+const TribalStewardshipSpectrum = lazy(() => import('../internal/TribalStewardshipSpectrum'))
 const TeamMethodologyPage = lazy(
   () => import('../features/scenarios/evaluation/TeamMethodologyPage'),
 )
@@ -75,6 +76,10 @@ export default function AppRouter() {
       <Route path="/pages/breakout" element={deferred(<BreakoutPage />)} />
       <Route path="/pages/co-design-timeline" element={<CoDesignTimelinePage />} />
       <Route path="/pages/site-map" element={deferred(<SiteMapPage />)} />
+      <Route
+        path="/pages/tribal-stewardship-spectrum"
+        element={deferred(<TribalStewardshipSpectrum />)}
+      />
       <Route path="/design-system" element={<DesignSystem />} />
     </Routes>
   )
