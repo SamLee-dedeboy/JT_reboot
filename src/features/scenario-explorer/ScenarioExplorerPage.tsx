@@ -39,6 +39,11 @@ import type {
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
   'rma-scenarios': { key: 'rmaScenarios', url: '/data/scenario-explorer/salinity_dashboard.json' },
   'rma-schism': { key: 'rmaSchism', url: '/data/scenario-explorer/rma_schism_dashboard.json' },
+  'rma-calsim': { key: 'rmaCalsim', url: '/data/scenario-explorer/rma_calsim_dashboard.json' },
+  'calsim-scenarios': {
+    key: 'calsimScenarios',
+    url: '/data/scenario-explorer/calsim_scenarios_dashboard.json',
+  },
   'tiered-outflows': {
     key: 'tieredOutflows',
     url: '/data/scenario-explorer/tiered_outflows_dashboard.json',
@@ -68,6 +73,8 @@ interface LabeledSelectProps {
 }
 
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual')
+const isModelComparisonMode = (mode: DashboardMode) =>
+  mode === 'rma-schism' || mode === 'rma-calsim'
 const isTunnelScenario = (label: string) => label.trim().toLowerCase() === 'a tunnel'
 const SLR_SCENARIO_ORDER = ['baseline-slr', 'bolster-slr', 'ecomachine-slr', 'newgreen-slr']
 const scenarioAbbreviation = (label: string) =>
@@ -301,6 +308,7 @@ export default function ScenarioExplorerPage({
   const [d1641Data, setD1641Data] = useState<D1641Dataset | null>(null)
   const [schismD1641Data, setSchismD1641Data] = useState<D1641Dataset | null>(null)
   const [slrD1641Data, setSlrD1641Data] = useState<D1641Dataset | null>(null)
+  const [calsimD1641Data, setCalsimD1641Data] = useState<D1641Dataset | null>(null)
   const [dashboardMode, setDashboardMode] = useState<DashboardMode>('rma-scenarios')
   const [baseScenario, setBaseScenario] = useState('baseline')
   const [scenario, setScenario] = useState('bolster')
@@ -360,6 +368,10 @@ export default function ScenarioExplorerPage({
   const sourceData =
     dashboardMode === 'rma-schism'
       ? datasets?.rmaSchism
+      : dashboardMode === 'rma-calsim'
+        ? datasets?.rmaCalsim
+        : dashboardMode === 'calsim-scenarios'
+          ? datasets?.calsimScenarios
       : dashboardMode === 'tiered-outflows'
         ? datasets?.tieredOutflows
         : dashboardMode === 'schism-runs'
@@ -401,12 +413,18 @@ export default function ScenarioExplorerPage({
             ? fetch(assetUrl('/data/scenario-explorer/d1641_rma_slr.json')).then(
                 (response) => response.json() as Promise<D1641Dataset>,
               )
-            : Promise.resolve(null),
+            : (nextMode === 'rma-calsim' || nextMode === 'calsim-scenarios') && !calsimD1641Data
+              ? fetch(assetUrl('/data/scenario-explorer/d1641_calsim.json')).then(
+                  (response) => response.json() as Promise<D1641Dataset>,
+                )
+              : Promise.resolve(null),
       ])
       nextData = loadedData
       if (loadedCompliance) {
         if (nextMode === 'slr-current' || nextMode === 'slr-scenarios')
           setSlrD1641Data(loadedCompliance)
+        else if (nextMode === 'rma-calsim' || nextMode === 'calsim-scenarios')
+          setCalsimD1641Data(loadedCompliance)
         else setSchismD1641Data(loadedCompliance)
       }
       setDatasets((current) => ({ ...current, [config.key]: nextData }))
@@ -417,6 +435,15 @@ export default function ScenarioExplorerPage({
       setSelectedModel('schism')
       setScenario('baseline')
       setActiveKeys(['baseline'])
+    } else if (nextMode === 'rma-calsim') {
+      setBaseScenario('rma')
+      setSelectedModel('calsim')
+      setScenario('baseline-calsim')
+      setActiveKeys(['baseline-calsim'])
+    } else if (nextMode === 'calsim-scenarios') {
+      setBaseScenario('baseline-calsim')
+      setScenario('reserve-calsim')
+      setActiveKeys(['reserve-calsim'])
     } else if (nextMode === 'tiered-outflows') {
       setBaseScenario('run15')
       setScenario('run16')
@@ -464,12 +491,12 @@ export default function ScenarioExplorerPage({
         return item
       })
     if (dashboardMode === 'schism-runs') return data.scenarios
-    if (dashboardMode !== 'rma-scenarios')
+    if (dashboardMode !== 'rma-scenarios' && dashboardMode !== 'calsim-scenarios')
       return data.scenarios.map((item) => ({ ...item, label: renameBaseline(item.label) }))
     const zeroSeries = data.dates.map(() => 0)
     const baseline: Scenario = {
-      key: 'baseline',
-      label: 'Business as Usual',
+      key: dashboardMode === 'calsim-scenarios' ? 'baseline-calsim' : 'baseline',
+      label: dashboardMode === 'calsim-scenarios' ? 'Business as Usual (CalSim)' : 'Business as Usual',
       stationValues: data.stations.map(() => zeroSeries),
       regionValues: Object.fromEntries(data.regions.map((regionName) => [regionName, zeroSeries])),
     }
@@ -477,7 +504,7 @@ export default function ScenarioExplorerPage({
   }, [dashboardMode, data])
   const comparisonBaseLabel = useMemo(
     () =>
-      dashboardMode === 'rma-schism'
+      isModelComparisonMode(dashboardMode)
         ? baseScenario.toUpperCase()
         : dashboardMode === 'slr-current'
           ? `Current ${scenarioOptions.find((item) => item.key === scenario)?.label.replace(/\s*\(SLR\)$/, '') ?? 'scenario'}`
@@ -486,8 +513,9 @@ export default function ScenarioExplorerPage({
   )
   const rawComparisonData = useMemo<ScenarioDataset | undefined>(() => {
     if (!data) return data
-    if (dashboardMode === 'rma-schism') {
-      if (baseScenario === 'rma' && selectedModel === 'schism')
+    if (isModelComparisonMode(dashboardMode)) {
+      const comparisonModel = dashboardMode === 'rma-calsim' ? 'calsim' : 'schism'
+      if (baseScenario === 'rma' && selectedModel === comparisonModel)
         return { ...data, scenarios: scenarioOptions }
       return {
         ...data,
@@ -595,7 +623,7 @@ export default function ScenarioExplorerPage({
     if (!rawComparisonData) return rawComparisonData
     const canonicalReference = rawComparisonData.referenceStationValues
     const baseDeltas =
-      dashboardMode !== 'rma-schism' && dashboardMode !== 'slr-current'
+      !isModelComparisonMode(dashboardMode) && dashboardMode !== 'slr-current'
         ? scenarioOptions.find((item) => item.key === baseScenario)?.stationValues
         : null
     const toPercent = (difference: number | null, reference: number | null) =>
@@ -617,7 +645,7 @@ export default function ScenarioExplorerPage({
                 if (canonical == null) return null
                 if (dashboardMode === 'slr-current')
                   return canonical + (pairedCurrent?.stationValues[stationIndex]?.[dateIndex] ?? 0)
-                if (dashboardMode !== 'rma-schism')
+                if (!isModelComparisonMode(dashboardMode))
                   return canonical + (baseDeltas?.[stationIndex]?.[dateIndex] ?? 0)
                 return baseScenario === 'schism' ? canonical - (values[dateIndex] ?? 0) : canonical
               }) ?? [])
@@ -734,6 +762,7 @@ export default function ScenarioExplorerPage({
   )
   const chartD1641Data = useMemo<D1641Dataset | null>(() => {
     if (dashboardMode === 'rma-scenarios') return d1641Data
+    if (dashboardMode === 'calsim-scenarios') return calsimD1641Data
     if (dashboardMode === 'schism-runs') return schismD1641Data
     if (dashboardMode === 'slr-scenarios') return slrD1641Data
     if (dashboardMode === 'slr-current') {
@@ -750,6 +779,22 @@ export default function ScenarioExplorerPage({
         },
       }
     }
+    if (dashboardMode === 'rma-calsim') {
+      if (!d1641Data || !calsimD1641Data) return null
+      const originalKey = scenario.replace(/-calsim$/, '')
+      const originalCompliance = d1641Data.scenarios[originalKey]
+      const calsimCompliance = calsimD1641Data.scenarios[scenario]
+      if (!originalCompliance || !calsimCompliance) return null
+      const byModel = { rma: originalCompliance, calsim: calsimCompliance }
+      return {
+        source: `${d1641Data.source}; ${calsimD1641Data.source}`,
+        generatedFrom: `${d1641Data.generatedFrom}; ${calsimD1641Data.generatedFrom}`,
+        scenarios: {
+          [baseScenario]: byModel[baseScenario as 'rma' | 'calsim'],
+          [scenario]: byModel[selectedModel as 'rma' | 'calsim'],
+        },
+      }
+    }
     if (dashboardMode !== 'rma-schism' || !d1641Data || !schismD1641Data) return null
     const schismScenarioKey = (
       { baseline: 'run27', reserve: 'run30', tunnel: 'run31' } as Record<string, string>
@@ -762,12 +807,13 @@ export default function ScenarioExplorerPage({
       source: `${d1641Data.source}; ${schismD1641Data.source}`,
       generatedFrom: `${d1641Data.generatedFrom}; ${schismD1641Data.generatedFrom}`,
       scenarios: {
-        [baseScenario]: byModel[baseScenario as ModelKey],
-        [scenario]: byModel[selectedModel],
+        [baseScenario]: byModel[baseScenario as 'rma' | 'schism'],
+        [scenario]: byModel[selectedModel as 'rma' | 'schism'],
       },
     }
   }, [
     baseScenario,
+    calsimD1641Data,
     d1641Data,
     dashboardMode,
     scenario,
@@ -803,7 +849,7 @@ export default function ScenarioExplorerPage({
     const canonicalReference = rawComparisonData.referenceStationValues
     const itemReference = rawSelectedScenario.referenceStationValues ?? canonicalReference
     const baseDeltas =
-      dashboardMode !== 'rma-schism' && dashboardMode !== 'slr-current'
+      !isModelComparisonMode(dashboardMode) && dashboardMode !== 'slr-current'
         ? scenarioOptions.find((item) => item.key === baseScenario)?.stationValues
         : null
     const pairedCurrent =
@@ -826,7 +872,7 @@ export default function ScenarioExplorerPage({
                     canonical +
                     (pairedCurrent?.stationValues[stationIndex]?.[referenceDateIndex] ?? 0)
                   )
-                if (dashboardMode !== 'rma-schism')
+                if (!isModelComparisonMode(dashboardMode))
                   return canonical + (baseDeltas?.[stationIndex]?.[referenceDateIndex] ?? 0)
                 return baseScenario === 'schism'
                   ? canonical -
@@ -956,7 +1002,7 @@ export default function ScenarioExplorerPage({
             })}
           >
             <PaperControls mode={dashboardMode}>
-              {dashboardMode === 'rma-schism' ? (
+              {isModelComparisonMode(dashboardMode) ? (
                 <>
                   <LabeledSelect
                     tourId="scenario-controls"
@@ -965,15 +1011,24 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => {
                       const next = event.target.value as ModelKey
                       setBaseScenario(next)
-                      setSelectedModel(next === 'rma' ? 'schism' : 'rma')
+                      setSelectedModel(
+                        next === 'rma'
+                          ? dashboardMode === 'rma-calsim'
+                            ? 'calsim'
+                            : 'schism'
+                          : 'rma',
+                      )
                       setHistogramBrush(null)
                     }}
                   >
                     <MenuItem value="rma" sx={menuItemSx('brand.primaryBlue')}>
                       RMA
                     </MenuItem>
-                    <MenuItem value="schism" sx={menuItemSx('brand.primaryBlue')}>
-                      SCHISM
+                    <MenuItem
+                      value={dashboardMode === 'rma-calsim' ? 'calsim' : 'schism'}
+                      sx={menuItemSx('brand.primaryBlue')}
+                    >
+                      {dashboardMode === 'rma-calsim' ? 'CalSim' : 'SCHISM'}
                     </MenuItem>
                   </LabeledSelect>
                   <SwapButton
@@ -992,15 +1047,24 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => {
                       const next = event.target.value as ModelKey
                       setSelectedModel(next)
-                      setBaseScenario(next === 'rma' ? 'schism' : 'rma')
+                      setBaseScenario(
+                        next === 'rma'
+                          ? dashboardMode === 'rma-calsim'
+                            ? 'calsim'
+                            : 'schism'
+                          : 'rma',
+                      )
                       setHistogramBrush(null)
                     }}
                   >
                     <MenuItem value="rma" sx={menuItemSx('brand.primaryGreen')}>
                       RMA
                     </MenuItem>
-                    <MenuItem value="schism" sx={menuItemSx('brand.primaryGreen')}>
-                      SCHISM
+                    <MenuItem
+                      value={dashboardMode === 'rma-calsim' ? 'calsim' : 'schism'}
+                      sx={menuItemSx('brand.primaryGreen')}
+                    >
+                      {dashboardMode === 'rma-calsim' ? 'CalSim' : 'SCHISM'}
                     </MenuItem>
                   </LabeledSelect>
                   <LabeledSelect
@@ -1375,6 +1439,8 @@ export default function ScenarioExplorerPage({
               d1641Data={
                 dashboardMode === 'rma-scenarios'
                   ? d1641Data
+                  : dashboardMode === 'calsim-scenarios'
+                    ? calsimD1641Data
                   : dashboardMode === 'schism-runs'
                     ? schismD1641Data
                     : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
@@ -1413,7 +1479,7 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
         gridTemplateColumns:
           mode === 'slr-current'
             ? 'minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
-            : mode === 'rma-schism'
+            : isModelComparisonMode(mode)
               ? 'minmax(0,.8fr) auto minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
               : 'minmax(0,1fr) auto minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)',
         minWidth: 0,
@@ -1426,7 +1492,7 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
           gridTemplateColumns:
             mode === 'slr-current'
               ? 'minmax(4rem,.9fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
-              : mode === 'rma-schism'
+              : isModelComparisonMode(mode)
                 ? 'minmax(4rem,.7fr) auto minmax(4rem,.7fr) minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
                 : 'minmax(4rem,.75fr) auto minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)',
         },
@@ -1436,7 +1502,7 @@ function PaperControls({ children, mode }: { children: ReactNode; mode: Dashboar
           gridTemplateColumns:
             mode === 'slr-current'
               ? 'minmax(3.5rem,.75fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
-              : mode === 'rma-schism'
+              : isModelComparisonMode(mode)
                 ? 'minmax(3.5rem,.55fr) auto minmax(3.5rem,.55fr) minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
                 : 'minmax(3.5rem,.6fr) auto minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)',
           p: theme.jtSpacing.component.xs,

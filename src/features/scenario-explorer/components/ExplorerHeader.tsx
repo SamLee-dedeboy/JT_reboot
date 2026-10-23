@@ -9,6 +9,8 @@ const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode
   { number: '04', label: 'SCHISM Runs', value: 'schism-runs' },
   { number: '05', label: 'SLR vs. Current', value: 'slr-current' },
   { number: '06', label: 'Compare SLR Scenarios', value: 'slr-scenarios' },
+  { number: '07', label: 'RMA vs. CalSim', value: 'rma-calsim' },
+  { number: '08', label: 'COR and TUN', value: 'calsim-scenarios' },
 ]
 
 const PUBLIC_MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [

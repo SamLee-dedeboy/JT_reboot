@@ -19,8 +19,31 @@ The browser loads generated files from `public/data/scenario-explorer`. The inte
 - `tiered_outflows_dashboard.json`
 - `schism_runs_dashboard.json` (internal only)
 - `d1641_schism.json` (internal only)
+- `rma_calsim_dashboard.json` (internal only; mode 07)
+- `calsim_scenarios_dashboard.json` (internal only; mode 08)
+- `d1641_calsim.json` and `d1641_calsim_source/` (internal only)
 
 The source preprocessing utilities are retained in `scripts/scenario-explorer`. They may contain source-machine paths and should be reviewed before regenerating data.
+
+## CalSim boundary-condition reruns
+
+Internal modes 07 and 08 use the October 21, 2026 RMA11 reruns in
+`JT_exploration/RMA/data/{baseline_calsim,reserve_calsim,tunnel_calsim}`. Mode 07 compares each
+rerun with its original RMA counterpart. Mode 08 compares COR and TUN with `baseline_calsim`; it
+does not use the older `reserve` or `tunnel` results as its scenario inputs.
+
+```bash
+python scripts/scenario-explorer/build_calsim_dashboards.py
+python scripts/scenario-explorer/build_d1641_calsim.py \
+  --processor ../JT_exploration/RMA/scripts/process_rma_d1641.py \
+  --data-dir ../JT_exploration/RMA/data \
+  --output-dir public/data/scenario-explorer/d1641_calsim_source \
+  --json-output public/data/scenario-explorer/d1641_calsim.json
+```
+
+The dashboard builder reads the delivered `EC-AVG-AVG` files. The D-1641 builder reads the
+instantaneous `EC` files, requires 96 valid 15-minute observations per complete day, writes all six
+intermediate compliance tables, adds all-date display metrics, and assembles the runtime JSON.
 
 ## Sea-level-rise (SLR) scenarios
 

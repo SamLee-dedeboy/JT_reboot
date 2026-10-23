@@ -34,6 +34,8 @@ export interface ScenarioDataset {
 export interface ScenarioDatasets {
   rmaScenarios: ScenarioDataset
   rmaSchism: ScenarioDataset
+  rmaCalsim: ScenarioDataset
+  calsimScenarios: ScenarioDataset
   tieredOutflows: ScenarioDataset
   schismRuns: ScenarioDataset
   slrScenarios: ScenarioDataset
@@ -46,8 +48,10 @@ export type DashboardMode =
   | 'schism-runs'
   | 'slr-current'
   | 'slr-scenarios'
+  | 'rma-calsim'
+  | 'calsim-scenarios'
 export type ValueMode = 'raw' | 'percent'
-export type ModelKey = 'rma' | 'schism'
+export type ModelKey = 'rma' | 'schism' | 'calsim'
 export type RangeMode = 'minmax' | 'p90' | 'iqr'
 
 export type D1641ObjectiveStatus =

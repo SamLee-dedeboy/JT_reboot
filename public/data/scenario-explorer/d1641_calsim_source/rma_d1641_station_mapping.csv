@@ -1,0 +1,49 @@
+scenario,d1641_station_id,rma_station_name,rma_short_name,rma_station_number,archive_index,latitude,longitude,source_file_occurrences,mapping_method
+baseline-calsim,EMM,SACRAMENTO RIVER AT EMMATON,emm2,104,9,38.0842856,-121.738874,3,identity/name mapping
+baseline-calsim,JER,SAN JOAQUIN RIVER AT JERSEY POINT,sjj,113,116,38.0522259,-121.6889323,1,identity/name mapping
+baseline-calsim,STI,MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND,sti,138,37,38.1168587,-121.4989043,5,identity/name mapping
+baseline-calsim,SAL,SAN ANDREAS LANDING,REsal,129,35,38.1031042,-121.5914462,1,identity/name mapping
+baseline-calsim,SJR,SAN JOAQUIN RIVER NEAR VERNALIS,vns,425,95,37.6760988,-121.2654998,5,identity/name mapping
+baseline-calsim,BDT,SAN JOAQUIN RIVER AT BRANDT BRIDGE,bdt,414,66,37.8645752,-121.323124,3,identity/name mapping
+baseline-calsim,UNI,,uni,403,44,37.8220938,-121.3750095,0,not present in scenario exports
+baseline-calsim,OLD,,old,379,70,37.8047259,-121.4495286,0,not present in scenario exports
+baseline-calsim,WCI,WEST CANAL NEAR CLIFTON COURT INTAKE,wci,360,60,37.8316122,-121.5540552,1,identity/name mapping
+baseline-calsim,DMC,TRACY PUMPING PLANT,trp,358,43,37.8166428,-121.5586439,2,identity/name mapping
+baseline-calsim,PPT,PRISONERS POINT,ppt,307,33,38.0563598,-121.5499832,2,identity/name mapping
+baseline-calsim,CLL,COLLINSVILLE,cll,90,82,38.0739494,-121.8500957,2,identity/name mapping
+baseline-calsim,NSL,MONTEZUMA SLOUGH AT NATIONAL STEEL,nsl,86,63,38.1220266,-121.8882111,3,identity/name mapping
+baseline-calsim,BDL,MONTEZUMA SLOUGH NEAR BELDONS LANDING,bdl,78,57,38.1867854,-121.9707748,3,identity/name mapping
+baseline-calsim,SNC,CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB,snc,57,54,38.1850321,-122.0830543,2,identity/name mapping
+baseline-calsim,VOL,SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH,vol,66,56,38.1810401,-122.0483434,2,identity/name mapping
+reserve-calsim,EMM,SACRAMENTO RIVER AT EMMATON,emm2,104,9,38.0842856,-121.738874,3,identity/name mapping
+reserve-calsim,JER,SAN JOAQUIN RIVER AT JERSEY POINT,sjj,113,116,38.0522259,-121.6889323,1,identity/name mapping
+reserve-calsim,STI,MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND,sti,138,37,38.1168587,-121.4989043,5,identity/name mapping
+reserve-calsim,SAL,SAN ANDREAS LANDING,REsal,129,35,38.1031042,-121.5914462,1,identity/name mapping
+reserve-calsim,SJR,SAN JOAQUIN RIVER NEAR VERNALIS,vns,425,95,37.6760988,-121.2654998,5,identity/name mapping
+reserve-calsim,BDT,SAN JOAQUIN RIVER AT BRANDT BRIDGE,bdt,414,66,37.8645752,-121.323124,3,identity/name mapping
+reserve-calsim,UNI,,uni,403,44,37.8220938,-121.3750095,0,not present in scenario exports
+reserve-calsim,OLD,,old,379,70,37.8047259,-121.4495286,0,not present in scenario exports
+reserve-calsim,WCI,WEST CANAL NEAR CLIFTON COURT INTAKE,wci,360,60,37.8316122,-121.5540552,1,identity/name mapping
+reserve-calsim,DMC,TRACY PUMPING PLANT,trp,358,43,37.8166428,-121.5586439,2,identity/name mapping
+reserve-calsim,PPT,PRISONERS POINT,ppt,307,33,38.0563598,-121.5499832,2,identity/name mapping
+reserve-calsim,CLL,COLLINSVILLE,cll,90,82,38.0739494,-121.8500957,2,identity/name mapping
+reserve-calsim,NSL,MONTEZUMA SLOUGH AT NATIONAL STEEL,nsl,86,63,38.1220266,-121.8882111,3,identity/name mapping
+reserve-calsim,BDL,MONTEZUMA SLOUGH NEAR BELDONS LANDING,bdl,78,57,38.1867854,-121.9707748,3,identity/name mapping
+reserve-calsim,SNC,CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB,snc,57,54,38.1850321,-122.0830543,2,identity/name mapping
+reserve-calsim,VOL,SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH,vol,66,56,38.1810401,-122.0483434,2,identity/name mapping
+tunnel-calsim,EMM,SACRAMENTO RIVER AT EMMATON,emm2,104,9,38.0842856,-121.738874,3,identity/name mapping
+tunnel-calsim,JER,SAN JOAQUIN RIVER AT JERSEY POINT,sjj,113,116,38.0522259,-121.6889323,1,identity/name mapping
+tunnel-calsim,STI,MOKELUMNE RIVER (SOUTH FORK) @ STATEN ISLAND,sti,138,37,38.1168587,-121.4989043,5,identity/name mapping
+tunnel-calsim,SAL,SAN ANDREAS LANDING,REsal,129,35,38.1031042,-121.5914462,1,identity/name mapping
+tunnel-calsim,SJR,SAN JOAQUIN RIVER NEAR VERNALIS,vns,425,95,37.6760988,-121.2654998,5,identity/name mapping
+tunnel-calsim,BDT,SAN JOAQUIN RIVER AT BRANDT BRIDGE,bdt,414,66,37.8645752,-121.323124,3,identity/name mapping
+tunnel-calsim,UNI,,uni,403,44,37.8220938,-121.3750095,0,not present in scenario exports
+tunnel-calsim,OLD,,old,379,70,37.8047259,-121.4495286,0,not present in scenario exports
+tunnel-calsim,WCI,WEST CANAL NEAR CLIFTON COURT INTAKE,wci,360,60,37.8316122,-121.5540552,1,identity/name mapping
+tunnel-calsim,DMC,TRACY PUMPING PLANT,trp,358,43,37.8166428,-121.5586439,2,identity/name mapping
+tunnel-calsim,PPT,PRISONERS POINT,ppt,307,33,38.0563598,-121.5499832,2,identity/name mapping
+tunnel-calsim,CLL,COLLINSVILLE,cll,90,82,38.0739494,-121.8500957,2,identity/name mapping
+tunnel-calsim,NSL,MONTEZUMA SLOUGH AT NATIONAL STEEL,nsl,86,63,38.1220266,-121.8882111,3,identity/name mapping
+tunnel-calsim,BDL,MONTEZUMA SLOUGH NEAR BELDONS LANDING,bdl,78,57,38.1867854,-121.9707748,3,identity/name mapping
+tunnel-calsim,SNC,CHADBOURNE SLOUGH AT SUNRISE DUCK CLUB,snc,57,54,38.1850321,-122.0830543,2,identity/name mapping
+tunnel-calsim,VOL,SUISUN SLOUGH 300' SOUTH OF VOLANTI SLOUGH,vol,66,56,38.1810401,-122.0483434,2,identity/name mapping

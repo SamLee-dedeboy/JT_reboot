@@ -6,6 +6,7 @@ const sourceDir =
 const outputPath = path.resolve(
   process.argv[3] ?? path.join('public', 'data', 'scenario-explorer', 'd1641_rma.json'),
 )
+const generatedFrom = process.argv[4] ?? 'RMA/data/processed/d1641_rma'
 
 function parseCsv(text) {
   const rows = []
@@ -159,7 +160,7 @@ await writeFile(
   `${JSON.stringify(
     {
       source: 'California State Water Resources Control Board Decision 1641',
-      generatedFrom: 'RMA/data/processed/d1641_rma',
+      generatedFrom,
       scenarios,
     },
     null,

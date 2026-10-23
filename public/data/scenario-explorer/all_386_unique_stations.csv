@@ -1,0 +1,387 @@
+station_id,region,long_name,short_name,origin,archive_index,x,y,latitude,longitude
+2,South Bay,South Central South Bay near Calaveras Point,ECO1,ECO,,582550.8,4147010.0,37.4662849,-122.066493
+3,South Bay,South Bay at East Palo Alto,ECO2,ECO,,579010.6,4148910.0,37.4837183,-122.1063181
+7,South Bay,South Bay at Redwood City,ECO3,ECO,,573508.4,4153212.0,37.5229453,-122.1681166
+8,South Bay,South Bay at Alameda Creek South,ECO4,ECO,,576758.1,4156141.0,37.5490784,-122.1310378
+9,South Bay,North Central South Bay,ECO5,ECO,,571643.3,4158390.0,37.5697598,-122.1887161
+10,South Bay,South Bay at Foster City,ECO6,ECO,,568124.4,4158602.0,37.5719376,-122.2285408
+11,South Bay,San Francisco Bay at San Mateo Bridge Near Foster City,mateo,DWR,91.0,566147.7,4159966.4,37.5843788,-122.2508005
+12,South Bay,South Bay at Alameda Creek North,ECO7,ECO,,573919.6,4161550.0,37.5980596,-122.1626229
+13,Central Bay,San Francisco Bay near Coyote Point,ECO8,ECO,,561435.7,4161086.0,37.5947962,-122.3040717
+14,Central Bay,South Central San Francisco Bay,ECO9,ECO,,565890.6,4164982.0,37.6296015,-122.2532604
+15,Central Bay,San Francisco Bay at San Lorenzo,ECO10,ECO,,572889.2,4168419.0,37.6600489,-122.1736092
+16,Central Bay,Central San Francisco Bay,ECO11,ECO,,562701.6,4170024.0,37.6752669,-122.2889656
+17,Central Bay,South East of Bay View,ECO12,ECO,,556269.1,4172028.0,37.6937458,-122.3617509
+18,Central Bay,San Francisco Bay near Oakland Airport,ECO13,ECO,,565936.7,4174390.0,37.7143891,-122.2518872
+19,Central Bay,North Central San Francisco Bay,ECO14,ECO,,560590.6,4177121.0,37.7393719,-122.3123119
+20,Central Bay,North East of Bay View,ECO15,ECO,,556819.7,4179986.0,37.7654352,-122.3548839
+22,Central Bay,San Francisco Bay at Pier 17,sfp17,DWR,241.0,553143.4,4184169.8,37.8033638,-122.3963149
+23,Central Bay,San Francisco,sffpx,DWR,74.0,547094.8,4184503.1,37.8066998,-122.4649996
+24,Central Bay,San Francisco Bay at Northeast Shore Alcatraz Island,alk,DWR,185.0,550895.2,4186802.8,37.8272224,-122.4216671
+25,Central Bay,South of Mount Caroline Livermore,ECO16,ECO,,552530.9,4188625.0,37.8435525,-122.4029488
+26,Central Bay,North East of Treasure Island,ECO17,ECO,,557239.0,4189258.0,37.848974,-122.3493908
+27,Central Bay,West of Richmond Inner Harbor,ECO18,ECO,,554069.2,4193567.0,37.8880028,-122.3850959
+30,Central Bay,Southampton Shoal Channel LB 6,sham,DWR,71.0,550775.4,4196680.1,37.9162496,-122.4223336
+31,Central Bay,Richmond,richm,DWR,79.0,552736.0,4198019.3,37.9282076,-122.3999311
+32,San Pablo Bay,San Francisco Bay at Richmond-San Rafael Bridge,richb,DWR,138.0,548648.5,4198778.5,37.9352779,-122.4463883
+33,San Pablo Bay,San Pablo Bay near Point San Pablo,ECO19,ECO,,552668.1,4204855.0,37.989818,-122.4002029
+34,San Pablo Bay,China Camp,scqc1,DWR,73.0,547485.2,4206082.9,38.0011707,-122.4591432
+35,San Pablo Bay,San Pablo Bay near Rat Rock,ECO20,ECO,,548195.0,4206748.0,38.0071274,-122.4510142
+36,San Pablo Bay,San Pablo Bay near Pinole Point,ECO21,ECO,,558310.1,4208495.0,38.0222776,-122.3356582
+37,San Pablo Bay,San Pablo Bay near Santa Venetia Hamilton Wetlands,ECO22,ECO,,545526.6,4209614.0,38.0330952,-122.4812265
+38,San Pablo Bay,South Central San Pablo Bay,ECO23,ECO,,551425.9,4210609.0,38.0417467,-122.4139359
+39,San Pablo Bay,San Pablo Bay near Rodeo,ECO24,ECO,,562748.8,4211288.0,38.0471519,-122.2848458
+40,San Pablo Bay,Carquinez Strait at Carquinez Bridge near Crockett,carqb,DWR,132.0,567940.8,4212900.6,38.0613098,-122.2255237
+41,San Pablo Bay,East Central San Pablo Bay,ECO25,ECO,,557911.0,4213772.0,38.0698607,-122.3397781
+42,San Pablo Bay,Mare Island,mare,DWR,140.0,565785.8,4213847.2,38.0699998,-122.2500001
+43,San Pablo Bay,San Pablo Bay near Bel Marin Keys,ECO26,ECO,,546702.2,4214780.0,38.0795935,-122.4674939
+44,San Pablo Bay,North Central San Pablo Bay,ECO27,ECO,,552603.1,4214936.0,38.0806753,-122.4002026
+45,San Pablo Bay,San Pablo Bay near Sears Point,ECO28,ECO,,550775.6,4218282.0,38.110935,-122.4208014
+46,San Pablo Bay,San Pablo Bay near Skaggs Island,ECO29,ECO,,557150.4,4219163.0,38.1184937,-122.3480174
+47,Suisun Bay,Carquinez Straight at Benecia,ECO30,ECO,,572625.2,4211850.0,38.0514779,-122.1722366
+48,Suisun Bay,Carquinez Straight at Ozol,ECO31,ECO,,574209.1,4209944.0,38.0341729,-122.154383
+50,Suisun Bay,Suisun Bay at Benicia Bridge,benbr,DWR,130.0,576633.3,4211159.0,38.0449203,-122.126632
+52,Suisun Bay,Cordelia Slough at Ibis club,REibs,DWR Revised,58.0,577637.36,4223643.42,38.1573401,-122.1138324
+53,Suisun Bay,Suisun Bay near Highway 680 Bridge,EJ1,EJ,,578478.91,4211910.17,38.0515315,-122.1055181
+54,Suisun Bay,Goodyear Slough at Fleet,flt,DWR,197.0,579121.9,4214883.0,38.0782657,-122.0978614
+55,Suisun Bay,Goodyear Slough at Morrow Island club,gys,DWR,55.0,579253.0,4219416.0,38.1191039,-122.0958635
+56,Suisun Bay,Cygnus-Cordelia Slough,cyg,DWR,255.0,579678.0,4223160.0,38.1528057,-122.090597
+57,Suisun Bay,Chadbourne Slough at Sunrise Duck Club,snc,DWR,54.0,580303.5,4226742.3,38.1850321,-122.0830543
+58,Suisun Bay,Suisun Bay near Point Edith,ECO32,ECO,,580440.5,4213603.0,38.0666144,-122.0829726
+59,Suisun Bay,Godfather II on Suisun Slough,REgod,DWR Revised,256.0,580585.88,4220050.89,38.1247072,-122.0805878
+60,Suisun Bay,Boynton Slough,bts,DWR,142.0,582199.0,4228990.87,38.2051238,-122.0611531
+61,Suisun Bay,Suisun Bay near Preston Point,EJ2,EJ,,582270.67,4214310.92,38.0728293,-122.0620297
+62,Suisun Bay,Grizzly Bay at Head of Montezuma Slough Buoy,gzm,DWR,221.0,582354.0,4221910.0,38.141301,-122.0602028
+63,Suisun Bay,Grizzly Bay at Suisun Slough,grizzb,DWR,220.0,582761.0,4218277.6,38.1085304,-122.0559804
+64,Suisun Bay,Suisun Bay near Garnet Point,ECO33,ECO,,582937.3,4216867.0,38.0958026,-122.0541336
+65,Suisun Bay,Hunter Cut at Montezuma Slough,REhun,DWR Revised,257.0,582986.79,4223472.99,38.1553278,-122.0528003
+66,Suisun Bay,Suisun Slough 300' south of Volanti Slough,vol,DWR,56.0,583348.0,4226330.0,38.1810401,-122.0483434
+67,Suisun Bay,Grizzly Bay,gzl,DWR,206.0,584309.02,4220037.89,38.12425,-122.038117
+68,Suisun Bay,First Mallard Branch,fmb,DWR,227.0,584692.1,4227881.3,38.194894,-122.0328138
+69,Suisun Bay,Suisun Bay below Ryer Island,EJ3,EJ,,585057.5,4214921.78,38.0780762,-122.0301884
+70,Suisun Bay,Port Chicago,pct,DWR,89.0,585550.4,4212803.2,38.0589381,-122.0248226
+71,Suisun Bay,Hill Slough,hsl,DWR,262.0,585680.0,4231386.0,38.2263823,-122.0211105
+72,Suisun Bay,Grizzly Bay Buoy,gzb,DWR,259.0,586986.9,4219943.0,38.1231408,-122.0075808
+73,Suisun Bay,Grizzly Bay near Pelican Point,EJ4,EJ,,587145.99,4217997.83,38.1055968,-122.0060036
+74,Suisun Bay,Montezuma Slough at Tree Slough,EJ5,EJ,,587905.1,4226349.84,38.1807857,-121.9963157
+75,Suisun Bay,Suisun Bay Cutoff Near Ryer,ryc,DWR,205.0,588041.6,4215616.3,38.0840491,-121.9960833
+76,Suisun Bay,Suisun Bay West Reach,EJ6,EJ,,588097.27,4212803.79,38.058699,-121.9957952
+77,Suisun Bay,Suisun Bay near Snag Island,EJ7,EJ,,588959.7,4214252.73,38.0716716,-121.9857857
+78,Suisun Bay,Montezuma Slough near Beldons Landing,bdl,DWR,57.0,590134.7,4227040.1,38.1867854,-121.9707748
+79,Suisun Bay,Suisun Bay at Channel Marker 24A Near Bay Point,c24,DWR,278.0,591743.04,4212444.61,38.0551,-121.95429
+80,Suisun Bay,Honker Bay,hon,DWR,204.0,593045.1,4214379.2,38.0724001,-121.9391995
+81,Suisun Bay,Montezuma Slough near Cross Slough,EJ8,EJ,,593349.67,4224951.83,38.1676403,-121.9343437
+82,Suisun Bay,Sacramento River at Mallard Island,mal,DWR,23.0,594757.5,4211123.3,38.0428827,-121.920111
+83,Suisun Bay,Montezuma Slough at Meins Landing,EJ9,EJ,,595597.5,4221857.01,38.1395172,-121.9091029
+84,Suisun Bay,Blacklock (NE1),REbll,DWR Revised,254.0,595735.33,4226395.83,38.1804019,-121.9069198
+85,Suisun Bay,Pittsburg,pts,DWR,85.0,597238.3,4211183.7,38.0431639,-121.8918355
+86,Suisun Bay,Montezuma Slough at National Steel,nsl,DWR,63.0,597451.6,4219938.0,38.1220266,-121.8882111
+87,Suisun Bay,Montezuma Slough at Roaring River,msl,DWR,258.0,597578.3,4216762.68,38.0934,-121.8872
+88,Suisun Bay,Suisun Bay At Van Sickle Island,confl,DWR,218.0,597605.9,4211894.6,38.0495304,-121.88755
+89,Suisun Bay,Sacramento River near Montezuma Slough,EJ10,EJ,,599775.27,4213937.86,38.0677057,-121.8625443
+90,Suisun Bay,Collinsville,cll,DWR,82.0,600858.7,4214644.1,38.0739494,-121.8500957
+92,Confluence,San Joaquin River near Pittsburg Point,EJ11,EJ,,600702.05,4209923.48,38.0314293,-121.8525457
+93,Confluence,San Joaquin River South of Confluence,EJ12,EJ,,601697.91,4212238.49,38.0521786,-121.8408716
+94,Confluence,Suisun Bay at Channel Marker 5 at Collinsville,co5,DWR,280.0,602123.11,4213753.24,38.06578,-121.8358099
+95,Confluence,San Joaquin River near Antioch Point,EJ13,EJ,,603220.52,4209290.75,38.0254443,-121.8239455
+96,Confluence,San Joaquin at Antioch,anh2,DWR,1.0,605075.1,4208474.7,38.0178777,-121.802939
+97,Confluence,Suisun Bay at Channel Marker 10 Near Collinsville,c10,DWR,281.0,605282.66,4213133.12,38.05983,-121.79989
+98,Confluence,Antioch Reach,EJ14,EJ,,605823.76,4209147.49,38.023853,-121.7943124
+99,Confluence,Sherman Lake,EJ15,EJ,,605828.57,4211651.22,38.0464132,-121.7938876
+100,Confluence,Donlon Island,62176.0,ECON,399.0,606624.08,4210274.31,38.0339128,-121.7850282
+101,Confluence,San Joaquin River below West Island Antioch,EJ16,EJ,,607218.8,4208490.6,38.0177699,-121.7785197
+102,Confluence,Sacramento River near Sherman Island,ssi,DWR,201.0,608608.2,4214765.6,38.0741467,-121.7617424
+103,Confluence,San Joaquin River near Antioch Bridge,EJ17,EJ,,608731.83,4209363.12,38.0254516,-121.761154
+104,Confluence,Sacramento River at Emmaton,emm2,DWR,9.0,610598.8,4215917.6,38.0842856,-121.738874
+106,Confluence,San Joaquin River at Big Break,EJ18,EJ,,611695.74,4209153.21,38.0231996,-121.7274247
+107,Confluence,San Joaquin River at Blind Point,blp,DWR,172.0,612410.9,4210203.7,38.0325767,-121.7191138
+108,Confluence,Oakley at Big Break Regional Shoreline,EJ19,EJ,,613026.28,4207527.34,38.0083845,-121.7125254
+109,Confluence,Sacramento River at Horeshoe Bend,62165.0,ECON,398.0,613244.49,4216945.97,38.0932241,-121.70855
+110,Confluence,Sacramento River near Sandy Beach,EJ20,EJ,,613619.89,4219509.86,38.1162787,-121.7038617
+111,Confluence,Sacramento River at Threemile Slough,tms,DWR,38.0,613974.4,4218374.1,38.1060004,-121.7
+112,Confluence,Marsh Creek at Big Break,EJ21,EJ,,614251.0,4208491.44,38.016918,-121.6984244
+113,Confluence,San Joaquin River at Jersey Point,sjj,DWR,116.0,615029.0,4212420.9,38.0522259,-121.6889323
+114,Confluence,Sacramento River at Rio Vista,REsrv,DWR Revised,129.0,615045.86,4222954.99,38.1471399,-121.6870426
+115,Confluence,Threemile Slough at San Joaquin River,sr3,DWR,148.0,615180.4,4216618.4,38.0900279,-121.6865308
+116,Confluence,Threemile Slough near San Joaquin River,tss,DWR,149.0,615192.53,4218085.21,38.1032429,-121.6861559
+117,Confluence,Threemile Slough near Rio Vista,tsl,DWR,115.0,615196.3,4218095.3,38.1033333,-121.6861113
+118,Confluence,Rio Vista,riv,DWR,87.0,615252.9,4224292.9,38.1591684,-121.6844638
+119,Confluence,San Joaquin River below Three Mile Slough,EJ22,EJ,,615795.51,4214975.72,38.0751481,-121.6797843
+120,Confluence,San Joaquin River at Twitchell Island,twi,DWR,200.0,616731.0,4217465.0,38.0974571,-121.6687144
+121,Confluence,False River near Oakley,fal,DWR,109.0,616952.5,4212848.6,38.0558331,-121.6669443
+122,Confluence,Sacramento River Downstream of Isleton,soi,DWR,198.0,617644.9,4226137.5,38.1754796,-121.6568625
+123,Confluence,Sacramento River near Ida Island,26178.0,ECON,336.0,618008.6,4225944.07,38.1736892,-121.6527434
+124,Confluence,Fisherman's Cut,fct,DWR,196.0,618521.7,4214201.8,38.0678217,-121.6488384
+125,Confluence,Vieras Resort at Sacramento River,JT11,EJ SAFER Proxy,317.0,619104.5059,4225821.553,38.1724411,-121.6402556
+126,Confluence,Isleton at Sacramento River,JT10,EJ SAFER Proxy,316.0,621359.0124,4224793.3,38.1628757,-121.6146995
+127,Confluence,Brannan Marinas at San Joaquin River,JT14,EJ SAFER Proxy,320.0,621505.607,4218554.016,38.1066397,-121.6140903
+128,Confluence,Oxbow Marina South,EJ23,EJ,,623222.18,4223516.8,38.1511218,-121.5936585
+129,Confluence,San Andreas Landing,REsal,DWR Revised,35.0,623496.91,4218191.59,38.1031042,-121.5914462
+130,Confluence,Oxbow Marina North,EJ24,EJ,,623728.3,4224207.32,38.157274,-121.5877637
+131,Confluence,Georgiana Slough at Mokelumne River,gsm,DWR,145.0,624430.5,4221190.9,38.1299997,-121.5802779
+132,Confluence,Old River at Franks Tract,osj,DWR,110.0,624652.3,4214658.4,38.0711115,-121.5788886
+133,Confluence,Mokelumne River at Andrus Island,mok,DWR,114.0,625274.8,4218552.5,38.1061112,-121.5711108
+134,Confluence,Brannan Marinas at Mokelumne and San Joaquin River Confluence,JT13,EJ SAFER Proxy,319.0,625296.7464,4217494.545,38.096576,-121.5710462
+135,Confluence,North Mokelumne RIver above Georgiana Slough,53866.0,ECON,365.0,626435.1,4222074.3,38.1376804,-121.5572558
+136,Confluence,Potato Slough at North Venice Island,REssa,DWR Revised,288.0,627374.62,4216506.42,38.0873826,-121.5475322
+137,Confluence,South Mokelumne River above Islemouth Slough,EJ25,EJ,,631256.82,4221227.13,38.1293592,-121.5024085
+138,Confluence,Mokelumne River (South Fork) @ Staten Island,sti,DWR,37.0,631586.4,4219845.0,38.1168587,-121.4989043
+139,Confluence,Little Potato Slough at Terminous,lps,DWR,113.0,631868.1,4217577.6,38.0963892,-121.4961107
+140,North Delta,North Delta Aggregate Area,Y173,ECON,401.0,605331.31,4236886.57,38.2738585,-121.7958192
+141,North Delta,Calhoun Slough near Barkers Cut,17838.0,ECON,332.0,605735.5948,4235357.665,38.2600348,-121.7914265
+142,North Delta,Hastings Tract,57403.0,ECON,393.0,607118.01,4235426.1,38.2604876,-121.7756183
+143,North Delta,Hastings Tract at Ulatis Creek,20016.0,ECON,333.0,607313.4295,4238818.131,38.2910279,-121.7728707
+144,North Delta,Ulatis Creek Near Elmira,ulc,DWR,215.0,608463.8,4239164.3,38.2940086,-121.759666
+145,North Delta,Lindsey Slough at the Big Ditch,EJ26,EJ,,608637.23,4235120.79,38.2575542,-121.7583038
+146,North Delta,Cache Slough,ccs,DWR,3.0,609500.3,4239525.4,38.2971363,-121.7477598
+147,North Delta,Haas Slough North of Sycamore Slough,58312.0,ECON,394.0,611183.34,4240379.02,38.3046206,-121.7283827
+148,North Delta,Hass Slough Near Elmira,has,DWR,219.0,611430.5,4239220.3,38.2941496,-121.7257392
+149,North Delta,Lookout Slough,58480.0,ECON,395.0,612602.24,4239137.9,38.2932609,-121.712356
+150,North Delta,Cache Slough Near Hastings Tract Near Rio Vista,ucs,DWR,216.0,612908.6,4237177.1,38.2755553,-121.7091665
+151,North Delta,Lindsey Slough,EJ27,EJ,,613676.84,4234003.2,38.2468609,-121.7008951
+153,North Delta,Shag Slough at Liberty Island near Courtland,sgg,DWR,126.0,614250.8,4241943.7,38.318333,-121.6930551
+154,North Delta,Cache Slough below Shag Slough,cbs,DWR,269.0,614881.0,4234438.0,38.2506254,-121.6870667
+155,North Delta,Cache Slough at Liberty Island,lib,DWR,189.0,615115.0,4233613.0,38.2431621,-121.684527
+156,North Delta,Prospect Slough Near Five Points,psf,DWR,265.0,615325.0,4233252.0,38.2398825,-121.6821866
+160,North Delta,Liberty Cut at Liberty Island near Courtland,libc,DWR,124.0,616502.5,4242438.4,38.3225004,-121.667222
+161,North Delta,Cache Slough at Ryer Island,ryi,DWR,128.0,616525.5,4230277.3,38.2129253,-121.6689605
+162,North Delta,Liberty Cut at Five Points,lcts,DWR,270.0,616555.0,4239591.0,38.2968386,-121.6670913
+163,North Delta,Sacramento River Deep Water Ship Channel Near Rio Vista,dws,DWR,127.0,616657.3,4235072.2,38.2561108,-121.6666666
+164,North Delta,Miner Slough Near Sacramento River and Prospect Island,mss,DWR,229.0,616742.4,4232792.7,38.2355612,-121.6660697
+165,North Delta,Toe Drain at Five Points,toes,DWR,266.0,617130.0,4239083.0,38.2921866,-121.6606015
+166,North Delta,Little Holland Tract at North Breach Near Holland Tract,lhtn,DWR,267.0,617274.0,4243882.0,38.3354065,-121.6581585
+167,North Delta,Cache Slough Above Ryer Island Ferry,ryf,DWR,217.0,617515.3,4228186.2,38.1939556,-121.6580031
+170,North Delta,Sacramento River Deep Water Ship Channel Near Courtland,cm62,DWR,224.0,618511.0,4244595.0,38.3416677,-121.6438887
+171,North Delta,Miner Slough at Five Points,mfv,DWR,211.0,618522.3,4238860.6,38.29,-121.6447217
+172,North Delta,Toe Drain South,471.0,ECON,329.0,618601.8806,4246101.069,38.3552251,-121.6425958
+173,North Delta,Miner Slough at Elevator Road,EJ28,EJ,,618891.93,4236490.06,38.2685927,-121.6408945
+174,North Delta,Toe Drain at Mallard Road,toen,DWR,212.0,619009.8,4247207.4,38.3651388,-121.6377415
+175,North Delta,Toe Drain Central,12021.0,ECON,331.0,619252.5605,4247936.569,38.3716761,-121.63484
+176,North Delta,Steamboat Slough near Sacramento River,sxs,DWR,195.0,619281.8,4227913.6,38.1912671,-121.6378811
+178,North Delta,Toe Drain North,21974.0,ECON,334.0,620405.8211,4251209.831,38.4010128,-121.6210815
+179,North Delta,Sacramento River Deep Water Ship Channel Near Clarksburg,cm66,DWR,214.0,620970.0,4251599.2,38.4044447,-121.6145551
+180,North Delta,Grand Island,54784.0,ECON,380.0,621100.6566,4228298.392,38.1944913,-121.6170509
+181,North Delta,Snug Harbor Marina at Steamboat Slough,JT12,EJ SAFER Proxy,318.0,621482.1727,4228795.042,38.1989147,-121.6126103
+183,North Delta,Sutter Slough at Miner Slough,EJ29,EJ,,621932.57,4238475.47,38.2860731,-121.6058029
+184,North Delta,Steamboat Slough Below Sutter Slough,sus,DWR,165.0,622318.4,4234477.5,38.2499997,-121.6020832
+185,North Delta,Steamboat Slough near Walker Landing,EJ30,EJ,,622366.41,4231479.7,38.2229835,-121.602052
+186,North Delta,Sutter Slough,EJ31,EJ,,622527.43,4241135.71,38.3099602,-121.598542
+188,North Delta,Sacramento River Deep Water Ship Channel Near Freeport,cm72,DWR,213.0,623525.5,4259677.4,38.4768754,-121.5838742
+189,North Delta,Steamboat Slough Intake,53753.0,ECON,361.0,623585.1212,4238407.545,38.2852351,-121.5869245
+190,North Delta,Steamboat Slough between Sacramento River and Sutter Slough,sss,DWR,119.0,623598.2,4238356.2,38.2847707,-121.586784
+191,North Delta,Sutter Slough at Elk Slough,EJ32,EJ,,623765.66,4243614.87,38.3321265,-121.5839487
+192,North Delta,Sacramento River at Tyler Island,53448.0,ECON,355.0,624193.22,4227521.18,38.1870675,-121.5818801
+193,North Delta,Sutter Slough at Courtland,sut,DWR,118.0,624348.3,4243212.4,38.3284197,-121.5773552
+194,North Delta,Steamboat Slough Upstream at Sacramento River,54352.0,ECON,374.0,624452.82,4240486.28,38.3038439,-121.5766401
+195,North Delta,Elk Slough,EJ33,EJ,,624697.44,4245394.46,38.3480306,-121.5729763
+196,North Delta,Courtland Intake,27138.0,ECON,337.0,624928.67,4243748.31,38.3331673,-121.5706224
+197,North Delta,Courtland at Sacramento River,JT3,EJ SAFER Proxy,309.0,624956.7612,4243645.846,38.3322402,-121.5703192
+198,North Delta,Sacramento River South of Steamboat Slough 1,55731.0,ECON,389.0,625325.47,4239737.01,38.2969717,-121.5667954
+199,North Delta,Sacramento River above Sacramento Weir,REssw,DWR Revised,287.0,625523.63,4274248.45,38.6078699,-121.5583551
+200,North Delta,Georgiana Slough downstream towards Broad Slough,EJ34,EJ,,625809.51,4227392.57,38.1856845,-121.5634523
+201,North Delta,Pocket Sacramento,EJ35,EJ,,626096.89,4261182.35,38.4900738,-121.5541328
+202,North Delta,Ryde at Sacramento River,JT8,EJ SAFER Proxy,314.0,626164.8291,4233119.342,38.2372314,-121.5583786
+203,North Delta,Sacramento Deep Water Shipping Channel at Lake Washington,EJ36,EJ,,626208.85,4269253.45,38.5627722,-121.5513921
+204,North Delta,Trailer Park at Sacramento River,JT9,EJ SAFER Proxy,315.0,626325.6434,4231599.925,38.2235193,-121.5568122
+205,North Delta,Sacramento River South of Steamboat Slough 2,54709.0,ECON,377.0,626364.47,4238530.45,38.2859554,-121.5551326
+206,North Delta,Sacramento River below Ryde,53739.0,ECON,360.0,626387.42,4231857.9,38.2258349,-121.5560607
+207,North Delta,Merritt Island,54485.0,ECON,376.0,626428.1755,4247613.218,38.3677778,-121.5527778
+208,North Delta,South Mokelumne River at Highway 12,EJ37,EJ,,626851.1,4219775.6,38.1169111,-121.5529193
+209,North Delta,Green's Landing,gln,DWR,15.0,626989.2,4245160.4,38.3455998,-121.5467995
+210,North Delta,Georgiana Slough below Race Track Road,64640.0,ECON,400.0,627536.52,4231568.89,38.2230688,-121.5429884
+211,North Delta,Sacramento River at Vorden,57393.0,ECON,392.0,627638.43,4237351.18,38.2751504,-121.5407831
+212,North Delta,Randall Island,52394.0,ECON,350.0,627677.599,4245314.075,38.3468865,-121.5388964
+213,North Delta,Georgiana Slough,53762.0,ECON,362.0,627769.4453,4230065.071,38.2094869,-121.5405989
+214,North Delta,Sacramento River near Snodgrass Slough Intake,52469.0,ECON,351.0,628049.59,4245752.98,38.3507876,-121.534561
+215,North Delta,Sacramento River at Snodgrass,snod,DWR,147.0,628119.1,4245666.2,38.3499958,-121.5337815
+216,North Delta,Clarksburg near Pumphouse Road,53158.0,ECON,353.0,628193.57,4254969.93,38.4338056,-121.5312346
+217,North Delta,North Mokelumne River at Staten Island,EJ38,EJ,,628439.16,4224842.9,38.1623416,-121.5338952
+218,North Delta,Georgiana Slough at Race Track Road,55746.0,ECON,391.0,628691.25,4232036.42,38.2271166,-121.5297157
+219,North Delta,Clarksburg at Sacramento River,JT1,EJ SAFER Proxy,307.0,628751.9151,4253281.675,38.4185153,-121.5251488
+220,North Delta,Sacramento near Isleton,55604.0,ECON,387.0,628872.33,4233324.7,38.2386975,-121.5274134
+221,North Delta,Lisbon District,55001.0,ECON,385.0,628880.1141,4255175.145,38.4355556,-121.5233333
+222,North Delta,Hood at Sacramento River,JT2,EJ SAFER Proxy,308.0,629216.1949,4247704.932,38.3682058,-121.5208563
+223,North Delta,Sacramento River below Georgiana Slough,ges,DWR,122.0,629219.1,4233351.8,38.2388919,-121.5234472
+224,North Delta,Sacramento River at Hood,srh,DWR,50.0,629247.7,4247651.0,38.3677154,-121.5205056
+225,North Delta,Sacramento River above Delta Cross Channel,sdc,DWR,120.0,629664.2,4235427.1,38.2575252,-121.5179831
+226,North Delta,Georgiana Slough near Sacramento River,gss,DWR,121.0,629727.3,4233179.3,38.2372646,-121.5176735
+227,North Delta,Sacramento River at Walnut Grove,swe,DWR,146.0,629874.3,4233686.1,38.2418094,-121.5159015
+228,North Delta,East Courtland,R3,REC,408.0,630084.0,4241117.0,38.3087272,-121.5121402
+229,North Delta,Sacramento River at I Street,ist,DWR,144.0,630173.3,4272187.3,38.5886312,-121.5053552
+230,North Delta,North Mokelumne River at Eagle Tree,EJ39,EJ,,630188.09,4229316.57,38.2023966,-121.5131185
+231,North Delta,Walnut Grove Cross Channel at Sacramento River,JT5,EJ SAFER Proxy,311.0,630261.3809,4234182.444,38.2462251,-121.5113884
+232,North Delta,Old Walnut Grove at Snodgrass Slough,JT6,EJ SAFER Proxy,312.0,630311.5921,4232287.076,38.2291416,-121.5111631
+233,North Delta,Locke at Sacramento River,JT4,EJ SAFER Proxy,310.0,630329.207,4234636.176,38.2503032,-121.5105301
+234,North Delta,Snodgrass Slough at Machado Ranch,EJ40,EJ,,630449.61,4239354.28,38.2927931,-121.5082851
+235,North Delta,Freeport Intake,53153.0,ECON,352.0,630547.73,4257931.66,38.4601471,-121.5037195
+236,North Delta,North Mokelumne River below Snodgrass Slough,mkn,DWR,194.0,630666.9,4231648.1,38.2233332,-121.5072226
+237,North Delta,Sacramento River at Freeport,fpt,DWR,117.0,630762.5,4257477.0,38.4560195,-121.5013435
+238,North Delta,Delta Cross Channel near Walnut Grove,dlc,DWR,112.0,630802.2,4234030.6,38.2447786,-121.505238
+239,North Delta,Locke,R2,REC,407.0,630882.0,4235051.0,38.2539602,-121.5041379
+240,North Delta,South Mokelumne River at Sycamore Slough,EJ41,EJ,,631119.36,4222570.89,38.1414859,-121.5037291
+241,North Delta,Snodgrass Slough at Horse Cut,EJ42,EJ,,631490.1,4233376.47,38.2387849,-121.4975007
+242,North Delta,Delta Meadows,R1,REC,406.0,631559.0,4236277.0,38.2649068,-121.4961751
+243,North Delta,Wimpy's Marina at Mokelumne Confluence,JT7,EJ SAFER Proxy,313.0,631947.7875,4232115.647,38.2273585,-121.4925071
+244,North Delta,South Mokelumne River at New Hope Bridge near Walnut Grove,smr,DWR,192.0,632073.2,4231917.6,38.2255558,-121.4911116
+245,North Delta,South Mokelumne River at Hog Slough,EJ43,EJ,,632079.56,4225194.3,38.1649815,-121.4922887
+246,North Delta,New Hope Tract,53786.0,ECON,364.0,632446.4867,4233228.109,38.2373078,-121.4866036
+247,North Delta,North Mokelumne River at McCormack Williamson Tract,EJ44,EJ,,632549.07,4236657.49,38.2681892,-121.4847903
+249,North Delta,South Mokelumne River at Beaver Slough,EJ45,EJ,,633232.1,4228486.4,38.1944719,-121.4785197
+250,North Delta,Glanville,52113.0,ECON,348.0,634690.1529,4235639.697,38.2587011,-121.4605165
+251,North Delta,Beaver Slough,EJ46,EJ,,634838.04,4229024.87,38.1990841,-121.4600841
+252,North Delta,Sycamore Slough,EJ47,EJ,,635044.25,4222480.39,38.1400915,-121.4589721
+253,North Delta,Hog Slough,EJ48,EJ,,635261.76,4225776.53,38.1697551,-121.4558646
+254,North Delta,North Mokelumne River at Cosumnes River Preserve,EJ49,EJ,,635354.11,4237139.02,38.272109,-121.4526436
+255,North Delta,Galt Mokelumne South Sacramento County Area,28670.0,ECON,339.0,636040.1125,4229638.269,38.2044295,-121.446243
+256,North Delta,Mokelumne River at Benson's Ferry,ben,DWR,2.0,636491.3,4235314.6,38.2555004,-121.4399994
+257,Central Delta,Lower Dutch Slough near Big Break,54824.0,ECON,381.0,615922.29,4207787.95,38.010367,-121.679503
+258,Central Delta,Lower Dutch Slough near Contra Costa Intake,54755.0,ECON,378.0,616081.0,4206746.03,38.0009584,-121.6778642
+259,Central Delta,Dutch Slough Intake,54757.0,ECON,379.0,616087.241,4207104.591,38.0041885,-121.6777351
+260,Central Delta,Dutch Sl below Jersey Island,dsj,DWR,107.0,616676.6,4208098.2,38.0130657,-121.6708621
+261,Central Delta,Taylor Slough,JT17,EJ SAFER Proxy,323.0,617340.4291,4209698.694,38.0274011,-121.6630399
+262,Central Delta,Dutch Slough,JT15,EJ SAFER Proxy,321.0,617841.3362,4208013.677,38.0121534,-121.6576111
+263,Central Delta,Little Frank's Tract at Piper Slough,EJ50,EJ,,618188.1,4211870.31,38.0468579,-121.6530257
+264,Central Delta,Taylor Slough and Dutch Slough Confluence,JT16,EJ SAFER Proxy,322.0,618563.8111,4208603.888,38.0173772,-121.6492855
+265,Central Delta,Little Franks Tract at Fisherman's Cut,EJ51,EJ,,618643.3,4212933.4,38.0563771,-121.6476629
+266,Central Delta,San Joaquin River at Fisherman's Cut,EJ52,EJ,,619061.54,4216359.13,38.0871888,-121.6423264
+267,Central Delta,Farrar Park,frp,DWR,13.0,619475.5,4208005.7,38.0118675,-121.6390017
+268,Central Delta,Rock Slough at Contra Costa Canal,rsl,DWR,34.0,619885.2,4204031.0,37.976,-121.6349998
+269,Central Delta,Delta Coves Bethel Island,EJ53,EJ,,620079.01,4208472.09,38.0159901,-121.6320505
+270,Central Delta,Frank's Tract at False River,EJ54,EJ,,620266.22,4212209.0,38.0496358,-121.6292909
+271,Central Delta,Willow Park Marina at Sand Mound Slough,JT18,EJ SAFER Proxy,324.0,620449.0372,4207500.072,38.0071828,-121.6279995
+272,Central Delta,Rock Slough Intake,54122.0,ECON,372.0,620566.8895,4204020.256,37.9758129,-121.627242
+273,Central Delta,Summer Lake at Sand Mound Slough,JT19,EJ SAFER Proxy,325.0,620857.0017,4205640.185,37.9903704,-121.623667
+274,Central Delta,Piper Slough at Bethal Tract,bet,DWR,171.0,620980.0,4210523.0,38.0343495,-121.6214428
+275,Central Delta,Rock Slough at Delta Road Bridge,rsd,DWR,167.0,621194.1,4204133.5,37.9767497,-121.6200834
+276,Central Delta,North West Franks Tract,ECO34,ECO,,621609.0,4212194.0,38.0493212,-121.6139935
+277,Central Delta,Bethel Island at Delta Coves,JT20,EJ SAFER Proxy,326.0,621892.5711,4208420.185,38.0152803,-121.6114047
+278,Central Delta,Orowood at Old River,JT22,EJ SAFER Proxy,328.0,621944.2518,4200024.257,37.9396236,-121.6122415
+279,Central Delta,Discovery Bay,EJ55,EJ,,622164.4,4196198.39,37.9051216,-121.6103858
+280,Central Delta,Werner Dredge Cut above Discovery Bay,EJ56,EJ,,622503.9,4197581.34,37.9175369,-121.6062899
+281,Central Delta,South Franks Tract at Bethel Island,EJ57,EJ,,622504.2,4209074.75,38.0210956,-121.604327
+282,Central Delta,South Central Franks Tract,ECO35,ECO,,622841.1,4210411.0,38.0330898,-121.6002607
+283,Central Delta,Franks Tract,frk,DWR,203.0,623008.4,4211892.7,38.0464174,-121.5981004
+284,Central Delta,Italian Slough West of Clifton Court Forebay,Y154,ECON,403.0,623239.0877,4188802.821,37.8383397,-121.5994269
+285,Central Delta,Frank's Tract North East,EJ58,EJ,,623372.36,4213091.68,38.0571708,-121.5937469
+286,Central Delta,Werner Dredger Cut near Palm Tract,wdcut,DWR,169.0,623426.6,4202761.2,37.9640841,-121.5949069
+288,Central Delta,Byron Area,61882.0,ECON,396.0,623954.1172,4189922.698,37.8483333,-121.5911111
+289,Central Delta,Discovery Bay at Indian Slough,REdbi,DWR Revised,7.0,624180.26,4197673.23,37.9181374,-121.5872077
+290,Central Delta,Discovery Bay Area,38984.0,ECON,340.0,624206.6299,4197995.818,37.9210404,-121.5868521
+291,Central Delta,Frank's Tract at Sheep Slough,EJ59,EJ,,624269.45,4210133.86,38.0303978,-121.5840377
+292,Central Delta,Frank's Tract at Old River,EJ60,EJ,,624417.72,4211861.59,38.0459445,-121.5820486
+293,Central Delta,Holland Cut near Bethel Island,hol,DWR,106.0,624476.9,4208582.2,38.0163887,-121.5819442
+294,Central Delta,Holland Tract,hll,DWR,17.0,624614.6,4207543.5,38.007011,-121.5805564
+295,Central Delta,Holland Cut at Holland Marina,holm,DWR,168.0,624631.5,4203880.0,37.974,-121.5810001
+296,Central Delta,Old River below Rhode Island,EJ61,EJ,,624636.01,4205387.0,37.9875777,-121.5806872
+297,Central Delta,CCWD Old River near Discovery Bay,idb,DWR,19.0,625220.4,4194097.8,37.8857793,-121.5759984
+298,Central Delta,Old River at Bacon Island,bac,DWR,30.0,625406.5,4203423.6,37.969781,-121.5722584
+299,Central Delta,Old River at Fay Island,EJ62,EJ,,625783.15,4201088.47,37.9486891,-121.5683801
+300,Central Delta,Old River at Quimby Island,orq,DWR,108.0,625994.6,4209807.9,38.0272226,-121.5644438
+301,Central Delta,San Joaquin River at Prisoners Point,pri,DWR,111.0,626573.0,4213393.1,38.0594445,-121.5572217
+302,Central Delta,Woodward Island,54173.0,ECON,373.0,626723.3208,4199437.725,37.933685,-121.5579732
+303,Central Delta,Railroad Cut South,rrcs,DWR,306.0,626846.15,4200085.17,37.9395014,-121.5564618
+304,Central Delta,Railroad Cut North,rrcn,DWR,305.0,626914.51,4200211.09,37.9406264,-121.5556619
+305,Central Delta,Old River above Youngs Slough,EJ63,EJ,,626943.71,4208156.54,38.0122113,-121.5539255
+306,Central Delta,Woodward Cut,wwc,DWR,304.0,626991.48,4197231.37,37.913768,-121.5553117
+307,Central Delta,Prisoners Point,ppt,DWR,33.0,627213.4,4213060.7,38.0563598,-121.5499832
+308,Central Delta,Middle River at Mildred Island,EJ64,EJ,,628470.16,4203767.14,37.9724479,-121.5373279
+309,Central Delta,San Joaquin River at Mandeville Reach,EJ65,EJ,,628631.2,4213035.27,38.0559302,-121.5338321
+310,Central Delta,Old River at Coney Island,cis,DWR,5.0,628727.8,4189748.3,37.8461004,-121.5368994
+311,Central Delta,Middle River at Middle River,mdm,DWR,99.0,628839.5,4200455.0,37.9425531,-121.5337176
+312,Central Delta,Mildred Island,53660.0,ECON,358.0,629163.43,4202708.11,37.9628077,-121.5296275
+313,Central Delta,Victoria Canal Intake,Y51,ECON,404.0,629284.7279,4192510.349,37.870908,-121.5300771
+314,Central Delta,Middle River above Indian Slough,EJ66,EJ,,629296.8,4198337.78,37.923412,-121.5288951
+315,Central Delta,Middle River below Three River Reach,EJ67,EJ,,629442.75,4210706.08,38.0348289,-121.5250059
+316,Central Delta,Middle River at Bacon Island,REbir,DWR Revised,152.0,629650.03,4207052.07,38.0018771,-121.5233056
+317,Central Delta,Latham Slough at Mildred Island,EJ68,EJ,,630225.44,4205286.23,37.9858846,-121.5170741
+318,Central Delta,Middle River near Holt,hlt,DWR,100.0,630737.3,4207200.2,38.0030556,-121.5108985
+319,Central Delta,Middle River below Woodward Cut,EJ69,EJ,,631181.5,4196566.05,37.9071788,-121.5077807
+320,Central Delta,Little Connection Slough at Venice Island,EJ70,EJ,,631286.62,4214844.11,38.071846,-121.5032424
+321,Central Delta,Columbia Cut,EJ71,EJ,,631521.16,4209885.28,38.0271342,-121.5014806
+322,Central Delta,Venice Island,vni,DWR,47.0,631822.4,4212328.2,38.0491005,-121.4975997
+323,Central Delta,Empire Cut,REtrn,DWR Revised,156.0,632520.94,4203721.09,37.9714506,-121.4912315
+324,Central Delta,San Joaquin River at Fern Island,EJ72,EJ,,632656.08,4210996.27,38.0369784,-121.488348
+325,Central Delta,Middle River at Union Point,mup,DWR,154.0,632905.7,4194776.6,37.8908057,-121.4885036
+326,Central Delta,Middle River Intake West of Tracy Blvd 1,52041.0,ECON,347.0,633205.06,4194110.73,37.8847625,-121.4852231
+327,Central Delta,White Slough at Empire Tract,EJ73,EJ,,634171.33,4215975.89,38.0816195,-121.470153
+328,Central Delta,Middle River Intake West of Tracy Blvd 2,51506.0,ECON,343.0,634660.7778,4193790.622,37.8816642,-121.4687342
+330,Central Delta,King Island Marina Trailer Park at White Slough,JT21,EJ SAFER Proxy,327.0,635179.1257,4213007.632,38.0547267,-121.4592269
+331,Central Delta,San Joaquin River near Hay Press Reach,EJ74,EJ,,635624.33,4207924.08,38.0088595,-121.4551166
+332,Central Delta,Drexler Tract,51829.0,ECON,345.0,635643.9,4193794.14,37.88155,-121.4575579
+333,Central Delta,Turner Cut near Holt,trn2,DWR,97.0,635762.3,4206110.6,37.9925001,-121.4538887
+334,Central Delta,Bishop Cut at King Island,54035.0,ECON,368.0,635970.2,4215678.48,38.0786712,-121.4497054
+335,Central Delta,Whiskey Slough at Lower Jones Tract,EJ75,EJ,,636363.4,4201398.4,37.9499548,-121.4479397
+336,Central Delta,Bishop Cut near Shin Knee Tract,EJ76,EJ,,637181.95,4216223.2,38.0833958,-121.4357895
+337,Central Delta,Disappointment Slough West of Bishop Cut,EJ77,EJ,,637984.34,4211610.6,38.0417169,-121.4275333
+338,Central Delta,San Joaquin River at Rindge Pump,rindg,DWR,143.0,638779.3,4206684.9,37.9972176,-121.4194308
+339,Central Delta,Bishop Cut at Telephone Cut,EJ78,EJ,,638797.43,4215044.87,38.0725332,-121.4176043
+340,Central Delta,Fourteen Mile Slough Stockton,EJ79,EJ,,640289.54,4210113.79,38.0278774,-121.4015658
+341,Central Delta,Pixley Slough North Stockton,EJ80,EJ,,640911.75,4211990.03,38.0446844,-121.3941099
+342,Central Delta,Rindge Tract near Fourteen Mile Slough,EJ81,EJ,,640917.51,4207918.7,38.0080036,-121.3948449
+343,Central Delta,San Joaquin River near Buckley Cove,sjc,DWR,251.0,641772.0,4204855.0,37.9802685,-121.3857204
+344,Central Delta,Burns Cutoff,EJ82,EJ,,642999.64,4200963.98,37.9450204,-121.3725212
+345,Central Delta,Fourteen Mile Slough at Five Mile Slough Stockton,EJ83,EJ,,643087.25,4208569.84,38.01353,-121.3700092
+346,Central Delta,Stockton Ship Channel below Burns Cut-off,rri,DWR,67.0,643575.2,4202944.9,37.9627764,-121.3655777
+347,Central Delta,Rough and Ready Island,51566.0,ECON,344.0,644132.0189,4200510.799,37.9407587,-121.3597292
+348,Central Delta,Calaveras River Stockton,EJ84,EJ,,644877.97,4204052.29,37.9725461,-121.3505297
+349,Central Delta,San Joaquin Rver at Rough and Ready Island,EJ85,EJ,,646160.3,4201442.49,37.9488284,-121.3364663
+350,Central Delta,San Joaquin River at French Camp Slough,EJ86,EJ,,647744.69,4198277.52,37.9200586,-121.3190902
+351,Central Delta,San Joaquin River at Port of Stockton,EJ87,EJ,,647838.86,4201887.32,37.9525643,-121.3172777
+352,Central Delta,American Legion Park Stockton,EJ88,EJ,,648547.4,4203511.87,37.9670843,-121.3088806
+353,Central Delta,French Camp Slough,EJ89,EJ,,648917.42,4197847.52,37.9159934,-121.3058421
+355,South Delta,Old River at Italian Slough,EJ90,EJ,,625502.38,4191817.97,37.8651985,-121.573189
+356,South Delta,Old River at Byron,orb,DWR,32.0,625738.9,4194696.3,37.8911004,-121.5699994
+357,South Delta,Old River at Clifton Court,REvcu2,DWR Revised,157.0,626333.22,4190716.09,37.8551554,-121.5639388
+358,South Delta,Tracy Pumping Plant,trp,DWR,43.0,626865.0,4186450.0,37.8166428,-121.5586439
+359,South Delta,Clifton Court,clc,DWR,6.0,626952.0,4187911.6,37.8298002,-121.5573994
+360,South Delta,West Canal near Clifton Court Intake,wci,DWR,60.0,627243.2,4188117.2,37.8316122,-121.5540552
+362,South Delta,Grant Line Canal near Clifton Court Forebay - WQ,glc2,DWR,159.0,627753.0,4186838.8,37.8200222,-121.5484894
+363,South Delta,Old River below Dam,obd,DWR,29.0,627898.6,4185906.3,37.8115997,-121.5470003
+364,South Delta,Old River South of Delta Mendota Canal 1,54416.0,ECON,375.0,628996.3947,4185291.228,37.8059033,-121.534642
+365,South Delta,Victoria Canal before Clifton Court Forebay,REvcu,DWR Revised,98.0,629270.8,4192548.77,37.8712562,-121.5302286
+366,South Delta,Old River South of Delta Mendota Canal 2,54928.0,ECON,382.0,629274.7907,4185024.071,37.8034567,-121.5315282
+367,South Delta,Grant Line Canal West,REglw,DWR Revised,302.0,630162.61,4186864.96,37.8199174,-121.5211154
+368,South Delta,Old River upstream of Mountain House Creek,orm,DWR,247.0,630537.0,4183977.0,37.7938429,-121.5173834
+369,South Delta,Wicklund Cut at Bethany Road Bridge,wcbr,DWR,295.0,630566.0,4182484.0,37.7803865,-121.5173229
+373,South Delta,Old River Flux Station Upstream,REorfu,DWR Revised,299.0,633788.35,4183121.52,37.7856645,-121.4806247
+374,South Delta,Grant Line Canal West of Tracy Blvd 1,54943.0,ECON,383.0,634964.3047,4186989.164,37.8203389,-121.4665538
+375,South Delta,Middle River at Tracy Blvd,mtb,DWR,27.0,635780.8,4193802.0,37.8816004,-121.4560002
+377,South Delta,Honker Lake Tract,51858.0,ECON,346.0,636017.532,4193819.149,37.8817196,-121.4533059
+378,South Delta,Grant Line Canal West of Tracy Blvd 2,53246.0,ECON,354.0,636184.5204,4187019.148,37.8204278,-121.4526889
+380,South Delta,Grantline Canal above Dam,glab,DWR,150.0,636598.9,4186932.5,37.8195852,-121.4479987
+381,South Delta,Old River above Tracy Drain,otbd,DWR,292.0,637086.0,4184987.0,37.8019834,-121.4428345
+383,South Delta,Doughty Cut above Grant Line Canal,dgl,DWR,8.0,638631.8,4186457.6,37.8149999,-121.4250003
+384,South Delta,Old River near Old River Golf Course,52195.0,ECON,349.0,638884.2827,4184846.962,37.80045,-121.4224417
+385,South Delta,Sugar Cut at Golden Anchor,sga,DWR,207.0,638981.8,4184006.2,37.7928601,-121.4214956
+389,South Delta,Tom Paine Slough above intake,tpi,DWR,39.0,639269.0,4183712.9,37.7901738,-121.4182912
+390,South Delta,Old River at Paradise Cut Confluence Upstream,pccu,DWR,290.0,639555.0,4185573.0,37.8068892,-121.4146859
+392,South Delta,Old River downstream of Tracy WW Outfall,otww,DWR,289.0,640088.0,4185530.0,37.8064201,-121.4086416
+393,South Delta,Drexler Pocket,53977.0,ECON,366.0,640422.43,4194394.358,37.8862333,-121.4031222
+394,South Delta,Tom Paine Slough near W Canal Blvd,53681.0,ECON,359.0,641827.0698,4182354.408,37.7775407,-121.3895147
+395,South Delta,Old River above Doughty Cut,orx,DWR,183.0,642021.8,4186071.2,37.8109974,-121.3865761
+396,South Delta,Middle River at Howard Road Bridge,mhr,DWR,25.0,642165.8,4193399.5,37.8769996,-121.3834999
+397,South Delta,Middle River Intake below Howard Road Bridge 1,54971.0,ECON,384.0,642184.2275,4193308.601,37.8761778,-121.3833083
+398,South Delta,Middle River at Mowry,mrmow,DWR,155.0,642289.3,4188756.4,37.8351482,-121.3830104
+399,South Delta,Tom Paine Slough at Paradise Ave,tppa,DWR,297.0,642469.0,4181997.0,37.7742207,-121.3822983
+400,South Delta,Middle River Intake below Howard Road Bridge 4,54060.0,ECON,370.0,642519.3488,4189227.241,37.8393544,-121.3803043
+401,South Delta,Middle River Intake below Howard Road Bridge 3,55743.0,ECON,390.0,642564.3866,4189534.377,37.8421145,-121.3797321
+402,South Delta,Middle River Intake below Howard Road Bridge 2,51172.0,ECON,341.0,642763.12,4191734.4,37.8619045,-121.3770397
+406,South Delta,Paradise Cut Upstream at North Bridge,pcnb,DWR,301.0,643723.16,4185003.32,37.80111,-121.367467
+407,South Delta,Paradise Cut Downstream towards Highway 5,53469.0,ECON,356.0,645070.7921,4183816.334,37.7902028,-121.3524028
+408,South Delta,Tom Paine Slough near Pescadero,tpp,DWR,40.0,645200.2,4181269.9,37.7672401,-121.3514433
+409,South Delta,Tom Paine Slough Intake near Pescadaro,53615.0,ECON,357.0,645222.0909,4181258.252,37.7671317,-121.3511972
+410,South Delta,Middle Upper Roberts Island,54071.0,ECON,371.0,645438.72,4187275.04,37.8213053,-121.3475314
+411,South Delta,San Joaquin River near Howard Road,51445.0,ECON,342.0,646657.52,4193164.38,37.8741691,-121.332494
+412,South Delta,San Joaquin River below Garwood Bridge,REsjg,DWR Revised,96.0,646731.79,4199949.83,37.9352887,-121.3302688
+413,South Delta,Old River at Head,oh1,DWR,31.0,647096.2,4185827.7,37.808,-121.3290005
+414,South Delta,San Joaquin River at Brandt Bridge,bdt,DWR,66.0,647500.8,4192114.6,37.8645752,-121.323124
+416,South Delta,San Joaquin River below Brandt Bridge,55727.0,ECON,388.0,647861.06,4191312.63,37.8572917,-121.3191942
+417,South Delta,San Joaquin River above Dos Reis,sjd,DWR,184.0,648081.13,4187415.1,37.8221422,-121.3174915
+418,South Delta,San Joaquin River below Paradise Dam,jpd,DWR,253.0,648954.0,4180604.0,37.760637,-121.3089774
+419,South Delta,San Joaquin at Mossdale Bridge,msd,DWR,26.0,649126.1,4183436.8,37.7861305,-121.3064421
+420,South Delta,San Joaquin River at D.V.I. Pump,dvi,DWR,252.0,649550.0,4179456.0,37.750197,-121.3024503
+421,South Delta,San Joaquin River at BCID Canal,23315.0,ECON,335.0,649959.45,4176689.85,37.7252089,-121.2983752
+422,South Delta,San Joaquin River West of Red Bridge Slough,55029.0,ECON,386.0,651710.9,4174950.93,37.709254,-121.2788718
+423,South Delta,North of Sacramento River near Perrin Road,54056.0,ECON,369.0,652014.96,4177010.39,37.7277578,-121.2749935
+424,South Delta,San Joaquin River near Walthal Slough,27344.0,ECON,338.0,652702.03,4176270.44,37.7209771,-121.2673555
+425,South Delta,San Joaquin River near Vernalis,vns,DWR,95.0,652957.8,4171293.8,37.6760988,-121.2654998
