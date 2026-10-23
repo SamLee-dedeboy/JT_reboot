@@ -65,41 +65,6 @@ export function TotalCell({ value }: { value: number }) {
   )
 }
 
-/** Matrix-cell version of the spread: widest gap between any two teams on −5…+5. */
-export function SpreadCell({ spanLeft, spanWidth }: { spanLeft: number; spanWidth: number }) {
-  return (
-    <Box
-      sx={(theme) => ({
-        position: 'relative',
-        height: 34,
-        borderRadius: 1,
-        bgcolor: theme.chart.voting.well,
-      })}
-    >
-      <Box
-        sx={(theme) => ({
-          position: 'absolute',
-          left: '50%',
-          top: 0,
-          bottom: 0,
-          borderLeft: `1px dashed ${theme.chart.voting.zeroLine}`,
-        })}
-      />
-      <Box
-        sx={(theme) => ({
-          position: 'absolute',
-          top: 13,
-          height: 8,
-          borderRadius: 1,
-          bgcolor: theme.chart.voting.spread,
-          left: `${spanLeft}%`,
-          width: `${spanWidth}%`,
-        })}
-      />
-    </Box>
-  )
-}
-
 /** Scenario (or team) name with an optional leading rank / color stripe and trailing slot. */
 export function RowLabel({
   name,

@@ -15,11 +15,10 @@ import { CARD_WIDTH } from './components/layout'
 import { StagePanels, StageTabBar } from './components/StageTabs'
 import type { StageTab } from './components/StageTabs'
 import { TEAMS } from './data'
-import BeforeAfter from './sketches/BeforeAfter'
 import PivotTable from './sketches/PivotTable'
 import OverallRanking from './sketches/OverallRanking'
 import ScoreShift from './sketches/ScoreShift'
-import WeightedMatrix from './sketches/WeightedMatrix'
+import WeightedBeforeAfter from './sketches/WeightedBeforeAfter'
 import WeightedTugOfWar from './sketches/WeightedTugOfWar'
 import SubteamPages from './subteams/SubteamPages'
 
@@ -43,9 +42,9 @@ const STEP_1_TABS: StageTab[] = [
 const STEP_2_TABS: StageTab[] = [
   {
     id: '2a',
-    label: 'Weighted matrix',
-    note: 'Drag a slider to change a team’s weight. Its column widens to match, and the rows sort again by weighted score. A team at 0 fades out, but its ballots remain in the record. Switch Weights to Presets to choose a lens instead of setting each team.',
-    content: <WeightedMatrix />,
+    label: 'Weights and ranking',
+    note: 'Drag a slider to change a team’s weight. The rows sort again by weighted score, and the lines on the left join each scenario’s equal-weight rank to the row it holds now: flat means the weighting changed nothing, sloped means it decided. A team at 0 fades out, but its ballots remain. Switch Weights to Presets to choose a lens instead of setting each team.',
+    content: <WeightedBeforeAfter />,
   },
   {
     id: '2b',
@@ -57,12 +56,6 @@ const STEP_2_TABS: StageTab[] = [
 
 // 3C (Rank across lenses, ./sketches/LensRankGrid) is hidden for now; re-add its tab here to restore it.
 const STEP_3_TABS: StageTab[] = [
-  {
-    id: '3a',
-    label: 'Before / after',
-    note: 'The left side shows the equal-weight order, and the right side shows the order under the chosen lens. Flat lines indicate unchanged rankings; sloped lines indicate where weighting changes the order.',
-    content: <BeforeAfter />,
-  },
   {
     id: '3b',
     label: 'Score shift',
@@ -149,14 +142,14 @@ export default function RankVisualization() {
                 step={2}
                 eyebrow="Weights"
                 title="Changing whose voice counts"
-                intro="Give a team more or less weight and watch the overall scores and ranking change. The range remains constant because it describes the ballots, not the weights."
+                intro="Give a team more or less weight and watch the ranking change against the equal-weight order on the left."
                 tabs={STEP_2_TABS}
               />
               <Step
                 step={3}
                 eyebrow="Sensitivity"
                 title="Does the weighting change the answer?"
-                intro="Compare your weights with the equal-weight ranking from step 1. Some scenarios retain their rank; when a scenario’s rank changes, the choice of weights affects the answer."
+                intro="How far each score moves under a chosen lens. When a scenario’s rank changes, the choice of weights affects the answer."
                 tabs={STEP_3_TABS}
               />
               <Step
