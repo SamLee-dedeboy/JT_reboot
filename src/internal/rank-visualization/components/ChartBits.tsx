@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { cellFill, fmtScore } from '../data'
 import type { Score } from '../data'
 import { useTeams } from './teamPalette'
-import TeamIcon from './TeamIcon'
+import TeamIcon from '../../../ui/TeamIcon'
 
 /** Diverging score cell (matrix sketches). `opacity` ghosts down-weighted teams. */
 export function ScoreCell({

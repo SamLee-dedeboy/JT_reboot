@@ -11,14 +11,22 @@ import Legend from '../../../map/layers/scenarios/Legend'
 import { getConfig } from '../../../map/layers/scenarios/config'
 import { jtSpacing } from '../../../theme'
 import NavRail from '../../../ui/NavRail'
+import TeamIcon from '../../../ui/TeamIcon'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import { evaluationTeams } from '../content'
 import EvaluationFramework from './EvaluationFramework'
+import { teamStyle } from '../teamStyle'
 
 const overviewNavigation = [
   { id: 'how-modeled', label: 'How are scenarios modeled?' },
   { id: 'how-evaluated', label: 'How are scenarios evaluated?' },
-  ...evaluationTeams.map((team) => ({ id: team.id, label: team.label, indent: true as const })),
+  ...evaluationTeams.map((team) => ({
+    id: team.id,
+    label: teamStyle[team.id].shortLabel,
+    indent: true as const,
+    color: teamStyle[team.id].color,
+    icon: <TeamIcon team={teamStyle[team.id].icon} size={18} />,
+  })),
   { id: 'how-compared', label: 'How are scenarios compared?' },
 ] as const
 
@@ -187,13 +195,15 @@ export default function Overview() {
           xs: '1fr',
           lg: 'minmax(180px, .3fr) minmax(0, 1fr) minmax(360px, .92fr)',
         },
-        gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
+        gap: { xs: jtSpacing.gap.xl, lg: 0 },
+        columnGap: { lg: jtSpacing.section.md },
         alignItems: 'start',
       }}
     >
       <Box
         component="aside"
         sx={{
+          gridRow: { lg: '1 / span 3' },
           position: { lg: 'sticky' },
           top: { lg: 148 },
           zIndex: 3,
@@ -224,13 +234,15 @@ export default function Overview() {
         />
       </Box>
 
-      <Stack spacing={0}>
+      <Stack spacing={0} sx={{ display: { lg: 'contents' } }}>
         <Box
           component="section"
           id="how-modeled"
           aria-labelledby="how-modeled-title"
           sx={[
             {
+              gridColumn: { lg: 2 },
+              gridRow: { lg: 1 },
               scrollMarginTop: 110,
               p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
             },
@@ -369,6 +381,9 @@ export default function Overview() {
           aria-labelledby="how-evaluated-title"
           sx={[
             {
+              // Spans the content and map columns, matching the methodology pages' width
+              gridColumn: { lg: '2 / -1' },
+              gridRow: { lg: 2 },
               scrollMarginTop: 110,
               p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
             },
@@ -394,6 +409,9 @@ export default function Overview() {
           aria-labelledby="how-compared-title"
           sx={[
             {
+              // Spans the content and map columns, matching the methodology pages' width
+              gridColumn: { lg: '2 / -1' },
+              gridRow: { lg: 3 },
               scrollMarginTop: 110,
               p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
             },
@@ -403,47 +421,71 @@ export default function Overview() {
           <Typography id="how-compared-title" variant="h2">
             How are scenarios compared?
           </Typography>
-          <Typography variant="body1" sx={{ mt: jtSpacing.gap.md, color: 'base.100' }}>
-            Each team places every scenario on a −5 to +5 scale, with the shared baseline fixed at
-            0. A score reflects how far a team’s metrics deviate from baseline and in which
-            direction. Each team defines the intervals used to translate those metric differences
-            into scores for its area of expertise.
-          </Typography>
-          <Box sx={{ mt: jtSpacing.section.md }}>
-            <Typography variant="h3" component="h3">
-              Explore results before ranking
-            </Typography>
-            <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-              Move through the outflow variations and adaptation scenarios to review their modeled
-              results before comparing their team scores and overall ranking.
-            </Typography>
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={jtSpacing.gap.sm}
-              sx={{ mt: jtSpacing.component.lg, alignItems: { xs: 'stretch', sm: 'center' } }}
-            >
-              <Button component={Link} to="/scenarios/tiered-outflows/results" variant="outlined">
-                View outflow variations
-              </Button>
-              <Button component={Link} to="/scenarios/eco-machine/results" variant="contained">
-                View adaptation scenarios
-              </Button>
-            </Stack>
-          </Box>
-          <Button
-            component={Link}
-            to="/pages/rank-visualization"
-            variant="contained"
-            endIcon={<ArrowForwardIcon />}
-            sx={{ mt: jtSpacing.component.lg }}
+          {/* Two columns from md up: how scores work on the left, where to start on the right */}
+          <Box
+            sx={{
+              mt: jtSpacing.gap.md,
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
+              gap: { xs: jtSpacing.section.md, md: jtSpacing.section.md },
+              alignItems: 'start',
+            }}
           >
-            Open ranking visualization
-          </Button>
+            <Box>
+              <Typography variant="h3" component="h3">
+                How scores work
+              </Typography>
+              <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                Each team places every scenario on a −5 to +5 scale, with the shared baseline fixed
+                at 0. A score reflects how far a team’s metrics deviate from baseline and in which
+                direction. Each team defines the intervals used to translate those metric
+                differences into scores for its area of expertise.
+              </Typography>
+              <Button
+                component={Link}
+                to="/scenarios/ranking"
+                variant="contained"
+                endIcon={<ArrowForwardIcon />}
+                sx={{ mt: jtSpacing.component.lg }}
+              >
+                Open ranking visualization
+              </Button>
+            </Box>
+            <Box>
+              <Typography variant="h3" component="h3">
+                Explore results before ranking
+              </Typography>
+              <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                Move through the outflow variations and adaptation scenarios to review their modeled
+                results before comparing their team scores and overall ranking.
+              </Typography>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={jtSpacing.gap.sm}
+                sx={{ mt: jtSpacing.component.lg, alignItems: { xs: 'stretch', sm: 'center' } }}
+              >
+                <Button component={Link} to="/scenarios/tiered-outflows/results" variant="outlined">
+                  View outflow variations
+                </Button>
+                <Button component={Link} to="/scenarios/eco-machine/results" variant="contained">
+                  View adaptation scenarios
+                </Button>
+              </Stack>
+            </Box>
+          </Box>
         </Box>
       </Stack>
 
-      <Box sx={{ position: { lg: 'sticky' }, top: { lg: 110 }, zIndex: 3 }}>
-        <ScenarioMap implementation={selectedImplementation} />
+      <Box
+        sx={{
+          gridColumn: { lg: 3 },
+          gridRow: { lg: 1 },
+          alignSelf: { lg: 'stretch' },
+        }}
+      >
+        <Box sx={{ position: { lg: 'sticky' }, top: { lg: 110 }, zIndex: 3 }}>
+          <ScenarioMap implementation={selectedImplementation} />
+        </Box>
       </Box>
     </Box>
   )

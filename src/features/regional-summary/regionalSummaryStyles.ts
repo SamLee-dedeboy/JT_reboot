@@ -129,6 +129,69 @@ export const regionalSummaryTypography = {
   },
 } as const
 
+export type RegionalMapScale = 'touch' | 'web'
+
+/**
+ * Map pin, label, and selected-place card sizing. `touch` is the kiosk scale above;
+ * `web` is the same composition proportionally reduced for the scenario results page.
+ */
+export const regionalMapScales = {
+  touch: {
+    touchTarget: regionalSummarySizing.touchTarget,
+    compactTouchTarget: regionalSummarySizing.compactTouchTarget,
+    controlIconSize: regionalSummarySizing.controlIconSize,
+    markerPinWidth: regionalSummarySizing.markerPinWidth,
+    markerPinHeight: regionalSummarySizing.markerPinHeight,
+    markerIconSize: regionalSummarySizing.markerIconSize,
+    markerAccent: regionalSummarySizing.markerAccent,
+    markerLabel: regionalSummaryTypography.markerLabel,
+    markerLabelPadding: {
+      px: 'clamp(9px, 0.55vw, 20px)',
+      pt: 'clamp(6px, 0.4vw, 14px)',
+      pb: 'clamp(8px, 0.5vw, 18px)',
+    },
+    markerLabelLift: 2.5,
+    markerOffset: [-24, 0] as [number, number],
+    previewWidth: regionalSummarySizing.previewWidth,
+    previewMinHeight: regionalSummarySizing.previewMinHeight,
+    previewPadding: regionalSummarySizing.previewPadding,
+    previewGap: regionalSummarySizing.previewGap,
+    previewMarkerOffset: regionalSummarySizing.previewMarkerOffset,
+    previewRadius: 'clamp(18px, 1.2vw, 36px)',
+    previewFrameRadius: 'clamp(12px, 0.8vw, 24px)',
+    previewTitle: regionalSummaryTypography.regionTitle,
+    previewEyebrow: regionalSummaryTypography.scenarioNumber,
+    previewBody: regionalSummaryTypography.instruction,
+    previewBodyGap: 1.5,
+    overviewPadding: { top: 120, right: 260, bottom: 120, left: 120 },
+  },
+  web: {
+    touchTarget: '44px',
+    compactTouchTarget: '36px',
+    controlIconSize: '1.25rem',
+    markerPinWidth: '36px',
+    markerPinHeight: '48px',
+    markerIconSize: '16px',
+    markerAccent: '3px',
+    markerLabel: { ...regionalSummaryTypography.markerLabel, fontSize: '0.9375rem' },
+    markerLabelPadding: { px: '8px', pt: '5px', pb: '6px' },
+    markerLabelLift: 1.5,
+    markerOffset: [-15, 0] as [number, number],
+    previewWidth: '340px',
+    previewMinHeight: '120px',
+    previewPadding: '14px',
+    previewGap: '10px',
+    previewMarkerOffset: 44,
+    previewRadius: '14px',
+    previewFrameRadius: '10px',
+    previewTitle: { ...regionalSummaryTypography.regionTitle, fontSize: '1.25rem' },
+    previewEyebrow: { ...regionalSummaryTypography.scenarioNumber, fontSize: '0.8125rem' },
+    previewBody: { ...regionalSummaryTypography.instruction, fontSize: '0.9375rem' },
+    previewBodyGap: 0.75,
+    overviewPadding: { top: 72, right: 180, bottom: 48, left: 64 },
+  },
+} as const
+
 /** Typography used only by the detailed evidence view. */
 export const regionalSummaryDetailTypography = {
   eyebrow: {

@@ -117,6 +117,15 @@ export const typography = {
     letterSpacing: '0.015em',
     lineHeight: 1.25,
   },
+  // Nested rail entry under an eyebrow parent (e.g. team sections); one step smaller.
+  navigationSubLabel: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.78rem, 0.72rem + 0.18vw, 0.92rem)',
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    lineHeight: 1.2,
+    textTransform: 'uppercase',
+  },
   displayNumber: {
     fontFamily: fontHeading,
     fontSize: 'clamp(3.5rem, 18vw, 8rem)',

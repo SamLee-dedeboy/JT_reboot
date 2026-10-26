@@ -1,49 +1,26 @@
-// Evaluation team reports: the methodology behind each criterion and the
-// team's findings for each scenario. Environmental Justice is drawn from the
-// team's draft report, "The Story Behind the Criterion: Environmental Justice
-// & Vulnerable Communities" (A. N. DePew, UC Davis, September 2026). Scores are
-// relative to baseline; `null` marks a value the draft has not filled in yet.
-
-export interface ReportDefinition {
-  term: string
-  text: string
-  source: string
-}
-
-export interface ReportMetric {
-  /** Matches the metric name in `evaluationTeams`. */
-  name: string
-  location: string
-  methods: string[]
-  results: Array<{ title: string; body: string }>
-}
+// Evaluation team findings for each scenario. Environmental Justice is drawn
+// from the team's draft report, "The Story Behind the Criterion: Environmental
+// Justice & Vulnerable Communities" (A. N. DePew, UC Davis, September 2026).
+// Ecology, Recreation, Economy, and Eco-cultural restate the published ranking
+// scores compiled in src/internal/rank-visualization/RANKINGS.md (team reports,
+// Sept 2026, and Bay-Delta Science Conference slides, Oct 2026); they carry no
+// narrative until the teams supply their own interpretation.
+// Scores are relative to baseline; `null` marks a value not published yet.
+// The criteria themselves are described in criterionStories.ts.
 
 export interface ScenarioFinding {
   headline: string
+  /** The team's published scores for this scenario; names need not match the criterion's metrics. */
   metrics: Array<{ name: string; finding: string; score: number | null }>
+  /** `score` is null when the team publishes no single criterion score. */
   overall: { score: number | null; summary: string }
-  narrative: string
+  /** The team's own interpretation, when it has written one. */
+  narrative?: string
 }
 
 export interface TeamReport {
   status: 'draft' | 'final'
   source: string
-  definitions: ReportDefinition[]
-  classifications: { intro: string; levels: string[]; indicators: string[] }
-  whyItMatters: {
-    stat: { value: string; label: string }
-    points: string[]
-    quotes: string[]
-  }
-  construction: {
-    background: string
-    timeline: string[]
-    alignment: string
-    priorities: Array<{ priority: string; outcome: string }>
-  }
-  metrics: ReportMetric[]
-  scoring: string
-  rankingSummary: string[]
   findings: Record<string, ScenarioFinding>
 }
 
@@ -55,160 +32,6 @@ const environmentalJustice: TeamReport = {
   status: 'draft',
   source:
     'The Story Behind the Criterion: Environmental Justice & Vulnerable Communities. A. N. DePew, UC Davis, September 2026 (draft).',
-  definitions: [
-    {
-      term: 'Just transition',
-      text: 'Ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies.',
-      source: 'Committee for Development Policy, 2023',
-    },
-    {
-      term: 'Environmental justice',
-      text: 'The fair treatment and meaningful involvement of all people, regardless of race, culture, national origin, or income, in the development, adoption, implementation, and enforcement of environmental laws, regulations, and policies.',
-      source: 'Delta Stewardship Council',
-    },
-    {
-      term: 'Vulnerability',
-      text: 'The intersection of exposure to climate hazards, sensitivity to those hazards, and adaptive capacity: the ability to recover from and adapt to them.',
-      source: 'Delta Adapts, Delta Stewardship Council, 2021',
-    },
-  ],
-  classifications: {
-    intro:
-      'Each community carries a vulnerability classification from the Delta Stewardship Council’s Vulnerability to Climate Change map, weighted across 14 indicators. The lowest classification anywhere in the Delta is Moderate, so every Delta community is vulnerable to some degree.',
-    levels: ['Moderate', 'High', 'Highest'],
-    indicators: [
-      'Children',
-      'Disability',
-      'Educational attainment',
-      'Linguistic isolation',
-      'Older adults living alone',
-      'Poverty',
-      'Race and ethnicity',
-      'Renters',
-      'Vehicle access',
-      'Health insurance',
-      'Asthma',
-      'Cardiovascular disease',
-      'Low birth weight',
-      'Food insecurity',
-    ],
-  },
-  whyItMatters: {
-    stat: {
-      value: '82.6%',
-      label:
-        'of Just Transitions interviewees think Delta decision-making is not equitable and fair',
-    },
-    points: [
-      'Only 8.7% said decision-making is equitable and fair; another 8.7% were unsure.',
-      'Interviewees pointed to power imbalances, monetary influence, and infringement of water rights.',
-      'The criterion looks for undue burdens: negative impacts that fall disproportionately by place, race and ethnicity, income, or other socioeconomic factors.',
-    ],
-    quotes: [
-      'The whole framework of salinity management in the Delta is fundamentally flawed by the institutional issues and the dominance of financial interests.',
-      'The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No.',
-    ],
-  },
-  construction: {
-    background:
-      'The criterion was built from direct engagement with environmental justice community members and advocates, not from literature alone. About 20% of the project’s 49 interviews were with these less-often-heard groups.',
-    timeline: [
-      'Interviews with EJ and Tribal community members and advocates',
-      'Public Workshop 1 (June 2024)',
-      'Tribal Workshop 1 (November 2024)',
-      'EJ Workshop (December 2024)',
-      'Initial criterion distilled from EJ Workshop feedback',
-      'Review at Public Workshop 2 and Tribal Workshop 2 (June 2025)',
-      'Tribal Workshop 3 (December 2025)',
-      'Periodic Advisory Committee review',
-    ],
-    alignment:
-      'Feedback from the EJ Workshop, Public Workshop 2, and ongoing collaboration was distilled into value categories. Some became EJ metrics, some are measured by other teams, and some fall outside the project’s scope.',
-    priorities: [
-      {
-        priority: 'Water quantity and quality',
-        outcome:
-          'Drinking water and HAB conditions became EJ metrics; pollutants and water rights are out of scope.',
-      },
-      {
-        priority: 'Community and recreation',
-        outcome: 'Covered by the Ecology and Recreation teams.',
-      },
-      { priority: 'Flood risk', outcome: 'Flood risk attenuation became an EJ metric.' },
-      {
-        priority: 'Ecological restoration and recovery',
-        outcome: 'Reflected in the scenario designs themselves (Eco Machine, New Green Watershed).',
-      },
-      {
-        priority: 'Ecocultural restoration and Indigenous sovereignty',
-        outcome: 'Given its own criterion, developed with Tribal and Indigenous communities.',
-      },
-      {
-        priority: 'Sustainable economy and economic transitions',
-        outcome:
-          'Agriculture is covered by the Economy team; water affordability lacks accessible data.',
-      },
-    ],
-  },
-  metrics: [
-    {
-      name: ejDrinkingWater,
-      location:
-        '49 in-Delta drinking-water system locations from the State Water Board’s SAFER program, moved into the nearest channel so model output can be read there (46 points for the outflow runs). Points are classified 10 Moderate, 36 High, and 3 Highest vulnerability.',
-      methods: [
-        'Salinity as electrical conductivity (µS/cm) from hydrodynamic model output.',
-        'The share of each run above 1,050 µS/cm, the drinking-water threshold.',
-        'Reported for the total run, the wet and dry seasons, and each vulnerability zone.',
-      ],
-      results: [
-        {
-          title: 'Delta Outflow Variations',
-          body: 'The 30% outflow increase performed best, then the historic baseline, then the 10% decrease. No run had exceedances in Highest-vulnerability zones.',
-        },
-        {
-          title: 'Adaptation scenarios',
-          body: 'Eco Machine and New Green Watershed performed best. Bolster and Fortify matched Business as Usual overall, Calling on Reserves came fifth, and A Tunnel performed worst. Every scenario saw more exceedances in the wet season than the dry season.',
-        },
-      ],
-    },
-    {
-      name: ejFloodRisk,
-      location: 'The Delta as a whole.',
-      methods: [
-        'Direction of change from Business as Usual, based on the flood-reduction measures in each scenario’s design, such as levee work and upland restoration.',
-        'Not assessed for the outflow variations, which share one landscape.',
-      ],
-      results: [
-        {
-          title: 'Adaptation scenarios',
-          body: 'No change: Calling on Reserves and Eco Machine. Slight decrease: A Tunnel. Moderate decrease: Bolster and Fortify. Significant decrease: New Green Watershed.',
-        },
-      ],
-    },
-    {
-      name: ejHabs,
-      location:
-        'Five regions prone to harmful algal blooms from May through October: Suisun Marsh and surrounding wetlands, Franks Tract, South Delta, Lindsey-Cache Slough, and McCormack-Williamson Tract.',
-      methods: [
-        'Change in water age compared with baseline while water is at or above 19°C, the temperature at which HABs begin to grow.',
-        'Water age is one of several factors that make bloom conditions more likely.',
-      ],
-      results: [
-        {
-          title: 'Adaptation scenarios',
-          body: 'Bolster and Fortify: no change. Eco Machine and Calling on Reserves: slightly worse. New Green Watershed: moderately worse. A Tunnel: pending in the draft.',
-        },
-      ],
-    },
-  ],
-  scoring:
-    'Scores run from −5 to 5 relative to baseline. Adaptation scenarios are scored in 1% steps against Business as Usual; outflow variations in 5% steps against the historic baseline, because flow changes move salinity far more. The two sets are not directly comparable.',
-  rankingSummary: [
-    'Overall positive: New Green Watershed and Eco Machine.',
-    'No overall change: Bolster and Fortify.',
-    'Overall negative: Calling on Reserves.',
-    'Among outflow variations, a 30% increase is strongly preferred over a 10% decrease.',
-  ],
   findings: {
     'eco-machine': {
       headline: 'Better for drinking water, no change in flood risk',
@@ -342,7 +165,304 @@ const environmentalJustice: TeamReport = {
   },
 }
 
+const publishedScoresSource =
+  'Published ranking scores from the team’s “Story Behind the Criterion” report (Sept 2026) and the Bay-Delta Science Conference slides (Oct 2026).'
+
+const ecologyNoCriterionScore = {
+  score: null,
+  summary: 'Ecology publishes a score for each component rather than one criterion score.',
+}
+const ecologyNoAcreage =
+  'Only Eco Machine and New Green Watershed add wetland acreage, so Landscape and Food webs stay at baseline.'
+
+const ecology: TeamReport = {
+  status: 'final',
+  source: publishedScoresSource,
+  findings: {
+    'eco-machine': {
+      headline: 'More reachable tidal wetland and a small food-web gain',
+      metrics: [
+        {
+          name: 'Landscape',
+          finding: 'Adds about 53,000 acres of tidal wetland that aquatic species can reach.',
+          score: 3,
+        },
+        {
+          name: 'Food webs',
+          finding: 'Food-web index of 21,200 from the wetland it adds.',
+          score: 1,
+        },
+        {
+          name: 'Species suitability',
+          finding:
+            'Wet year (2019): more suitable days for juvenile longfin smelt (+1). Dry year (2020): fewer suitable days for the undesirable largemouth bass (+2) and Brazilian waterweed (+1), more for the undesirable overbite clam (−1).',
+          score: null,
+        },
+      ],
+      overall: ecologyNoCriterionScore,
+    },
+    'new-green-watershed': {
+      headline: 'The largest gains in reachable habitat and food webs',
+      metrics: [
+        {
+          name: 'Landscape',
+          finding: 'Adds about 80,000 acres of tidal wetland, the most of any scenario.',
+          score: 5,
+        },
+        {
+          name: 'Food webs',
+          finding:
+            'Food-web index of 69,661 in the 50% wetland / 50% rice version (+5 with all managed wetland, +4 at 25% / 75%).',
+          score: 4,
+        },
+        {
+          name: 'Species suitability',
+          finding:
+            'Wet year (2019): more suitable days for juvenile longfin smelt (+1). Dry year (2020): fewer suitable days for the undesirable largemouth bass (+2) and Brazilian waterweed (+1), more for the undesirable overbite clam (−1).',
+          score: null,
+        },
+      ],
+      overall: ecologyNoCriterionScore,
+    },
+    'bolster-and-fortify': {
+      headline: 'No change from Business as Usual',
+      metrics: [
+        { name: 'Landscape', finding: ecologyNoAcreage, score: 0 },
+        { name: 'Food webs', finding: ecologyNoAcreage, score: 0 },
+        {
+          name: 'Species suitability',
+          finding: 'No change for any species in either year.',
+          score: 0,
+        },
+      ],
+      overall: ecologyNoCriterionScore,
+    },
+    'calling-on-reserves': {
+      headline: 'No habitat change; mixed results by species',
+      metrics: [
+        { name: 'Landscape', finding: ecologyNoAcreage, score: 0 },
+        { name: 'Food webs', finding: ecologyNoAcreage, score: 0 },
+        {
+          name: 'Species suitability',
+          finding:
+            'Wet year (2019): more suitable days for juvenile Chinook salmon (+1). Dry year (2020): fewer suitable days for the undesirable largemouth bass (+2) and Brazilian waterweed (+2), more for the undesirable overbite clam (−1).',
+          score: null,
+        },
+      ],
+      overall: ecologyNoCriterionScore,
+    },
+    'a-tunnel': {
+      headline: 'No habitat change; species suitability not modeled',
+      metrics: [
+        { name: 'Landscape', finding: ecologyNoAcreage, score: 0 },
+        { name: 'Food webs', finding: ecologyNoAcreage, score: 0 },
+        {
+          name: 'Species suitability',
+          finding: 'Not modeled for A Tunnel.',
+          score: null,
+        },
+      ],
+      overall: ecologyNoCriterionScore,
+    },
+  },
+}
+
+const recreationNoCriterionScore = {
+  score: null,
+  summary:
+    'Recreation publishes a Delta-wide salinity score for each activity rather than one criterion score.',
+}
+const recreationRule =
+  'One point per percentage point of days over the activity’s salinity threshold, against Business as Usual.'
+
+/** Delta-wide, whole-run salinity scores: day use & boating, birding, waterfowl hunting, angling. */
+function recreationMetrics(
+  [dayUse, birding, hunting, angling]: [number, number, number, number],
+  temperature: { finding: string; score: number | null },
+) {
+  const activity = (name: string, threshold: string, score: number) => ({
+    name,
+    finding:
+      score === 0
+        ? `No change in days over ${threshold}.`
+        : `About ${-score} percentage point${score === -1 ? '' : 's'} more days over ${threshold}.`,
+    score,
+  })
+  return [
+    activity('Day use & boating', '1,000 µS/cm', dayUse),
+    activity('Birding', '2,640 µS/cm', birding),
+    activity('Waterfowl hunting', '3,600 µS/cm', hunting),
+    activity('Angling', '9,130 µS/cm', angling),
+    { name: 'Water temperature', ...temperature },
+  ]
+}
+const recreationTemperatureUnchanged = {
+  finding: 'No change in days over any activity’s temperature threshold.',
+  score: 0,
+}
+const recreationNoTemperatureRun = {
+  finding: 'No temperature run for this scenario.',
+  score: null,
+}
+
+const recreation: TeamReport = {
+  status: 'final',
+  source: `${publishedScoresSource} ${recreationRule}`,
+  findings: {
+    'eco-machine': {
+      headline: 'Slightly saltier for anglers, birders, and hunters',
+      metrics: recreationMetrics([0, -1, -1, -2], recreationTemperatureUnchanged),
+      overall: recreationNoCriterionScore,
+    },
+    'new-green-watershed': {
+      headline: 'Slightly saltier for anglers, birders, and hunters',
+      metrics: recreationMetrics([0, -1, -1, -2], recreationTemperatureUnchanged),
+      overall: recreationNoCriterionScore,
+    },
+    'bolster-and-fortify': {
+      headline: 'No change in recreation conditions',
+      metrics: recreationMetrics([0, 0, 0, 0], recreationTemperatureUnchanged),
+      overall: recreationNoCriterionScore,
+    },
+    'calling-on-reserves': {
+      headline: 'Saltier for every activity, most of all angling',
+      metrics: recreationMetrics([-2, -2, -2, -4], recreationNoTemperatureRun),
+      overall: recreationNoCriterionScore,
+    },
+    'a-tunnel': {
+      headline: 'The largest salinity losses for every activity',
+      metrics: recreationMetrics([-4, -4, -3, -5], recreationNoTemperatureRun),
+      overall: recreationNoCriterionScore,
+    },
+  },
+}
+
+const economyMetric = 'Gross revenue, jobs, and value added'
+const economyBaseline =
+  'Against Business as Usual: $1.107B direct revenue, about 7,700 jobs, and $671M value added.'
+const economySeaLevelRise = 'The score is the same with 2 feet of sea-level rise.'
+
+const economy: TeamReport = {
+  status: 'final',
+  source:
+    'Published ranking scores from the team’s “Story Behind the Criterion” report, v16 (25 Oct 2026). One score covers revenue, jobs, and value added, and is the same under current climate and with 2 feet of sea-level rise.',
+  findings: {
+    'eco-machine': {
+      headline: 'A small loss from converting farmland',
+      metrics: [
+        {
+          name: economyMetric,
+          finding: `Almost none of the restored Suisun Marsh land is farmed, so land conversion lowers direct revenue by only $0.29M–$1.15M a year; one-time construction of about $0.85–1.5B falls outside the score. ${economyBaseline}`,
+          score: 0,
+        },
+      ],
+      overall: { score: 0, summary: 'No change from Business as Usual' },
+    },
+    'new-green-watershed': {
+      headline: 'The largest agricultural losses',
+      metrics: [
+        {
+          name: economyMetric,
+          finding: `Converting farmland lowers direct revenue by $282.5M a year in the 50% wetland version ($212.4M at 25%, scored −3; $504.5M at 100%, scored −5). ${economyBaseline}`,
+          score: -4,
+        },
+      ],
+      overall: { score: -4, summary: '50% wetland version; −3 to −5 across versions' },
+    },
+    'bolster-and-fortify': {
+      headline: 'A small dry-year loss from salinity',
+      metrics: [
+        {
+          name: economyMetric,
+          finding: `Salinity costs about $10k in the dry year (2020), mostly in the Central Delta, and about $27k with 2 feet of sea-level rise. ${economyBaseline}`,
+          score: -1,
+        },
+      ],
+      overall: {
+        score: -1,
+        summary: `Slightly worse than Business as Usual. ${economySeaLevelRise}`,
+      },
+    },
+    'calling-on-reserves': {
+      headline: 'Close to neutral',
+      metrics: [
+        {
+          name: economyMetric,
+          finding: `Against its own base run, salinity effects are about +$2.9k in the dry year (2020) and −$0.3k in the wet year (2019); +$5.7k in the dry year with 2 feet of sea-level rise. ${economyBaseline}`,
+          score: 0,
+        },
+      ],
+      overall: { score: 0, summary: `No change from Business as Usual. ${economySeaLevelRise}` },
+    },
+    'a-tunnel': {
+      headline: 'A small dry-year loss on central Delta islands',
+      metrics: [
+        {
+          name: economyMetric,
+          finding: `In the dry year (2020) the tunnel shifts salinity from the western to the central Delta and costs about $27k against its own base run, about 80% of it in the Central Delta; about $19k with 2 feet of sea-level rise. ${economyBaseline}`,
+          score: -1,
+        },
+      ],
+      overall: {
+        score: -1,
+        summary: `Slightly worse than Business as Usual. ${economySeaLevelRise}`,
+      },
+    },
+  },
+}
+
+const ecoculturalOverallBasis =
+  'One overall score combining restored acres, flow, and the team’s qualitative judgement.'
+
+const ecoculturalRestoration: TeamReport = {
+  status: 'final',
+  source: `${publishedScoresSource} ${ecoculturalOverallBasis}`,
+  findings: {
+    'eco-machine': {
+      headline: 'Restoration in Suisun Marsh and Franks Tract',
+      metrics: [
+        {
+          name: 'Restoration',
+          finding: 'Restores 43,100 acres: 41,720 in Suisun Marsh and 1,380 in Franks Tract.',
+          score: 2,
+        },
+      ],
+      overall: { score: 2, summary: ecoculturalOverallBasis },
+    },
+    'new-green-watershed': {
+      headline: 'The most restoration, in the Delta and the upper watershed',
+      metrics: [
+        {
+          name: 'Restoration',
+          finding: 'Restores 248,815 acres in the Delta, plus restoration in the upper watershed.',
+          score: 5,
+        },
+      ],
+      overall: { score: 4, summary: ecoculturalOverallBasis },
+    },
+    'bolster-and-fortify': {
+      headline: 'No change from Business as Usual',
+      metrics: [{ name: 'Restoration', finding: 'No restored acres.', score: 0 }],
+      overall: { score: 0, summary: ecoculturalOverallBasis },
+    },
+    'calling-on-reserves': {
+      headline: 'Slightly better overall without new restoration',
+      metrics: [{ name: 'Restoration', finding: 'No restored acres.', score: 0 }],
+      overall: { score: 1, summary: ecoculturalOverallBasis },
+    },
+    'a-tunnel': {
+      headline: 'Worse than Business as Usual',
+      metrics: [{ name: 'Restoration', finding: 'No restored acres.', score: 0 }],
+      overall: { score: -2, summary: ecoculturalOverallBasis },
+    },
+  },
+}
+
 /** Team reports by team id; teams without one show their criterion summary only. */
 export const teamReports: Partial<Record<string, TeamReport>> = {
+  ecology,
   'environmental-justice': environmentalJustice,
+  'ecocultural-restoration': ecoculturalRestoration,
+  recreation,
+  economy,
 }

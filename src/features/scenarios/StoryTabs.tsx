@@ -19,15 +19,22 @@ export default function StoryTabs({
   currentSlug,
   destination = 'story',
   teamId,
+  search,
+  availableSlugs,
 }: {
   currentSlug: string
   destination?: 'story' | 'results'
   /** With `destination="results"`, keeps the visitor on this team's results. */
   teamId?: string
+  search?: string
+  availableSlugs?: readonly string[]
 }) {
+  const visibleScenarios = availableSlugs
+    ? orderedScenarios.filter((scenario) => availableSlugs.includes(scenario.slug))
+    : orderedScenarios
   const hrefFor = (slug: string) =>
     destination === 'results'
-      ? `/scenarios/${slug}/results${teamId ? `/${teamId}` : ''}`
+      ? `/scenarios/${slug}/results${teamId ? `/${teamId}` : ''}${search ?? ''}`
       : `/scenarios/${slug}`
 
   return (
@@ -60,13 +67,13 @@ export default function StoryTabs({
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(5, 1fr)',
+            gridTemplateColumns: `repeat(${visibleScenarios.length}, 1fr)`,
             width: 'max-content',
             flex: '0 0 auto',
             gap: jtSpacing.gap.xs,
           }}
         >
-          {orderedScenarios.map((scenario, index) => {
+          {visibleScenarios.map((scenario, index) => {
             const active = scenario.slug === currentSlug
             return (
               <Box

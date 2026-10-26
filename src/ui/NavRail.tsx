@@ -1,6 +1,6 @@
 // Reusable fixed side navigation rail with scroll-spy behavior for any page
 // that exposes stable section IDs.
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Box } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 
@@ -9,6 +9,10 @@ export interface NavRailItem {
   label: string
   disabled?: boolean
   indent?: boolean
+  /** Shown before the label, e.g. a team icon. */
+  icon?: ReactNode
+  /** Identity color for the label, icon and active dot; the label keeps it in every state. */
+  color?: string
 }
 
 const HOME_SECTIONS: NavRailItem[] = [
@@ -88,12 +92,14 @@ export default function NavRail({
           alignSelf: variant === 'home' ? 'start' : undefined,
           gap: variant === 'home' ? theme.jtSpacing.gap.sm : theme.jtSpacing.gap.xs,
           pointerEvents: 'auto',
+          userSelect: 'none',
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
       {items.map((s) => {
         const on = activeId === s.id
+        const accent = s.color ?? 'primary.main'
         const dot = (
           <Box
             className="rail-dot"
@@ -115,9 +121,9 @@ export default function NavRail({
                     ? 'primary.main'
                     : 'common.white'
                   : on
-                    ? 'primary.main'
+                    ? accent
                     : 'base.300',
-              bgcolor: on ? 'primary.main' : 'transparent',
+              bgcolor: on ? accent : 'transparent',
               transform: on ? 'scale(1.2)' : 'none',
               transition:
                 'transform 200ms ease, border-color 200ms ease, background-color 200ms ease',
@@ -129,12 +135,19 @@ export default function NavRail({
           <Box
             className="rail-label"
             sx={{
-              typography: s.indent ? 'captionSmall' : 'eyebrow',
-              color: on ? 'primary.main' : 'common.white',
+              // Colored (team) items use the nested navigation step below the eyebrow parents.
+              typography: s.color ? 'navigationSubLabel' : s.indent ? 'captionSmall' : 'eyebrow',
+              color: s.color ?? (on ? 'primary.main' : 'common.white'),
               transition: 'color 200ms ease',
               whiteSpace: 'nowrap',
+              ...(s.icon && {
+                display: 'flex',
+                alignItems: 'center',
+                gap: (theme: Theme) => theme.jtSpacing.gap.xs,
+              }),
             }}
           >
+            {s.icon}
             {s.label}
           </Box>
         )
@@ -161,14 +174,11 @@ export default function NavRail({
               opacity: s.disabled ? 0.58 : 1,
               color: on ? 'primary.main' : 'base.200',
               '&:hover .rail-dot, &:hover .rail-label': {
-                color: variant === 'home' ? 'common.white' : 'primary.main',
+                color: s.color ?? (variant === 'home' ? 'common.white' : 'primary.main'),
               },
               '&:hover .rail-dot': {
-                borderColor: 'primary.main',
-                bgcolor: on ? 'primary.main' : 'transparent',
-              },
-              '&:hover .rail-label': {
-                color: variant === 'home' ? 'common.white' : 'primary.main',
+                borderColor: accent,
+                bgcolor: on ? accent : 'transparent',
               },
             }}
           >

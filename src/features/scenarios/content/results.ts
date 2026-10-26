@@ -265,6 +265,11 @@ export const resultFamilies = [
     label: 'Adaptation Scenarios',
     href: '/scenarios/eco-machine/results',
   },
+  {
+    id: 'adaptation-slr',
+    label: 'Adaptation Scenarios with Sea-Level Rise',
+    href: '/scenarios/eco-machine/results?seaLevelRise=true',
+  },
 ] as const
 
 export const outflowResultVariations = [

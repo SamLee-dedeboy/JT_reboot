@@ -10,9 +10,8 @@
 //     reader needs the same warning from both: Ecology's whole column is the mean of
 //     its two published metric ranks, and Recreation's whole column is read off the
 //     per-activity threshold percentages in the Oct 2026 slides by a mapping nobody
-//     published. EJ's Calling on Reserves and A Tunnel, and Economy's A Tunnel, are
-//     marked pending by their subteams and carry stand-ins here. None of these are
-//     the subteams' own numbers.
+//     published. EJ's Calling on Reserves and A Tunnel are marked pending by their
+//     subteam and carry stand-ins here. None of these are the subteams' own numbers.
 // Only the six adaptation scenarios are shown; the tiered outflow runs use a
 // different increment and are not comparable with them.
 import { alpha } from '@mui/material/styles'
@@ -88,7 +87,8 @@ export const SCENARIOS: Scenario[] = [
     provisional: [true, true, false, false, false],
   },
   {
-    // Economy scores this 0 in the dry year and +1 in the wet; the app takes 0.
+    // Economy: 0 in both water years and with sea level rise (v16, 25 Oct 2026),
+    // against RMA's own base run for this scenario.
     // Recreation*: −2 on three activities and −4 on angling, mean −2.5; second
     // worst after A Tunnel.
     // EJ*: now "pending" for want of a water-age result; −1 is the mean of the two
@@ -104,11 +104,12 @@ export const SCENARIOS: Scenario[] = [
     // withdrew the drinking-water numbers the Sept report published for it.
     // Recreation*: now measured, −4 on three activities and −5 on angling, mean −4;
     // worst of the six. EJ*: mean of the four metric scores the Sept report gave
-    // (−3, −5, 0, +1). Economy*: salinity moves gross revenue by < 0.01%.
+    // (−3, −5, 0, +1). Economy: −1 (v16, 25 Oct 2026), from a dry-year salinity
+    // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0, -4, -2, 0, -2],
-    provisional: [true, true, true, true, false],
+    scores: [0, -4, -2, -1, -2],
+    provisional: [true, true, true, false, false],
   },
   {
     name: 'Business as Usual',

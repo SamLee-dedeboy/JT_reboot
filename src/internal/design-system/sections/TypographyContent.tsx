@@ -122,6 +122,12 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
       content: 'Small uppercase section label.',
     },
     {
+      label: 'Navigation Sub Label',
+      variantName: 'navigationSubLabel',
+      variant: theme.typography.navigationSubLabel as TypographyToken,
+      content: 'Nested rail entry under an eyebrow, such as a team in On this page.',
+    },
+    {
       label: 'Logo',
       variantName: 'logo',
       variant: theme.typography.logo as TypographyToken,

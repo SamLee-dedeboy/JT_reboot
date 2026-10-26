@@ -26,10 +26,12 @@ const BreakoutPage = lazy(() => import('../internal/rank-visualization/breakout/
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
 const SiteMapPage = lazy(() => import('../internal/site-map/SiteMapPage'))
 const TribalStewardshipSpectrum = lazy(() => import('../internal/TribalStewardshipSpectrum'))
+const EcoculturalMetricsArrow = lazy(() => import('../internal/EcoculturalMetricsArrow'))
 const TeamMethodologyPage = lazy(
   () => import('../features/scenarios/evaluation/TeamMethodologyPage'),
 )
 const TeamScenarioPage = lazy(() => import('../features/scenarios/evaluation/TeamScenarioPage'))
+const RankingPage = lazy(() => import('../features/scenarios/ranking/Page'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
 
@@ -47,6 +49,8 @@ export default function AppRouter() {
         element={deferred(<TeamScenarioPage />)}
       />
       <Route path="/scenarios/evaluation/:teamId" element={deferred(<TeamMethodologyPage />)} />
+      <Route path="/scenarios/ranking" element={deferred(<RankingPage />)} />
+      <Route path="/scenarios/ranking/:view" element={deferred(<RankingPage />)} />
       <Route path="/scenarios/:scenarioSlug" element={<IntroductionPage />} />
       <Route path="/pages/project-documentation" element={<ProjectDocumentation />} />
       <Route path="/pages/service-learning" element={<ServiceLearning />} />
@@ -80,6 +84,7 @@ export default function AppRouter() {
         path="/pages/tribal-stewardship-spectrum"
         element={deferred(<TribalStewardshipSpectrum />)}
       />
+      <Route path="/pages/ecocultural-metrics" element={deferred(<EcoculturalMetricsArrow />)} />
       <Route path="/design-system" element={<DesignSystem />} />
     </Routes>
   )

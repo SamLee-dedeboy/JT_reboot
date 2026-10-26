@@ -85,18 +85,25 @@ const SHOW_PINS = false
 
 /** The one breakout page: every team's table behind the tab bar, the team in `?team=`. */
 export default function BreakoutPage() {
+  return <BreakoutTable />
+}
+
+export function BreakoutTable({ embedded = false }: { embedded?: boolean }) {
   const [params] = useSearchParams()
   const param = params.get('team')
   const team = TEAM_KEYS.includes(param as TeamKey) ? (param as TeamKey) : TEAM_KEYS[0]
   return (
-    // No site navbar or footer: the table owns the screen it is projected on.
-    <Box component="main" sx={{ minHeight: '100dvh', bgcolor: 'base.800', color: 'common.white' }}>
-      <Table team={team} key={team} />
+    <Box
+      component={embedded ? 'section' : 'main'}
+      aria-label={embedded ? 'Performance by criterion' : undefined}
+      sx={{ minHeight: embedded ? 0 : '100dvh', bgcolor: 'base.800', color: 'common.white' }}
+    >
+      <Table team={team} key={team} embedded={embedded} />
     </Box>
   )
 }
 
-function Table({ team }: { team: TeamKey }) {
+function Table({ team, embedded }: { team: TeamKey; embedded: boolean }) {
   const state = useBreakout(team)
   const name = TEAMS.find((entry) => entry.key === team)?.name ?? ''
   const [inspect, setInspect] = useState<Coords | null>(null)
@@ -114,15 +121,19 @@ function Table({ team }: { team: TeamKey }) {
         // One shrinkable column: the tab row scrolls sideways instead of widening the page.
         gridTemplateColumns: 'minmax(0, 1fr)',
         gridTemplateRows: 'auto auto minmax(0, 1fr)',
-        height: { md: '100dvh' },
-        minHeight: '100dvh',
-        overflow: { md: 'hidden' },
+        height: { md: embedded ? 'calc(100dvh - 58px)' : '100dvh' },
+        minHeight: embedded ? { xs: 'auto', md: 'calc(100dvh - 58px)' } : '100dvh',
+        overflow: { md: embedded ? 'visible' : 'hidden' },
         // Today's run on base.800; the sea-level-rise runs ease into base.900.
         bgcolor: state.climate === 'slr' ? 'base.900' : 'base.800',
         transition: 'background-color 600ms ease',
       }}
     >
-      <TableTabs current={team} />
+      <TableTabs
+        current={team}
+        pathname={embedded ? '/scenarios/ranking/by-criterion' : '/pages/breakout'}
+        stickyTop={embedded ? { xs: 72, md: 76 } : 0}
+      />
 
       {/* What is on screen, in one glance from the back row, and the host's opening words. */}
       <Stack
@@ -297,6 +308,8 @@ function Rail({ state, places }: { state: Breakout; places: boolean }) {
   const periodValue =
     state.period === ANY && !state.hasWholeRun ? (state.periodFacets[0]?.key ?? ANY) : state.period
   const placeValue = state.place === ANY && wide ? wide.key : state.place
+  // Places and periods are the team's own cuts of the data, so they wear its color.
+  const teamColor = TEAMS.find((t) => t.key === state.root.team)?.color
   return (
     <Stack
       component="aside"
@@ -377,6 +390,7 @@ function Rail({ state, places }: { state: Breakout; places: boolean }) {
         <RailGroup title={UI.places}>
           <Segmented
             label="Place"
+            accent={teamColor}
             value={placeValue}
             onChange={state.setPlace}
             columns={2}
@@ -392,6 +406,7 @@ function Rail({ state, places }: { state: Breakout; places: boolean }) {
         <RailGroup title={UI.timePeriods}>
           <Segmented
             label="Period"
+            accent={teamColor}
             value={periodValue}
             onChange={state.setPeriod}
             columns={2}
@@ -474,8 +489,18 @@ function read(
   const cell = valueAt({ criterion: node.id, scenario, place, period, climate })
   // A row scored per species or per activity has no number of its own: its
   // entities carry the ranks, and the row says so.
-  if (cell.value === null && node.entityNoun && Object.keys(node.values).length === 0)
-    return { value: null as number | null, why: UI.perEntity(node.entityNoun) }
+  // When every entity is a version of one scenario, the other columns are that, not pending.
+  if (cell.value === null && node.entityNoun && Object.keys(node.values).length === 0) {
+    const versionOnly = (node.children ?? []).every(
+      (child) => child.edge === 'refines' && child.values[scenario] === undefined,
+    )
+    return {
+      value: null as number | null,
+      why: versionOnly ? UI.versionOnly : UI.perEntity(node.entityNoun),
+    }
+  }
+  if (node.notApplicable?.includes(scenario) || node.notApplicableAt?.[scenario]?.includes(place))
+    return { value: null as number | null, why: UI.notApplicable }
   if (cell.value === null) {
     // Under sea level rise a scenario with no run at all is a different gap from a
     // number never scored: Calling on Reserves and A Tunnel were not run with it.
@@ -484,8 +509,12 @@ function read(
     // A measure with no SLR result at all is a gap in the measure, not the scenario.
     const series = cell.node?.values[scenario]
     const anySlr = Object.keys(cell.node?.values ?? {}).length > 0
-    const why =
-      climate !== 'slr'
+    // A version of one scenario (New Green Watershed's restoration levels) has no
+    // value under the others by design, not because a run is missing.
+    const versionOnly = node.edge === 'refines' && series === undefined
+    const why = versionOnly
+      ? UI.versionOnly
+      : climate !== 'slr'
         ? series === undefined && Object.keys(cell.node?.values ?? {}).length > 0
           ? UI.notRun
           : UI.notScored
@@ -970,6 +999,7 @@ function Matrix({ state, onInspect }: { state: Breakout; onInspect: (coords: Coo
                     shown(cell.value) === highest
                   }
                   baseline={diff && cell.scenario === 'bau'}
+                  columnOff={!lit(cell.scenario)}
                   signedText={diff}
                   onClick={
                     cell.value !== null && !diff
@@ -1089,6 +1119,7 @@ function Cell({
   score,
   top,
   baseline,
+  columnOff,
   signedText,
   onClick,
 }: {
@@ -1104,10 +1135,14 @@ function Cell({
   top?: boolean
   /** Business as Usual in deviation view: plain white, neither dimmed nor green. */
   baseline?: boolean
+  /** The cell's scenario is switched off, so its column is already faded. */
+  columnOff?: boolean
   signedText: boolean
   onClick?: () => void
 }) {
   const empty = value === null
+  // Both mark a number that will never exist, so both recede the same way.
+  const versionOnly = empty && (why === UI.versionOnly || why === UI.notApplicable)
   const fill = empty || !score ? undefined : cellFill(value)
   // A detail at zero (no acres, no change) is background, so it recedes.
   const quiet = !empty && !score && value === 0
@@ -1169,21 +1204,26 @@ function Cell({
         minHeight: 0,
         px: { md: 0.75, xl: 1.25 },
         borderRadius: 0.6,
-        border: empty && !summary ? 1 : 0,
+        // A row that belongs to one scenario is grayed out under the others exactly
+        // as a switched-off scenario is: an ordinary cell at the same fade, once.
+        border: empty && !summary && !versionOnly ? 1 : 0,
+        opacity: versionOnly && !columnOff ? FADED : 1,
         borderStyle: 'dashed',
         borderColor: 'border.default',
-        bgcolor: fill ?? (summary || !empty ? 'translucent.100' : 'transparent'),
+        bgcolor: fill ?? (summary || !empty || versionOnly ? 'translucent.100' : 'transparent'),
         color:
           // The best value is green even at zero: no added water age is the best there is.
           baseline && !empty
             ? 'base.50'
             : top
               ? 'primary.main'
-              : (empty && !summary) || quiet
-                ? 'base.300'
-                : fill
-                  ? 'common.white'
-                  : 'base.50',
+              : versionOnly
+                ? 'base.50'
+                : (empty && !summary) || quiet
+                  ? 'base.300'
+                  : fill
+                    ? 'common.white'
+                    : 'base.50',
         overflow: 'hidden',
         '&.Mui-focusVisible': focusRing,
       }}

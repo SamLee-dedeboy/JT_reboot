@@ -137,6 +137,10 @@ export interface CriterionNode {
    * beside them is theirs. Scenario-level marking cannot say that.
    */
   inferredSlices?: string[]
+  /** Scenarios the subteam marks as not applicable: no number exists, and none is coming. */
+  notApplicable?: ScenarioKey[]
+  /** The same, for one scenario at some places only: Eco Machine restores nothing in the North or South Delta. */
+  notApplicableAt?: Partial<Record<ScenarioKey, string[]>>
   /** Rich grid with its own renderer, where one scalar would misreport the source. */
   detail?: 'waterAge'
   /**

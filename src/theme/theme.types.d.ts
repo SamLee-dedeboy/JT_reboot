@@ -19,6 +19,7 @@ declare module '@mui/material/styles' {
     meta: CSSProperties
     controlLabel: CSSProperties
     navigationLabel: CSSProperties
+    navigationSubLabel: CSSProperties
     displayNumber: CSSProperties
     accentCardTitle: CSSProperties
     scenarioPanelTitle: CSSProperties
@@ -43,7 +44,8 @@ declare module '@mui/material/styles' {
     salinity: typeof palette.salinity
     translucent: typeof palette.translucent
     border: typeof palette.border
-    dataViz: typeof palette.dataViz
+    teams: typeof palette.teams
+    visualization: typeof palette.visualization
     surface: string
     surfaceStrong: string
     footerBg: string
@@ -55,7 +57,8 @@ declare module '@mui/material/styles' {
     salinity?: typeof palette.salinity
     translucent?: typeof palette.translucent
     border?: typeof palette.border
-    dataViz?: typeof palette.dataViz
+    teams?: typeof palette.teams
+    visualization?: typeof palette.visualization
     surface?: string
     surfaceStrong?: string
     footerBg?: string
@@ -95,6 +98,7 @@ declare module '@mui/material/Typography' {
     meta: true
     controlLabel: true
     navigationLabel: true
+    navigationSubLabel: true
     displayNumber: true
     accentCardTitle: true
     scenarioPanelTitle: true

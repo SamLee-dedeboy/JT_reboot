@@ -1,9 +1,11 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import { Box, Button, Chip, Stack, Typography } from '@mui/material'
-import { alpha, type Theme } from '@mui/material/styles'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { chart, jtSpacing } from '../../../theme'
-import { evaluationTeams } from '../content'
+import { jtSpacing } from '../../../theme'
+import TagChip from '../../../ui/TagChip'
+import TeamIcon from '../../../ui/TeamIcon'
+import { criterionStories, evaluationTeams } from '../content'
+import { teamStyle, type EvaluationTeamId } from '../teamStyle'
 
 const teamRationales: Record<(typeof evaluationTeams)[number]['id'], string> = {
   ecology:
@@ -26,17 +28,7 @@ const visibleEntityGroup: Record<(typeof evaluationTeams)[number]['id'], string>
   economy: 'Economic sectors',
 }
 
-const teamColor = (theme: Theme, teamId: (typeof evaluationTeams)[number]['id']) => {
-  const colors = {
-    ecology: chart.voting.team.ecology,
-    'environmental-justice': chart.voting.team.environmentalJustice,
-    'ecocultural-restoration': theme.palette.dataViz.neutral,
-    recreation: chart.voting.team.recreation,
-    economy: chart.voting.team.economy,
-  } as const
-
-  return colors[teamId]
-}
+const teamColor = (teamId: EvaluationTeamId) => teamStyle[teamId].color
 
 /** On a scenario's results page, each team section also links to that team's results for it. */
 export default function EvaluationFramework({
@@ -72,34 +64,15 @@ export default function EvaluationFramework({
         <Typography variant="h3" component="h3">
           Why these teams
         </Typography>
-        <Stack spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.lg }}>
+        {/* Each team stacked: its chip on top, the rationale beneath */}
+        <Box sx={{ mt: jtSpacing.component.lg, display: 'grid', gap: jtSpacing.gap.lg }}>
           {evaluationTeams.map((team) => (
-            <Stack
-              key={team.id}
-              direction={{ xs: 'column', sm: 'row' }}
-              spacing={jtSpacing.gap.md}
-              sx={{ alignItems: { xs: 'flex-start', sm: 'center' } }}
-            >
-              <Chip
-                label={team.label}
-                sx={(theme) => ({
-                  flex: 'none',
-                  height: 'auto',
-                  color: 'common.white',
-                  borderColor: teamColor(theme, team.id),
-                  bgcolor: alpha(teamColor(theme, team.id), 0.22),
-                  '& .MuiChip-label': {
-                    typography: 'captionSmall',
-                    py: jtSpacing.component.xs / 2,
-                    whiteSpace: 'normal',
-                  },
-                })}
-                variant="outlined"
-              />
+            <Stack key={team.id} spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
+              <TagChip label={team.label} fill={teamColor(team.id)} />
               <Typography variant="body2">{teamRationales[team.id]}</Typography>
             </Stack>
           ))}
-        </Stack>
+        </Box>
       </Box>
 
       <Stack spacing={jtSpacing.section.sm} sx={{ mt: jtSpacing.section.md }}>
@@ -108,73 +81,118 @@ export default function EvaluationFramework({
             component="article"
             id={team.id}
             key={team.id}
-            sx={(theme) => ({
+            sx={{
               scrollMarginTop: 110,
               pt: jtSpacing.component.md,
               borderTop: 4,
-              borderColor: teamColor(theme, team.id),
-            })}
+              borderColor: teamColor(team.id),
+            }}
           >
-            <Stack spacing={jtSpacing.component.md}>
-              <Stack spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                <Typography variant="h3" component="h3">
-                  {team.label}
-                </Typography>
+            {/* Team title spans both columns so their first headings line up */}
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: jtSpacing.gap.sm,
+                mb: jtSpacing.component.md,
+                color: teamColor(team.id),
+              }}
+            >
+              <TeamIcon team={teamStyle[team.id].icon} size={32} />
+              {team.label}
+            </Typography>
+            {/* Two columns from md up: the criterion on the left, its components on the right */}
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
+                gap: { xs: jtSpacing.component.md, md: jtSpacing.section.md },
+                alignItems: 'start',
+              }}
+            >
+              <Stack spacing={jtSpacing.component.md}>
+                <Stack spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
+                  <Box>
+                    <Typography variant="navigationLabel" component="h4">
+                      What is this criterion?
+                    </Typography>
+                    <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                      {criterionStories[team.id].brief.what}
+                    </Typography>
+                  </Box>
+                </Stack>
+
+                <Stack spacing={jtSpacing.gap.sm}>
+                  {team.entityGroups
+                    .filter((group) => group.label === visibleEntityGroup[team.id])
+                    .map((group) => (
+                      <Box key={group.label}>
+                        <Typography
+                          variant="captionSmall"
+                          component="h5"
+                          sx={{ color: 'base.100' }}
+                        >
+                          {group.label}
+                        </Typography>
+                        <Stack
+                          direction="row"
+                          useFlexGap
+                          spacing={jtSpacing.gap.xs}
+                          sx={{ mt: jtSpacing.gap.xs, flexWrap: 'wrap' }}
+                        >
+                          {group.items.map((entity) => (
+                            <TagChip key={entity} label={entity} fill={teamColor(team.id)} />
+                          ))}
+                        </Stack>
+                      </Box>
+                    ))}
+                </Stack>
+
                 <Box>
                   <Typography variant="navigationLabel" component="h4">
-                    Overall goal
+                    Why does it matter?
                   </Typography>
                   <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                    {team.summary}
+                    {criterionStories[team.id].brief.why}
                   </Typography>
                 </Box>
-              </Stack>
 
-              <Stack spacing={jtSpacing.gap.sm}>
-                {team.entityGroups
-                  .filter((group) => group.label === visibleEntityGroup[team.id])
-                  .map((group) => (
-                    <Box key={group.label}>
-                      <Typography variant="captionSmall" component="h5" sx={{ color: 'base.100' }}>
-                        {group.label}
-                      </Typography>
-                      <Stack
-                        direction="row"
-                        useFlexGap
-                        spacing={jtSpacing.gap.xs}
-                        sx={{ mt: jtSpacing.gap.xs, flexWrap: 'wrap' }}
-                      >
-                        {group.items.map((entity) => (
-                          <Chip
-                            key={entity}
-                            label={entity}
-                            variant="outlined"
-                            sx={(theme) => ({
-                              height: 'auto',
-                              color: 'common.white',
-                              borderColor: teamColor(theme, team.id),
-                              bgcolor: alpha(teamColor(theme, team.id), 0.18),
-                              '& .MuiChip-label': {
-                                typography: 'captionSmall',
-                                py: jtSpacing.component.xs / 2,
-                                whiteSpace: 'normal',
-                              },
-                            })}
-                          />
-                        ))}
-                      </Stack>
-                    </Box>
-                  ))}
+                <Stack
+                  direction="row"
+                  useFlexGap
+                  spacing={jtSpacing.gap.sm}
+                  sx={{ flexWrap: 'wrap' }}
+                >
+                  <Button
+                    component={Link}
+                    to={`/scenarios/evaluation/${team.id}`}
+                    variant="outlined"
+                    endIcon={<ArrowForwardIcon />}
+                  >
+                    More about how this team evaluated
+                  </Button>
+                  {scenario && (
+                    <Button
+                      component={Link}
+                      to={`/scenarios/${scenario.slug}/results/${team.id}`}
+                      variant="outlined"
+                      sx={{ color: 'common.white', borderColor: 'base.300' }}
+                    >
+                      Results for {scenario.title}
+                    </Button>
+                  )}
+                </Stack>
               </Stack>
-
               <Box>
                 <Typography variant="navigationLabel" component="h4">
-                  Metrics
+                  What are its components?
                 </Typography>
                 <Stack spacing={0} sx={{ mt: jtSpacing.gap.sm }}>
-                  {team.metrics.map((metric, metricIndex) => (
+                  {criterionStories[team.id].components.items.map((component, componentIndex) => (
                     <Box
-                      key={metric.name}
+                      key={component.name}
                       sx={{
                         py: jtSpacing.component.md,
                         borderTop: 1,
@@ -190,48 +208,22 @@ export default function EvaluationFramework({
                           variant="numberBadge"
                           component="span"
                           aria-hidden="true"
-                          sx={(theme) => ({ color: teamColor(theme, team.id) })}
+                          sx={{ color: teamColor(team.id) }}
                         >
-                          {String(metricIndex + 1).padStart(2, '0')}
+                          {String(componentIndex + 1).padStart(2, '0')}
                         </Typography>
                         <Typography variant="h4" component="h5">
-                          {metric.name}
+                          {component.name}
                         </Typography>
                       </Stack>
                       <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                        {metric.definition}
+                        {component.summary}
                       </Typography>
                     </Box>
                   ))}
                 </Stack>
               </Box>
-
-              <Stack
-                direction="row"
-                useFlexGap
-                spacing={jtSpacing.gap.sm}
-                sx={{ flexWrap: 'wrap' }}
-              >
-                <Button
-                  component={Link}
-                  to={`/scenarios/evaluation/${team.id}`}
-                  variant="outlined"
-                  endIcon={<ArrowForwardIcon />}
-                >
-                  More about how this team evaluated
-                </Button>
-                {scenario && (
-                  <Button
-                    component={Link}
-                    to={`/scenarios/${scenario.slug}/results/${team.id}`}
-                    variant="outlined"
-                    sx={{ color: 'common.white', borderColor: 'base.300' }}
-                  >
-                    Results for {scenario.title}
-                  </Button>
-                )}
-              </Stack>
-            </Stack>
+            </Box>
           </Box>
         ))}
       </Stack>

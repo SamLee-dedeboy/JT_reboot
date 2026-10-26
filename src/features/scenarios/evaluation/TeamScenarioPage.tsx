@@ -31,11 +31,24 @@ export default function TeamScenarioPage() {
   const isAdaptation = adaptationScenarios.some((item) => item.slug === scenario.slug)
   const resultsPath = `/scenarios/${scenario.slug}/results`
 
+  // The team's published scores, or what each metric will measure while results are pending.
+  const metricCards = finding
+    ? finding.metrics.map((metric) => ({
+        ...metric,
+        measurement: team.metrics.find((item) => item.name === metric.name)?.measurement,
+      }))
+    : team.metrics.map((metric) => ({
+        name: metric.name,
+        finding: 'Results in preparation.',
+        score: null,
+        measurement: metric.measurement,
+      }))
+
   // Adaptation scenarios that have an overall score, best first, for "Where it ranks".
   const ranked = isAdaptation
     ? adaptationScenarios
         .map((item) => ({ scenario: item, finding: report?.findings[item.slug] }))
-        .filter((item) => item.finding)
+        .filter((item) => item.finding && item.finding.overall.score !== null)
         .sort((a, b) => (b.finding!.overall.score ?? -99) - (a.finding!.overall.score ?? -99))
     : []
 
@@ -56,9 +69,10 @@ export default function TeamScenarioPage() {
             finding?.headline ?? `${team.label} results for ${scenario.title} are in preparation.`
           }
         >
-          {report?.status === 'draft' && finding && (
+          {report && finding && (
             <Typography variant="captionSmall" sx={{ color: 'base.200' }}>
-              Draft findings · {report.source}
+              {report.status === 'draft' ? 'Draft findings · ' : 'Source · '}
+              {report.source}
             </Typography>
           )}
         </EvaluationHero>
@@ -84,33 +98,38 @@ export default function TeamScenarioPage() {
                   display: 'grid',
                   gridTemplateColumns: {
                     xs: '1fr',
-                    md: `repeat(${Math.min(team.metrics.length, 3)}, 1fr)`,
+                    md: `repeat(${Math.min(metricCards.length, 3)}, 1fr)`,
                   },
                   gap: jtSpacing.gap.md,
                 }}
               >
-                {team.metrics.map((metric) => {
-                  const result = finding?.metrics.find((item) => item.name === metric.name)
-                  return (
-                    <Stack key={metric.name} spacing={jtSpacing.gap.sm} sx={evaluationCardSx}>
-                      <Stack
-                        direction="row"
-                        sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 1 }}
-                      >
-                        <Typography variant="cardTitle" component="h3">
-                          {metric.name}
-                        </Typography>
-                        <ScoreBadge score={result?.score ?? null} />
-                      </Stack>
-                      <Typography variant="cardBody" sx={{ color: 'base.50' }}>
-                        {result?.finding ?? 'Results in preparation.'}
+                {metricCards.map((metric) => (
+                  <Stack key={metric.name} spacing={jtSpacing.gap.sm} sx={evaluationCardSx}>
+                    <Stack
+                      direction="row"
+                      sx={{ justifyContent: 'space-between', alignItems: 'center', gap: 1 }}
+                    >
+                      <Typography variant="cardTitle" component="h3">
+                        {metric.name}
                       </Typography>
+                      {metric.score !== null || !finding ? (
+                        <ScoreBadge score={metric.score} />
+                      ) : (
+                        <Typography variant="captionSmall" sx={{ color: 'base.200' }}>
+                          Not scored
+                        </Typography>
+                      )}
+                    </Stack>
+                    <Typography variant="cardBody" sx={{ color: 'base.50' }}>
+                      {metric.finding}
+                    </Typography>
+                    {metric.measurement && (
                       <Typography variant="captionSmall" sx={{ color: 'base.200' }}>
                         {metric.measurement}
                       </Typography>
-                    </Stack>
-                  )
-                })}
+                    )}
+                  </Stack>
+                ))}
               </Box>
             </Box>
 
@@ -119,10 +138,10 @@ export default function TeamScenarioPage() {
               <Box component="section" aria-labelledby="rank-title">
                 <SectionHeading number="02" title="Where it ranks" id="rank-title" />
                 <Stack direction="row" spacing={jtSpacing.gap.md} sx={{ alignItems: 'center' }}>
-                  <ScoreBadge score={finding.overall.score} />
+                  {finding.overall.score !== null && <ScoreBadge score={finding.overall.score} />}
                   <Typography variant="bodyLarge">{finding.overall.summary}</Typography>
                 </Stack>
-                {ranked.length > 0 && (
+                {finding.overall.score !== null && ranked.length > 0 && (
                   <Stack
                     component="ol"
                     spacing={jtSpacing.gap.xs}
@@ -164,7 +183,7 @@ export default function TeamScenarioPage() {
             )}
 
             {/* The team's narrative */}
-            {finding && (
+            {finding?.narrative && (
               <Box component="section" aria-labelledby="narrative-title">
                 <SectionHeading
                   number="03"

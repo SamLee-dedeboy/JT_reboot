@@ -17,27 +17,27 @@ export const chart = {
   voting: {
     // Teams use data-only hues so a team never reads as brand chrome or a score.
     team: {
-      ecology: palette.dataViz.gold,
-      recreation: palette.dataViz.orchid,
-      environmentalJustice: palette.dataViz.clay,
-      economy: palette.dataViz.cobalt,
-      ecoCultural: palette.dataViz.violet,
+      ecology: palette.teams.ecology,
+      recreation: palette.teams.recreation,
+      environmentalJustice: palette.teams.envJustice,
+      economy: palette.teams.economy,
+      ecoCultural: palette.teams.ecoCultural,
     },
     // Selectable team palettes; each is validated against the score pair below.
     teamPalettes: {
       color: [
-        palette.dataViz.gold,
-        palette.dataViz.orchid,
-        palette.dataViz.clay,
-        palette.dataViz.cobalt,
-        palette.dataViz.violet,
+        palette.teams.ecology,
+        palette.teams.recreation,
+        palette.teams.envJustice,
+        palette.teams.economy,
+        palette.teams.ecoCultural,
       ],
       neutral: [
-        palette.dataViz.neutral,
-        palette.dataViz.neutral,
-        palette.dataViz.neutral,
-        palette.dataViz.neutral,
-        palette.dataViz.neutral,
+        palette.visualization.neutral,
+        palette.visualization.neutral,
+        palette.visualization.neutral,
+        palette.visualization.neutral,
+        palette.visualization.neutral,
       ],
     },
     scenario: {

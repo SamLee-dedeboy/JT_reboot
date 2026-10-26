@@ -5,22 +5,32 @@ import CheckIcon from '@mui/icons-material/Check'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, ButtonBase, Chip, IconButton, Stack, Typography } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
+import TeamIcon from '../../../ui/TeamIcon'
 import { TEAMS } from '../data'
 import type { TeamKey } from '../data'
 import { focusRing, pageX } from './styles'
 
 /** The team switcher: the evaluation pages' numbered bar, stuck to the top of the screen. */
-export function TableTabs({ current }: { current: TeamKey }) {
+export function TableTabs({
+  current,
+  pathname = '/pages/breakout',
+  stickyTop = 0,
+}: {
+  current: TeamKey
+  pathname?: string
+  stickyTop?: number | { xs: number; md: number }
+}) {
   return (
     <Box
       component="nav"
       aria-label="Breakout tables"
       sx={{
         position: 'sticky',
-        top: 0,
+        top: stickyTop,
         zIndex: 90,
         bgcolor: 'base.700',
         borderTop: 1,
@@ -33,43 +43,38 @@ export function TableTabs({ current }: { current: TeamKey }) {
         sx={{
           px: pageX,
           display: 'flex',
+          justifyContent: 'center',
           overflowX: 'auto',
           scrollbarWidth: 'none',
           '&::-webkit-scrollbar': { display: 'none' },
         }}
       >
         <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ flex: '0 0 auto' }}>
-          {TEAMS.map((team, index) => {
+          {TEAMS.map((team) => {
             const active = team.key === current
             return (
               <Box
                 key={team.key}
                 component={Link}
-                to={{ pathname: '/pages/breakout', search: `?team=${team.key}` }}
+                to={{ pathname, search: `?team=${team.key}` }}
                 aria-current={active ? 'page' : undefined}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: jtSpacing.gap.xs,
-                  px: jtSpacing.component.sm,
+                  px: jtSpacing.component.md,
                   py: jtSpacing.component.sm,
                   borderRadius: 1,
                   textDecoration: 'none',
-                  color: active ? 'common.black' : 'common.white',
-                  bgcolor: active ? 'primary.main' : 'transparent',
+                  color: active ? 'common.black' : team.color,
+                  bgcolor: active ? team.color : 'transparent',
                   '&:hover, &:focus-visible': {
-                    bgcolor: active ? 'primary.main' : 'translucent.primaryGreen',
+                    bgcolor: active ? team.color : 'translucent.100',
                     outline: 'none',
                   },
                 }}
               >
-                <Typography
-                  component="span"
-                  variant="numberBadge"
-                  sx={{ color: active ? 'common.black' : 'primary.main' }}
-                >
-                  {String(index + 1).padStart(2, '0')}
-                </Typography>
+                <TeamIcon team={team.key} size={18} />
                 <Typography component="span" variant="button" sx={{ whiteSpace: 'nowrap' }}>
                   {team.name}
                 </Typography>
@@ -139,6 +144,7 @@ export function Segmented<T extends string>({
   columns = options.length,
   dense,
   tone = 'primary',
+  accent,
 }: {
   label: string
   value: T
@@ -149,9 +155,15 @@ export function Segmented<T extends string>({
   dense?: boolean
   /** The chosen option's fill: the page's green, or the brand blue for the sea level. */
   tone?: 'primary' | 'secondary'
+  /** A color that replaces the tone's fill: the host team's color, for its own facets. */
+  accent?: string
 }) {
-  const fill = `${tone}.main`
-  const hover = tone === 'secondary' ? 'translucent.primaryBlue' : 'translucent.primaryGreen'
+  const fill = accent ?? `${tone}.main`
+  const hover = accent
+    ? alpha(accent, 0.24)
+    : tone === 'secondary'
+      ? 'translucent.primaryBlue'
+      : 'translucent.primaryGreen'
   return (
     <Box
       role="radiogroup"
@@ -329,32 +341,5 @@ export function MeasureRow({
   )
 }
 
-/**
- * A small pill for a variant of a row, such as a life stage. In a map tab it is
- * picked (green when on); in a table row it is a plain off-white label.
- */
-export function StageChip({
-  label,
-  on = false,
-  plain,
-}: {
-  label: string
-  on?: boolean
-  plain?: boolean
-}) {
-  return (
-    <Chip
-      component="span"
-      size="small"
-      variant="outlined"
-      label={label}
-      sx={{
-        flex: 'none',
-        typography: 'meta',
-        color: plain ? 'base.50' : on ? 'common.white' : 'base.200',
-        borderColor: plain ? 'base.50' : on ? 'primary.main' : 'border.default',
-        bgcolor: !plain && on ? 'translucent.primaryGreen' : 'transparent',
-      }}
-    />
-  )
-}
+/** The life-stage pill now lives in the shared UI; re-exported for this page's imports. */
+export { default as StageChip } from '../../../ui/StageChip'

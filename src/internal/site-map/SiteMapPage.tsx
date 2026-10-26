@@ -1,6 +1,7 @@
 // Internal site map: how visitors move through the site, generated from
 // AppRouter, the navbar config, and links found in page source. Opens on the
-// site map, with the proposed Future Scenarios structure layered on; the journey is a toggle away.
+// site map, with the sections the Future Scenarios workflow still needs layered
+// on; the visitor journey is a toggle away.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -20,13 +21,7 @@ import { navItems } from '../../ui/navigation'
 import { buildSiteGraph, type SiteGraph, type SiteNode } from './siteMapModel'
 import SiteMapDiagram from './SiteMapDiagram'
 import ScenarioJourney from './ScenarioJourney'
-import {
-  currentSections,
-  proposedPages,
-  proposedScenarioMenu,
-  proposedSections,
-  replacedPaths,
-} from './pageStructure'
+import { currentSections, proposedPages, proposedSections } from './pageStructure'
 
 type SiteMapView = 'full' | 'journey'
 
@@ -39,7 +34,7 @@ interface FilterState {
 }
 
 const filterLabels: Record<keyof FilterState, string> = {
-  showProposal: 'Proposed structure',
+  showProposal: 'Proposed additions',
   showSections: 'Page sections',
   showLinks: 'In-page links',
   showInternal: 'Internal tools',
@@ -124,8 +119,6 @@ function FullSiteMap() {
               pages: filters.showSections
                 ? proposedPages
                 : proposedPages.map((page) => ({ ...page, sections: [] })),
-              menu: { section: 'Future Scenarios', items: proposedScenarioMenu },
-              replaced: replacedPaths,
             }
           : undefined,
       }),
@@ -260,7 +253,8 @@ function DetailsPanel({ graph, node }: { graph: SiteGraph; node: SiteNode | null
         )}
         {node.proposed && (
           <Typography variant="captionSmall" component="p" sx={{ color: 'base.100', mt: 0.5 }}>
-            Proposed{node.kind === 'page' ? ' page, not in AppRouter yet' : ' section'}
+            Proposed
+            {node.kind === 'page' ? ' page, not in AppRouter yet' : ' section, not built yet'}
             {node.today && `. Today this content is at ${node.today}.`}
           </Typography>
         )}
@@ -451,9 +445,11 @@ function AuditList({ graph }: { graph: SiteGraph }) {
         </Box>
       )}
       <Typography variant="captionSmall" component="p" sx={{ color: 'base.200', mt: 1.5 }}>
-        Links are found statically in each route's imports. Links built at runtime (helpers such as{' '}
-        <code>coDesignPath</code>) are not detected, and shared content files can be counted for
-        every page that imports them.
+        Links are found statically in each route's imports, including path helpers that return a
+        route template (such as <code>methodologyPath</code>). Helpers built from other values (such
+        as <code>coDesignPath</code>) are not detected, a link counts even when it only renders
+        under some conditions, and shared content files can be counted for every page that imports
+        them.
       </Typography>
     </Box>
   )

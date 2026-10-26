@@ -1,30 +1,36 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import CloseIcon from '@mui/icons-material/Close'
 import HelpIcon from '@mui/icons-material/Help'
-import { Box, Button, IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Box, Button, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import type { Geometry, Position } from 'geojson'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Layer, Marker, Popup, Source, type LayerProps } from 'react-map-gl/mapbox'
+import { Layer, Source } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
 import { assetUrl } from '../../utils/baseUrl'
 import type { ScenarioContent } from '../scenarios/content'
 import RegionalPatternsPage from './RegionalPatternsPage'
-import RegionalPlaceMarker from './RegionalPlaceMarker'
-import ScenarioStrategyGuide from './ScenarioStrategyGuide'
+import { RegionalPlaceLayers, RegionalPlacePreview } from './RegionalSalinityMapParts'
 import {
-  excludedRegionalPatternIds,
-  getRegionalPlaceContent,
-  sortRegionalPlaces,
-  type RegionalTextHighlight,
-} from './regionalPlaceContent'
-import { regionalPatternIds, registerRegionalPolygonPatterns } from './regionalPolygonPatterns'
-import { type RegionalPlace, useRegionalPlaces } from './regionalSummaryData'
+  filterPlacesByReleaseView,
+  panRegionalPreviewIntoView,
+  regionalInteractiveLayerIds,
+  regionalMapStyleUrl,
+  regionalOverview,
+  regionalOverviewMaxZoom,
+  regionalPreviewPopupSx,
+  regionalReleaseViewOptions,
+  registerRegionalMapPatterns,
+  scenarioOverviewBounds,
+  useCuratedRegionalPlaces,
+  type RegionalReleaseView,
+} from './regionalSalinityMap'
+import ScenarioStrategyGuide from './ScenarioStrategyGuide'
+import { type RegionalPlace } from './regionalSummaryData'
 import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import {
+  regionalMapScales,
   regionalSummaryControlStyles,
   regionalSummarySizing,
   regionalSummaryTypography,
@@ -35,58 +41,16 @@ interface RegionalSalinityExplorerProps {
   onBack: () => void
 }
 
-const trendLabel = {
-  saltier: 'Generally saltier',
-  fresher: 'Generally fresher',
-  flipping: 'Flips between saltier and fresher',
-  unclear: 'Direction still under review',
-} as const
-
-const regionalOverview = { longitude: -121.96, latitude: 38.06, zoom: 9.5 }
-
 type Bounds = [[number, number], [number, number]]
 
-// Leaves room for pins and labels, which extend up and to the right of each point.
-const overviewPadding = { top: 120, right: 260, bottom: 120, left: 120 }
-const overviewMaxZoom = 11.5
+const overviewPadding = regionalMapScales.touch.overviewPadding
+const overviewMaxZoom = regionalOverviewMaxZoom
 
 const strategyWelcomeBounds: Record<string, Bounds> = {
   'bolster-and-fortify': [
     [-122.67, 37.95],
     [-121.18, 38.05],
   ],
-}
-
-function collectPositions(geometry: Geometry, positions: Position[]) {
-  if (geometry.type === 'GeometryCollection') {
-    geometry.geometries.forEach((part) => collectPositions(part, positions))
-    return
-  }
-  const walk = (value: unknown): void => {
-    if (!Array.isArray(value)) return
-    if (typeof value[0] === 'number') positions.push(value as Position)
-    else value.forEach(walk)
-  }
-  walk(geometry.coordinates)
-}
-
-function scenarioOverviewBounds(places: RegionalPlace[]): Bounds | null {
-  const positions: Position[] = []
-  places.forEach((place) => {
-    positions.push(place.coordinates)
-    if (place.geometry) collectPositions(place.geometry, positions)
-  })
-  if (positions.length === 0) return null
-  const longitudes = positions.map(([longitude]) => longitude)
-  const latitudes = positions.map(([, latitude]) => latitude)
-  return [
-    [Math.min(...longitudes), Math.min(...latitudes)],
-    [Math.max(...longitudes), Math.max(...latitudes)],
-  ]
-}
-
-function mapLayerId(regionId: string) {
-  return regionId.replace(/[^a-zA-Z0-9_-]/g, '-')
 }
 
 interface BolsterStrategyLayer {
@@ -155,66 +119,6 @@ const strategyCameras: Record<
   ],
 }
 
-const monthYear = new Intl.DateTimeFormat('en-US', {
-  month: 'long',
-  year: 'numeric',
-  timeZone: 'UTC',
-})
-const monthOnly = new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' })
-
-function regionalTimingSummary(place: RegionalPlace) {
-  const directedPatterns = place.patterns.filter(
-    (pattern) => pattern.direction && pattern.startDate && pattern.endDate,
-  )
-  const relevantPatterns =
-    place.trend === 'flipping'
-      ? directedPatterns
-      : directedPatterns.filter((pattern) => pattern.direction === place.trend)
-
-  if (relevantPatterns.length === 0) return `${trendLabel[place.trend]} across the modeled period.`
-
-  const starts = relevantPatterns.map((pattern) => new Date(`${pattern.startDate}T00:00:00Z`))
-  const ends = relevantPatterns.map((pattern) => new Date(`${pattern.endDate}T00:00:00Z`))
-  const start = new Date(Math.min(...starts.map((date) => date.getTime())))
-  const end = new Date(Math.max(...ends.map((date) => date.getTime())))
-  const sameYear = start.getUTCFullYear() === end.getUTCFullYear()
-  const isEntireSimulationPeriod =
-    start.getUTCFullYear() === 2018 &&
-    start.getUTCMonth() === 9 &&
-    end.getUTCFullYear() === 2020 &&
-    end.getUTCMonth() === 8
-  const isDryYear2019 =
-    start.getUTCFullYear() === 2018 &&
-    start.getUTCMonth() === 9 &&
-    end.getUTCFullYear() === 2019 &&
-    end.getUTCMonth() === 8
-  const range = sameYear
-    ? `${monthOnly.format(start)}–${monthYear.format(end)}`
-    : `${monthYear.format(start)}–${monthYear.format(end)}`
-  const wetSeason =
-    [9, 10, 11, 0, 1, 2].includes(start.getUTCMonth()) &&
-    [9, 10, 11, 0, 1, 2].includes(end.getUTCMonth())
-  const season = wetSeason ? ' (wet season)' : ''
-
-  if (place.trend === 'flipping') {
-    if (isEntireSimulationPeriod) {
-      return 'Shifts between saltier and fresher periods throughout the entire simulation period.'
-    }
-    if (isDryYear2019) {
-      return 'Shifts between saltier and fresher periods during dry year (2019).'
-    }
-    return `Shifts between saltier and fresher periods during ${range}${season}.`
-  }
-
-  if (isEntireSimulationPeriod) {
-    return `${trendLabel[place.trend]} throughout the entire simulation period.`
-  }
-  if (isDryYear2019) {
-    return `${trendLabel[place.trend]} during dry year (2019).`
-  }
-  return `${trendLabel[place.trend]} during ${range}${season}.`
-}
-
 export default function RegionalSalinityExplorer({
   scenario,
   onBack,
@@ -224,12 +128,12 @@ export default function RegionalSalinityExplorer({
   const isOutflowScenario = scenario.slug === 'alternative-delta-outflows'
   const isCallingOnReserves = scenario.slug === 'calling-on-reserves'
   const [outflowVariant, setOutflowVariant] = useState<'plus30' | 'minus10'>('plus30')
-  const [releaseView, setReleaseView] = useState<'all' | 'before' | 'during-after'>('all')
+  const [releaseView, setReleaseView] = useState<RegionalReleaseView>('all')
   const outflowScenarioKey =
     outflowVariant === 'plus30'
       ? 'schism_run16_plus30pct_outflow'
       : 'schism_run17_minus10pct_outflow'
-  const { places: sourcePlaces } = useRegionalPlaces(
+  const { places } = useCuratedRegionalPlaces(
     scenario.slug,
     isOutflowScenario ? outflowScenarioKey : undefined,
   )
@@ -244,52 +148,10 @@ export default function RegionalSalinityExplorer({
         : scenario,
     [isOutflowScenario, outflowVariant, scenario],
   )
-  const places = useMemo(
-    () =>
-      sortRegionalPlaces(
-        scenario.slug,
-        sourcePlaces.map((place) => {
-          const patterns = place.patterns.filter(
-            (pattern) => !excludedRegionalPatternIds.has(pattern.id),
-          )
-          const directions = new Set(
-            patterns.flatMap((pattern) => (pattern.direction ? [pattern.direction] : [])),
-          )
-          const [onlyDirection] = directions
-
-          return {
-            ...place,
-            patterns,
-            trend: directions.size > 1 ? ('flipping' as const) : (onlyDirection ?? place.trend),
-            name: getRegionalPlaceContent(scenario.slug, place).displayName,
-          }
-        }),
-      ),
-    [scenario.slug, sourcePlaces],
+  const mapPlaces = useMemo(
+    () => (isCallingOnReserves ? filterPlacesByReleaseView(places, releaseView) : places),
+    [isCallingOnReserves, places, releaseView],
   )
-  const mapPlaces = useMemo(() => {
-    if (!isCallingOnReserves || releaseView === 'all') return places
-
-    return places
-      .map((place) => {
-        const patterns = place.patterns.filter((pattern) => {
-          const timing = pattern.reviewNote.toLowerCase()
-          return releaseView === 'before'
-            ? timing.includes('before') || timing.includes('between potential releases')
-            : timing.includes('during') || timing.includes('after')
-        })
-        const directions = new Set(
-          patterns.flatMap((pattern) => (pattern.direction ? [pattern.direction] : [])),
-        )
-        const [onlyDirection] = directions
-        return {
-          ...place,
-          patterns,
-          trend: directions.size > 1 ? ('flipping' as const) : (onlyDirection ?? place.trend),
-        }
-      })
-      .filter((place) => place.patterns.length > 0)
-  }, [isCallingOnReserves, places, releaseView])
   const [selectedRegion, setSelectedRegion] = useState<RegionalPlace | null>(null)
   const [patternsOpen, setPatternsOpen] = useState(false)
   const [patternsReady, setPatternsReady] = useState(false)
@@ -306,56 +168,11 @@ export default function RegionalSalinityExplorer({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !selectedRegion || strategyGuideOpen || patternsOpen) return
-
-    let secondFrame = 0
-    const firstFrame = window.requestAnimationFrame(() => {
-      secondFrame = window.requestAnimationFrame(() => {
-        const mapContainer = map.getContainer()
-        const preview = mapContainer.querySelector<HTMLElement>('.regional-summary-preview-popup')
-        if (!preview) return
-
-        const mapBounds = mapContainer.getBoundingClientRect()
-        const previewBounds = preview.getBoundingClientRect()
-        const inset = Math.min(
-          regionalSummarySizing.previewViewportInsetMax,
-          Math.max(
-            regionalSummarySizing.previewViewportInsetMin,
-            mapBounds.width * regionalSummarySizing.previewViewportInsetRatio,
-          ),
-        )
-        const safeLeft = mapBounds.left + inset
-        const safeRight = mapBounds.right - inset
-        const safeTop = mapBounds.top + inset
-        const safeBottom = mapBounds.bottom - inset
-        let visualShiftX = 0
-        let visualShiftY = 0
-
-        if (previewBounds.left < safeLeft) visualShiftX = safeLeft - previewBounds.left
-        if (previewBounds.right > safeRight) visualShiftX = safeRight - previewBounds.right
-        if (previewBounds.top < safeTop) visualShiftY = safeTop - previewBounds.top
-        if (previewBounds.bottom > safeBottom) visualShiftY = safeBottom - previewBounds.bottom
-
-        if (visualShiftX || visualShiftY) {
-          map.panBy([-visualShiftX, -visualShiftY], {
-            duration: reduceMotion ? 0 : 520,
-            essential: false,
-          })
-        }
-      })
-    })
-
-    return () => {
-      window.cancelAnimationFrame(firstFrame)
-      window.cancelAnimationFrame(secondFrame)
-    }
+    return panRegionalPreviewIntoView(map, reduceMotion)
   }, [patternsOpen, reduceMotion, selectedRegion, strategyGuideOpen])
 
-  const regionalInteractiveLayerIds = useMemo(
-    () =>
-      mapPlaces.flatMap((place) => [
-        `regional-fill-${mapLayerId(place.id)}`,
-        ...(patternsReady ? [`regional-pattern-${mapLayerId(place.id)}`] : []),
-      ]),
+  const interactiveLayerIds = useMemo(
+    () => regionalInteractiveLayerIds(mapPlaces, patternsReady),
     [mapPlaces, patternsReady],
   )
 
@@ -480,21 +297,6 @@ export default function RegionalSalinityExplorer({
     reduceMotion,
     strategyGuideOpen,
   ])
-
-  const trendColor = (trend: RegionalPlace['trend']) => {
-    if (trend === 'saltier') return theme.palette.salinity.pink
-    if (trend === 'fresher') return theme.palette.salinity.teal
-    if (trend === 'flipping') return theme.palette.salinity.pink
-    return theme.palette.base[100]
-  }
-
-  const editorialColor = (highlight?: RegionalTextHighlight) => {
-    if (highlight === 'saltier') return theme.palette.salinity.pink
-    if (highlight === 'fresher') return theme.palette.salinity.teal
-    if (highlight === 'primary') return theme.palette.primary.main
-    if (highlight === 'white') return theme.palette.common.white
-    return theme.palette.base[100]
-  }
 
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -636,25 +438,7 @@ export default function RegionalSalinityExplorer({
                 position: 'relative',
                 height: regionalSummarySizing.contentHeight,
                 overflow: 'hidden',
-                '& .regional-summary-preview-popup': {
-                  zIndex: 6,
-                },
-                '& .regional-summary-preview-popup .mapboxgl-popup-content': {
-                  width: 'max-content',
-                  minWidth: regionalSummarySizing.previewWidth,
-                  maxWidth: 'calc(100vw - 48px)',
-                  minHeight: regionalSummarySizing.previewMinHeight,
-                  p: 0,
-                  border: 1,
-                  borderColor: 'base.500',
-                  borderRadius: 'clamp(18px, 1.2vw, 36px)',
-                  bgcolor: 'base.800',
-                  boxShadow: 'none',
-                  backdropFilter: 'blur(14px)',
-                },
-                '& .regional-summary-preview-popup .mapboxgl-popup-tip': {
-                  display: 'none',
-                },
+                ...regionalPreviewPopupSx('touch'),
               }}
             >
               {isOutflowScenario || isCallingOnReserves ? (
@@ -682,7 +466,7 @@ export default function RegionalSalinityExplorer({
                         setOutflowVariant(value as 'plus30' | 'minus10')
                       } else {
                         if (value === releaseView) return
-                        setReleaseView(value as 'all' | 'before' | 'during-after')
+                        setReleaseView(value as RegionalReleaseView)
                       }
                       setSelectedRegion(null)
                       setPatternsOpen(false)
@@ -698,11 +482,7 @@ export default function RegionalSalinityExplorer({
                           ['plus30', '+30% Delta outflow'],
                           ['minus10', '−10% Delta outflow'],
                         ]
-                      : [
-                          ['all', 'View all'],
-                          ['before', 'Before release'],
-                          ['during-after', 'During and after release'],
-                        ]
+                      : regionalReleaseViewOptions
                     ).map(([value, label]) => (
                       <ToggleButton
                         key={value}
@@ -730,7 +510,7 @@ export default function RegionalSalinityExplorer({
               ) : null}
               <BaseMap
                 mapStyle={offlineMapStyle}
-                mapStyleUrl="mapbox://styles/justtransition/cmreic454000z01sle8uh6v7n"
+                mapStyleUrl={regionalMapStyleUrl}
                 initialViewState={regionalOverview}
                 dragPan
                 scrollZoom
@@ -739,7 +519,7 @@ export default function RegionalSalinityExplorer({
                 keyboard
                 attributionControl={false}
                 cursor={mapCursor}
-                interactiveLayerIds={regionalInteractiveLayerIds}
+                interactiveLayerIds={interactiveLayerIds}
                 onMouseMove={(event) => setMapCursor(event.features?.length ? 'pointer' : 'grab')}
                 onMouseLeave={() => setMapCursor('grab')}
                 onClick={(event) => {
@@ -750,237 +530,30 @@ export default function RegionalSalinityExplorer({
                 }}
                 onMapReady={(map) => {
                   mapRef.current = map
-                  registerRegionalPolygonPatterns(map, {
-                    saltier: theme.palette.salinity.pink,
-                    fresher: theme.palette.salinity.teal,
-                    flipping: theme.palette.accent.yellow,
-                    unclear: theme.palette.base[100],
-                  })
+                  registerRegionalMapPatterns(map, theme)
                   setPatternsReady(true)
                   if (strategyGuideOpen && !strategyGuideStarted) moveToStrategyWelcome(0)
                   else moveToOverview(0)
                 }}
               >
-                {mapPlaces.map((region) => {
-                  if (!region.geometry) return null
-                  const selected = selectedRegion?.id === region.id
-                  const color = trendColor(region.trend)
-                  const polygonColor = region.trend === 'flipping' ? theme.palette.base[900] : color
-                  const feature = {
-                    type: 'Feature' as const,
-                    properties: { id: region.id, trend: region.trend },
-                    geometry: region.geometry,
+                <RegionalPlaceLayers
+                  places={mapPlaces}
+                  selectedPlaceId={selectedRegion?.id ?? null}
+                  patternsReady={patternsReady}
+                  scale="touch"
+                  onSelectPlace={(region) =>
+                    setSelectedRegion(
+                      places.find((candidate) => candidate.id === region.id) ?? region,
+                    )
                   }
-                  const stableId = mapLayerId(region.id)
-                  const fillLayer: LayerProps = {
-                    id: `regional-fill-${stableId}`,
-                    type: 'fill',
-                    paint: {
-                      'fill-color': polygonColor,
-                      'fill-opacity': selected ? 0.7 : 0.4,
-                    },
-                  }
-                  const patternLayer: LayerProps = {
-                    id: `regional-pattern-${stableId}`,
-                    type: 'fill',
-                    paint: {
-                      'fill-pattern': regionalPatternIds[region.trend],
-                      'fill-opacity': selected ? 1 : 0.76,
-                    },
-                  }
-                  const lineLayer: LayerProps = {
-                    id: `regional-line-${stableId}`,
-                    type: 'line',
-                    paint: {
-                      'line-color': color,
-                      'line-width': selected ? 4 : 2,
-                      'line-opacity': 0, //selected ? 1 : 0.82,
-                      //'line-dasharray': [2, 2],
-                      //...(approximate ? { 'line-dasharray': [2, 2] } : {}),
-                    },
-                  }
-                  return (
-                    <Source
-                      key={`geometry-${region.id}`}
-                      id={`regional-source-${stableId}`}
-                      type="geojson"
-                      data={feature}
-                    >
-                      <Layer {...fillLayer} />
-                      {patternsReady ? <Layer {...patternLayer} /> : null}
-                      {region.trend !== 'flipping' ? <Layer {...lineLayer} /> : null}
-                    </Source>
-                  )
-                })}
-                {mapPlaces.map((region, index) => {
-                  const selected = selectedRegion?.id === region.id
-                  const detailRegion =
-                    places.find((candidate) => candidate.id === region.id) ?? region
-                  return (
-                    <Marker
-                      key={region.id}
-                      longitude={region.coordinates[0]}
-                      latitude={region.coordinates[1]}
-                      anchor="bottom-left"
-                      offset={[-24, 0]}
-                    >
-                      <RegionalPlaceMarker
-                        color={trendColor(region.trend)}
-                        secondaryColor={
-                          region.trend === 'flipping' ? theme.palette.salinity.teal : undefined
-                        }
-                        index={index}
-                        name={region.name}
-                        selected={selected}
-                        onSelect={() => setSelectedRegion(detailRegion)}
-                      />
-                    </Marker>
-                  )
-                })}
+                />
                 {selectedRegion ? (
-                  <Popup
-                    key={`${selectedRegion.id}-${getRegionalPlaceContent(scenario.slug, selectedRegion).cardSide}`}
-                    longitude={selectedRegion.coordinates[0]}
-                    latitude={selectedRegion.coordinates[1]}
-                    anchor={
-                      getRegionalPlaceContent(scenario.slug, selectedRegion).cardSide === 'left'
-                        ? 'right'
-                        : 'left'
-                    }
-                    offset={regionalSummarySizing.previewMarkerOffset}
-                    closeButton={false}
-                    closeOnClick={false}
-                    focusAfterOpen={false}
-                    maxWidth="none"
-                    className="regional-summary-preview-popup"
-                  >
-                    <Box
-                      aria-live="polite"
-                      sx={{
-                        p: regionalSummarySizing.previewPadding,
-                        display: 'grid',
-                        gap: regionalSummarySizing.previewGap,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: 'grid',
-                          gridTemplateColumns: 'minmax(0, 1fr) auto',
-                          alignItems: 'center',
-                          gap: 2,
-                        }}
-                      >
-                        <Typography
-                          component="h2"
-                          sx={{
-                            ...regionalSummaryTypography.regionTitle,
-                            pl: regionalSummarySizing.previewPadding,
-                            whiteSpace: 'nowrap',
-                            color:
-                              selectedRegion.trend === 'saltier'
-                                ? 'salinity.pink'
-                                : 'salinity.teal',
-                          }}
-                        >
-                          {selectedRegion.name}
-                        </Typography>
-                        <IconButton
-                          aria-label="Close regional pattern summary"
-                          onClick={() => setSelectedRegion(null)}
-                          sx={{
-                            width: regionalSummarySizing.compactTouchTarget,
-                            height: regionalSummarySizing.compactTouchTarget,
-                            color:
-                              selectedRegion.trend === 'saltier'
-                                ? 'salinity.pink'
-                                : 'salinity.teal',
-                            '& .MuiSvgIcon-root': {
-                              fontSize: regionalSummarySizing.controlIconSize,
-                            },
-                          }}
-                        >
-                          <CloseIcon />
-                        </IconButton>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          width: regionalSummarySizing.previewWidth,
-                          px: regionalSummarySizing.previewPadding,
-                          boxSizing: 'border-box',
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            ...regionalSummaryTypography.scenarioNumber,
-                            color: 'common.white',
-                          }}
-                        >
-                          Why this place
-                        </Typography>
-                        <Typography
-                          sx={{
-                            ...regionalSummaryTypography.instruction,
-                            color: 'base.100',
-                            mt: 1.5,
-                          }}
-                        >
-                          {getRegionalPlaceContent(scenario.slug, selectedRegion).whyThisPlace}
-                        </Typography>
-                      </Box>
-
-                      <Box
-                        sx={{
-                          width: regionalSummarySizing.previewWidth,
-                          p: regionalSummarySizing.previewPadding,
-                          boxSizing: 'border-box',
-                          border: 2,
-                          borderColor:
-                            selectedRegion.trend === 'saltier' ? 'salinity.pink' : 'salinity.teal',
-                          borderRadius: 'clamp(12px, 0.8vw, 24px)',
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            ...regionalSummaryTypography.scenarioNumber,
-                            color: 'common.white',
-                          }}
-                        >
-                          Key takeaway
-                        </Typography>
-                        <Typography
-                          sx={{
-                            ...regionalSummaryTypography.instruction,
-                            color: 'base.100',
-                            mt: 1.5,
-                          }}
-                        >
-                          {getRegionalPlaceContent(scenario.slug, selectedRegion).keyTakeaway?.map(
-                            (segment, index) => (
-                              <Box
-                                component="span"
-                                key={`${segment.text}-${index}`}
-                                sx={{
-                                  color: editorialColor(segment.highlight),
-                                  fontWeight: segment.strong ? 800 : 400,
-                                }}
-                              >
-                                {segment.text}
-                              </Box>
-                            ),
-                          ) ?? (
-                            <Box
-                              component="span"
-                              sx={{
-                                color: trendColor(selectedRegion.trend),
-                                fontWeight: 800,
-                              }}
-                            >
-                              {regionalTimingSummary(selectedRegion)}
-                            </Box>
-                          )}
-                        </Typography>
-                      </Box>
+                  <RegionalPlacePreview
+                    scenarioSlug={scenario.slug}
+                    place={selectedRegion}
+                    scale="touch"
+                    onClose={() => setSelectedRegion(null)}
+                    action={
                       <Button
                         endIcon={<ArrowForwardIcon />}
                         onClick={() => setPatternsOpen(true)}
@@ -992,8 +565,8 @@ export default function RegionalSalinityExplorer({
                       >
                         View Salinity Pattern Timeline
                       </Button>
-                    </Box>
-                  </Popup>
+                    }
+                  />
                 ) : null}
                 {scenario.slug === 'bolster-and-fortify' &&
                 strategyGuideOpen &&

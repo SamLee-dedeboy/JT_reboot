@@ -17,6 +17,8 @@ import Eyebrow from '../../ui/Eyebrow'
 import Hl, { type HighlightStyleVariant } from '../../ui/Highlight'
 import Icon from '../../ui/Icon'
 import NavRail from '../../ui/NavRail'
+import TagChip from '../../ui/TagChip'
+import { chart } from '../../theme'
 import AccentPlateCard from '../../ui/cards/AccentPlateCard'
 import ArticleAccordionCard from '../../ui/cards/ArticleAccordionCard'
 import NotchTabCard from '../../ui/cards/NotchTabCard'
@@ -1798,6 +1800,28 @@ export default function DesignSystem() {
               >
                 Business as Usual
               </Box>
+            </ButtonSpec>
+            <ButtonSpec
+              title="Tag Chip"
+              caption={
+                <SpecCaption>
+                  <StyleLine token>
+                    Fill uses a team color from chart.voting.team; text is common.black in{' '}
+                    <TypeSpec variant="captionSmall" />.
+                  </StyleLine>
+                  <StyleLine token>Shared as ui/TagChip for team and entity tags.</StyleLine>
+                </SpecCaption>
+              }
+            >
+              <Stack
+                direction="row"
+                useFlexGap
+                spacing={theme.jtSpacing.gap.xs}
+                sx={{ flexWrap: 'wrap' }}
+              >
+                <TagChip label="Chinook Salmon" fill={chart.voting.team.ecology} />
+                <TagChip label="Boaters" fill={chart.voting.team.recreation} />
+              </Stack>
             </ButtonSpec>
           </Box>
         </DesignSection>

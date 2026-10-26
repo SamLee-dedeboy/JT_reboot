@@ -1,5 +1,6 @@
 // Future Scenarios journey: pick a scenario and an evaluation team, then follow
-// the path a visitor takes from the scenario gallery to that team's results.
+// the path a visitor takes from the home page through that team's results to
+// the overall ranking.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Box, Chip, Stack, Typography } from '@mui/material'
@@ -260,9 +261,16 @@ function Outline({ items }: { items: OutlineItem[] }) {
           <Typography
             variant="cardBody"
             component="span"
-            sx={(theme) => ({ color: item.focus ? theme.chart.siteMap.selected : 'common.white' })}
+            sx={(theme) => ({
+              color: item.planned
+                ? theme.chart.siteMap.warning
+                : item.focus
+                  ? theme.chart.siteMap.selected
+                  : 'common.white',
+            })}
           >
             {item.title}
+            {item.planned && ' (not built yet)'}
           </Typography>
           {item.detail && (
             <Typography variant="captionSmall" component="p" sx={{ color: 'base.200' }}>

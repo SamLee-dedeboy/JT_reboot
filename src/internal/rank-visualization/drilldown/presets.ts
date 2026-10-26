@@ -66,7 +66,7 @@ export const PIVOT_PRESETS: PivotPreset[] = [
     finding:
       'Farm revenue losses in the dry year come mainly from land conversion, not salinity. Salinity costs at most tens of thousands of dollars. Under New Green Watershed, land conversion costs $282M.',
     criteria: ['econ-revenue-salinity', 'econ-revenue-half'],
-    scenarios: ['ngw', 'bf', 'cor', 'bau'],
+    scenarios: ['ngw', 'bf', 'cor', 'tunnel', 'bau'],
     periods: ['2020'],
   },
   {

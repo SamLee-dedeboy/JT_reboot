@@ -18,7 +18,13 @@ import {
 } from './regionalPatternEvidence'
 import { regionalPatternIds, registerRegionalPolygonPatterns } from './regionalPolygonPatterns'
 import { getRegionalTimelineContextPeriods } from './regionalTimelineContext'
-import { excludedRegionalPatternIds } from './regionalPlaceContent'
+import {
+  datedEvents,
+  datePosition,
+  eventPlacement,
+  timelineDomain,
+  valueFormat,
+} from './regionalTimeline'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
 import {
   regionalSummaryControlStyles,
@@ -46,71 +52,6 @@ interface EventSeries {
 }
 
 type EventSeriesDataset = Record<string, EventSeries>
-
-const valueFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
-const defaultQuarterTicks = [
-  ['2018-10-01', 'Oct 2018'],
-  ['2019-01-01', 'Jan 2019'],
-  ['2019-04-01', 'Apr 2019'],
-  ['2019-07-01', 'Jul 2019'],
-  ['2019-10-01', 'Oct 2019'],
-  ['2020-01-01', 'Jan 2020'],
-  ['2020-04-01', 'Apr 2020'],
-  ['2020-07-01', 'Jul 2020'],
-  ['2020-10-01', 'Oct 2020'],
-] as const
-
-const outflowQuarterTicks = [
-  ['2020-08-01', 'Aug 2020'],
-  ['2020-10-01', 'Oct 2020'],
-  ['2021-01-01', 'Jan 2021'],
-  ['2021-04-01', 'Apr 2021'],
-  ['2021-07-01', 'Jul 2021'],
-  ['2021-10-01', 'Oct 2021'],
-  ['2022-01-01', 'Jan 2022'],
-] as const
-
-interface TimelineDomain {
-  start: number
-  end: number
-  ticks: readonly (readonly [string, string])[]
-  isOutflowComparison: boolean
-}
-
-function timelineDomain(scenarioSlug: string): TimelineDomain {
-  const isOutflowComparison = scenarioSlug === 'alternative-delta-outflows'
-  return {
-    start: Date.parse(isOutflowComparison ? '2020-08-01T00:00:00Z' : '2018-10-01T00:00:00Z'),
-    end: Date.parse(isOutflowComparison ? '2022-01-01T00:00:00Z' : '2020-11-29T00:00:00Z'),
-    ticks: isOutflowComparison ? outflowQuarterTicks : defaultQuarterTicks,
-    isOutflowComparison,
-  }
-}
-
-function datedEvents(place: RegionalPlace) {
-  return place.patterns
-    .filter(
-      (pattern) =>
-        pattern.startDate &&
-        pattern.endDate &&
-        pattern.candidateType !== 'threshold_consequence' &&
-        !excludedRegionalPatternIds.has(pattern.id),
-    )
-    .toSorted((left, right) => (left.startDate ?? '').localeCompare(right.startDate ?? ''))
-}
-
-function datePosition(date: string, domain: TimelineDomain) {
-  const value = Date.parse(`${date}T00:00:00Z`)
-  return Math.min(100, Math.max(0, ((value - domain.start) / (domain.end - domain.start)) * 100))
-}
-
-function eventPlacement(pattern: RegionalPattern, domain: TimelineDomain) {
-  const left = datePosition(pattern.startDate as string, domain)
-  return {
-    left,
-    width: Math.max(0.7, datePosition(pattern.endDate as string, domain) - left),
-  }
-}
 
 function dateLabel(date: string) {
   return new Intl.DateTimeFormat('en-US', {
@@ -140,39 +81,7 @@ export default function RegionalPatternsPage({
   onPlaceChange,
   onBack,
 }: Props) {
-  const evidence = usePatternEvidence()
-  const [eventSeries, setEventSeries] = useState<EventSeriesDataset>({})
-  const activePlace = place
-  const [selectedPattern, setSelectedPattern] = useState<RegionalPattern | null>(null)
-  const [selectedPatternPlaceId, setSelectedPatternPlaceId] = useState<string | null>(null)
-  const [highlightedStationId, setHighlightedStationId] = useState<number | null>(null)
   const [tutorialOpen, setTutorialOpen] = useState(true)
-  const events = useMemo(() => datedEvents(activePlace), [activePlace])
-  const activePattern = selectedPatternPlaceId === activePlace.id ? selectedPattern : null
-
-  useEffect(() => {
-    const controller = new AbortController()
-    fetch(assetUrl('/data/regional-summary/pattern-ec-series-7d.json'), {
-      signal: controller.signal,
-    })
-      .then((response) => response.json() as Promise<EventSeriesDataset>)
-      .then(setEventSeries)
-      .catch(() => setEventSeries({}))
-    return () => controller.abort()
-  }, [])
-
-  const selectedEvidence = activePattern ? evidence?.patterns[activePattern.id] : undefined
-  const selectedSeries = activePattern ? eventSeries[activePattern.id] : undefined
-  const defaultMapStations = useMemo(
-    () =>
-      events
-        .map((event) => evidence?.patterns[event.id]?.stationEvidence.stations)
-        .find((stations) => stations?.length) ?? [],
-    [events, evidence],
-  )
-  const mapStations = selectedEvidence?.stationEvidence.stations.length
-    ? selectedEvidence.stationEvidence.stations
-    : defaultMapStations
 
   return (
     <Box
@@ -214,7 +123,7 @@ export default function RegionalPatternsPage({
               mt: 0.5,
             }}
           >
-            {activePlace.name}
+            {place.name}
           </Typography>
           <Typography sx={{ ...regionalSummaryDetailTypography.lead, color: 'base.100' }}>
             <Box component="span" sx={{ color: 'primary.main', fontWeight: 800 }}>
@@ -245,126 +154,185 @@ export default function RegionalPatternsPage({
 
       <RegionalPatternsTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
 
-      <Box
-        component="main"
-        sx={{
-          ...regionalSummaryDetailGrid.detail,
-          width: '90dvw',
-          mx: 'auto',
-          overflow: 'hidden',
-          py: '1.5dvh',
-        }}
-      >
-        <Box data-tour="regional-pattern-timeline" sx={regionalSummaryDetailGrid.timeline}>
-          <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
-            Salinity Pattern Timeline
-          </Typography>
-          <Box sx={{ minHeight: 0 }}>
-            <Timeline
-              scenarioSlug={scenario.slug}
-              events={events}
-              selectedPattern={activePattern}
-              onSelect={(pattern) => {
-                setSelectedPattern(pattern)
-                setSelectedPatternPlaceId(activePlace.id)
+      <RegionalPatternEvidence
+        scenarioSlug={scenario.slug}
+        scenarioTitle={scenario.title}
+        place={place}
+        places={places}
+        onPlaceChange={onPlaceChange}
+      />
+    </Box>
+  )
+}
+
+/** Salinity Pattern Timeline, its evidence workspace, and the region comparison rows. */
+function RegionalPatternEvidence({
+  scenarioSlug,
+  scenarioTitle,
+  place,
+  places,
+  onPlaceChange,
+}: {
+  scenarioSlug: string
+  scenarioTitle: string
+  place: RegionalPlace
+  places: RegionalPlace[]
+  onPlaceChange: (place: RegionalPlace) => void
+}) {
+  const evidence = usePatternEvidence()
+  const [eventSeries, setEventSeries] = useState<EventSeriesDataset>({})
+  const activePlace = place
+  const [selectedPattern, setSelectedPattern] = useState<RegionalPattern | null>(null)
+  const [selectedPatternPlaceId, setSelectedPatternPlaceId] = useState<string | null>(null)
+  const [highlightedStationId, setHighlightedStationId] = useState<number | null>(null)
+  const events = useMemo(() => datedEvents(activePlace), [activePlace])
+  const activePattern = selectedPatternPlaceId === activePlace.id ? selectedPattern : null
+  const grid = regionalSummaryDetailGrid
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetch(assetUrl('/data/regional-summary/pattern-ec-series-7d.json'), {
+      signal: controller.signal,
+    })
+      .then((response) => response.json() as Promise<EventSeriesDataset>)
+      .then(setEventSeries)
+      .catch(() => setEventSeries({}))
+    return () => controller.abort()
+  }, [])
+
+  const selectedEvidence = activePattern ? evidence?.patterns[activePattern.id] : undefined
+  const selectedSeries = activePattern ? eventSeries[activePattern.id] : undefined
+  const defaultMapStations = useMemo(
+    () =>
+      events
+        .map((event) => evidence?.patterns[event.id]?.stationEvidence.stations)
+        .find((stations) => stations?.length) ?? [],
+    [events, evidence],
+  )
+  const mapStations = selectedEvidence?.stationEvidence.stations.length
+    ? selectedEvidence.stationEvidence.stations
+    : defaultMapStations
+
+  return (
+    <Box
+      component="main"
+      sx={{
+        ...regionalSummaryDetailGrid.detail,
+        width: '90dvw',
+        mx: 'auto',
+        overflow: 'hidden',
+        py: '1.5dvh',
+      }}
+    >
+      <Box data-tour="regional-pattern-timeline" sx={regionalSummaryDetailGrid.timeline}>
+        <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
+          Salinity Pattern Timeline
+        </Typography>
+        <Box sx={{ minHeight: 0 }}>
+          <Timeline
+            scenarioSlug={scenarioSlug}
+            events={events}
+            selectedPattern={activePattern}
+            onSelect={(pattern) => {
+              setSelectedPattern(pattern)
+              setSelectedPatternPlaceId(activePlace.id)
+            }}
+          />
+        </Box>
+      </Box>
+
+      <Box sx={grid.workspace}>
+        <Box data-tour="regional-pattern-map" sx={regionalSummaryDetailGrid.map}>
+          <EvidencePanel title="Stations within the Region">
+            <StationMap
+              key={activePlace.id}
+              place={activePlace}
+              stations={mapStations}
+              selectedDirection={activePattern?.direction ?? null}
+              highlightedStationId={highlightedStationId}
+              onHighlightStation={setHighlightedStationId}
+            />
+          </EvidencePanel>
+        </Box>
+
+        <Box data-tour="regional-pattern-details" sx={grid.patternDetails}>
+          {activePattern ? (
+            <>
+              <Box sx={grid.charts}>
+                <EvidencePanel title="Regional Salinity Change Over Time">
+                  {selectedSeries ? (
+                    <RegionalEcChart
+                      key={activePattern.id}
+                      pattern={activePattern}
+                      series={selectedSeries}
+                    />
+                  ) : (
+                    <EmptyEvidence text="Regional EC series unavailable." />
+                  )}
+                </EvidencePanel>
+                <EvidencePanel title="Salinity Deviation across Stations">
+                  {selectedEvidence?.stationEvidence.stations.length ? (
+                    <StationDistribution
+                      key={activePattern.id}
+                      stations={selectedEvidence.stationEvidence.stations}
+                      direction={activePattern.direction}
+                      highlightedStationId={highlightedStationId}
+                      onHighlightStation={setHighlightedStationId}
+                    />
+                  ) : (
+                    <EmptyEvidence text="Station evidence unavailable." />
+                  )}
+                </EvidencePanel>
+              </Box>
+              <Box sx={regionalSummaryDetailGrid.interpretation}>
+                <InterpretationCard
+                  key={activePattern.id}
+                  scenarioTitle={scenarioTitle}
+                  placeName={activePlace.name}
+                  pattern={activePattern}
+                  evidence={selectedEvidence}
+                />
+              </Box>
+            </>
+          ) : (
+            <Box
+              sx={{
+                gridRow: '1 / -1',
+                display: 'grid',
+                placeItems: 'center',
+                bgcolor: 'base.800',
+                px: regionalSummarySizing.surfacePadding,
+              }}
+            >
+              <Typography sx={{ ...regionalSummaryDetailTypography.lead, color: 'base.200' }}>
+                Select a pattern to see its details
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </Box>
+
+      <Box data-tour="regional-pattern-regions" sx={grid.regions}>
+        <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
+          Explore Other Regions
+        </Typography>
+        <Box sx={{ display: 'grid', gap: 0.25 }}>
+          {places.map((candidate) => (
+            <ComparisonRow
+              key={candidate.id}
+              scenarioSlug={scenarioSlug}
+              place={candidate}
+              active={candidate.id === activePlace.id}
+              onSelect={() => {
+                if (candidate.id !== activePlace.id) {
+                  onPlaceChange(candidate)
+                }
+                setSelectedPattern(null)
+                setSelectedPatternPlaceId(null)
+                setHighlightedStationId(null)
               }}
             />
-          </Box>
-        </Box>
-
-        <Box sx={regionalSummaryDetailGrid.workspace}>
-          <Box data-tour="regional-pattern-map" sx={regionalSummaryDetailGrid.map}>
-            <EvidencePanel title="Stations within the Region">
-              <StationMap
-                key={activePlace.id}
-                place={activePlace}
-                stations={mapStations}
-                selectedDirection={activePattern?.direction ?? null}
-                highlightedStationId={highlightedStationId}
-                onHighlightStation={setHighlightedStationId}
-              />
-            </EvidencePanel>
-          </Box>
-
-          <Box data-tour="regional-pattern-details" sx={regionalSummaryDetailGrid.patternDetails}>
-            {activePattern ? (
-              <>
-                <Box sx={regionalSummaryDetailGrid.charts}>
-                  <EvidencePanel title="Regional Salinity Change Over Time">
-                    {selectedSeries ? (
-                      <RegionalEcChart
-                        key={activePattern.id}
-                        pattern={activePattern}
-                        series={selectedSeries}
-                      />
-                    ) : (
-                      <EmptyEvidence text="Regional EC series unavailable." />
-                    )}
-                  </EvidencePanel>
-                  <EvidencePanel title="Salinity Deviation across Stations">
-                    {selectedEvidence?.stationEvidence.stations.length ? (
-                      <StationDistribution
-                        key={activePattern.id}
-                        stations={selectedEvidence.stationEvidence.stations}
-                        direction={activePattern.direction}
-                        highlightedStationId={highlightedStationId}
-                        onHighlightStation={setHighlightedStationId}
-                      />
-                    ) : (
-                      <EmptyEvidence text="Station evidence unavailable." />
-                    )}
-                  </EvidencePanel>
-                </Box>
-                <Box sx={regionalSummaryDetailGrid.interpretation}>
-                  <InterpretationCard
-                    key={activePattern.id}
-                    scenarioTitle={scenario.title}
-                    placeName={activePlace.name}
-                    pattern={activePattern}
-                    evidence={selectedEvidence}
-                  />
-                </Box>
-              </>
-            ) : (
-              <Box
-                sx={{
-                  gridRow: '1 / -1',
-                  display: 'grid',
-                  placeItems: 'center',
-                  bgcolor: 'base.800',
-                  px: regionalSummarySizing.surfacePadding,
-                }}
-              >
-                <Typography sx={{ ...regionalSummaryDetailTypography.lead, color: 'base.200' }}>
-                  Select a pattern to see its details
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Box>
-
-        <Box data-tour="regional-pattern-regions" sx={regionalSummaryDetailGrid.regions}>
-          <Typography sx={{ ...regionalSummaryDetailTypography.sectionTitle, mb: 0.5 }}>
-            Explore Other Regions
-          </Typography>
-          <Box sx={{ display: 'grid', gap: 0.25 }}>
-            {places.map((candidate) => (
-              <ComparisonRow
-                key={candidate.id}
-                scenarioSlug={scenario.slug}
-                place={candidate}
-                active={candidate.id === activePlace.id}
-                onSelect={() => {
-                  if (candidate.id !== activePlace.id) {
-                    onPlaceChange(candidate)
-                  }
-                  setSelectedPattern(null)
-                  setSelectedPatternPlaceId(null)
-                  setHighlightedStationId(null)
-                }}
-              />
-            ))}
-          </Box>
+          ))}
         </Box>
       </Box>
     </Box>
@@ -996,6 +964,8 @@ function Timeline({
               color: 'base.100',
               mt: 0.5,
               whiteSpace: 'nowrap',
+              // Quarter labels collide on phones; keep every other one.
+              display: { xs: index % 2 ? 'none' : 'block', sm: 'block' },
             }}
           >
             {label}
@@ -1045,7 +1015,7 @@ function Timeline({
   )
 }
 
-function InterpretationCard({
+export function InterpretationCard({
   scenarioTitle,
   placeName,
   pattern,

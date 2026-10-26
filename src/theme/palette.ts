@@ -58,22 +58,24 @@ export const palette = {
     default: 'rgba(155,162,164,0.24)',
     strong: 'rgba(155,162,164,0.40)',
   },
-  // Data-only hues for team identity in charts. Chosen outside the heavily used
+  // Team identity hues. Chosen outside the heavily used
   // brand green / blue-teal-cyan / magenta families and away from the score pair
   // (brand blue = good, accent orange = unacceptable); >= ΔE 15 (OKLab) from those
   // site colors and mutually distinct incl. protan/deutan simulation.
-  dataViz: {
-    // Team palette ("Color"): best-separated set found (teams >= ΔE 24 apart,
+  teams: {
+    // Best-separated set found (teams >= ΔE 24 apart,
     // >= ΔE 19.7 under protan/deutan, >= ΔE 15.8 from the score blue/orange).
-    gold: '#efbd24',
-    orchid: '#f69efe',
-    clay: '#ae6259',
-    cobalt: '#586de3',
+    envJustice: '#f0a8e8',
+    recreation: '#ff7f5c',
+    economy: '#7f86ff',
     // Fifth team (eco-cultural). Clear of the others to normal vision (>= ΔE 15);
     // ΔE ~7 from cobalt/score-blue under protan-deutan, which the per-team icons
     // and always-present labels cover as secondary encoding.
-    violet: '#b255b6',
-    // Single light neutral for every team (9.9:1 on the card surface)
+    ecoCultural: '#ffe6b0',
+    ecology: '#ffb347',
+  },
+  visualization: {
+    // Single light neutral for monochrome chart series (9.9:1 on the card surface).
     neutral: '#c9cecf',
   },
   surface: 'rgba(81,93,97,0.30)',

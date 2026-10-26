@@ -66,8 +66,10 @@ export interface SiteGraphOptions {
   /** Proposed pages and menu shown over the real routes. */
   proposal?: {
     pages: ProposedPage[]
-    menu: { section: string; items: DropdownItem[] }
-    replaced: string[]
+    /** A replacement dropdown for one navbar section. */
+    menu?: { section: string; items: DropdownItem[] }
+    /** Routes the proposal replaces; they leave the map while it is shown. */
+    replaced?: string[]
   }
 }
 
@@ -162,9 +164,10 @@ export function buildSiteGraph(
     })),
   ]
   const hiddenPaths = new Set([...(options.hiddenPaths ?? []), ...(proposal?.replaced ?? [])])
-  const navItems = proposal
+  const menu = proposal?.menu
+  const navItems = menu
     ? declaredNav.map((item) =>
-        item.label === proposal.menu.section ? { ...item, dropdown: proposal.menu.items } : item,
+        item.label === menu.section ? { ...item, dropdown: menu.items } : item,
       )
     : declaredNav
   // A page is still a proposal until AppRouter declares it; a worked example

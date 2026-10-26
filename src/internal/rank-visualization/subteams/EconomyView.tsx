@@ -20,12 +20,13 @@ import { RegionMap } from './RegionMap'
 
 const BASE = 1_107_300_000
 
-/** Everything either source states for the salinity pathway, in dollars per year. */
+/** The salinity pathway's dry-year (2020) farm revenue change, current climate (v16 workbook). */
 const SALINITY = [
-  { label: 'Bolster & Fortify, dry year', value: -34_000 },
-  { label: 'Calling on Reserves, dry year', value: -1_000 },
-  { label: 'Calling on Reserves, wet year', value: 4_000 },
-  { label: 'New Green Watershed, wet year', value: 468_000 },
+  { label: 'A Tunnel, dry year', value: -26_953 },
+  { label: 'Bolster & Fortify, dry year', value: -10_167 },
+  { label: 'Calling on Reserves, dry year', value: 2_880 },
+  { label: 'Eco Machine, dry year', value: 3_534 },
+  { label: 'New Green Watershed, dry year', value: 967 },
 ]
 
 /** The land-use pathway, direct revenue change at each restoration intensity. */
@@ -38,7 +39,7 @@ const LAND_USE = [
 const WIDEST = 504_500_000
 
 const ZONE_KEY = REGION_DATA_KEY.economy ?? {}
-const ZONE_SCENARIOS: ScenarioKey[] = ['ngw', 'em', 'bf', 'cor', 'bau']
+const ZONE_SCENARIOS: ScenarioKey[] = ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau']
 
 const economyScore = (scenario: ScenarioKey) => {
   const cell = valueAt({ criterion: 'economy', scenario, place: ANY, period: ANY })
@@ -94,7 +95,7 @@ export default function EconomyView() {
     >
       <Panel
         title="Two ways a scenario changes farm revenue, drawn to one scale"
-        intro="Saltier irrigation water lowers crop yields: the **salinity pathway**. Restoring farmland to wetland takes it out of production: the **land-use pathway**. Each bar is the **change in annual gross farm revenue** from today’s $1.107 billion, and every bar uses the same axis. The salinity bars are ==too small to see==, which is the point: the largest salinity effect anywhere is **−$34,000** in a dry year, 0.003% of the base and about **one eight-thousandth** of the 50/50 restoration effect."
+        intro="Saltier irrigation water lowers crop yields: the **salinity pathway**. Restoring farmland to wetland takes it out of production: the **land-use pathway**. Each bar is the **change in annual gross farm revenue** from today’s $1.107 billion, and every bar uses the same axis. The salinity bars are ==too small to see==, which is the point: the largest salinity effect anywhere is A Tunnel’s **−$27,000** in a dry year, 0.002% of the base and about **one ten-thousandth** of the 50/50 restoration effect."
       >
         <Box sx={{ display: 'grid', gap: 2 }}>
           <Group title="Salinity pathway">

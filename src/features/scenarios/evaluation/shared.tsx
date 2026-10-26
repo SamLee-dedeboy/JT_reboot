@@ -1,11 +1,14 @@
 // Shared pieces of the evaluation pages: the image hero with breadcrumbs, the
 // team switcher, and the score badge used for baseline-relative team scores.
 import { Box, Breadcrumbs, Container, Stack, Typography } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
+import TeamIcon from '../../../ui/TeamIcon'
 import { assetUrl } from '../../../utils/baseUrl'
 import { evaluationTeams } from '../content'
+import { teamStyle } from '../teamStyle'
 
 export function EvaluationHero({
   image,
@@ -13,13 +16,22 @@ export function EvaluationHero({
   eyebrow,
   title,
   summary,
+  accent,
+  icon,
+  summaryVariant = 'bodyLarge',
   children,
 }: {
   image: string
-  crumbs: Array<{ label: string; to: string }>
-  eyebrow: string
+  crumbs?: Array<{ label: string; to: string }>
+  eyebrow?: string
   title: string
   summary: string
+  /** Team color for the eyebrow and title; defaults to the theme's own colors. */
+  accent?: string
+  /** Shown before the title, e.g. the team icon. */
+  icon?: ReactNode
+  /** Type style for the summary; the methodology pages keep body copy at body1. */
+  summaryVariant?: 'bodyLarge' | 'body1'
   children?: ReactNode
 }) {
   return (
@@ -43,28 +55,38 @@ export function EvaluationHero({
     >
       <Container maxWidth="lg">
         <Stack spacing={jtSpacing.gap.lg} sx={{ maxWidth: '78ch' }}>
-          <Breadcrumbs aria-label="Breadcrumb" sx={{ color: 'base.200' }}>
-            {crumbs.map((crumb) => (
-              <Typography
-                key={crumb.to}
-                component={Link}
-                to={crumb.to}
-                variant="meta"
-                sx={{
-                  color: 'base.100',
-                  textDecoration: 'none',
-                  '&:hover, &:focus-visible': { color: 'primary.main' },
-                }}
-              >
-                {crumb.label}
-              </Typography>
-            ))}
-          </Breadcrumbs>
-          <Typography variant="eyebrow" component="p">
-            {eyebrow}
+          {crumbs && (
+            <Breadcrumbs aria-label="Breadcrumb" sx={{ color: 'base.200' }}>
+              {crumbs.map((crumb) => (
+                <Typography
+                  key={crumb.to}
+                  component={Link}
+                  to={crumb.to}
+                  variant="meta"
+                  sx={{
+                    color: 'base.100',
+                    textDecoration: 'none',
+                    '&:hover, &:focus-visible': { color: 'primary.main' },
+                  }}
+                >
+                  {crumb.label}
+                </Typography>
+              ))}
+            </Breadcrumbs>
+          )}
+          {eyebrow && (
+            <Typography variant="eyebrow" component="p" sx={{ color: accent }}>
+              {eyebrow}
+            </Typography>
+          )}
+          <Typography
+            variant="h1"
+            sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.md, color: accent }}
+          >
+            {icon}
+            {title}
           </Typography>
-          <Typography variant="h1">{title}</Typography>
-          <Typography variant="bodyLarge" sx={{ color: 'base.50' }}>
+          <Typography variant={summaryVariant} sx={{ color: 'base.50' }}>
             {summary}
           </Typography>
           {children}
@@ -113,6 +135,7 @@ export function TeamTabs({
         <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ flex: '0 0 auto' }}>
           {evaluationTeams.map((team) => {
             const active = team.id === activeTeamId
+            const { color, icon } = teamStyle[team.id]
             return (
               <Box
                 key={team.id}
@@ -126,21 +149,15 @@ export function TeamTabs({
                   px: jtSpacing.component.sm,
                   py: jtSpacing.component.sm,
                   borderRadius: 1,
-                  color: active ? 'common.black' : 'common.white',
-                  bgcolor: active ? 'primary.main' : 'transparent',
+                  color: active ? 'common.black' : color,
+                  bgcolor: active ? color : 'transparent',
                   '&:hover, &:focus-visible': {
-                    bgcolor: active ? 'primary.main' : 'translucent.primaryGreen',
+                    bgcolor: active ? color : alpha(color, 0.16),
                     outline: 'none',
                   },
                 }}
               >
-                <Typography
-                  component="span"
-                  variant="numberBadge"
-                  sx={{ color: active ? 'common.black' : 'primary.main' }}
-                >
-                  {team.number}
-                </Typography>
+                <TeamIcon team={icon} size={18} />
                 <Typography component="span" variant="button" sx={{ whiteSpace: 'nowrap' }}>
                   {team.label}
                 </Typography>
@@ -196,17 +213,26 @@ export function SectionHeading({
   number,
   title,
   id,
+  accent,
+  variant = 'h2',
 }: {
-  number: string
+  /** Section number shown above the title; omitted on pages that list sections in a rail. */
+  number?: string
   title: string
   id: string
+  /** Team color for the number. */
+  accent?: string
+  /** Type style for the title; it stays an h2 element either way. */
+  variant?: 'h2' | 'h3'
 }) {
   return (
     <Stack spacing={jtSpacing.gap.xs} sx={{ mb: jtSpacing.gap.lg }}>
-      <Typography variant="numberArticle" component="p" aria-hidden="true">
-        {number}
-      </Typography>
-      <Typography variant="h2" id={id}>
+      {number && (
+        <Typography variant="numberArticle" component="p" aria-hidden="true" sx={{ color: accent }}>
+          {number}
+        </Typography>
+      )}
+      <Typography variant={variant} component="h2" id={id}>
         {title}
       </Typography>
     </Stack>

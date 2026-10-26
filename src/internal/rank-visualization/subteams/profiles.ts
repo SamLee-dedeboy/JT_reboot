@@ -275,7 +275,7 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       'What happens to the Delta’s economy when its water gets saltier or farmland changes to another use? The team tracked differences in **gross revenue, employment and value added** from the Business as Usual baseline.',
     measured: 'Differences from today’s farm economy',
     measuredNote:
-      'The team measured ==3 metrics==, gross revenue, jobs and value added, across **5 geographies**, the Delta as a whole and four zones, in **2 water years**; for New Green Watershed it also studied three restoration intensities. Every result is a **difference from today**: the Delta’s farm economy earns about **$1.107 billion a year** under Business as Usual, and each number says how far a scenario moves it, in dollars or jobs.',
+      'The team measured ==3 metrics==, gross revenue, jobs and value added, across **5 geographies**, the Delta as a whole and four zones, in **2 water years** and **2 climates** (today and 2 ft of sea level rise); for New Green Watershed it also studied three restoration intensities. Every result is a **difference from today**: the Delta’s farm economy earns about **$1.107 billion a year** under Business as Usual, and each number says how far a scenario moves it, in dollars or jobs.',
     reaches: 'one number',
     reachesNote:
       '==One number per scenario==: its revenue change on **whichever of the two pathways dominates** that scenario. The other pathway and the other metrics do not enter it.',
@@ -291,15 +291,15 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       ],
       order: 'West to south',
     },
-    rule: 'The team scored each scenario on **“whichever effect actually dominates for it, rather than forcing every scenario onto one percent-based scale”**. The report identifies the main effect in each scenario: **salinity** for Bolster & Fortify and Calling on Reserves, and **land conversion** for the other two.',
-    ruleWhere: 'Sept report, Comparative Scenario Performance Ranking',
-    verdict: { ngw: -4, em: 0, bf: -1, cor: 0, tunnel: null, bau: 0 },
+    rule: 'The team scored each scenario on **“whichever effect actually dominates for it, rather than forcing every scenario onto one percent-based scale”**. The report identifies the main effect in each scenario: **salinity** for Bolster & Fortify, Calling on Reserves and A Tunnel, and **land conversion** for Eco Machine and New Green Watershed. The scores are the same with 2 ft of sea level rise.',
+    ruleWhere: 'v16 report (25 Oct 2026), Comparative Scenario Performance Ranking',
+    verdict: { ngw: -4, em: 0, bf: -1, cor: 0, tunnel: -1, bau: 0 },
     finding:
       'Salinity changes gross revenue by ==less than 0.01%== of a $1.107B farm economy in every scenario modelled, so **land conversion determines the criterion**.',
     findings: [
       {
-        label: 'Three futures the farm economy barely notices',
-        text: 'Doing nothing, changing reservoir operations or fortifying levees: for these three “the Delta’s farm economy barely notices the difference, in dollars, jobs, or regional value added, in either a wet or dry year”. The team calls this ==“a genuinely reassuring finding”==.',
+        label: 'Four futures the farm economy barely notices',
+        text: 'Doing nothing, fortifying levees, calling on reserves and building a tunnel: for these four “the Delta’s farm economy barely notices the difference, in dollars, jobs, or regional value added, in either a wet or dry year”, and that holds with 2 ft of sea level rise. A Tunnel moves dry-year salinity from the western to the central Delta and costs about $27,000 a year, the largest salinity loss. The team calls this ==“a genuinely reassuring finding”==.',
       },
       {
         label: 'New Green Watershed',

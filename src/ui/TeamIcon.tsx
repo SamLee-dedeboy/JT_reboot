@@ -3,7 +3,8 @@
 // text color, so a team's icon inherits that team's color wherever it is used.
 import { Box } from '@mui/material'
 import type { ReactNode } from 'react'
-import type { TeamKey } from '../data'
+/** The five evaluation subteams, keyed as in the ranking data. */
+export type TeamKey = 'ecology' | 'recreation' | 'environmentalJustice' | 'economy' | 'ecoCultural'
 
 /** Marks the criterion each icon stands for, so the imagery stays tied to the metric. */
 const ICONS: Record<TeamKey, { title: string; art: ReactNode }> = {

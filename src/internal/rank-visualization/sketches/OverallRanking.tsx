@@ -2,6 +2,11 @@
 // on a full −5…+5 axis. Each scenario unfolds into its four team ballots on the
 // same axis: the dashed overall line runs on through them (the average) and
 // dashed grey guides mark the lowest and highest ballot (the spread).
+//
+// The ballots are the breakout table's team scores (../breakout/teamScores.ts), so
+// this chart and each team's table share one number per scenario. A score the
+// table shows as "awaiting subteam" is not a ballot here either. Rows keep the
+// table's column order by default; Rank order sorts them by overall score.
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, ButtonBase, Switch, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
@@ -12,12 +17,40 @@ import SketchCard from '../components/SketchCard'
 import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, COLUMN_GAP, ROW_GAP, TRACK_HEIGHT, trackColumns } from '../components/layout'
 import { BallotPip, RankNumber, ScaleLabels } from '../components/ChartBits'
-import TeamIcon from '../components/TeamIcon'
-import { RANKED, TEAMS, fmtScore, scored, toPct } from '../data'
+import TeamIcon from '../../../ui/TeamIcon'
+import { SCENARIOS, TEAMS, fmtScore, scored, toPct } from '../data'
 import type { Score } from '../data'
-import type { ScenarioStats } from '../data'
+import { SCENARIO_KEYS } from '../drilldown/model'
+import type { ScenarioKey } from '../drilldown/model'
+import { publishedTeamScore } from '../breakout/teamScores'
+import { BREAKOUT_SCENARIOS } from '../breakout/useBreakout'
+import { UI } from '../breakout/labels'
 
-type RankedScenario = ScenarioStats & { rank: number }
+interface RankedScenario {
+  key: ScenarioKey
+  name: string
+  /** One published score per team, in TEAMS order; null while awaiting the subteam. */
+  scores: Score[]
+  /** Mean of the published scores. */
+  avg: number
+  rank: number
+}
+
+/** Every scenario with the breakout table's scores, in the table's column order. */
+const SCENARIO_ROWS: RankedScenario[] = (() => {
+  const rows = SCENARIOS.map((scenario, i) => {
+    const key = SCENARIO_KEYS[i]
+    const scores = TEAMS.map((team) => publishedTeamScore(team.key, key))
+    const values = scored(scores)
+    const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0
+    return { key, name: scenario.name, scores, avg, rank: 0 }
+  })
+  const byScore = [...rows].sort((a, b) => b.avg - a.avg)
+  for (const row of rows) row.rank = byScore.indexOf(row) + 1
+  return BREAKOUT_SCENARIOS.map((key) => rows.find((row) => row.key === key)!)
+})()
+
+const RANKED_ROWS = [...SCENARIO_ROWS].sort((a, b) => a.rank - b.rank)
 
 const rowColumns = trackColumns()
 /** Ballot sub-rows are shorter than scenario rows so the breakdown reads as nested. */
@@ -27,6 +60,9 @@ const BALLOT_INDENT = 32
 /** Width of the ballot-score slot at the end of the label column (fits "+5" / "−4"). */
 const BALLOT_SCORE_WIDTH = 24
 const LONGEST_TEAM_NAME = TEAMS.map((t) => t.name).reduce((a, b) => (b.length > a.length ? b : a))
+
+/** The breakout table's word for a score the subteam has not published. */
+const AWAITING = UI.awaiting
 
 const barColor = (theme: Theme, score: number) =>
   score >= 0 ? theme.chart.voting.above : theme.chart.voting.below
@@ -61,6 +97,7 @@ function SpreadBand({
   variant: 'row' | 'column'
 }) {
   const values = scored(scores)
+  if (values.length < 2) return null
   const minPos = toPct(Math.min(...values))
   const maxPos = toPct(Math.max(...values))
   if (maxPos === minPos) return null
@@ -94,7 +131,7 @@ function SpreadBand({
 /** Scenario track: overall bar from the zero line on a full −5…+5 axis. */
 function OverallTrack({ scenario, showSpread }: { scenario: RankedScenario; showSpread: boolean }) {
   const avgPos = toPct(scenario.avg)
-  const isBaseline = scenario.scores.every((score) => score === 0)
+  const isBaseline = scenario.key === 'bau'
   return (
     <Box sx={{ position: 'relative', height: TRACK_HEIGHT, '& > *': { position: 'absolute' } }}>
       {/* Full −5…+5 axis with end ticks, so every row shows the whole range */}
@@ -167,7 +204,6 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
     >
       {scenario.scores.map((score, i) => {
         const team = teams[i]
-        const isProvisional = scenario.provisional[i]
         const pos = score === null ? 50 : toPct(score)
         return (
           <Box
@@ -194,11 +230,7 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
                   color={team.color}
                   score={score}
                   size={10}
-                  title={`${team.name}: ${
-                    score === null
-                      ? 'not scored yet'
-                      : `${fmtScore(score)}${isProvisional ? ' (inferred, not the subteam’s own number)' : ''}`
-                  }`}
+                  title={`${team.name}: ${score === null ? AWAITING : fmtScore(score)}`}
                 />
               </Box>
               <Box sx={{ display: 'flex', color: team.color }}>
@@ -223,7 +255,7 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
                   color: 'base.100',
                 }}
               >
-                {score === null ? '—' : `${fmtScore(score)}${isProvisional ? '*' : ''}`}
+                {score === null ? '—' : fmtScore(score)}
               </Typography>
             </Box>
 
@@ -246,13 +278,24 @@ function Breakdown({ scenario, showSpread }: { scenario: RankedScenario; showSpr
                     borderRadius: 0.5,
                     left: `${Math.min(50, pos)}%`,
                     width: `${Math.abs(pos - 50)}%`,
-                    // Provisional: outline only, so it reads as a placeholder
-                    bgcolor: isProvisional ? 'transparent' : team.color,
-                    border: isProvisional ? 1 : 0,
-                    borderStyle: 'dashed',
-                    borderColor: team.color,
+                    bgcolor: team.color,
                   }}
                 />
+              )}
+              {/* No ballot yet: the table's own words, just past the zero line */}
+              {score === null && (
+                <Typography
+                  variant="chartAxis"
+                  sx={{
+                    left: 'calc(50% + 8px)',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'base.300',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {AWAITING}
+                </Typography>
               )}
               {/* Dashed overall line continues from the bar tip (the average of these
                   ballots), colored by the scenario's sign like its bar and score */}
@@ -283,18 +326,20 @@ function ScenarioRow({
   open,
   onToggle,
   showSpread,
+  scoreLabel,
 }: {
   scenario: RankedScenario
   open: boolean
   onToggle: () => void
   showSpread: boolean
+  scoreLabel: string
 }) {
   return (
     <Box>
       <ButtonBase
         onClick={onToggle}
         aria-expanded={open}
-        aria-label={`${scenario.name}: ${open ? 'hide' : 'show'} the four ballots`}
+        aria-label={`${scenario.name}: ${open ? 'hide' : 'show'} the ${scoreLabel.toLowerCase()}`}
         sx={(theme) => ({
           width: '100%',
           display: 'grid',
@@ -388,12 +433,36 @@ function TierScale({ label, color }: { label: string; color: (theme: Theme) => s
   )
 }
 
-export default function OverallRanking() {
+/**
+ * Consecutive rows on the same side of today, one tier rule each. In rank order
+ * that is one run per tier; in the table's order a tier can come back further down.
+ */
+function tierRuns(rows: RankedScenario[]) {
+  const runs: { tier: (typeof TIERS)[number]; rows: RankedScenario[] }[] = []
+  for (const row of rows) {
+    const key = tierOf(row.avg)
+    const last = runs[runs.length - 1]
+    if (last?.tier.key === key) last.rows.push(row)
+    else runs.push({ tier: TIERS.find((t) => t.key === key)!, rows: [row] })
+  }
+  return runs
+}
+
+export default function OverallRanking({
+  rankOrderLocked = false,
+  scoreLabel = 'Ballots',
+}: {
+  rankOrderLocked?: boolean
+  scoreLabel?: string
+}) {
   // Spread (lowest-to-highest ballot) is off by default and toggled from the chart header.
   const [showSpread, setShowSpread] = useState(false)
+  // Off: the breakout table's column order, so the two views line up. On: best first.
+  const [rankOrder, setRankOrder] = useState(rankOrderLocked)
+  const rows = rankOrder ? RANKED_ROWS : SCENARIO_ROWS
   // Every breakdown starts open; each row then opens and closes on its own.
-  const [open, setOpen] = useState<Set<string>>(() => new Set(RANKED.map((s) => s.name)))
-  const allOpen = open.size === RANKED.length
+  const [open, setOpen] = useState<Set<string>>(() => new Set(SCENARIO_ROWS.map((s) => s.name)))
+  const allOpen = open.size === SCENARIO_ROWS.length
   const toggle = (name: string) =>
     setOpen((current) => {
       const next = new Set(current)
@@ -425,10 +494,12 @@ export default function OverallRanking() {
                 size="small"
                 checked={allOpen}
                 onChange={(event) =>
-                  setOpen(event.target.checked ? new Set(RANKED.map((s) => s.name)) : new Set())
+                  setOpen(
+                    event.target.checked ? new Set(SCENARIO_ROWS.map((s) => s.name)) : new Set(),
+                  )
                 }
               />
-              <Typography variant="chartColumnHead">Ballots</Typography>
+              <Typography variant="chartColumnHead">{scoreLabel}</Typography>
             </Box>
             <Box
               component="label"
@@ -441,6 +512,19 @@ export default function OverallRanking() {
               />
               <Typography variant="chartColumnHead">Range</Typography>
             </Box>
+            {!rankOrderLocked && (
+              <Box
+                component="label"
+                sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, cursor: 'pointer' }}
+              >
+                <Switch
+                  size="small"
+                  checked={rankOrder}
+                  onChange={(event) => setRankOrder(event.target.checked)}
+                />
+                <Typography variant="chartColumnHead">Rank order</Typography>
+              </Box>
+            )}
           </Box>
           <ScaleLabels labels={['−5', '0', '5']} />
           <Typography variant="chartColumnHead" sx={{ textAlign: 'right' }}>
@@ -449,14 +533,12 @@ export default function OverallRanking() {
         </Box>
       </Box>
 
-      {/* Rows are ranked, so each tier is one contiguous group */}
+      {/* Each run of rows on the same side of today shares one tier rule */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {TIERS.map((tier) => {
-          const members = RANKED.filter((s) => tierOf(s.avg) === tier.key)
-          if (members.length === 0) return null
+        {tierRuns(rows).map(({ tier, rows: members }) => {
           return (
             <Box
-              key={tier.key}
+              key={members[0].key}
               sx={{ display: 'grid', gridTemplateColumns: withTierAxis, columnGap: 1 }}
             >
               <TierScale label={tier.label} color={tier.color} />
@@ -468,6 +550,7 @@ export default function OverallRanking() {
                     open={open.has(scenario.name)}
                     onToggle={() => toggle(scenario.name)}
                     showSpread={showSpread}
+                    scoreLabel={scoreLabel}
                   />
                 ))}
               </Box>

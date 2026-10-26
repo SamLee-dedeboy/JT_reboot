@@ -185,18 +185,41 @@ function reachableFrom(root: string, file: string, source: string, names: string
 const LINK_PATTERN =
   /(?:\b(?:to|href)\s*[:=]\s*\{?\s*|\bnavigate\(\s*)(?:'([^'\n]*)'|"([^"\n]*)"|`([^`]*)`)/g
 
-function linksIn(source: string, file: string, from: string): SiteMapLink[] {
+// Path helpers such as `export const methodologyPath = (teamId: string) => `/scenarios/...``.
+const HELPER_PATTERN = /export const (\w+) = \([^)]*\)(?:\s*:\s*\w+)?\s*=>\s*`(\/[^`]*)`/g
+
+type PathHelpers = Map<string, string>
+
+function helpersIn(source: string, helpers: PathHelpers) {
+  for (const [, name, template] of source.matchAll(HELPER_PATTERN)) helpers.set(name, template)
+}
+
+const toPattern = (raw: string) =>
+  raw.replace(/\$\{[^}]*\}/g, ':param').replace(/(?::param)+/g, ':param')
+
+function linksIn(source: string, file: string, from: string, helpers: PathHelpers): SiteMapLink[] {
   const links: SiteMapLink[] = []
+  const lineAt = (index: number | undefined) => source.slice(0, index).split('\n').length
   for (const match of source.matchAll(LINK_PATTERN)) {
     const template = match[3]
     const raw = match[1] ?? match[2] ?? template ?? ''
     if (!raw.startsWith('/') || raw.startsWith('//')) continue
-    const to = raw.replace(/\$\{[^}]*\}/g, ':param').replace(/(?::param)+/g, ':param')
+    const to = toPattern(raw)
     const pathname = to.split(/[?#]/)[0]
     // Asset URLs such as /exports/report.pdf are not page routes.
     if (/\.[a-z0-9]+$/i.test(pathname)) continue
-    const line = source.slice(0, match.index).split('\n').length
-    links.push({ from, to, file, line, dynamic: to !== raw })
+    links.push({ from, to, file, line: lineAt(match.index), dynamic: to !== raw })
+  }
+  // Links built by a path helper: `to={methodologyPath(id)}`, `hrefFor={methodologyPath}`,
+  // or `hrefFor={(id) => teamResultsPath(slug, id)}`.
+  for (const [name, template] of helpers) {
+    const call = new RegExp(
+      `\\b(?:to|href|hrefFor)\\s*[:=]\\s*\\{?\\s*(?:\\([^)]*\\)\\s*=>\\s*)?${name}\\b`,
+      'g',
+    )
+    for (const match of source.matchAll(call)) {
+      links.push({ from, to: toPattern(template), file, line: lineAt(match.index), dynamic: true })
+    }
   }
   return links
 }
@@ -205,6 +228,9 @@ export function buildSiteMap(root: string) {
   const routes = parseRoutes(root, ROUTER_FILE, '', null)
   const entryFiles = new Set(routes.map((route) => route.file).filter(Boolean))
   const links: SiteMapLink[] = []
+  const helpers: PathHelpers = new Map()
+  // Each route's own sources; links are read once every path helper is known.
+  const scanned: { from: string; file: string; source: string }[] = []
 
   for (const route of routes) {
     if (!route.file) continue
@@ -220,10 +246,12 @@ export function buildSiteMap(root: string) {
       visited.add(key)
       const source = read(root, file)
       const { ownBody, next } = reachableFrom(root, file, source, names)
-      if (ownBody) links.push(...linksIn(source, file, route.path))
+      helpersIn(source, helpers)
+      if (ownBody) scanned.push({ from: route.path, file, source })
       queue.push(...next)
     }
   }
+  for (const { from, file, source } of scanned) links.push(...linksIn(source, file, from, helpers))
 
   // A nested router's own links stay with the parent route; drop exact duplicates.
   const unique = new Map(

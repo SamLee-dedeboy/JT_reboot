@@ -2,7 +2,7 @@ import PlaceIcon from '@mui/icons-material/Place'
 import { Box, Typography } from '@mui/material'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useId } from 'react'
-import { regionalSummarySizing, regionalSummaryTypography } from './regionalSummaryStyles'
+import { regionalMapScales, type RegionalMapScale } from './regionalSummaryStyles'
 
 interface RegionalPlaceMarkerProps {
   color: string
@@ -11,6 +11,7 @@ interface RegionalPlaceMarkerProps {
   name: string
   selected: boolean
   onSelect: () => void
+  scale?: RegionalMapScale
 }
 
 export default function RegionalPlaceMarker({
@@ -20,9 +21,11 @@ export default function RegionalPlaceMarker({
   name,
   selected,
   onSelect,
+  scale = 'touch',
 }: RegionalPlaceMarkerProps) {
   const reduceMotion = useReducedMotion()
   const gradientId = useId().replaceAll(':', '')
+  const sizing = regionalMapScales[scale]
 
   return (
     <Box
@@ -49,8 +52,8 @@ export default function RegionalPlaceMarker({
         color: 'common.white',
         cursor: 'pointer',
         display: 'flex',
-        minHeight: regionalSummarySizing.touchTarget,
-        minWidth: regionalSummarySizing.touchTarget,
+        minHeight: sizing.touchTarget,
+        minWidth: sizing.touchTarget,
         p: 0,
         transformOrigin: '50% 100%',
         userSelect: 'none',
@@ -65,8 +68,8 @@ export default function RegionalPlaceMarker({
       <Box
         sx={{
           position: 'relative',
-          width: regionalSummarySizing.markerPinWidth,
-          height: regionalSummarySizing.markerPinHeight,
+          width: sizing.markerPinWidth,
+          height: sizing.markerPinHeight,
           flex: '0 0 auto',
           zIndex: 1,
         }}
@@ -77,8 +80,8 @@ export default function RegionalPlaceMarker({
           aria-hidden="true"
           sx={{
             display: 'block',
-            width: regionalSummarySizing.markerPinWidth,
-            height: regionalSummarySizing.markerPinHeight,
+            width: sizing.markerPinWidth,
+            height: sizing.markerPinHeight,
           }}
         >
           {secondaryColor ? (
@@ -103,7 +106,7 @@ export default function RegionalPlaceMarker({
           aria-hidden="true"
           sx={{
             color,
-            fontSize: regionalSummarySizing.markerIconSize,
+            fontSize: sizing.markerIconSize,
             position: 'absolute',
             left: '42.9%',
             top: '31.1%',
@@ -114,24 +117,22 @@ export default function RegionalPlaceMarker({
       <Typography
         component="span"
         sx={{
-          ...regionalSummaryTypography.markerLabel,
+          ...sizing.markerLabel,
           bgcolor: 'base.900',
           backgroundImage: secondaryColor
             ? `linear-gradient(90deg, ${color} 0 50%, ${secondaryColor} 50% 100%)`
             : `linear-gradient(${color}, ${color})`,
           backgroundPosition: 'bottom',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: `100% ${regionalSummarySizing.markerAccent}`,
+          backgroundSize: `100% ${sizing.markerAccent}`,
           boxShadow: selected
-            ? `0 0 0 3px #f2f0ef, 0 0 24px ${color}`
+            ? `0 0 0 ${scale === 'web' ? 2 : 3}px #f2f0ef, 0 0 ${scale === 'web' ? 14 : 24}px ${color}`
             : '2px 2px 5px rgba(16,22,24,0.6)',
           color: 'common.white',
           display: 'block',
           ml: -0.5,
-          mb: 2.5,
-          px: 'clamp(9px, 0.55vw, 20px)',
-          pt: 'clamp(6px, 0.4vw, 14px)',
-          pb: 'clamp(8px, 0.5vw, 18px)',
+          mb: sizing.markerLabelLift,
+          ...sizing.markerLabelPadding,
           whiteSpace: 'nowrap',
         }}
       >

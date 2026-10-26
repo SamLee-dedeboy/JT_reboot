@@ -121,7 +121,7 @@ const nextStepItems = [
     title: 'Scenario ranking',
     body: 'Use the ranking visualization to compare overall scenario scores and see how different priorities and weighting choices affect which futures rise to the top.',
     label: 'Open ranking visualization',
-    href: '/pages/rank-visualization',
+    href: '/scenarios/ranking',
   },
 ] as const
 

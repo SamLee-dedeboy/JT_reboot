@@ -47,6 +47,7 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-rec-temperature-angling': 'Angling',
   'bk-rec-temperature-dayUseCold': 'Cold-water day use',
   'bk-rec-restoration': 'Habitat Restoration',
+  'bk-rec-restoration-acres': 'Restored acres',
   'bk-rec-economy': 'Recreation economy',
 
   // Environmental justice
@@ -144,6 +145,10 @@ export const UI = {
   // What a cell shows without a number.
   awaiting: 'awaiting subteam',
   notRun: 'not run',
+  /** A row that is one version of New Green Watershed, under the other scenarios. */
+  versionOnly: 'NGW only',
+  /** A scenario the subteam marks N/A for this row. */
+  notApplicable: 'N/A',
   notScored: 'not scored',
   notRunWithSlr: 'not run with SLR',
   noSlrResult: 'no SLR result',
@@ -163,6 +168,12 @@ export const UI = {
   basedOn: 'Based on',
   howScored: 'How it is scored',
 } as const
+
+/** Economy's shared score rule (v16 report), the same for all three metrics. */
+const ECONOMY_RULE =
+  'Each scenario is scored on whichever pathway dominates for it: Business as Usual 0; Calling on Reserves 0 (salinity, very small); Bolster & Fortify −1 and A Tunnel −1 (salinity, small); Eco Machine 0 (land use, little farmland); New Green Watershed −4 (land use; the 50/50 version, −3 at 25/75, −5 all wetland).'
+const ECONOMY_RULE_NOTE =
+  'The same in both water years and with 2 ft of sea level rise. Calling on Reserves and A Tunnel are compared with their own RMA base run.'
 
 /**
  * What each ranking score is based on and how the team turns that into −5…+5,
@@ -210,6 +221,18 @@ export const RANKING_DEFINITIONS: Record<string, { basedOn: string; rule: string
       rule: '−1 per percentage point more days over the threshold than Business as Usual, +1 per point fewer; ±5 at five points or more. Each activity is scored on its own.',
       note: 'Calling on Reserves and A Tunnel have no temperature runs.',
     },
+    'bk-rec-restoration': {
+      basedOn:
+        'Restored acres from Recreation’s “Overall Restoration (Acres)” sheet, by Delta region: Eco Machine 41,720 in Suisun Marsh and 1,380 in the Central Delta; New Green Watershed at its 50% bound 41,720, 66,947, 283,904 and 277,681 (Suisun, Central, North, South).',
+      rule: 'Scenarios that restore nothing score 0 (scoring email, 22 Oct 2026). Recreation scores Eco Machine and New Green Watershed.',
+      note: 'Eco Machine and New Green Watershed are awaiting Recreation’s scores.',
+    },
+    'bk-rec-economy': {
+      basedOn:
+        'The yearly value of four recreation services (amenity and recreation, biodiversity, recreational hunting, recreational fishing) for New Green Watershed at 50% restoration and for Business as Usual’s existing protected land, by Delta region (Recreation’s “Overall $” sheet).',
+      rule: '+1 per 1% more value than Business as Usual, ±5 at most. Each service is scored on its own; the team publishes no single economy score.',
+      note: 'Eco Machine, Bolster & Fortify, Calling on Reserves and A Tunnel are awaiting Recreation.',
+    },
 
     // Environmental justice
     'bk-environmentalJustice': {
@@ -235,22 +258,23 @@ export const RANKING_DEFINITIONS: Record<string, { basedOn: string; rule: string
     // Economy
     'bk-economy': {
       basedOn: 'Gross revenue, jobs and value added.',
-      rule: 'One score that the three metrics share.',
+      rule: 'One score that the three metrics share, set by whichever pathway (salinity or land use) dominates for each scenario.',
+      note: 'The same with 2 ft of sea level rise.',
     },
     'bk-econ-revenue': {
       basedOn: 'Direct gross revenue against Business as Usual ($1.107B a year).',
-      rule: 'One score shared with jobs and value added: Calling on Reserves +1 in WY 2019 (wet) and 0 in WY 2020 (dry); Bolster & Fortify −1; Eco Machine 0; New Green Watershed −4 (the 50/50 version; −3 at 25/75, −5 all wetland).',
-      note: 'A Tunnel is pending.',
+      rule: `One score shared with jobs and value added. ${ECONOMY_RULE}`,
+      note: ECONOMY_RULE_NOTE,
     },
     'bk-econ-jobs': {
-      basedOn: 'Direct jobs against Business as Usual (7,650).',
-      rule: 'One score shared with gross revenue and value added: Calling on Reserves +1 in WY 2019 (wet) and 0 in WY 2020 (dry); Bolster & Fortify −1; Eco Machine 0; New Green Watershed −4 (the 50/50 version; −3 at 25/75, −5 all wetland).',
-      note: 'A Tunnel is pending.',
+      basedOn: 'Jobs against Business as Usual (7,720 direct, 11,860 total).',
+      rule: `One score shared with gross revenue and value added. ${ECONOMY_RULE}`,
+      note: ECONOMY_RULE_NOTE,
     },
     'bk-econ-value': {
-      basedOn: 'Direct value added against Business as Usual ($671M a year).',
-      rule: 'One score shared with gross revenue and jobs: Calling on Reserves +1 in WY 2019 (wet) and 0 in WY 2020 (dry); Bolster & Fortify −1; Eco Machine 0; New Green Watershed −4 (the 50/50 version; −3 at 25/75, −5 all wetland).',
-      note: 'A Tunnel is pending.',
+      basedOn: 'Value added against Business as Usual ($671M direct, $999M total a year).',
+      rule: `One score shared with gross revenue and jobs. ${ECONOMY_RULE}`,
+      note: ECONOMY_RULE_NOTE,
     },
 
     // Eco-cultural

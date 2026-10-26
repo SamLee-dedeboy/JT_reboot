@@ -1,5 +1,5 @@
-import { Box, Container, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
-import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom'
+import { Box, Container, Stack, Typography } from '@mui/material'
+import { Navigate, useParams, useSearchParams } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
@@ -36,13 +36,19 @@ export default function Page() {
     return <Navigate to="/scenarios/results" replace />
   }
 
-  const family: ResultFamily = isOverview ? 'overview' : isOutflow ? 'outflow' : 'adaptation'
   const variationId = searchParams.get('variation') ?? outflowResultVariations[0].id
   const variation =
     outflowResultVariations.find((item) => item.id === variationId) ?? outflowResultVariations[0]
-  const seaLevelRise = isAdaptation && searchParams.get('seaLevelRise') === 'true'
   const slrAvailable =
     isAdaptation && slrScenarioSlugs.includes(scenarioSlug as (typeof slrScenarioSlugs)[number])
+  const seaLevelRise = slrAvailable && searchParams.get('seaLevelRise') === 'true'
+  const family: ResultFamily = isOverview
+    ? 'overview'
+    : isOutflow
+      ? 'outflow'
+      : seaLevelRise
+        ? 'adaptation-slr'
+        : 'adaptation'
   const heroImage = isOverview
     ? '/images/scenarios/cover.jpg'
     : isOutflow
@@ -54,7 +60,7 @@ export default function Page() {
     : `Review how ${scenario?.title} changes modeled outcomes relative to baseline operations.`
   const explorerHref = isOutflow
     ? `/pages/scenario-explorer?mode=tiered-outflows&scenario=${variation.explorerKey}`
-    : `/pages/scenario-explorer/internal?scenario=${explorerScenarioKeys[scenarioSlug ?? '']}${seaLevelRise ? '&seaLevelRise=true' : ''}`
+    : `/pages/scenario-explorer?scenario=${explorerScenarioKeys[scenarioSlug ?? '']}`
 
   return (
     <>
@@ -85,14 +91,23 @@ export default function Page() {
                 Review modeled outcomes and the shared criteria used to compare each Delta future
                 against baseline operations.
               </Typography>
-              <FamilyNavigation activeFamily={family} />
+              <FamilyNavigation
+                activeFamily={family}
+                scenarioSlug={isAdaptation ? scenarioSlug : undefined}
+                slrAvailable={slrAvailable}
+              />
             </Stack>
           </Container>
         </Box>
 
         {isOutflow && <OutflowTabs activeVariation={variation.id} />}
         {isAdaptation && scenarioSlug && (
-          <StoryTabs currentSlug={scenarioSlug} destination="results" />
+          <StoryTabs
+            currentSlug={scenarioSlug}
+            destination="results"
+            search={seaLevelRise ? '?seaLevelRise=true' : undefined}
+            availableSlugs={seaLevelRise ? slrScenarioSlugs : undefined}
+          />
         )}
 
         {isOverview ? (
@@ -122,29 +137,6 @@ export default function Page() {
                 >
                   {resultSummary}
                 </Typography>
-                {isAdaptation && slrAvailable && (
-                  <ToggleButtonGroup
-                    exclusive
-                    value={seaLevelRise ? 'slr' : 'present'}
-                    aria-label="Sea-level condition"
-                    sx={{ mt: jtSpacing.component.lg }}
-                  >
-                    <ToggleButton
-                      component={Link}
-                      to={`/scenarios/${scenarioSlug}/results`}
-                      value="present"
-                    >
-                      Present-day conditions
-                    </ToggleButton>
-                    <ToggleButton
-                      component={Link}
-                      to={`/scenarios/${scenarioSlug}/results?seaLevelRise=true`}
-                      value="slr"
-                    >
-                      +2 ft sea-level rise
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                )}
               </Box>
               <ScenarioResults
                 scenarioSlug={scenarioSlug ?? ''}

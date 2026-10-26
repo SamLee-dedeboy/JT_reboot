@@ -228,6 +228,61 @@ function thresholdRow(id: string, label: string, note: string): CriterionNode {
   })
 }
 
+const NOT_BROKEN_OUT: Facet[] = [{ key: ANY, label: 'Not broken out' }]
+
+/**
+ * Habitat restoration as a ranking score, with Recreation's acres beneath it. The
+ * scoring email sets the four scenarios that restore nothing at 0; Recreation has
+ * not scored Eco Machine or New Green Watershed against Business as Usual.
+ */
+function habitatRestoration(): CriterionNode {
+  const acres = node('rec-restoration')
+  return adapt(acres, {
+    label: 'Habitat Restoration',
+    edge: 'beside',
+    unit: 'score',
+    places: NOT_BROKEN_OUT,
+    // Eco Machine and New Green Watershed are stand-ins, shown as "awaiting subteam".
+    values: flat({ bau: 0, bf: 0, cor: 0, tunnel: 0, em: 0, ngw: 0 }),
+    inferredFor: ['em', 'ngw'],
+    sources: [
+      {
+        doc: 'ours',
+        where: 'Recreation scoring email, 22 Oct 2026',
+        quote:
+          'BAU, BAF, COR, TUN → all will be scored at 0. Eco Machine and New Green Watershed (the 50-50 regime) are for Recreation to score.',
+      },
+      ...sourcesFor('rec-restoration'),
+    ],
+    note: 'Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Eco Machine and New Green Watershed are awaiting Recreation’s scores; the workbook’s own acre scores compare New Green Watershed’s versions with each other, not scenarios with Business as Usual. Open the row for the acres Recreation reports.',
+    children: [
+      adapt(acres, {
+        id: 'bk-rec-restoration-acres',
+        label: 'Restored acres',
+        level: 'entity',
+        edge: 'measures',
+        notApplicable: ['bf', 'cor', 'tunnel'],
+      }),
+    ],
+  })
+}
+
+/**
+ * Recreation economy as Recreation publishes it: a score per service and no single
+ * score, so the row reads "per service" and its services carry the ranks. The
+ * "Overall $" sheet has columns for New Green Watershed and Business as Usual only.
+ */
+function recreationEconomy(): CriterionNode {
+  const economy = node('rec-economy')
+  return adapt(economy, {
+    edge: 'beside',
+    entityNoun: 'service',
+    // The "Overall $" sheet covers New Green Watershed (against Business as Usual) only,
+    // so each service is a version of that scenario and the other columns read "NGW only".
+    children: (economy.children ?? []).map((service) => adapt(service, { edge: 'refines' })),
+  })
+}
+
 function recreationTree(): CriterionNode {
   return adapt(node('recreation'), {
     children: [
@@ -241,8 +296,8 @@ function recreationTree(): CriterionNode {
         'Temperature thresholds',
         'The same construction against water temperature: 19 °C for day use & boating, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, < 18 °C cold-water day use. Calling on Reserves and A Tunnel have no temperature runs.',
       ),
-      adapt(node('rec-restoration')),
-      adapt(node('rec-economy')),
+      habitatRestoration(),
+      recreationEconomy(),
     ],
   })
 }
@@ -328,11 +383,11 @@ function ejTree(): CriterionNode {
 
 // ---------- Economy ----------
 
-/** One score shared by the three metrics; Calling on Reserves differs by water year. */
-const ECONOMY_SCORE: Partial<Record<ScenarioKey, SliceValues>> = merge(
-  flat({ bau: 0, em: 0, ngw: -4, bf: -1, tunnel: null }),
-  { cor: { [sliceKey(ANY, '2019')]: 1, [sliceKey(ANY, '2020')]: 0 } },
-)
+/**
+ * One score shared by the three metrics, the same in both water years and both
+ * climates (v16). The scores carry the water years anyway so the When control
+ * reaches the salinity rows beneath them.
+ */
 const WATER_YEARS: Facet[] = relabel(
   [
     { key: '2019', label: '' },
@@ -342,11 +397,10 @@ const WATER_YEARS: Facet[] = relabel(
 )
 
 function economyTree(): CriterionNode {
-  const metric = (id: string) => adapt(node(id), { values: ECONOMY_SCORE, periods: WATER_YEARS })
+  const metric = (id: string) => adapt(node(id), { periods: WATER_YEARS })
   return adapt(node('economy'), {
-    values: ECONOMY_SCORE,
     periods: WATER_YEARS,
-    note: `${node('economy').note} Calling on Reserves is +1 in the wet water year (2019) and 0 in the dry one (2020); New Green Watershed uses the 50/50 primary version (−4).`,
+    note: `${node('economy').note} New Green Watershed uses the 50/50 primary version (−4; −3 at 25/75, −5 all wetland).`,
     children: [metric('econ-revenue'), metric('econ-jobs'), metric('econ-value')],
   })
 }

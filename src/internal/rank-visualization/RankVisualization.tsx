@@ -33,7 +33,7 @@ const STEP_1_TABS: StageTab[] = [
   {
     id: '1a',
     label: 'Ranked scoreboard',
-    note: 'Each bar runs from the baseline to the overall score on the −5 to +5 axis. Click a scenario to show its five ballots; a dashed ballot with an asterisk was inferred. The dashed line is the mean of the ballots, blue above the baseline and orange below. Turn on Range to shade the interval from the lowest ballot to the highest.',
+    note: 'Each bar runs from the baseline to the overall score on the −5 to +5 axis. Click a scenario to show its five ballots, which are the scores at the top of each team’s breakout table; “awaiting subteam” marks a score the team has not published, and it is left out of the mean. The dashed line is the mean of the ballots, blue above the baseline and orange below. Rows follow the breakout table’s scenario order; turn on Rank order to sort them best first. Turn on Range to shade the interval from the lowest ballot to the highest.',
     content: <OverallRanking />,
   },
 ]
@@ -134,7 +134,7 @@ export default function RankVisualization() {
                 step={1}
                 eyebrow="Equal weights"
                 title="The overall ranking"
-                intro="Five subteams scored six adaptation scenarios against Business as Usual, each on its own criterion. With equal weights, their scores give one overall ranking. Scores come from the Oct 2026 conference slides, or the Sept 2026 reports where the slides have none; an asterisk marks a value we inferred rather than one the subteam reported."
+                intro="Five subteams scored six adaptation scenarios against Business as Usual, each on its own criterion. With equal weights, their scores give one overall ranking. Scores come from the Oct 2026 conference slides, or the Sept 2026 reports where the slides have none. This step shows only the scores the subteams published; the later steps still use our inferred values, marked with an asterisk, where a subteam has not published one."
                 extra={<StepOneKey />}
                 tabs={STEP_1_TABS}
               />

@@ -312,6 +312,25 @@ Scenario titles, summaries, and images come from
 `../scenarios/content/scenarioContent.ts` so this experience stays aligned with
 the main scenario pages.
 
+## Scenario results embed
+
+The scenario results pages (`/scenarios/:scenarioSlug/results`) reuse this map
+through `RegionalSalinitySummary.tsx`. Both it and `RegionalSalinityExplorer.tsx`
+draw regions with the shared `RegionalPlaceLayers` and `RegionalPlacePreview`
+(`RegionalSalinityMapParts.tsx`) and the data helpers in `regionalSalinityMap.ts`,
+so polygons, flipping stripes, split pins, and place cards stay identical.
+`regionalMapScales` in `regionalSummaryStyles.ts` holds the `touch` (kiosk) and
+`web` (results page) sizes for pins, labels, and cards.
+
+On the results page the section opens with a sentence summarizing which regions get
+saltier, fresher, or flip, then recaps the scenario's strategies (from
+`scenarioStrategies.ts`, shared with the kiosk guide) beside a static map: regions
+and pins open their card, but the camera cannot be dragged or zoomed. The place card
+has no timeline action. Below the map, `RegionalStackedTimeline.tsx` stacks every
+region's events on one simulation timeline, with season or operations bands and
+water-year type underneath; selecting a bar shows only its event details. Date
+helpers shared with the kiosk timeline live in `regionalTimeline.ts`.
+
 ## Touchscreen requirements
 
 - This tool is a self-contained touchscreen installation and does not need to

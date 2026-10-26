@@ -12,7 +12,7 @@ export const linking = {
     Drivers: palette.accent.blue,
     Strategies: palette.accent.red,
     Value: palette.accent.yellow,
-    Governance: palette.dataViz.orchid,
+    Governance: palette.teams.recreation,
   },
   // Text drawn on category / centre colours; readableTextOn picks one.
   onColor: { light: palette.common.white, dark: palette.common.black },

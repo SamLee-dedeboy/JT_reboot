@@ -1748,7 +1748,7 @@ function AttentionStackedChart({
   onCompareModeChange: (mode: AttentionCompareMode) => void
 }) {
   const [scaleMode, setScaleMode] = useState<AttentionScaleMode>('linear')
-  const [designMode, setDesignMode] = useState<AttentionDesignMode>('bars')
+  const [designMode, setDesignMode] = useState<AttentionDesignMode>('overlay')
   const scenarios = useMemo<AttentionScenario[]>(
     () => buildAttentionScenarios(records, selectedRestorationLevel, selectedScenarioHabitat),
     [records, selectedRestorationLevel, selectedScenarioHabitat],

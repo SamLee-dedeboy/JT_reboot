@@ -40,7 +40,7 @@ export const navItems: NavItem[] = [
     dropdown: [
       { label: 'Choose a Future', href: '/scenarios' },
       { label: 'Modeling & Evaluation', href: '/scenarios/results' },
-      { label: 'Performance & Ranking', href: '/pages/rank-visualization' },
+      { label: 'Performance & Ranking', href: '/scenarios/ranking' },
     ],
   },
   {
@@ -69,6 +69,7 @@ export const navItems: NavItem[] = [
       { label: 'Breakout Tables', href: '/pages/breakout' },
       { label: 'Co-Design Timeline', href: '/pages/co-design-timeline' },
       { label: 'Tribal Stewardship Spectrum', href: '/pages/tribal-stewardship-spectrum' },
+      { label: 'Eco-cultural Metrics', href: '/pages/ecocultural-metrics' },
       { label: 'Site Map', href: '/pages/site-map' },
     ],
   },
