@@ -3,6 +3,7 @@ import { Box, Button, Stack, Typography, useTheme } from '@mui/material'
 import { useReducedMotion } from 'framer-motion'
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { navigation } from '../../theme'
 
 interface AdaptationPanelItem {
   title: string
@@ -33,7 +34,7 @@ export default function AdaptationPanels({
         position: 'relative',
         width: 1,
         height: 1,
-        minHeight: { xs: 'calc(100svh - 72px)', md: 'calc(100svh - 76px)' },
+        minHeight: navigation.belowBar('100svh'),
         overflow: { xs: 'auto', md: 'hidden' },
         bgcolor: 'base.900',
       }}
@@ -84,7 +85,10 @@ export default function AdaptationPanels({
               sx={{
                 position: 'relative',
                 minWidth: 0,
-                minHeight: { xs: isSelected ? '36rem' : '15rem', md: 'calc(100svh - 76px)' },
+                minHeight: {
+                  xs: isSelected ? '36rem' : '15rem',
+                  md: navigation.belowBar('100svh').md,
+                },
                 flex: {
                   xs: '0 0 auto',
                   md: isSelected ? '2.7 1 0' : '0.65 1 0',
@@ -123,6 +127,7 @@ export default function AdaptationPanels({
                 component="img"
                 src={item.image}
                 alt=""
+                decoding="async"
                 sx={{
                   position: 'absolute',
                   inset: 0,

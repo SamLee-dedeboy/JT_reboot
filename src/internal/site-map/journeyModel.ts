@@ -14,6 +14,7 @@ import {
   slrScenarioSlugs,
   teamReports,
   tieredOutflowsScenario,
+  storyInReadingOrder,
 } from '../../features/scenarios/content'
 import { methodologyPath, teamResultsPath } from '../../features/scenarios/evaluation/paths'
 import { matchRoute } from './siteMapModel'
@@ -95,11 +96,7 @@ function methodologyOutline(team: JourneyTeam): OutlineItem[] {
     { title: 'What is this criterion?', detail: story.brief.what },
     {
       title: 'Why does it matter?',
-      detail: story.why.stat ? `${story.why.stat.value} ${story.why.stat.label}` : undefined,
-    },
-    {
-      title: 'How was it constructed?',
-      children: story.construction.steps.map((step) => ({ title: step.title })),
+      detail: story.why.stats?.map((stat) => `${stat.value} ${stat.label}`).join(' · '),
     },
     ...(regions
       ? [
@@ -113,6 +110,10 @@ function methodologyOutline(team: JourneyTeam): OutlineItem[] {
       title: 'What are its components?',
       detail: 'One tab per component',
       children: story.components.items.map((item) => ({ title: item.name })),
+    },
+    {
+      title: 'How was it constructed?',
+      children: story.construction.steps.map((step) => ({ title: step.title })),
     },
     {
       title: 'Scenario comparisons',
@@ -188,12 +189,13 @@ export function buildJourney(
         'Understand Current Operations',
         `Explore Outflow Variations: ${tieredOutflowsScenario.title}`,
         `Explore Adaptation Scenarios: ${adaptationScenarios.map((item) => item.title).join(', ')}`,
-        "What's next? Results, criteria, sea-level rise, ranking",
+        "What's next? Modeling, evaluation, ranking",
       ],
       branches: [
         { label: 'Key parameters', to: '/scenarios/key-parameters' },
         { label: 'Background context', to: '/scenarios/background-context' },
-        { label: 'Results overview', to: '/scenarios/results' },
+        { label: 'Modeling', to: '/scenarios/modeling' },
+        { label: 'Evaluation', to: '/scenarios/evaluation' },
         { label: 'Performance & ranking', to: '/scenarios/ranking' },
       ],
     },
@@ -203,7 +205,7 @@ export function buildJourney(
       question: 'What would this future change, and where?',
       route: scenarioPath,
       status: status(scenarioPath),
-      sees: scenario.story.map((chapter) => chapter.title),
+      sees: storyInReadingOrder(scenario).map(({ chapter }) => chapter.title),
       branches: [{ label: 'Other scenarios', to: '/scenarios', note: 'Scenario tabs' }],
     },
     {
@@ -225,7 +227,7 @@ export function buildJourney(
             'Regional salinity summary with wet and dry years',
           ],
       branches: [
-        { label: 'Results overview', to: '/scenarios/results', note: 'Family tabs' },
+        { label: 'Modeling overview', to: '/scenarios/modeling', note: 'Family tabs' },
         ...(slrAvailable
           ? [{ label: '+2 ft sea-level rise', to: `${resultsPath}?seaLevelRise=true` }]
           : []),
@@ -248,8 +250,8 @@ export function buildJourney(
       branches: [
         {
           label: 'How are scenarios evaluated?',
-          to: '/scenarios/results#how-evaluated',
-          note: 'Results overview',
+          to: '/scenarios/evaluation',
+          note: 'Evaluation overview',
         },
       ],
     },
@@ -263,7 +265,7 @@ export function buildJourney(
       outline: methodologyOutline(team),
       branches: [
         { label: 'Other criteria', to: teamMethodologyPath, note: 'Team tabs' },
-        { label: 'Results overview', to: '/scenarios/results', note: 'Return to overview' },
+        { label: 'Evaluation overview', to: '/scenarios/evaluation', note: 'Back to evaluation' },
       ],
     },
     {

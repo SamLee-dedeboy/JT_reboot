@@ -13,6 +13,7 @@
     "test": "vitest run",
     "audit:tokens": "node scripts/check-theme-tokens.mjs",
     "audit:tokens:repository": "node scripts/check-theme-tokens.mjs src/features/repository src/ui/cards/StudioFeatureCard.tsx src/ui/cards/ResourceReportCard.tsx",
+    "copy:criteria": "node scripts/criteria-copy.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

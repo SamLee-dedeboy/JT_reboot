@@ -9,6 +9,7 @@ import WorksPanel from './components/04_WorksPanel'
 import HomeImagePanel from './components/HomeImagePanel'
 import HomeNavRail from './components/HomeNavRail'
 import PanelSlant from './components/PanelSlant'
+import { navigation } from '../../theme'
 
 const HeroMap = lazy(() => import('../../map/instances/HeroMap'))
 
@@ -29,7 +30,7 @@ export default function HomePage() {
             sx={{
               position: 'relative',
               zIndex: 0,
-              height: { xs: 'calc(120dvh - 72px)', md: 'calc(120dvh - 76px)' },
+              height: navigation.belowBar('120dvh'),
             }}
           >
             <Suspense
@@ -37,7 +38,11 @@ export default function HomePage() {
                 <Box
                   component="section"
                   id="top"
-                  sx={{ width: '100%', height: 'calc(100svh - 76px)', bgcolor: 'brand.base' }}
+                  sx={{
+                    width: '100%',
+                    height: navigation.belowBar('100svh').md,
+                    bgcolor: 'brand.base',
+                  }}
                 />
               }
             >

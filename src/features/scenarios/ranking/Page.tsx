@@ -1,6 +1,6 @@
 import { Box, Container, Stack, Typography } from '@mui/material'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, navigation } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import { assetUrl } from '../../../utils/baseUrl'
@@ -38,7 +38,7 @@ export default function Page() {
               inset: 0,
               zIndex: -1,
               backgroundImage: (theme) =>
-                `linear-gradient(90deg, ${theme.palette.translucent[900]} 0%, ${theme.palette.translucent[700]} 52%, ${theme.palette.translucent[300]} 100%), url(${assetUrl('/images/scenarios/cover.jpg')})`,
+                `linear-gradient(90deg, ${theme.palette.translucent[900]} 0%, ${theme.palette.translucent[700]} 52%, ${theme.palette.translucent[300]} 100%), url(${assetUrl('/images/scenarios/web/cover.webp')})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             },
@@ -71,7 +71,7 @@ function RankingTabs({ activeView, sticky }: { activeView: RankingView; sticky: 
       aria-label="Performance and ranking views"
       sx={{
         position: sticky ? 'sticky' : 'relative',
-        top: sticky ? { xs: 72, md: 76 } : 'auto',
+        top: sticky ? navigation.barHeight : 'auto',
         zIndex: 90,
         bgcolor: 'base.700',
         borderTop: 1,
@@ -81,7 +81,12 @@ function RankingTabs({ activeView, sticky }: { activeView: RankingView; sticky: 
     >
       <Container
         maxWidth={false}
-        sx={{ width: '90dvw', px: 0, display: 'flex', justifyContent: 'center' }}
+        sx={{
+          width: jtSpacing.layout.hybrid.width,
+          px: 0,
+          display: 'flex',
+          justifyContent: 'center',
+        }}
       >
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', width: 'max-content' }}>
           {views.map((view, index) => {
@@ -168,9 +173,17 @@ function RankingSection({
       aria-labelledby={sectionId}
       sx={{ bgcolor: background, borderBottom: 1, borderColor: 'border.default' }}
     >
-      <Container maxWidth="lg" sx={{ py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl } }}>
+      <Container
+        maxWidth={false}
+        sx={{
+          width: jtSpacing.layout.data.width,
+          maxWidth: jtSpacing.layout.data.maxWidth,
+          px: 0,
+          py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl },
+        }}
+      >
         <Stack spacing={{ xs: jtSpacing.section.sm, md: jtSpacing.section.md }}>
-          <Stack spacing={jtSpacing.gap.sm} sx={{ maxWidth: '78ch' }}>
+          <Stack spacing={jtSpacing.gap.sm} sx={{ maxWidth: jtSpacing.layout.reading.width }}>
             <Typography id={sectionId} variant="h2">
               {title}
             </Typography>

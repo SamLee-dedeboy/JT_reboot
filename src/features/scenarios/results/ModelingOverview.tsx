@@ -10,24 +10,19 @@ import Layers from '../../../map/layers/scenarios/Layers'
 import Legend from '../../../map/layers/scenarios/Legend'
 import { getConfig } from '../../../map/layers/scenarios/config'
 import { jtSpacing } from '../../../theme'
-import NavRail from '../../../ui/NavRail'
-import TeamIcon from '../../../ui/TeamIcon'
+import PageRail from '../../../ui/PageRail'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
-import { evaluationTeams } from '../content'
-import EvaluationFramework from './EvaluationFramework'
-import { teamStyle } from '../teamStyle'
+import ModeledSalinity from './ModeledSalinity'
+import { fullBleedBand } from './styles'
 
 const overviewNavigation = [
   { id: 'how-modeled', label: 'How are scenarios modeled?' },
-  { id: 'how-evaluated', label: 'How are scenarios evaluated?' },
-  ...evaluationTeams.map((team) => ({
-    id: team.id,
-    label: teamStyle[team.id].shortLabel,
-    indent: true as const,
-    color: teamStyle[team.id].color,
-    icon: <TeamIcon team={teamStyle[team.id].icon} size={18} />,
-  })),
-  { id: 'how-compared', label: 'How are scenarios compared?' },
+  { id: 'shared-baseline', label: 'A shared baseline', indent: true },
+  { id: 'model-setup', label: 'Space and time', indent: true },
+  { id: 'what-is-modeled', label: 'What is modeled', indent: true },
+  { id: 'scenario-implementations', label: 'How each future is built', indent: true },
+  { id: 'modeled-salinity', label: 'Where salinity changes' },
+  { id: 'next-step', label: 'Next: evaluation' },
 ] as const
 
 const implementationDetails = [
@@ -96,12 +91,6 @@ const modeledOutputs = [
 type OverviewSectionId = (typeof overviewNavigation)[number]['id']
 type Implementation = (typeof implementationDetails)[number]
 
-const fullBleedBand = (color: string) => ({
-  backgroundColor: color,
-  boxShadow: `0 0 0 100vmax ${color}`,
-  clipPath: 'inset(0 -100vmax)',
-})
-
 function AssetList({ title, assets }: { title: string; assets: readonly string[] }) {
   return (
     <Stack spacing={jtSpacing.gap.sm} sx={{ mt: jtSpacing.component.lg }}>
@@ -163,7 +152,7 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
   )
 }
 
-export default function Overview() {
+export default function ModelingOverview() {
   const [selectedImplementationId, setSelectedImplementationId] = useState('eco')
   const [activeSection, setActiveSection] = useState<OverviewSectionId>('how-modeled')
   const selectedImplementation =
@@ -200,39 +189,16 @@ export default function Overview() {
         alignItems: 'start',
       }}
     >
-      <Box
-        component="aside"
+      <PageRail
+        items={[...overviewNavigation]}
+        ariaLabel="Results overview sections"
+        activeItemId={activeSection}
+        onNavigate={(id) => setActiveSection(id as OverviewSectionId)}
         sx={{
           gridRow: { lg: '1 / span 3' },
-          position: { lg: 'sticky' },
-          top: { lg: 148 },
-          zIndex: 3,
           pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
         }}
-      >
-        <Typography
-          variant="eyebrow"
-          sx={{ display: 'block', color: 'base.200', mb: jtSpacing.component.md }}
-        >
-          On this page
-        </Typography>
-        <NavRail
-          items={[...overviewNavigation]}
-          ariaLabel="Results overview sections"
-          activeItemId={activeSection}
-          onNavigate={(id) => setActiveSection(id as OverviewSectionId)}
-          sx={{
-            position: 'relative',
-            inset: 'auto',
-            transform: 'none',
-            zIndex: 1,
-            display: 'flex !important',
-            alignItems: 'flex-start',
-            '& button': { justifyContent: 'flex-start', flexDirection: 'row-reverse' },
-            '& .rail-label': { whiteSpace: 'normal', textAlign: 'left' },
-          }}
-        />
-      </Box>
+      />
 
       <Stack spacing={0} sx={{ display: { lg: 'contents' } }}>
         <Box
@@ -257,7 +223,9 @@ export default function Overview() {
             how four Delta geometries change salinity, water age, and water temperature.
           </Typography>
           <Box
+            id="shared-baseline"
             sx={{
+              scrollMarginTop: 110,
               mt: jtSpacing.section.md,
               p: jtSpacing.component.lg,
               border: 1,
@@ -277,7 +245,9 @@ export default function Overview() {
             </Typography>
           </Box>
           <Box
+            id="model-setup"
             sx={{
+              scrollMarginTop: 110,
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
               gap: jtSpacing.gap.md,
@@ -312,7 +282,7 @@ export default function Overview() {
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ mt: jtSpacing.section.md }}>
+          <Box id="what-is-modeled" sx={{ mt: jtSpacing.section.md, scrollMarginTop: 110 }}>
             <Typography variant="h3" component="h3">
               What is modeled
             </Typography>
@@ -337,7 +307,15 @@ export default function Overview() {
               ))}
             </Stack>
           </Box>
-          <Box sx={{ mt: jtSpacing.section.md, borderBottom: 1, borderColor: 'border.default' }}>
+          <Box
+            id="scenario-implementations"
+            sx={{
+              mt: jtSpacing.section.md,
+              scrollMarginTop: 110,
+              borderBottom: 1,
+              borderColor: 'border.default',
+            }}
+          >
             <Tabs
               value={selectedImplementationId}
               onChange={(_, value: string) => setSelectedImplementationId(value)}
@@ -375,13 +353,13 @@ export default function Overview() {
           </Box>
         </Box>
 
+        {/* What the model shows: the simplified salinity view for any modeled future. */}
         <Box
           component="section"
-          id="how-evaluated"
-          aria-labelledby="how-evaluated-title"
+          id="modeled-salinity"
+          aria-labelledby="modeled-salinity-title"
           sx={[
             {
-              // Spans the content and map columns, matching the methodology pages' width
               gridColumn: { lg: '2 / -1' },
               gridRow: { lg: 2 },
               scrollMarginTop: 110,
@@ -390,26 +368,31 @@ export default function Overview() {
             (theme) => fullBleedBand(theme.palette.base[700]),
           ]}
         >
-          <Typography id="how-evaluated-title" variant="h2" sx={{ mb: jtSpacing.gap.md }}>
-            How are scenarios evaluated?
+          <Typography id="modeled-salinity-title" variant="h2">
+            Where does salinity change?
           </Typography>
-          <Typography variant="body1" sx={{ mb: jtSpacing.section.md, color: 'base.100' }}>
-            Multidisciplinary teams evaluate every future from complementary ecological, cultural,
-            community, recreational, and economic perspectives. Together, they show how each
-            scenario creates different benefits, burdens, and trade-offs across the Delta.
+          <Typography
+            variant="body1"
+            sx={{
+              mt: jtSpacing.gap.md,
+              mb: jtSpacing.section.sm,
+              color: 'base.100',
+              maxWidth: '78ch',
+            }}
+          >
+            Pick an outflow variation or adaptation scenario to see which places get saltier or
+            fresher than Business as Usual, and in which seasons and water years.
           </Typography>
-          <Box sx={{ mt: jtSpacing.section.md }}>
-            <EvaluationFramework showIntroduction={false} />
-          </Box>
+          <ModeledSalinity />
         </Box>
 
+        {/* Hand-off to the next step in the workflow: how the modeled futures are evaluated. */}
         <Box
           component="section"
-          id="how-compared"
-          aria-labelledby="how-compared-title"
+          id="next-step"
+          aria-labelledby="next-step-title"
           sx={[
             {
-              // Spans the content and map columns, matching the methodology pages' width
               gridColumn: { lg: '2 / -1' },
               gridRow: { lg: 3 },
               scrollMarginTop: 110,
@@ -418,61 +401,33 @@ export default function Overview() {
             (theme) => fullBleedBand(theme.palette.base[800]),
           ]}
         >
-          <Typography id="how-compared-title" variant="h2">
-            How are scenarios compared?
+          <Typography id="next-step-title" variant="h2">
+            Next: how are scenarios evaluated?
           </Typography>
-          {/* Two columns from md up: how scores work on the left, where to start on the right */}
-          <Box
-            sx={{
-              mt: jtSpacing.gap.md,
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1fr)' },
-              gap: { xs: jtSpacing.section.md, md: jtSpacing.section.md },
-              alignItems: 'start',
-            }}
+          <Typography
+            variant="body1"
+            sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
           >
-            <Box>
-              <Typography variant="h3" component="h3">
-                How scores work
-              </Typography>
-              <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                Each team places every scenario on a −5 to +5 scale, with the shared baseline fixed
-                at 0. A score reflects how far a team’s metrics deviate from baseline and in which
-                direction. Each team defines the intervals used to translate those metric
-                differences into scores for its area of expertise.
-              </Typography>
-              <Button
-                component={Link}
-                to="/scenarios/ranking"
-                variant="contained"
-                endIcon={<ArrowForwardIcon />}
-                sx={{ mt: jtSpacing.component.lg }}
-              >
-                Open ranking visualization
-              </Button>
-            </Box>
-            <Box>
-              <Typography variant="h3" component="h3">
-                Explore results before ranking
-              </Typography>
-              <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                Move through the outflow variations and adaptation scenarios to review their modeled
-                results before comparing their team scores and overall ranking.
-              </Typography>
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                spacing={jtSpacing.gap.sm}
-                sx={{ mt: jtSpacing.component.lg, alignItems: { xs: 'stretch', sm: 'center' } }}
-              >
-                <Button component={Link} to="/scenarios/tiered-outflows/results" variant="outlined">
-                  View outflow variations
-                </Button>
-                <Button component={Link} to="/scenarios/eco-machine/results" variant="contained">
-                  View adaptation scenarios
-                </Button>
-              </Stack>
-            </Box>
-          </Box>
+            Modeled salinity, water age, and temperature feed five evaluation criteria. Explore the
+            results in detail, or learn how each criterion evaluates the scenarios.
+          </Typography>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={jtSpacing.gap.sm}
+            sx={{ mt: jtSpacing.component.lg, alignItems: { xs: 'stretch', sm: 'center' } }}
+          >
+            <Button
+              component={Link}
+              to="/scenarios/evaluation"
+              variant="contained"
+              endIcon={<ArrowForwardIcon />}
+            >
+              How scenarios are evaluated
+            </Button>
+            <Button component={Link} to="/pages/regional-summary" variant="outlined">
+              Read more in detail
+            </Button>
+          </Stack>
         </Box>
       </Stack>
 

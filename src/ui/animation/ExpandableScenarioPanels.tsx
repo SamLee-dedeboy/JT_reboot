@@ -4,6 +4,7 @@ import { motion, useMotionValueEvent, useScroll, useTransform } from 'framer-mot
 import { useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { TypographyProps } from '@mui/material/Typography'
+import { navigation } from '../../theme'
 
 export interface ExpandableScenarioPanelItem {
   title: string
@@ -65,9 +66,7 @@ export default function ExpandableScenarioPanels({
       theme.palette.base[900],
     ],
   )
-  const panelHeight = collapseOnScroll
-    ? '100dvh'
-    : { xs: 'calc(100svh - 72px)', md: 'calc(100svh - 76px)' }
+  const panelHeight = collapseOnScroll ? '100dvh' : navigation.belowBar('100svh')
 
   return (
     <Box
@@ -120,7 +119,7 @@ export default function ExpandableScenarioPanels({
               inset: '100dvh 0 auto',
               height: '100dvh',
               pointerEvents: 'none',
-              scrollMarginTop: { xs: '72px', md: '76px' },
+              scrollMarginTop: navigation.barHeight,
             }}
           >
             <Typography
@@ -149,7 +148,7 @@ export default function ExpandableScenarioPanels({
               inset: '200dvh 0 auto',
               height: '100dvh',
               pointerEvents: 'none',
-              scrollMarginTop: { xs: '72px', md: '76px' },
+              scrollMarginTop: navigation.barHeight,
             }}
           >
             <Typography
@@ -274,7 +273,9 @@ export default function ExpandableScenarioPanels({
                   flex: { xs: '1 1 15rem', md: '1 1 0' },
                   minWidth: 0,
                   height: collapseOnScroll ? '100%' : 'auto',
-                  minHeight: collapseOnScroll ? 0 : { xs: '15rem', md: 'calc(100svh - 76px)' },
+                  minHeight: collapseOnScroll
+                    ? 0
+                    : { xs: '15rem', md: navigation.belowBar('100svh').md },
                   isolation: 'isolate',
                   overflow: 'hidden',
                   borderColor: 'translucent.primaryGreen',

@@ -4,7 +4,7 @@ export const tieredOutflowsScenario: ScenarioContent = {
   slug: 'tiered-outflows',
   number: 'Outflow variations',
   title: 'Delta Outflow Variations',
-  image: '/images/scenarios/outflow.jpg',
+  image: '/images/scenarios/web/outflow.webp',
   summary:
     'How could increasing or reducing the amount of freshwater moving through the Delta change salinity, ecosystems, communities, and water uses?',
   story: [
@@ -36,6 +36,10 @@ export const tieredOutflowsScenario: ScenarioContent = {
         'Changing how much water flows through the Delta involves difficult trade-offs between competing water needs. Outcomes also depend on how water flows are increased, such as by changes in upstream uses and reservoir release, or by reductions in water exports from the Delta. Our modeled variations in Delta outflow were limited to changes in exports. Reductions in upstream uses to increase flows could be modelled in future efforts.',
         'The seasonal timing of changes in flows is also a critical factor for outcomes. Two of our other project scenarios also explore these timed changes in flow: A Tunnel and Calling on Reserves.',
         'What other strategies could help manage salinity and protect ecosystems, communities, and water users in the Delta? Explore alternative scenarios to see how different approaches might reshape salinity conditions in the Delta.',
+      ],
+      relatedLinks: [
+        { label: 'Read about A Tunnel', href: '/scenarios/a-tunnel' },
+        { label: 'Read about Calling on Reserves', href: '/scenarios/calling-on-reserves' },
       ],
     },
   ],

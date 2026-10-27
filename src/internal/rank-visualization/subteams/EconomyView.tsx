@@ -168,7 +168,7 @@ export default function EconomyView() {
 
       <Panel
         title="The salinity pathway on the map, dry year"
-        intro="Each map colours the three outlined zones by the **change in value added** from Business as Usual in 2020, for the **salinity pathway only**; West Delta has no outline yet. The score beneath each map is the criterion score, and ==it does not come from this map==: Economy scores each scenario on its dominant effect, and for New Green Watershed that is land conversion. Three of the sixteen zone values could not be verified from the slide image."
+        intro="Each map colours the four zones by the **change in value added** from Business as Usual in 2020, for the **salinity pathway only**. The score beneath each map is the criterion score, and ==it does not come from this map==: Economy scores each scenario on its dominant effect, and for New Green Watershed that is land conversion. Three of the sixteen zone values could not be verified from the slide image."
       >
         <RegionValues
           team="economy"

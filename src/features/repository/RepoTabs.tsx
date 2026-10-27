@@ -2,7 +2,7 @@
 // sections.
 import { Link } from 'react-router-dom'
 import { Box, Container, Typography } from '@mui/material'
-import { jtSpacing } from '../../theme'
+import { jtSpacing, navigation } from '../../theme'
 
 export type RepoTabKey = 'docs' | 'learning' | 'resources'
 
@@ -38,7 +38,7 @@ export default function RepoTabs({ current }: { current: RepoTabKey }) {
       aria-label="Repository sections"
       sx={{
         position: 'sticky',
-        top: { xs: 72, md: 76 },
+        top: navigation.barHeight,
         zIndex: 90,
         bgcolor: 'base.700',
         borderTop: 1,

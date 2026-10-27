@@ -8,10 +8,9 @@
 //   - Values the subteam did not publish as a criterion score are INFERRED, flagged
 //     in `provisional` and marked with * on screen. Two kinds, one label, because a
 //     reader needs the same warning from both: Ecology's whole column is the mean of
-//     its two published metric ranks, and Recreation's whole column is read off the
-//     per-activity threshold percentages in the Oct 2026 slides by a mapping nobody
-//     published. EJ's Calling on Reserves and A Tunnel are marked pending by their
-//     subteam and carry stand-ins here. None of these are the subteams' own numbers.
+//     its two published metric ranks. EJ's Calling on Reserves and A Tunnel are
+//     marked pending by their subteam and carry stand-ins here. None of these are
+//     the subteams' own numbers. Recreation's column is its own score (26 Oct 2026).
 // Only the six adaptation scenarios are shown; the tiered outflow runs use a
 // different increment and are not comparable with them.
 import { alpha } from '@mui/material/styles'
@@ -62,60 +61,61 @@ export const SCENARIOS: Scenario[] = [
   {
     // Ecology: landscape +5 and food web +4 (NGW2). EJ: the only scenario above 0.
     // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
-    // Recreation*: −1 for every salinity activity bar day use and boating (0); the
-    // mean of its four activity scores, which the subteam now publishes by region
-    // and season (18 Oct 2026 workbooks). Wins on its unscored restoration metric.
+    // Recreation: −0.375, its own score (26 Oct 2026): salinity and temperature,
+    // today and with sea level rise, averaged; the Suisun Marsh salinity losses
+    // outweigh Central Delta gains. Restoration and its economy (+5 each) are scored
+    // apart from it.
     name: 'New Green Watershed',
     color: voting.scenario.newGreenWatershed,
-    scores: [4.5, -1, 1, -4, 4],
-    provisional: [true, true, false, false, false],
+    scores: [4.5, -0.375, 1, -4, 4],
+    provisional: [true, false, false, false, false],
   },
   {
     // Ecology: landscape +3, food web +1. EJ fell from +1 to 0 when the Oct 2026
     // slides dropped the two seasonal drinking-water scores from its average.
-    // Recreation*: the same activity scores as NGW, so the same mean.
+    // Recreation: the same activity scores as NGW, so the same −0.375.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
-    scores: [2, -1, 0, 0, 2],
-    provisional: [true, true, false, false, false],
+    scores: [2, -0.375, 0, 0, 2],
+    provisional: [true, false, false, false, false],
   },
   {
-    // Recreation*: 0 on every activity, Delta-wide.
+    // Recreation: 0 on every activity, Delta-wide.
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
     scores: [0, 0, 0, -1, 0],
-    provisional: [true, true, false, false, false],
+    provisional: [true, false, false, false, false],
   },
   {
     // Economy: 0 in both water years and with sea level rise (v16, 25 Oct 2026),
     // against RMA's own base run for this scenario.
-    // Recreation*: −2 on three activities and −4 on angling, mean −2.5; second
-    // worst after A Tunnel.
+    // Recreation: +0.0625 against CalSim's Business as Usual (26 Oct 2026), the only
+    // scenario above 0; it had been −2.5 against RMA's.
     // EJ*: now "pending" for want of a water-age result; −1 is the mean of the two
     // metrics it has (drinking water −2, flood risk 0), which is also what the
     // Sept report published.
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [0, -2.5, -1, 0, 1],
-    provisional: [true, true, true, false, false],
+    scores: [0, 0.0625, -1, 0, 1],
+    provisional: [true, false, true, false, false],
   },
   {
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
     // withdrew the drinking-water numbers the Sept report published for it.
-    // Recreation*: now measured, −4 on three activities and −5 on angling, mean −4;
-    // worst of the six. EJ*: mean of the four metric scores the Sept report gave
+    // Recreation: −0.125 against CalSim's Business as Usual (26 Oct 2026); it had
+    // been −4 against RMA's. EJ*: mean of the four metric scores the Sept report gave
     // (−3, −5, 0, +1). Economy: −1 (v16, 25 Oct 2026), from a dry-year salinity
     // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0, -4, -2, -1, -2],
-    provisional: [true, true, true, false, false],
+    scores: [0, -0.125, -2, -1, -2],
+    provisional: [true, false, true, false, false],
   },
   {
     name: 'Business as Usual',
     color: voting.scenario.businessAsUsual,
     scores: [0, 0, 0, 0, 0],
-    provisional: [true, true, false, false, false],
+    provisional: [true, false, false, false, false],
   },
 ]
 
@@ -140,7 +140,9 @@ export const toPct = (score: number) => 50 + (score / SCORE_MAX) * 50
 
 /** Signed label with a typographic minus, rounded to one decimal. */
 export function fmtScore(value: number): string {
-  const rounded = Math.round(value * 10) / 10
+  // Unrounded, as the subteams give them (0.0625 stays 0.0625); four places only
+  // trims floating-point noise from weighted means.
+  const rounded = Math.round(value * 10000) / 10000
   if (rounded === 0) return '0'
   return rounded > 0 ? `+${rounded}` : `−${Math.abs(rounded)}`
 }

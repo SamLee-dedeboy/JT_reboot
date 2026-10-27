@@ -166,7 +166,7 @@ const environmentalJustice: TeamReport = {
 }
 
 const publishedScoresSource =
-  'Published ranking scores from the team’s “Story Behind the Criterion” report (Sept 2026) and the Bay-Delta Science Conference slides (Oct 2026).'
+  'Published ranking scores from the criterion’s “Story Behind the Criterion” report (Sept 2026) and the Bay-Delta Science Conference slides (Oct 2026).'
 
 const ecologyNoCriterionScore = {
   score: null,
@@ -345,7 +345,7 @@ const economySeaLevelRise = 'The score is the same with 2 feet of sea-level rise
 const economy: TeamReport = {
   status: 'final',
   source:
-    'Published ranking scores from the team’s “Story Behind the Criterion” report, v16 (25 Oct 2026). One score covers revenue, jobs, and value added, and is the same under current climate and with 2 feet of sea-level rise.',
+    'Published ranking scores from the criterion’s “Story Behind the Criterion” report, v16 (25 Oct 2026). One score covers revenue, jobs, and value added, and is the same under current climate and with 2 feet of sea-level rise.',
   findings: {
     'eco-machine': {
       headline: 'A small loss from converting farmland',
@@ -412,7 +412,7 @@ const economy: TeamReport = {
 }
 
 const ecoculturalOverallBasis =
-  'One overall score combining restored acres, flow, and the team’s qualitative judgement.'
+  'One overall score combining restored acres, flow, and the criterion’s qualitative judgement.'
 
 const ecoculturalRestoration: TeamReport = {
   status: 'final',

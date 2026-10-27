@@ -362,7 +362,9 @@ export function fmtValue(value: number, unit: Unit): string {
       return `${step} ${value > 0 ? 'younger' : 'older'}`
     }
     default: {
-      const rounded = Math.round(value * 10) / 10
+      // Scores print as the subteam gives them: Recreation's 0.0625 stays 0.0625,
+      // not 0.1. Four places only trims floating-point noise from our means.
+      const rounded = Math.round(value * 10000) / 10000
       if (rounded === 0) return '0'
       return rounded > 0 ? `+${rounded}` : `−${Math.abs(rounded)}`
     }

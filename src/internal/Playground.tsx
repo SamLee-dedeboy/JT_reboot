@@ -7,6 +7,7 @@ import DrinkingWaterMap from '../map/instances/DrinkingWaterMap'
 import KelpFusionMap from '../map/instances/KelpFusionMap'
 import GanttChart from './visualizations/GanttChart'
 import type { KelpSet } from './kelp/lib/types'
+import { navigation } from '../theme'
 
 type MapTab = 'drinking-water' | 'kelp'
 
@@ -66,8 +67,8 @@ export default function Playground() {
         sx={{
           mt: (theme) => `-${theme.spacing(theme.jtSpacing.section.xs)}`,
           width: '100%',
-          minHeight: { xs: 'calc(100vh - 72px)', md: 'calc(100vh - 76px)' },
-          height: { lg: 'calc(100vh - 76px)' },
+          minHeight: navigation.belowBar('100vh'),
+          height: { lg: navigation.belowBar('100vh').md },
           display: 'flex',
           flexDirection: { xs: 'column', lg: 'row' },
           alignItems: 'stretch',

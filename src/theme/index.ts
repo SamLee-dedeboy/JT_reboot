@@ -1,4 +1,11 @@
-export { default as theme, highlighter, logoWordmark, navigation, numbering } from './theme'
+export {
+  default as theme,
+  highlighter,
+  logoWordmark,
+  navigation,
+  numbering,
+  ranking,
+} from './theme'
 export { palette } from './palette'
 export { typography, fontBody, fontHeading } from './typography'
 export { jtSpacing } from './spacing'

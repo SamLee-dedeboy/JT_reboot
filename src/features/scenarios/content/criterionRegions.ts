@@ -23,6 +23,9 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
     intro:
       'Ecology groups its 145 points into subregions drawn from a published clustering of average daily water temperature, so each region shares similar conditions for fish and the food they eat.',
     regions: [
+      { name: 'South Bay', note: '9 points.' },
+      { name: 'Central Bay', note: '16 points.' },
+      { name: 'San Pablo Bay', note: '15 points.' },
       { name: 'North Delta', note: '30 points.' },
       { name: 'Central', note: '23 points.' },
       { name: 'South Delta', note: '11 points.' },
@@ -30,8 +33,6 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
       { name: 'Suisun Bay', note: '25 points, reported together with Suisun Marsh.' },
       { name: 'Suisun Marsh', note: 'Folded into Suisun Bay in the results.' },
     ],
-    mapNote:
-      'San Pablo Bay, Central Bay, and South Bay are also scored, so range shifts of migratory species show up, but they sit outside this map.',
   },
   'environmental-justice': {
     mapTeam: 'environmentalJustice',
@@ -46,12 +47,15 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
   recreation: {
     mapTeam: 'recreation',
     intro:
-      'Recreation splits the Delta into four regions that follow tidal flow and conductivity zones from earlier studies, and the highways people take to reach recreation sites.',
+      'Recreation splits the Delta into four regions that follow tidal flow and conductivity zones from earlier studies, and the highways people take to reach recreation sites (Andrews et al., 2017; Delta Stewardship Council, 2013).',
     regions: [
-      { name: 'North Delta' },
-      { name: 'Confluence', note: 'The report’s Central Delta.' },
-      { name: 'South Delta' },
-      { name: 'Suisun Bay', note: 'The report’s Suisun Marsh region.' },
+      { name: 'North Delta', note: 'Sacramento River corridors and nearby recreation sites' },
+      { name: 'Confluence', note: 'The meeting area of the Sacramento and San Joaquin rivers' },
+      {
+        name: 'South Delta',
+        note: 'San Joaquin River corridors, Clifton Court Forebay, and nearby sites',
+      },
+      { name: 'Suisun Bay', note: 'Suisun, Grizzly, and Honker bays and Suisun Marsh' },
     ],
   },
   economy: {
@@ -59,10 +63,10 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
     intro:
       'A Delta-wide total can hide winners and losers, so Economy also reports by zone. North, Central, and South Delta are drawn by water agency; the fourth zone is the West Delta.',
     regions: [
-      { name: 'North Delta Water Agency', note: 'North Delta zone' },
-      { name: 'Central Delta Water Agency', note: 'Central Delta zone' },
-      { name: 'South Delta Water Agency', note: 'South Delta zone' },
+      { name: 'North Delta' },
+      { name: 'Central Delta' },
+      { name: 'South Delta' },
+      { name: 'West Delta' },
     ],
-    mapNote: 'The West Delta zone has results but no published outline yet, so it is not drawn.',
   },
 }

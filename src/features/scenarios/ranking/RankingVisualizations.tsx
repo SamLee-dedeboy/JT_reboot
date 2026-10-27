@@ -1,23 +1,28 @@
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
 import { Box, Button, ButtonBase, Collapse, Slider, Stack, Typography } from '@mui/material'
-import type { Theme } from '@mui/material/styles'
+import type { Breakpoint, Theme } from '@mui/material/styles'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo, useState } from 'react'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, numbering, ranking } from '../../../theme'
 import TeamIcon from '../../../ui/TeamIcon'
 import {
   EQUAL_WEIGHTS,
+  RANKED,
   SCENARIOS,
   TEAMS,
-  WEIGHT_PRESETS,
   fmtScore,
   weightedRanking,
 } from '../../../internal/rank-visualization/data'
+import type { WeightedScenario } from '../../../internal/rank-visualization/data'
 
 const SCORE_MIN = -5
 const SCORE_MAX = 5
 
 const scorePosition = (score: number) => `${((score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)) * 100}%`
+
+/** Ordinal ranks (1st, 2nd…), kept apart from the 01/02 numbering used elsewhere on the site. */
+const rankLabel = (rank: number) => `${rank}${['th', 'st', 'nd', 'rd'][rank] ?? 'th'}`
 
 const scoreColor = (score: number, theme: Theme) =>
   score > 0
@@ -34,11 +39,24 @@ function Legend() {
       sx={{ color: 'base.100' }}
     >
       <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center' }}>
-        <Box sx={(theme) => ({ width: 28, borderTop: 6, borderColor: theme.chart.voting.above })} />
+        <Box
+          sx={(theme) => ({
+            width: ranking.legend.swatchWidth,
+            borderTop: ranking.legend.swatchHeight,
+            borderColor: theme.chart.voting.above,
+          })}
+        />
         <Typography variant="captionSmall">Reported score</Typography>
       </Stack>
       <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center' }}>
-        <Box sx={{ width: 28, borderTop: 2, borderStyle: 'dashed', borderColor: 'base.100' }} />
+        <Box
+          sx={{
+            width: ranking.legend.swatchWidth,
+            borderTop: ranking.bar.outlineWidth,
+            borderStyle: 'dashed',
+            borderColor: 'base.100',
+          }}
+        />
         <Typography variant="captionSmall">Illustrative value—data not yet available</Typography>
       </Stack>
     </Stack>
@@ -73,7 +91,7 @@ function ScoreBar({
     <Box
       sx={{
         position: 'relative',
-        height: 34,
+        height: ranking.trackHeight,
         borderBottom: 1,
         borderColor: 'border.subtle',
       }}
@@ -84,10 +102,11 @@ function ScoreBar({
             position: 'absolute',
             left,
             width: `calc(${right} - ${left})`,
-            top: 9,
-            height: 16,
+            top: '50%',
+            height: ranking.bar.height,
+            transform: 'translateY(-50%)',
             bgcolor: provisional ? 'transparent' : (color ?? scoreColor(score, theme)),
-            border: provisional ? 2 : 0,
+            border: provisional ? ranking.bar.outlineWidth : 0,
             borderStyle: provisional ? 'dashed' : 'solid',
             borderColor: color ?? scoreColor(score, theme),
           })}
@@ -98,11 +117,11 @@ function ScoreBar({
           sx={{
             position: 'absolute',
             left: '50%',
-            top: 9,
-            width: 4,
-            height: 16,
+            top: '50%',
+            width: ranking.bar.zeroMarkWidth,
+            height: ranking.bar.height,
             bgcolor: color,
-            transform: 'translateX(-2px)',
+            transform: 'translate(-50%, -50%)',
           }}
         />
       )}
@@ -110,21 +129,42 @@ function ScoreBar({
   )
 }
 
-function ZeroGuide({ breakpoint, offset }: { breakpoint: 'sm' | 'md'; offset: number }) {
+/**
+ * Zero line through a list's score-bar column, drawn on a grid that mirrors the rows so it
+ * lands on the bars' center at every width.
+ */
+function ZeroGuide({
+  columns,
+  columnGap,
+  column,
+  from,
+}: {
+  columns: Partial<Record<Breakpoint, string>>
+  columnGap: number | Partial<Record<Breakpoint, number>>
+  column: number
+  from: Breakpoint
+}) {
   return (
     <Box
       aria-hidden
       sx={{
-        display: { xs: 'none', [breakpoint]: 'block' },
+        display: { xs: 'none', [from]: 'grid' },
+        gridTemplateColumns: columns,
+        columnGap,
         position: 'absolute',
-        zIndex: 0,
-        insetBlock: 0,
-        left: `calc(50% + ${offset}px)`,
-        borderLeft: 2,
-        borderColor: 'base.300',
+        inset: 0,
         pointerEvents: 'none',
       }}
-    />
+    >
+      <Box
+        sx={{
+          gridColumn: column,
+          justifySelf: 'center',
+          borderLeft: ranking.zeroLine.width,
+          borderColor: ranking.zeroLine.color,
+        }}
+      />
+    </Box>
   )
 }
 
@@ -140,13 +180,10 @@ function TeamBreakdown({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
             key={team.key}
             sx={{
               display: 'grid',
-              gridTemplateColumns: {
-                xs: 'minmax(130px, 1fr) 72px',
-                md: '240px minmax(320px, 1fr) 72px',
-              },
+              gridTemplateColumns: ranking.columns.team,
               gap: jtSpacing.gap.md,
               alignItems: 'center',
-              minHeight: 34,
+              minHeight: ranking.trackHeight,
             }}
           >
             <Stack
@@ -154,7 +191,7 @@ function TeamBreakdown({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
               spacing={jtSpacing.gap.xs}
               sx={{ alignItems: 'center', color: team.color }}
             >
-              <TeamIcon team={team.key} size={18} />
+              <TeamIcon team={team.key} size={ranking.teamIconSize} />
               <Typography variant="navigationLabel" sx={{ color: 'inherit' }}>
                 {team.name}
               </Typography>
@@ -183,6 +220,8 @@ const average = (scores: (number | null)[]) => {
   const values = scores.filter((score): score is number => score !== null)
   return values.reduce((sum, score) => sum + score, 0) / values.length
 }
+
+const OVERALL_GAP = { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md }
 
 export function OverallRankingChart() {
   const [expanded, setExpanded] = useState(() => new Set(SCENARIOS.map(({ name }) => name)))
@@ -219,11 +258,8 @@ export function OverallRankingChart() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: '38px minmax(120px, .8fr) 64px',
-              md: '46px 240px minmax(320px, 1fr) 72px',
-            },
-            columnGap: { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md },
+            gridTemplateColumns: ranking.columns.overall,
+            columnGap: OVERALL_GAP,
             alignItems: 'end',
             pb: jtSpacing.component.sm,
           }}
@@ -238,13 +274,19 @@ export function OverallRankingChart() {
           </Typography>
         </Box>
         <Box sx={{ position: 'relative' }}>
-          <ZeroGuide breakpoint="md" offset={117} />
+          {/* The guide follows the scenario rows' columns, not the indented team rows. */}
+          <ZeroGuide
+            columns={ranking.columns.overall}
+            columnGap={OVERALL_GAP}
+            column={3}
+            from="md"
+          />
           {ranked.map((scenario, index) => {
             const open = expanded.has(scenario.name)
             return (
               <Box
                 key={scenario.name}
-                sx={{ position: 'relative', zIndex: 1, borderTop: 1, borderColor: 'border.subtle' }}
+                sx={{ position: 'relative', borderTop: 1, borderColor: 'border.subtle' }}
               >
                 <ButtonBase
                   onClick={() =>
@@ -256,24 +298,19 @@ export function OverallRankingChart() {
                     })
                   }
                   aria-expanded={open}
-                  aria-label={`${open ? 'Hide' : 'Show'} ${scenario.name} team grand scores`}
+                  aria-label={`${open ? 'Hide' : 'Show'} ${scenario.name} criterion scores`}
                   sx={{
                     width: '100%',
                     display: 'grid',
-                    gridTemplateColumns: {
-                      xs: '38px minmax(120px, .8fr) 64px',
-                      md: '46px 240px minmax(320px, 1fr) 72px',
-                    },
-                    columnGap: { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md },
+                    gridTemplateColumns: ranking.columns.overall,
+                    columnGap: OVERALL_GAP,
                     alignItems: 'center',
-                    minHeight: 58,
+                    minHeight: ranking.rowHeight,
                     textAlign: 'left',
                     '&:hover, &.Mui-focusVisible': { bgcolor: 'translucent.100' },
                   }}
                 >
-                  <Typography variant="numberArticle">
-                    {String(index + 1).padStart(2, '0')}
-                  </Typography>
+                  <Typography variant="numberRank">{rankLabel(index + 1)}</Typography>
                   <Stack
                     direction="row"
                     sx={{ alignItems: 'center', justifyContent: 'space-between' }}
@@ -283,7 +320,7 @@ export function OverallRankingChart() {
                       sx={{
                         color: 'base.100',
                         transform: open ? 'rotate(180deg)' : 'none',
-                        transition: 'transform 180ms ease',
+                        transition: `transform ${ranking.motion.expandMs}ms ease`,
                       }}
                     />
                   </Stack>
@@ -300,8 +337,16 @@ export function OverallRankingChart() {
                     {fmtScore(scenario.average)}
                   </Typography>
                 </ButtonBase>
-                <Collapse in={open} timeout={180}>
-                  <Box sx={{ pl: { xs: 0, md: 'calc(46px + 20px)' } }}>
+                <Collapse in={open} timeout={ranking.motion.expandMs}>
+                  {/* Team rows start under the scenario name, past the rank column. */}
+                  <Box
+                    sx={(theme) => ({
+                      pl: {
+                        xs: 0,
+                        md: `calc(${numbering.rank.width.sm} + ${theme.spacing(jtSpacing.gap.md)})`,
+                      },
+                    })}
+                  >
                     <TeamBreakdown scenario={scenario} />
                   </Box>
                 </Collapse>
@@ -314,142 +359,258 @@ export function OverallRankingChart() {
   )
 }
 
+/** The only priority levels a visitor can pick; the slider steps through them evenly. */
+const PRIORITY_STEPS = [0.5, 1, 2, 3]
+const PRIORITY_MARKS = PRIORITY_STEPS.map((_, index) => ({ value: index }))
+const RERANK_TRANSITION = { duration: ranking.motion.rerankSeconds, ease: 'easeOut' } as const
+
+const rowCenter = (index: number) => ranking.rowHeight / 2 + index * ranking.rowHeight
+
+function PriorityControls({
+  weights,
+  onChange,
+}: {
+  weights: number[]
+  onChange: (teamIndex: number, weight: number) => void
+}) {
+  return (
+    <Box>
+      <Stack
+        direction="row"
+        spacing={jtSpacing.gap.sm}
+        sx={{ alignItems: 'center', mb: jtSpacing.component.sm }}
+      >
+        <TuneRoundedIcon sx={{ color: 'primary.main' }} />
+        <Typography variant="h4" component="h3" sx={{ whiteSpace: 'nowrap' }}>
+          Set your priorities
+        </Typography>
+      </Stack>
+      {/* One line per team: name, stepped slider, current weight. */}
+      <Stack>
+        {TEAMS.map((team, index) => (
+          <Box
+            key={team.key}
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: ranking.columns.control,
+              gap: jtSpacing.gap.sm,
+              alignItems: 'center',
+              minHeight: ranking.controlHeight,
+              borderTop: 1,
+              borderColor: 'border.subtle',
+            }}
+          >
+            <Stack
+              direction="row"
+              spacing={jtSpacing.gap.xs}
+              sx={{ alignItems: 'center', color: team.color }}
+            >
+              <TeamIcon team={team.key} size={ranking.teamIconSize} />
+              <Typography variant="navigationLabel" noWrap sx={{ color: 'common.white' }}>
+                {team.name}
+              </Typography>
+            </Stack>
+            <Slider
+              size="small"
+              min={0}
+              max={PRIORITY_STEPS.length - 1}
+              step={1}
+              marks={PRIORITY_MARKS}
+              scale={(step) => PRIORITY_STEPS[step]}
+              value={PRIORITY_STEPS.indexOf(weights[index])}
+              onChange={(_, step) => onChange(index, PRIORITY_STEPS[step as number])}
+              getAriaValueText={(weight) => `×${weight}`}
+              aria-label={`${team.name} priority weight`}
+              sx={{ color: team.color }}
+            />
+            <Typography variant="chartValueLarge" sx={{ textAlign: 'right' }}>
+              ×{weights[index]}
+            </Typography>
+          </Box>
+        ))}
+      </Stack>
+    </Box>
+  )
+}
+
+function CurrentRanking({
+  scenarios,
+  weights,
+}: {
+  scenarios: WeightedScenario[]
+  weights: number[]
+}) {
+  const reduceMotion = useReducedMotion()
+
+  return (
+    <Box sx={{ position: 'relative' }}>
+      <ZeroGuide
+        columns={{ sm: ranking.columns.current.sm }}
+        columnGap={jtSpacing.gap.sm}
+        column={3}
+        from="sm"
+      />
+      {scenarios.map((scenario, index) => {
+        const provisional = scenario.provisional.some(
+          (value, teamIndex) => value && weights[teamIndex] > 0,
+        )
+        return (
+          <Box
+            key={scenario.name}
+            component={motion.div}
+            layout="position"
+            transition={reduceMotion ? { duration: 0 } : RERANK_TRANSITION}
+            sx={{
+              position: 'relative',
+              display: 'grid',
+              gridTemplateColumns: ranking.columns.current,
+              gap: jtSpacing.gap.sm,
+              alignItems: 'center',
+              height: ranking.rowHeight,
+              borderTop: 1,
+              borderColor: 'border.subtle',
+            }}
+          >
+            <Typography variant="numberRank">{rankLabel(index + 1)}</Typography>
+            <Typography variant="navigationLabel">{scenario.name}</Typography>
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <ScoreBar score={scenario.wAvg} provisional={provisional} />
+            </Box>
+            <Typography
+              variant="chartValueLarge"
+              sx={(theme) => ({ textAlign: 'right', color: scoreColor(scenario.wAvg, theme) })}
+            >
+              {fmtScore(scenario.wAvg)}
+            </Typography>
+          </Box>
+        )
+      })}
+    </Box>
+  )
+}
+
+function RankingLinks({ scenarios }: { scenarios: WeightedScenario[] }) {
+  const reduceMotion = useReducedMotion()
+  const { width, bend, strokeWidth, opacity, color } = ranking.links
+  const height = ranking.rowHeight * RANKED.length
+
+  return (
+    <Box
+      component="svg"
+      aria-hidden
+      viewBox={`0 0 ${width} ${height}`}
+      width={width}
+      height={height}
+      sx={{ display: 'block', overflow: 'visible', color }}
+    >
+      {scenarios.map((scenario, now) => {
+        const before = RANKED.findIndex(({ name }) => name === scenario.name)
+        const moved = before !== now
+        return (
+          <motion.path
+            key={scenario.name}
+            fill="none"
+            stroke="currentColor"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            initial={false}
+            animate={{
+              d: `M0,${rowCenter(now)} L${width * bend[0]},${rowCenter(now)} L${width * bend[1]},${rowCenter(before)} L${width},${rowCenter(before)}`,
+              strokeWidth: moved ? strokeWidth.moved : strokeWidth.resting,
+              opacity: moved ? opacity.moved : opacity.resting,
+            }}
+            transition={reduceMotion ? { duration: 0 } : RERANK_TRANSITION}
+          />
+        )
+      })}
+    </Box>
+  )
+}
+
+function EqualRanking() {
+  return (
+    <Box>
+      {RANKED.map((scenario) => (
+        <Box
+          key={scenario.name}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: ranking.columns.equal,
+            gap: jtSpacing.gap.sm,
+            alignItems: 'center',
+            height: ranking.rowHeight,
+            borderTop: 1,
+            borderColor: 'border.subtle',
+          }}
+        >
+          <Typography variant="numberRank" sx={{ color: 'base.200' }}>
+            {rankLabel(scenario.rank)}
+          </Typography>
+          <Typography variant="navigationLabel" sx={{ color: 'base.100' }}>
+            {scenario.name}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
 export function WeightedRankingChart() {
   const [weights, setWeights] = useState([...EQUAL_WEIGHTS])
-  const ranking = useMemo(() => weightedRanking(weights), [weights])
+  const scenarios = useMemo(() => weightedRanking(weights), [weights])
+  const setWeight = (teamIndex: number, weight: number) =>
+    setWeights((current) => current.map((value, i) => (i === teamIndex ? weight : value)))
 
   return (
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', lg: 'minmax(300px, .72fr) minmax(0, 1.28fr)' },
+        gridTemplateColumns: ranking.columns.layout,
         gap: { xs: jtSpacing.section.md, lg: jtSpacing.section.lg },
         alignItems: 'start',
       }}
     >
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateRows: 'auto auto',
-          gap: jtSpacing.section.sm,
-        }}
-      >
-        <Box>
+      <PriorityControls weights={weights} onChange={setWeight} />
+
+      {/* Current ranking, linked row by row to the equal-weight ranking. */}
+      <Box>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: ranking.columns.linked,
+            columnGap: jtSpacing.gap.sm,
+            alignItems: 'end',
+          }}
+        >
           <Stack
             direction="row"
-            spacing={jtSpacing.gap.sm}
-            sx={{ alignItems: 'center', mb: jtSpacing.component.lg }}
+            sx={{ justifyContent: 'space-between', alignItems: 'end', mb: jtSpacing.component.sm }}
           >
-            <TuneRoundedIcon sx={{ color: 'primary.main' }} />
             <Typography variant="h4" component="h3">
-              Set your priorities
+              Your ranking
             </Typography>
+            <Typography variant="captionSmall">Weighted score</Typography>
           </Stack>
-          <Stack spacing={jtSpacing.component.md}>
-            {TEAMS.map((team, index) => (
-              <Box key={team.key}>
-                <Stack
-                  direction="row"
-                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                >
-                  <Stack
-                    direction="row"
-                    spacing={jtSpacing.gap.xs}
-                    sx={{ alignItems: 'center', color: team.color }}
-                  >
-                    <TeamIcon team={team.key} size={18} />
-                    <Typography variant="navigationLabel" sx={{ color: 'common.white' }}>
-                      {team.name}
-                    </Typography>
-                  </Stack>
-                  <Typography variant="chartValueLarge">×{weights[index]}</Typography>
-                </Stack>
-                <Slider
-                  min={0}
-                  max={3}
-                  step={0.5}
-                  value={weights[index]}
-                  onChange={(_, value) =>
-                    setWeights((current) =>
-                      current.map((weight, i) => (i === index ? (value as number) : weight)),
-                    )
-                  }
-                  aria-label={`${team.name} priority weight`}
-                  sx={{ color: team.color }}
-                />
-              </Box>
-            ))}
-          </Stack>
-        </Box>
-        <Box>
-          <Typography variant="h4" component="h3" sx={{ mb: jtSpacing.gap.sm }}>
-            Starting points
+          <Box sx={{ display: { xs: 'none', md: 'block' } }} />
+          <Typography
+            variant="h4"
+            component="h3"
+            sx={{
+              display: { xs: 'none', md: 'block' },
+              mb: jtSpacing.component.sm,
+              color: 'base.100',
+            }}
+          >
+            Equal weights
           </Typography>
-          <Stack direction="row" useFlexGap spacing={jtSpacing.gap.xs} sx={{ flexWrap: 'wrap' }}>
-            {WEIGHT_PRESETS.slice(0, 4).map((preset) => (
-              <Button
-                key={preset.name}
-                size="small"
-                variant="outlined"
-                onClick={() => setWeights([...preset.weights])}
-              >
-                {preset.name}
-              </Button>
-            ))}
-          </Stack>
-        </Box>
-      </Box>
 
-      <Box>
-        <Stack
-          direction="row"
-          sx={{ justifyContent: 'space-between', alignItems: 'end', mb: jtSpacing.component.sm }}
-        >
-          <Typography variant="h4" component="h3">
-            Your ranking
-          </Typography>
-          <Typography variant="captionSmall">Weighted score</Typography>
-        </Stack>
-        <Box sx={{ position: 'relative' }}>
-          <ZeroGuide breakpoint="sm" offset={116} />
-          {ranking.map((scenario, index) => {
-            const provisional = scenario.provisional.some(
-              (value, teamIndex) => value && weights[teamIndex] > 0,
-            )
-            return (
-              <Box
-                key={scenario.name}
-                sx={{
-                  position: 'relative',
-                  zIndex: 1,
-                  display: 'grid',
-                  gridTemplateColumns: {
-                    xs: '36px minmax(0, 1fr) 56px',
-                    sm: '42px 210px minmax(80px, 1fr) 56px',
-                  },
-                  gap: jtSpacing.gap.sm,
-                  alignItems: 'center',
-                  minHeight: 58,
-                  borderTop: 1,
-                  borderColor: 'border.subtle',
-                }}
-              >
-                <Typography variant="numberArticle">
-                  {String(index + 1).padStart(2, '0')}
-                </Typography>
-                <Typography variant="navigationLabel">{scenario.name}</Typography>
-                <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                  <ScoreBar score={scenario.wAvg} provisional={provisional} />
-                </Box>
-                <Typography
-                  variant="chartValueLarge"
-                  sx={(theme) => ({ textAlign: 'right', color: scoreColor(scenario.wAvg, theme) })}
-                >
-                  {fmtScore(scenario.wAvg)}
-                </Typography>
-              </Box>
-            )
-          })}
+          <CurrentRanking scenarios={scenarios} weights={weights} />
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+            <RankingLinks scenarios={scenarios} />
+          </Box>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+            <EqualRanking />
+          </Box>
         </Box>
         <Box sx={{ mt: jtSpacing.component.md }}>
           <Legend />

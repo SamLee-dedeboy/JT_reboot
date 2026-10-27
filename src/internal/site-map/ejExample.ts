@@ -34,13 +34,9 @@ export const ejMethodologyExample: ProposedPage = {
     {
       label: 'Why does it matter?',
       children: [
-        ...(story.why.stat ? [{ label: story.why.stat.value, detail: story.why.stat.label }] : []),
+        ...(story.why.stats ?? []).map((stat) => ({ label: stat.value, detail: stat.label })),
         ...(story.why.quote ? [{ label: 'Interview quote', detail: story.why.quote }] : []),
       ],
-    },
-    {
-      label: 'How was it constructed?',
-      children: story.construction.steps.map((step) => ({ label: step.title, detail: step.body })),
     },
     ...(regions
       ? [
@@ -56,6 +52,10 @@ export const ejMethodologyExample: ProposedPage = {
     {
       label: 'What are its components?',
       children: story.components.items.map((item) => ({ label: item.name, detail: item.summary })),
+    },
+    {
+      label: 'How was it constructed?',
+      children: story.construction.steps.map((step) => ({ label: step.title, detail: step.body })),
     },
     { label: 'References', detail: story.source },
   ],

@@ -419,7 +419,7 @@ function recMean(
 }
 
 const REC_SLR_NOTE =
-  'With sea level rise, against the SLR run’s own Business as Usual: the same activities, regions and periods for Business as Usual, Bolster & Fortify, Eco Machine and New Green Watershed. Calling on Reserves and A Tunnel were not run with sea level rise.'
+  'With sea level rise, against the SLR run’s own Business as Usual: the same activities, regions and periods for every scenario. Calling on Reserves and A Tunnel are CalSim runs, scored against CalSim’s own Business as Usual with sea level rise.'
 
 function recSlrSources(metric: 'salinity' | 'temperature'): Source[] {
   const book =
@@ -461,7 +461,7 @@ function recActivityNode(
     provenance: 'reported',
     unit: 'score',
     betterHigher: true,
-    note: `The subteam’s own score for this activity, by region and period: one point per percentage point of days over the threshold against Business as Usual, ±5 at five points or more. Threshold: ${threshold}. ${spec.season}.`,
+    note: `The subteam’s own score for this activity, by region and period: one point per percentage point of days over the threshold against Business as Usual, ±5 at five points or more. Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual instead. Threshold: ${threshold}. ${spec.season}.`,
     places: REC_PLACES,
     periods: SEASON_FACETS,
     values: recValues(scores, spec.key),
@@ -476,7 +476,7 @@ function recActivityNode(
         provenance: 'reported',
         unit: 'share',
         betterHigher: false,
-        note: `Proportion of days whose daily mean crosses the ${metric} threshold (${threshold}), at 32 points in 4 regions, Oct 2018–Dec 2020. The score above is read from this.`,
+        note: `Proportion of days whose daily mean crosses the ${metric} threshold (${threshold}), at 32 points in 4 regions, Oct 2018–Dec 2020. The score above is read from this. Calling on Reserves and A Tunnel come from CalSim runs, whose own Business as Usual differs from RMA’s, so their days compare with each other rather than with the Business as Usual column here.`,
         places: REC_PLACES,
         periods: SEASON_FACETS,
         values: recValues(days, spec.key),
@@ -533,8 +533,9 @@ function byRecRegion(by: Partial<Record<ScenarioKey, (number | null)[]>>) {
  * Recreation's "Overall $" sheet (26 Oct 2026) as published, $M a year (2025): New
  * Green Watershed's 50% restoration and Business as Usual (existing protected land,
  * CPAD) by Delta region, with New Green Watershed's −5…+5 score against Business
- * as Usual (Delta-wide first, as the sheet scores it). The sheet has no column for
- * the other four scenarios.
+ * as Usual (Delta-wide first, as the sheet scores it). `emAdded` is what Eco
+ * Machine's restoration adds on top of Business as Usual, Delta-wide only
+ * ("Recreation The Score.xlsx", table 2), where every service scores +5.
  */
 const REC_ECONOMY_SERVICES: {
   key: string
@@ -542,6 +543,7 @@ const REC_ECONOMY_SERVICES: {
   ngw: number[]
   bau: number[]
   score: number[]
+  emAdded: number
 }[] = [
   {
     key: 'amenity',
@@ -549,6 +551,7 @@ const REC_ECONOMY_SERVICES: {
     ngw: [15.613, 15.747, 20.865, 23.127],
     bau: [6.757, 8.875, 20.865, 3.845],
     score: [5, 5, 5, 0, 5],
+    emAdded: 16.127,
   },
   {
     key: 'biodiversity',
@@ -556,6 +559,7 @@ const REC_ECONOMY_SERVICES: {
     ngw: [6.791, 6.849, 9.075, 10.059],
     bau: [2.939, 3.86, 9.075, 1.672],
     score: [5, 5, 5, 0, 5],
+    emAdded: 7.015,
   },
   {
     key: 'hunting',
@@ -563,6 +567,7 @@ const REC_ECONOMY_SERVICES: {
     ngw: [3.903, 3.937, 5.216, 5.782],
     bau: [1.689, 2.219, 5.216, 0.961],
     score: [5, 5, 5, 0, 5],
+    emAdded: 4.032,
   },
   {
     key: 'fishing',
@@ -570,46 +575,78 @@ const REC_ECONOMY_SERVICES: {
     ngw: [11.868, 11.97, 15.86, 17.58],
     bau: [5.136, 6.746, 15.86, 2.923],
     score: [5, 5, 5, 0, 5],
+    emAdded: 12.259,
   },
 ]
 
-/** The criterion score: the salinity metric's Delta-wide, whole-run mean, lifted to a flat value. */
+/**
+ * The criterion score as Recreation computes it ("Recreation The Score.xlsx", 26 Oct
+ * 2026): the whole-run activity means for salinity and temperature, today and with
+ * sea level rise, averaged with equal weight, (A + A SLR + B + B SLR) / 4, at each
+ * place. It reproduces the sheet's Delta-wide and regional tables.
+ */
 function recCriterion(
-  mean: Partial<Record<ScenarioKey, SliceValues>>,
+  ...means: Partial<Record<ScenarioKey, SliceValues>>[]
 ): Partial<Record<ScenarioKey, SliceValues>> {
-  return Object.fromEntries(
-    Object.entries(mean).map(([scenario, series]) => [
-      scenario,
-      { [sliceKey(ANY, ANY)]: series?.[sliceKey('delta', 'run')] ?? null },
-    ]),
-  )
+  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
+  for (const scenario of Object.keys(means[0]) as ScenarioKey[]) {
+    const series: SliceValues = {}
+    for (const place of REC_PLACES) {
+      const parts = means.map((mean) => mean[scenario]?.[sliceKey(place.key, 'run')] ?? null)
+      series[sliceKey(place.key, ANY)] = parts.some((part) => part === null)
+        ? null
+        : Math.round(
+            (parts.reduce<number>((sum, part) => sum + (part ?? 0), 0) / parts.length) * 10000,
+          ) / 10000
+    }
+    out[scenario] = series
+  }
+  return out
 }
-const REC_CRITERION = recCriterion(REC_SALINITY_MEAN)
+const REC_CRITERION = recCriterion(
+  REC_SALINITY_MEAN,
+  REC_SLR_SALINITY_MEAN,
+  REC_TEMPERATURE_MEAN,
+  REC_SLR_TEMPERATURE_MEAN,
+)
+
+const REC_SCORE_SOURCE: Source = {
+  doc: 'data',
+  where: 'Recreation The Score.xlsx (Recreation, 26 Oct 2026) · Recreation Score · tables 1 and 4',
+  quote:
+    'RECREATION: THE SCORE — BAU 0, BAF 0, ECO −0.375, NGW −0.375, COR vs CS 0.0625, Tunnel vs CS −0.125. Table 1 combines Standard + SLR hydrology: (A Std + A SLR + B Std + B SLR) / 4.',
+}
 
 const RECREATION: CriterionNode = {
   id: 'recreation',
   label: 'Recreation',
   level: 'team',
   team: 'recreation',
-  provenance: 'inferred',
+  provenance: 'reported',
   unit: 'score',
   betterHigher: true,
-  note: 'The subteam now scores each activity itself, by region and by season (its 18 Oct 2026 workbooks), but publishes no criterion score. This value is the mean of its four salinity activity scores, Delta-wide, whole run: Bolster & Fortify 0, Eco Machine −1, New Green Watershed −1, Calling on Reserves −2.5, A Tunnel −4. Temperature scores are 0 Delta-wide for every scenario and are left out.',
-  places: NO_FACET,
+  note: 'Recreation’s own score (26 Oct 2026): the mean of four equally weighted parts, salinity and temperature, each today and with sea level rise, where each part is the mean of its activity scores over the whole run. Delta-wide: Calling on Reserves +0.06, Business as Usual and Bolster & Fortify 0, A Tunnel −0.13, Eco Machine and New Green Watershed −0.38. Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual. Suisun Marsh drives the losses (Eco Machine and New Green Watershed −1.83 there) and the Central Delta the gains (+0.56). Habitat restoration and recreation economy are scored separately and do not enter it.',
+  places: REC_PLACES,
   periods: NO_FACET,
   values: REC_CRITERION,
-  slr: recSlr('salinity', recCriterion(REC_SLR_SALINITY_MEAN)),
+  sources: [REC_SCORE_SOURCE],
+  // The score already blends both climates, so it reads the same under either.
+  slr: {
+    values: REC_CRITERION,
+    note: 'Recreation’s score already averages today’s runs with the sea-level-rise runs, so it is the same under either climate.',
+    sources: [REC_SCORE_SOURCE],
+  },
   children: [
     {
       id: 'rec-salinity',
       label: 'Salinity thresholds',
       level: 'metric',
       team: 'recreation',
-      edge: 'derives',
-      provenance: 'inferred',
+      edge: 'averages',
+      provenance: 'reported',
       unit: 'score',
       betterHigher: true,
-      note: 'The mean of the four activity scores at each region and period; the criterion score is its Delta-wide, whole-run value. Exceedance concentrates in Suisun Marsh and the Central Delta, while the North and South Delta sit at 0% for every activity. A Tunnel is the worst scenario, −2 to −5 in Suisun Marsh and the Central Delta, and Calling on Reserves the second worst. Bolster & Fortify scores 0 everywhere but one cell.',
+      note: 'The mean of the four activity scores at each region and period (Recreation’s component A). Its whole-run value, today and with sea level rise, makes up half of the criterion score. Exceedance concentrates in Suisun Marsh and the Central Delta, while the North and South Delta sit near 0% for every activity. Eco Machine and New Green Watershed lose heavily in Suisun Marsh (−4 to −5 for birding, waterfowl and angling) and gain in the Central Delta. Against CalSim’s Business as Usual, A Tunnel is slightly worse and Calling on Reserves slightly better. Bolster & Fortify scores 0 everywhere but the Central Delta’s day use.',
       places: REC_PLACES,
       periods: SEASON_FACETS,
       values: REC_SALINITY_MEAN,
@@ -630,11 +667,11 @@ const RECREATION: CriterionNode = {
       label: 'Temperature thresholds',
       level: 'metric',
       team: 'recreation',
-      edge: 'beside',
-      provenance: 'inferred',
+      edge: 'averages',
+      provenance: 'reported',
       unit: 'score',
       betterHigher: true,
-      note: 'The same construction against temperature thresholds, for the four scenarios run so far; Calling on Reserves and A Tunnel are pending. Every Delta-wide score is 0 and Suisun Marsh is the only region that moves (±1), so this metric is kept beside the criterion score rather than in it. Dry seasons drive the crossings; cold water matters only for day use, in wet seasons.',
+      note: 'The same construction against temperature thresholds over five activities (Recreation’s component B); its whole-run value, today and with sea level rise, makes up the other half of the criterion score. Over the whole run every scenario is 0 Delta-wide; the only regional moves are New Green Watershed and Eco Machine’s cold-water day use in Suisun Marsh (+1) and A Tunnel’s waterfowl in the Central and North Delta (−1). Dry seasons drive the crossings; cold water matters only for day use, in wet seasons.',
       places: REC_PLACES,
       periods: SEASON_FACETS,
       values: REC_TEMPERATURE_MEAN,
@@ -1145,11 +1182,16 @@ function recService(spec: (typeof REC_ECONOMY_SERVICES)[number]): CriterionNode 
     provenance: 'reported',
     unit: 'dollars',
     betterHigher: true,
-    note: 'Yearly value in 2025 dollars as Recreation’s “Overall $” sheet gives it: New Green Watershed at 50% restoration, Business as Usual as existing protected land. The score beside each value is the team’s, against Business as Usual: 1 point per 1% more value, capped at ±5. North Delta has no restoration at 50%, so the sheet carries its existing protected land and scores it 0.',
+    note: 'Yearly value in 2025 dollars as Recreation’s “Overall $” sheet gives it: New Green Watershed at 50% restoration, Business as Usual as existing protected land. Eco Machine is Business as Usual plus what its restoration adds, Delta-wide only (“Recreation The Score.xlsx”, 26 Oct 2026). The score beside each value is the team’s, against Business as Usual: 1 point per 1% more value, capped at ±5. North Delta has no restoration at 50%, so the sheet carries its existing protected land and scores it 0.',
     places: REC_PLACES,
     periods: NO_FACET,
-    values: byRecRegion({ ngw: spec.ngw, bau: spec.bau }),
-    ranks: byRecPlace({ ngw: spec.score, bau: spec.score.map(() => 0) }),
+    values: {
+      ...byRecRegion({ ngw: spec.ngw, bau: spec.bau }),
+      ...byRecPlace({
+        em: [Math.round((spec.bau.reduce((sum, v) => sum + v, 0) + spec.emAdded) * 1000) / 1000],
+      }),
+    },
+    ranks: byRecPlace({ ngw: spec.score, bau: spec.score.map(() => 0), em: [5] }),
   }
 }
 
@@ -1548,10 +1590,9 @@ const SOURCES: Record<string, Source[]> = {
   // --- Recreation ---
   recreation: [
     {
-      doc: 'ours',
-      where: 'Mean change in threshold exceedance against Business as Usual',
-      quote:
-        'Recreation publishes no score at any level. We average the five activities’ change in exceedance against Business as Usual and negate it, because a higher share of days over threshold is the worse outcome.',
+      doc: 'data',
+      where: 'Recreation The Score.xlsx (Recreation, 26 Oct 2026) · Recreation Score · table 1',
+      quote: 'Table 1 combines Standard + SLR hydrology: (A Std + A SLR + B Std + B SLR) / 4.',
     },
     {
       doc: 'report',
@@ -1568,10 +1609,9 @@ const SOURCES: Record<string, Source[]> = {
         'Scenario rankings (-5 to 5 vs BAU) reflect that BAF is effectively the same as BAU, scoring at 0, except for one instance for Central Delta Day use (Total Run). Tunnel performs the worst, scoring -2 to -5 across both Suisun Marsh and the Central Delta, and is the only scenario that pushes Southern Delta boating and day uses over the threshold during wet seasons (84%) or greater than a -5 move on the charts. Calling on Reserves (COR) is the second worst scenario across Suisun and the Central Delta, but having one surprising movement of (+2) in the wet seasons.',
     },
     {
-      doc: 'ours',
-      where: 'Mean of the four activity scores',
-      quote:
-        'The criterion score is the mean of day use and boating, birding, waterfowl and angling, Delta-wide, whole run.',
+      doc: 'data',
+      where: 'Recreation The Score.xlsx (Recreation, 26 Oct 2026) · Recreation Score · table 4',
+      quote: 'each A/B = average of activity scores in that region',
     },
   ],
   'rec-temperature': [

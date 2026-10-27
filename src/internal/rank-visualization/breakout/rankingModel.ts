@@ -218,22 +218,33 @@ function thresholdRow(id: string, label: string, note: string): CriterionNode {
   return adapt(base, {
     label,
     note,
-    // The team scores activities and stops there; their mean is ours, so the row
-    // shows the activities' ranks instead of a number of its own.
-    values: {},
-    provenance: 'reported',
     entityNoun: 'activity',
-    slr: base.slr && { ...base.slr, values: {} },
     children: (base.children ?? []).map(activity),
   })
 }
 
 const NOT_BROKEN_OUT: Facet[] = [{ key: ANY, label: 'Not broken out' }]
 
+/** The scoring email that sets every scenario restoring nothing at 0. */
+const SCORING_EMAIL: Source = {
+  doc: 'ours',
+  where: 'Recreation scoring email, 22 Oct 2026',
+  quote:
+    'BAU, BAF, COR, TUN → all will be scored at 0. Eco Machine and New Green Watershed (the 50-50 regime) are for Recreation to score.',
+}
+
+/** Recreation's restoration table: habitat (C) and economy (D), each kept apart from its score. */
+const RESTORATION_SCORE: Source = {
+  doc: 'data',
+  where: 'Recreation The Score.xlsx (Recreation, 26 Oct 2026) · Recreation Score · table 3',
+  quote:
+    'C — Habitat (restored acres): BAU 0, ECO 5, NGW Lower/Middle/Upper 5. D — Economy ($): BAU 0, ECO 5, NGW 5. C and D treat restoration as added on top of BAU protected areas.',
+}
+
 /**
- * Habitat restoration as a ranking score, with Recreation's acres beneath it. The
- * scoring email sets the four scenarios that restore nothing at 0; Recreation has
- * not scored Eco Machine or New Green Watershed against Business as Usual.
+ * Habitat restoration as a ranking score, with Recreation's acres beneath it: +5 for
+ * Eco Machine and New Green Watershed (every bound), 0 for the scenarios that
+ * restore nothing.
  */
 function habitatRestoration(): CriterionNode {
   const acres = node('rec-restoration')
@@ -242,19 +253,9 @@ function habitatRestoration(): CriterionNode {
     edge: 'beside',
     unit: 'score',
     places: NOT_BROKEN_OUT,
-    // Eco Machine and New Green Watershed are stand-ins, shown as "awaiting subteam".
-    values: flat({ bau: 0, bf: 0, cor: 0, tunnel: 0, em: 0, ngw: 0 }),
-    inferredFor: ['em', 'ngw'],
-    sources: [
-      {
-        doc: 'ours',
-        where: 'Recreation scoring email, 22 Oct 2026',
-        quote:
-          'BAU, BAF, COR, TUN → all will be scored at 0. Eco Machine and New Green Watershed (the 50-50 regime) are for Recreation to score.',
-      },
-      ...sourcesFor('rec-restoration'),
-    ],
-    note: 'Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Eco Machine and New Green Watershed are awaiting Recreation’s scores; the workbook’s own acre scores compare New Green Watershed’s versions with each other, not scenarios with Business as Usual. Open the row for the acres Recreation reports.',
+    values: flat({ bau: 0, bf: 0, cor: 0, tunnel: 0, em: 5, ngw: 5 }),
+    sources: [RESTORATION_SCORE, SCORING_EMAIL, ...sourcesFor('rec-restoration')],
+    note: 'Recreation scores restored acres added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound (25, 50 and 100%). Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for the acres Recreation reports.',
     children: [
       adapt(acres, {
         id: 'bk-rec-restoration-acres',
@@ -268,17 +269,20 @@ function habitatRestoration(): CriterionNode {
 }
 
 /**
- * Recreation economy as Recreation publishes it: a score per service and no single
- * score, so the row reads "per service" and its services carry the ranks. The
- * "Overall $" sheet has columns for New Green Watershed and Business as Usual only.
+ * Recreation economy as a ranking score (Recreation's component D), with each
+ * service's dollars and score beneath it: +5 for Eco Machine and New Green
+ * Watershed, 0 for the scenarios that restore nothing.
  */
 function recreationEconomy(): CriterionNode {
   const economy = node('rec-economy')
   return adapt(economy, {
     edge: 'beside',
+    unit: 'score',
+    places: NOT_BROKEN_OUT,
+    values: flat({ bau: 0, bf: 0, cor: 0, tunnel: 0, em: 5, ngw: 5 }),
     entityNoun: 'service',
-    // The "Overall $" sheet covers New Green Watershed (against Business as Usual) only,
-    // so each service is a version of that scenario and the other columns read "NGW only".
+    sources: [RESTORATION_SCORE, SCORING_EMAIL, ...sourcesFor('rec-economy')],
+    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound; every service scores +5 for both. Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
     children: (economy.children ?? []).map((service) => adapt(service, { edge: 'refines' })),
   })
 }
@@ -289,12 +293,12 @@ function recreationTree(): CriterionNode {
       thresholdRow(
         'rec-salinity',
         'Salinity thresholds',
-        'Each activity is scored on its proportion of days over its salinity threshold: day use & boating 1,000 µS/cm, birding 2,640, waterfowl hunting 3,600, angling 9,130. One point per percentage point against Business as Usual, ±5 at five or more. Open the row for each activity’s days over the threshold with its score beside it.',
+        'Each activity is scored on its proportion of days over its salinity threshold: day use & boating 1,000 µS/cm, birding 2,640, waterfowl hunting 3,600, angling 9,130. One point per percentage point against Business as Usual (CalSim’s, for Calling on Reserves and A Tunnel), ±5 at five or more. The mean of the four, today and with sea level rise, is half of the Recreation score. Open the row for each activity’s days over the threshold with its score beside it.',
       ),
       thresholdRow(
         'rec-temperature',
         'Temperature thresholds',
-        'The same construction against water temperature: 19 °C for day use & boating, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, < 18 °C cold-water day use. Calling on Reserves and A Tunnel have no temperature runs.',
+        'The same construction against water temperature: 19 °C for day use & boating, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, < 18 °C cold-water day use. The mean of the five activities, today and with sea level rise, is the other half of the Recreation score.',
       ),
       habitatRestoration(),
       recreationEconomy(),

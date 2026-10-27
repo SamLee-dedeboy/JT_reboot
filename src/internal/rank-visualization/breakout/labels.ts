@@ -207,31 +207,34 @@ export const RANKING_DEFINITIONS: Record<string, { basedOn: string; rule: string
 
     // Recreation
     'bk-recreation': {
-      basedOn: 'The activities’ salinity and temperature scores.',
-      rule: 'Recreation publishes no single score, so the table shows none until the team sets one.',
+      basedOn:
+        'The activities’ salinity and temperature scores over the whole run, today and with sea level rise.',
+      rule: 'Recreation’s own score (26 Oct 2026): average the activity scores into salinity and temperature, then average those four parts with equal weight, (A + A SLR + B + B SLR) / 4. Not rounded.',
+      note: 'Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual. Habitat restoration and recreation economy are scored separately and do not enter it.',
     },
     'bk-rec-salinity': {
       basedOn:
         'Each activity’s proportion of days over its salinity threshold: day use and boating 1,000 µS/cm, birding 2,640, waterfowl hunting 3,600, angling 9,130.',
-      rule: '−1 per percentage point more days over the threshold than Business as Usual, +1 per point fewer; ±5 at five points or more. Each activity is scored on its own.',
+      rule: '−1 per percentage point more days over the threshold than Business as Usual, +1 per point fewer; ±5 at five points or more. Each activity is scored on its own, and the row is their mean.',
+      note: 'Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual.',
     },
     'bk-rec-temperature': {
       basedOn:
         'Each activity’s proportion of days over its temperature threshold: 19 °C day use and boating, 20 °C birding, 23 °C waterfowl hunting, 18.4 / 22.3 °C angling, below 18 °C cold-water day use.',
-      rule: '−1 per percentage point more days over the threshold than Business as Usual, +1 per point fewer; ±5 at five points or more. Each activity is scored on its own.',
-      note: 'Calling on Reserves and A Tunnel have no temperature runs.',
+      rule: '−1 per percentage point more days over the threshold than Business as Usual, +1 per point fewer; ±5 at five points or more. Each activity is scored on its own, and the row is their mean.',
+      note: 'Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual.',
     },
     'bk-rec-restoration': {
       basedOn:
         'Restored acres from Recreation’s “Overall Restoration (Acres)” sheet, by Delta region: Eco Machine 41,720 in Suisun Marsh and 1,380 in the Central Delta; New Green Watershed at its 50% bound 41,720, 66,947, 283,904 and 277,681 (Suisun, Central, North, South).',
-      rule: 'Scenarios that restore nothing score 0 (scoring email, 22 Oct 2026). Recreation scores Eco Machine and New Green Watershed.',
-      note: 'Eco Machine and New Green Watershed are awaiting Recreation’s scores.',
+      rule: 'Restored acres added on top of Business as Usual’s protected areas: Eco Machine +5, New Green Watershed +5 at every bound (26 Oct 2026). Scenarios that restore nothing score 0 (scoring email, 22 Oct 2026).',
+      note: 'Kept apart from the Recreation score.',
     },
     'bk-rec-economy': {
       basedOn:
-        'The yearly value of four recreation services (amenity and recreation, biodiversity, recreational hunting, recreational fishing) for New Green Watershed at 50% restoration and for Business as Usual’s existing protected land, by Delta region (Recreation’s “Overall $” sheet).',
-      rule: '+1 per 1% more value than Business as Usual, ±5 at most. Each service is scored on its own; the team publishes no single economy score.',
-      note: 'Eco Machine, Bolster & Fortify, Calling on Reserves and A Tunnel are awaiting Recreation.',
+        'The yearly value of four recreation services (amenity and recreation, biodiversity, recreational hunting, recreational fishing) on restored land, added on top of Business as Usual’s existing protected land: New Green Watershed by Delta region (“Overall $” sheet), Eco Machine Delta-wide.',
+      rule: '+1 per 1% more value than Business as Usual, ±5 at most: Eco Machine +5, New Green Watershed +5 at every bound (26 Oct 2026). Scenarios that restore nothing score 0 (scoring email, 22 Oct 2026).',
+      note: 'Kept apart from the Recreation score.',
     },
 
     // Environmental justice

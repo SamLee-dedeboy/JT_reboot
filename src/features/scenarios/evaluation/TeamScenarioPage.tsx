@@ -20,7 +20,7 @@ export default function TeamScenarioPage() {
   if (!team || !scenario || !isEvaluatedScenario(scenarioSlug)) {
     return (
       <Navigate
-        to={scenario ? `/scenarios/${scenario.slug}/results` : '/scenarios/results'}
+        to={scenario ? `/scenarios/${scenario.slug}/results` : '/scenarios/evaluation'}
         replace
       />
     )
@@ -209,7 +209,7 @@ export default function TeamScenarioPage() {
                 variant="contained"
                 endIcon={<ArrowForwardIcon />}
               >
-                Same team, another future
+                Compare this criterion across scenarios
               </Button>
               <Button
                 component={Link}
@@ -217,7 +217,7 @@ export default function TeamScenarioPage() {
                 variant="outlined"
                 sx={{ color: 'common.white', borderColor: 'base.300' }}
               >
-                How this team evaluated
+                How this criterion was evaluated
               </Button>
               <Button
                 component={Link}

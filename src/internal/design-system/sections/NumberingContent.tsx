@@ -95,6 +95,31 @@ export default function NumberingContent() {
 
       <Box sx={displayItemSx}>
         <Box sx={{ display: 'flex', gap: jtSpacing.gap.sm, alignItems: 'baseline' }}>
+          <Typography
+            variant="numberRank"
+            component="span"
+            sx={{ width: theme.numbering.rank.width }}
+          >
+            3rd
+          </Typography>
+        </Box>
+        <Typography variant="body2">
+          Ranking place, on the performance and ranking charts.
+        </Typography>
+        <ComponentMeta>
+          <StyleLine token>
+            Typography uses MUI `numberRank` variant: numberArticle&apos;s size, not uppercased, so
+            the ordinal suffix reads as a word.
+          </StyleLine>
+          <StyleLine token>
+            Reserved rank column width uses `theme.numbering.rank.width`; chart rows use
+            `theme.ranking` geometry.
+          </StyleLine>
+        </ComponentMeta>
+      </Box>
+
+      <Box sx={displayItemSx}>
+        <Box sx={{ display: 'flex', gap: jtSpacing.gap.sm, alignItems: 'baseline' }}>
           <Typography variant="numberTimeline" component="div">
             2025
           </Typography>

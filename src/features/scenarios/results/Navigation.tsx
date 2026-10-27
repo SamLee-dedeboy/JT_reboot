@@ -1,6 +1,6 @@
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, navigation } from '../../../theme'
 import { outflowResultVariations, resultFamilies } from '../content'
 
 export type ResultFamily = (typeof resultFamilies)[number]['id']
@@ -48,7 +48,7 @@ export function OutflowTabs({ activeVariation }: { activeVariation: string }) {
       aria-label="Outflow variations"
       sx={{
         position: 'sticky',
-        top: { xs: 72, md: 76 },
+        top: navigation.barHeight,
         zIndex: 90,
         bgcolor: 'base.700',
         borderTop: 1,

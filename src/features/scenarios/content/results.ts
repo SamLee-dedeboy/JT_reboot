@@ -160,13 +160,7 @@ export const evaluationTeams = [
     entityGroups: [
       {
         label: 'People',
-        items: [
-          'Anglers',
-          'Marina boaters',
-          'Birdwatchers',
-          'Waterfowl hunters',
-          'State-park and day-use visitors',
-        ],
+        items: ['Anglers', 'Birders', 'Boaters', 'Day-use visitors', 'Waterfowl hunters'],
       },
       {
         label: 'Places',
@@ -253,7 +247,7 @@ export const resultFamilies = [
   {
     id: 'overview',
     label: 'Overview',
-    href: '/scenarios/results',
+    href: '/scenarios/modeling',
   },
   {
     id: 'outflow',

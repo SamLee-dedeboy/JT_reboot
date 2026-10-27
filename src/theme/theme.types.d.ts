@@ -4,7 +4,7 @@ import type { coDesign } from './coDesign'
 import type { map } from './map'
 import type { palette } from './palette'
 import type { jtSpacing } from './spacing'
-import type { highlighter, logoWordmark, navigation, numbering } from './theme'
+import type { highlighter, logoWordmark, navigation, numbering, ranking } from './theme'
 
 declare module '@mui/material/styles' {
   interface TypographyVariants {
@@ -33,6 +33,7 @@ declare module '@mui/material/styles' {
     chartValueLarge: CSSProperties
     numberGhost: CSSProperties
     numberArticle: CSSProperties
+    numberRank: CSSProperties
     numberTimeline: CSSProperties
     numberBadge: CSSProperties
   }
@@ -72,6 +73,7 @@ declare module '@mui/material/styles' {
     map: typeof map
     chart: typeof chart
     coDesign: typeof coDesign
+    ranking: typeof ranking
   }
   interface ThemeOptions {
     jtSpacing?: typeof jtSpacing
@@ -82,6 +84,7 @@ declare module '@mui/material/styles' {
     map?: typeof map
     chart?: typeof chart
     coDesign?: typeof coDesign
+    ranking?: typeof ranking
   }
 }
 
@@ -112,6 +115,7 @@ declare module '@mui/material/Typography' {
     chartValueLarge: true
     numberGhost: true
     numberArticle: true
+    numberRank: true
     numberTimeline: true
     numberBadge: true
   }

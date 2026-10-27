@@ -19,12 +19,15 @@ as a layer beside the numbers, not a join onto them, until the gaps are filled.
 """
 import json
 import math
+import sqlite3
 import struct
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SHP = ROOT / "scripts/data/subteam-regions/subteam_regions"
+WEST_DELTA = ROOT / "scripts/data/subteam-regions/west_delta_merged.gpkg"
+ECO_BAYS = ROOT / "scripts/data/subteam-regions/eco-bay-polygons.geojson"
 WATER = ROOT / "public/data/delta_waterway.geojson"
 OUT = ROOT / "src/internal/rank-visualization/subteams/regionShapes.ts"
 
@@ -38,11 +41,11 @@ PAD = 0.01
 # means the app has no values for that region; a key with no shapefile row means
 # the app has values the map cannot place.
 MISMATCH = """\
-//   Ecology      shapefile 6 regions, data has 8: no South Bay, Central Bay or
-//                San Pablo Bay outlines; "Central" ≈ centralDelta; "Suisun
-//                Marsh" has no data key (the report folds it into Suisun Bay).
-//   Economy      shapefile has the 3 water agencies; data has 4 zones. West
-//                Delta is missing.
+//   Ecology      all 8 data regions are mapped; "Central" ≈ centralDelta and
+//                "Suisun Marsh" has no data key (the report folds it into
+//                Suisun Bay).
+//   Economy      the shapefile's 3 water-agency regions are supplemented by
+//                the merged West Delta polygon; all 4 data zones are mapped.
 //   Recreation   shapefile has Suisun Bay / Confluence / North / South Delta;
 //                data has suisunMarsh / centralDelta / northDelta / southDelta,
 //                and the activity values are not stored per place at all.
@@ -94,6 +97,31 @@ def read_shp(path):
             rings.append([(pts[2 * j], pts[2 * j + 1]) for j in range(s, e)])
         shapes.append(rings)
     return shapes
+
+
+def read_gpkg_polygon(path, table):
+    """Read the first Polygon from a GeoPackage without requiring GDAL."""
+    with sqlite3.connect(path) as connection:
+        column = connection.execute(
+            "SELECT column_name FROM gpkg_geometry_columns WHERE table_name = ?", (table,)
+        ).fetchone()[0]
+        blob = connection.execute(f'SELECT "{column}" FROM "{table}" LIMIT 1').fetchone()[0]
+
+    flags = blob[3]
+    envelope_doubles = (0, 4, 6, 6, 8)[(flags >> 1) & 0b111]
+    data = memoryview(blob)[8 + envelope_doubles * 8 :]
+    endian = "<" if data[0] == 1 else ">"
+    geometry_type, ring_count = struct.unpack_from(f"{endian}II", data, 1)
+    if geometry_type != 3:
+        raise SystemExit(f"unsupported GeoPackage geometry type {geometry_type}; expected Polygon")
+    offset, rings = 9, []
+    for _ in range(ring_count):
+        point_count = struct.unpack_from(f"{endian}I", data, offset)[0]
+        offset += 4
+        coords = struct.unpack_from(f"{endian}{point_count * 2}d", data, offset)
+        offset += point_count * 16
+        rings.append([(coords[i], coords[i + 1]) for i in range(0, len(coords), 2)])
+    return rings
 
 
 def perp(p, a, b):
@@ -168,6 +196,44 @@ def main():
         {"team": TEAM[r["team"]], "name": r["type"], "rings": simplify(s, REGION_TOL, REGION_MIN_AREA)}
         for r, s in zip(rows, shapes)
     ]
+    economy_names = {
+        "North Delta Water Agency": "North Delta",
+        "Central Delta Water Agency": "Central Delta",
+        "South Delta Water Agency": "South Delta",
+    }
+    for region in regions:
+        if region["team"] == "economy":
+            region["name"] = economy_names.get(region["name"], region["name"])
+    regions.append(
+        {
+            "team": "economy",
+            "name": "West Delta",
+            "rings": simplify(
+                read_gpkg_polygon(WEST_DELTA, "west_delta_merged"),
+                REGION_TOL,
+                REGION_MIN_AREA,
+            ),
+        }
+    )
+    bay_features = json.loads(ECO_BAYS.read_text(encoding="utf-8"))["features"]
+    for feature in bay_features:
+        geometry = feature["geometry"]
+        polygon_rings = (
+            geometry["coordinates"]
+            if geometry["type"] == "Polygon"
+            else [ring for polygon in geometry["coordinates"] for ring in polygon]
+        )
+        regions.append(
+            {
+                "team": "ecology",
+                "name": feature["properties"]["title"],
+                "rings": simplify(
+                    [[tuple(point[:2]) for point in ring] for ring in polygon_rings],
+                    REGION_TOL,
+                    REGION_MIN_AREA,
+                ),
+            }
+        )
     geom = json.loads(WATER.read_text())["features"][0]["geometry"]
     wrings = geom["coordinates"] if geom["type"] == "Polygon" else [r for p in geom["coordinates"] for r in p]
     water = simplify([[tuple(p[:2]) for p in r] for r in wrings], WATER_TOL, WATER_MIN_AREA)
@@ -185,10 +251,36 @@ def main():
     def path(svg_rings):
         return "".join("M" + "L".join(f"{x} {y}" for x, y in r) + "Z" for r in svg_rings)
 
+    projected_regions = [
+        {**region, "svg_rings": [[project(*point) for point in ring] for ring in region["rings"]]}
+        for region in regions
+    ]
+    team_viewboxes = {}
+    for team in TEAM.values():
+        points = [
+            point
+            for region in projected_regions
+            if region["team"] == team
+            for ring in region["svg_rings"]
+            for point in ring
+        ]
+        if not points:
+            continue
+        team_xs, team_ys = zip(*points)
+        inset = 20
+        x, y = min(team_xs) - inset, min(team_ys) - inset
+        team_viewboxes[team] = {
+            "x": round(x, 1),
+            "y": round(y, 1),
+            "width": round(max(team_xs) - min(team_xs) + inset * 2, 1),
+            "height": round(max(team_ys) - min(team_ys) + inset * 2, 1),
+        }
+
     lines = [
         "// GENERATED by scripts/build-subteam-regions.py — do not edit by hand.",
         "//",
-        "// Source: scripts/data/subteam-regions/subteam_regions.shp (WGS84, Oct 2026) and",
+        "// Source: scripts/data/subteam-regions/subteam_regions.shp plus the merged West Delta",
+        "// GeoPackage and Ecology Bay polygons (WGS84, Oct 2026), and",
         "// the Delta waterway outline in public/data/delta_waterway.geojson, both",
         "// Douglas-Peucker simplified and projected once into one shared frame.",
         "//",
@@ -208,20 +300,21 @@ def main():
         "}",
         "",
         f"export const REGION_VIEWBOX = {{ width: {width}, height: {int(FRAME_HEIGHT)} }}",
+        f"export const REGION_TEAM_VIEWBOX = {json.dumps(team_viewboxes)} as const",
         "",
         "/** The Delta channels, as context behind the boundaries. */",
         f"export const WATERWAY_PATH = {json.dumps(path([[project(*p) for p in r] for r in water]))}",
         "",
         "export const REGION_SHAPES: RegionShape[] = [",
     ]
-    for g in regions:
-        svg_rings = [[project(*p) for p in r] for r in g["rings"]]
+    for g in projected_regions:
+        svg_rings = g["svg_rings"]
         label = pole(max(svg_rings, key=ring_area))
         lines.append(
             f"  {{ team: {json.dumps(g['team'])}, name: {json.dumps(g['name'])}, d: {json.dumps(path(svg_rings))}, label: [{label[0]}, {label[1]}] }},"
         )
     lines.append("]")
-    OUT.write_text("\n".join(lines) + "\n")
+    OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
     npts = sum(len(r) for g in regions for r in g["rings"]) + sum(len(r) for r in water)
     print(f"wrote {OUT.relative_to(ROOT)}: {len(regions)} regions, {len(water)} water rings, {npts} points, frame {width}×{int(FRAME_HEIGHT)}")
 

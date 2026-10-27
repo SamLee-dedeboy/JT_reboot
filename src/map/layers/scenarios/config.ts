@@ -139,6 +139,8 @@ function createScenarioAsset({
   legend,
   filter,
 }: ScenarioAssetOptions): SourceConfig {
+  // Mapbox rejects a layer whose `filter` key is present but undefined, so set it only when given.
+  const filterSpec = filter ? { filter } : {}
   return {
     id,
     type: 'geojson',
@@ -153,7 +155,7 @@ function createScenarioAsset({
               id: `${id}-fill`,
               type: 'fill' as const,
               source: id,
-              filter,
+              ...filterSpec,
               paint: {
                 'fill-color': color,
                 'fill-opacity': 0.62,
@@ -166,7 +168,7 @@ function createScenarioAsset({
         id: `${id}-line`,
         type: 'line',
         source: id,
-        filter,
+        ...filterSpec,
         paint: {
           'line-color': color,
           'line-opacity': 0.95,
@@ -684,7 +686,7 @@ export const configBySlug: Record<string, Config> = {
     showNavigationControl: true,
     legendActivation: 'adaptation',
     highlightFallbackColor: map.scenarios.ecoMachineLocations.suisunMarsh,
-    triggers: { adaptationLayers: 'chapter-2' },
+    triggers: { adaptationLayers: 'design-approach' },
     selectionBounds: {
       'suisun-marsh': [
         [-122.22, 38.02],
@@ -702,7 +704,7 @@ export const configBySlug: Record<string, Config> = {
     showNavigationControl: true,
     legendActivation: 'adaptation',
     highlightFallbackColor: map.scenarios.bolsterAndFortify.gates,
-    triggers: { adaptationLayers: 'chapter-2' },
+    triggers: { adaptationLayers: 'design-approach' },
     selectionBounds: {
       'operable-gates': [
         [-121.61, 38.01],
@@ -724,7 +726,7 @@ export const configBySlug: Record<string, Config> = {
     showNavigationControl: true,
     legendActivation: 'adaptation',
     highlightFallbackColor: map.scenarios.tunnel.facilities,
-    triggers: { adaptationLayers: 'chapter-2' },
+    triggers: { adaptationLayers: 'design-approach' },
     selectionBounds: {
       'tunnel-intakes': [
         [-121.58, 38.31],
@@ -756,8 +758,8 @@ export const configBySlug: Record<string, Config> = {
       'statewide-ecocultural': watershedOverviewBounds,
     },
     triggers: {
-      adaptationLayers: 'chapter-2',
-      statewide: 'chapter-3',
+      adaptationLayers: 'design-approach',
+      statewide: 'supporting-strategy',
       ecocultural: 'ecocultural-stewardship',
     },
   },

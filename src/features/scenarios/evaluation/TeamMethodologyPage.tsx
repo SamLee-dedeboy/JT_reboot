@@ -17,20 +17,20 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
-import { alpha } from '@mui/material/styles'
+import { alpha, type Theme } from '@mui/material/styles'
 import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Label } from '../../../internal/rank-visualization/subteams/RegionMap'
 import {
   REGION_SHAPES,
-  REGION_VIEWBOX,
+  REGION_TEAM_VIEWBOX,
   WATERWAY_PATH,
 } from '../../../internal/rank-visualization/subteams/regionShapes'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import StageChip from '../../../ui/StageChip'
-import NavRail from '../../../ui/NavRail'
+import PageRail from '../../../ui/PageRail'
 import TeamIcon from '../../../ui/TeamIcon'
 import {
   criterionReferences,
@@ -42,13 +42,15 @@ import {
 } from '../content'
 import { teamStyle } from '../teamStyle'
 import { findTeam, methodologyPath } from './paths'
+import { CitedText } from './citations'
+import { CitationContext, referenceId } from './citationContext'
 import { evaluationCardSx } from './styles'
 import { EvaluationHero, SectionHeading, TeamTabs } from './shared'
 
 export default function TeamMethodologyPage() {
   const { teamId } = useParams()
   const team = findTeam(teamId)
-  if (!team) return <Navigate to="/scenarios/results#evaluation-framework" replace />
+  if (!team) return <Navigate to="/scenarios/evaluation" replace />
   const story = criterionStories[team.id]
   const { color, icon } = teamStyle[team.id]
   const regions = criterionRegions[team.id]
@@ -59,7 +61,7 @@ export default function TeamMethodologyPage() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <EvaluationHero
-          image="/images/scenarios/cover.jpg"
+          image="/images/scenarios/web/cover.webp"
           title={team.label}
           summary={story.brief.what}
           summaryVariant="body1"
@@ -69,7 +71,7 @@ export default function TeamMethodologyPage() {
           <Box>
             <Button
               component={Link}
-              to="/scenarios/results"
+              to={`/scenarios/evaluation#${team.id}`}
               variant="outlined"
               startIcon={<ArrowBackIcon />}
               sx={{
@@ -78,115 +80,112 @@ export default function TeamMethodologyPage() {
                 '&:hover': { borderColor: color, bgcolor: alpha(color, 0.12) },
               }}
             >
-              Return to overview
+              Back to evaluation
             </Button>
           </Box>
         </EvaluationHero>
         <TeamTabs activeTeamId={team.id} hrefFor={methodologyPath} />
 
-        {/* Same frame as the results overview: 90dvw, rail column, padded content */}
+        {/* Hybrid-width frame: readable prose and wide map/table sections share one page. */}
         <Container
           maxWidth={false}
           sx={{
-            width: '90dvw',
+            width: jtSpacing.layout.hybrid.width,
             px: 0,
             pb: jtSpacing.section.xl,
             display: 'grid',
-            // The overview's three columns; content spans the last two, where its map sits
+            // Keep the rail track stable when the hybrid frame width changes.
             gridTemplateColumns: {
               xs: '1fr',
-              lg: 'minmax(180px, .3fr) minmax(0, 1fr) minmax(360px, .92fr)',
+              lg: '240px minmax(0, 1fr) minmax(360px, .92fr)',
             },
             gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
             alignItems: 'start',
           }}
         >
           {/* Section rail: beside the content from lg up, above it on smaller screens */}
-          <Box
-            component="aside"
-            sx={{
-              position: { lg: 'sticky' },
-              top: { lg: 148 },
-              zIndex: 3,
-              pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
-            }}
-          >
-            <Typography
-              variant="eyebrow"
-              sx={{ display: 'block', color: 'base.200', mb: jtSpacing.component.md }}
-            >
-              On this page
-            </Typography>
-            <NavRail
-              items={sections}
-              ariaLabel={`${team.label} sections`}
-              sx={{
-                position: 'relative',
-                inset: 'auto',
-                transform: 'none',
-                zIndex: 1,
-                display: 'flex !important',
-                alignItems: 'flex-start',
-                '& button': { justifyContent: 'flex-start', flexDirection: 'row-reverse' },
-                '& .rail-label': { whiteSpace: 'normal', textAlign: 'left' },
-              }}
-            />
-          </Box>
+          <PageRail
+            items={sections}
+            ariaLabel={`${team.label} sections`}
+            sx={{ pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl } }}
+          />
 
-          <Stack
-            spacing={jtSpacing.section.xl}
-            sx={{
-              minWidth: 0,
-              gridColumn: { lg: '2 / -1' },
-              p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
-            }}
+          <CitationContext.Provider
+            value={{ accent: color, references: criterionReferences[team.id] }}
           >
-            <WhatSection story={story} accent={color} />
-            <WhySection story={story} accent={color} />
-            <ConstructionSection story={story} accent={color} />
-            {regions && <RegionsSection regions={regions} accent={color} />}
-            {/* Keyed by team so switching teams resets the open component tab */}
-            <ComponentsSection key={team.id} story={story} accent={color} />
-            <Box
-              component="section"
-              id="references"
-              aria-labelledby="references-title"
-              sx={sectionSx}
+            <Stack
+              spacing={jtSpacing.section.xl}
+              sx={{
+                minWidth: 0,
+                gridColumn: { lg: '2 / -1' },
+                p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
+              }}
             >
-              <SectionHeading
-                variant="h3"
-                title="References"
-                id="references-title"
-                accent={color}
-              />
-              <Typography variant="body2" sx={{ color: 'base.200', maxWidth: '78ch' }}>
-                Sources this summary draws on, from {story.source}
-              </Typography>
+              <WhatSection story={story} accent={color} />
+              <WhySection story={story} accent={color} />
+              {regions && <RegionsSection regions={regions} accent={color} />}
+              {/* Keyed by criterion so switching criteria resets the open component tab */}
+              <ComponentsSection key={team.id} story={story} accent={color} />
+              <ConstructionSection story={story} accent={color} />
               <Box
-                component="ol"
-                sx={{ m: 0, mt: jtSpacing.gap.md, p: 0, listStyle: 'none', maxWidth: '96ch' }}
+                component="section"
+                id="references"
+                aria-labelledby="references-title"
+                sx={sectionSx}
               >
-                {criterionReferences[team.id].map((reference) => (
-                  <Typography
-                    key={reference}
-                    component="li"
-                    variant="body2"
-                    sx={{
-                      color: 'base.100',
-                      py: jtSpacing.component.xs,
-                      pl: jtSpacing.component.md,
-                      textIndent: (theme) => theme.spacing(-jtSpacing.component.md),
-                      borderTop: 1,
-                      borderColor: 'border.subtle',
-                      overflowWrap: 'anywhere',
-                    }}
-                  >
-                    <Reference text={reference} accent={color} />
-                  </Typography>
-                ))}
+                <SectionHeading
+                  variant="h3"
+                  title="References"
+                  id="references-title"
+                  accent={color}
+                />
+                <Typography
+                  variant="body2"
+                  sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.200' })}
+                >
+                  Sources this summary draws on, from {story.source}
+                </Typography>
+                <Box
+                  component="ol"
+                  sx={(theme) => ({
+                    ...methodologyTextColumnSx(theme),
+                    m: 0,
+                    mt: jtSpacing.gap.md,
+                    p: 0,
+                    listStyle: 'none',
+                  })}
+                >
+                  {criterionReferences[team.id].map((reference, index) => (
+                    <Typography
+                      key={reference}
+                      id={referenceId(index)}
+                      component="li"
+                      variant="body2"
+                      sx={{
+                        ...sectionSx,
+                        display: 'grid',
+                        gridTemplateColumns: '2.5em minmax(0, 1fr)',
+                        color: 'base.100',
+                        py: jtSpacing.component.xs,
+                        borderTop: 1,
+                        borderColor: 'border.subtle',
+                        overflowWrap: 'anywhere',
+                        // Flash the entry a citation number jumps to
+                        '&:target': { bgcolor: alpha(color, 0.14) },
+                      }}
+                    >
+                      <Box component="span" sx={{ color, fontWeight: 600 }}>
+                        {index + 1}.
+                      </Box>
+                      <span>
+                        <Reference text={reference} accent={color} />
+                      </span>
+                    </Typography>
+                  ))}
+                </Box>
               </Box>
-            </Box>
-          </Stack>
+            </Stack>
+          </CitationContext.Provider>
         </Container>
       </Box>
       <Footer />
@@ -198,14 +197,20 @@ export default function TeamMethodologyPage() {
 const pageSections = [
   { id: 'what', label: 'What is this criterion?' },
   { id: 'why', label: 'Why does it matter?' },
-  { id: 'construction', label: 'How was it constructed?' },
   { id: 'regions', label: 'Which regions does it cover?' },
   { id: 'components', label: 'What are its components?' },
+  { id: 'construction', label: 'How was it constructed?' },
   { id: 'references', label: 'References' },
 ]
 
 /** Clears the sticky navbar and team tabs when a section is scrolled to. */
 const sectionSx = { scrollMarginTop: 150 } as const
+
+/** The left half of the methodology's hybrid grid, used by standalone prose. */
+const methodologyTextColumnSx = (theme: Theme) => ({
+  width: { md: `calc(50% - ${theme.spacing(jtSpacing.section.md / 2)})` },
+  maxWidth: '100%',
+})
 
 interface SectionProps {
   story: CriterionStory
@@ -214,17 +219,29 @@ interface SectionProps {
 
 function WhatSection({ story, accent }: SectionProps) {
   return (
-    <Box component="section" id="what" aria-labelledby="criterion-title" sx={sectionSx}>
-      <SectionHeading
-        variant="h3"
-        title="What is this criterion?"
-        id="criterion-title"
-        accent={accent}
-      />
-      <Stack spacing={jtSpacing.gap.md} sx={{ maxWidth: '78ch' }}>
+    <Box
+      component="section"
+      id="what"
+      aria-labelledby="criterion-title"
+      sx={{
+        ...sectionSx,
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+        columnGap: { xs: 0, md: jtSpacing.section.md },
+      }}
+    >
+      <Box sx={{ gridColumn: 1 }}>
+        <SectionHeading
+          variant="h3"
+          title="What is this criterion?"
+          id="criterion-title"
+          accent={accent}
+        />
+      </Box>
+      <Stack spacing={jtSpacing.gap.md} sx={{ gridColumn: 1, minWidth: 0 }}>
         {story.what.map((paragraph) => (
           <Typography key={paragraph} variant="body1" sx={{ color: 'base.100' }}>
-            {paragraph}
+            <CitedText text={paragraph} />
           </Typography>
         ))}
       </Stack>
@@ -232,6 +249,8 @@ function WhatSection({ story, accent }: SectionProps) {
         type="button"
         variant="outlined"
         sx={{
+          gridColumn: 1,
+          justifySelf: 'start',
           mt: jtSpacing.component.lg,
           color: accent,
           borderColor: accent,
@@ -245,7 +264,7 @@ function WhatSection({ story, accent }: SectionProps) {
 }
 
 function WhySection({ story, accent }: SectionProps) {
-  const { stat, paragraphs, quote } = story.why
+  const { stats = [], paragraphs, quote } = story.why
   return (
     <Box component="section" id="why" aria-labelledby="why-title" sx={sectionSx}>
       <SectionHeading
@@ -259,24 +278,28 @@ function WhySection({ story, accent }: SectionProps) {
           display: 'grid',
           gridTemplateColumns: {
             xs: '1fr',
-            md: stat ? 'minmax(0, .8fr) minmax(0, 1fr)' : 'minmax(0, 78ch)',
+            md: stats.length ? 'minmax(0, .8fr) minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
           },
           gap: { xs: jtSpacing.gap.lg, md: jtSpacing.section.md },
           alignItems: 'start',
         }}
       >
-        {stat && (
-          <Stack spacing={jtSpacing.gap.sm}>
-            <Typography variant="displayNumber" component="p" sx={{ color: accent }}>
-              {stat.value}
-            </Typography>
-            <Typography variant="body1">{stat.label}</Typography>
+        {stats.length > 0 && (
+          <Stack spacing={jtSpacing.gap.lg}>
+            {stats.map((stat) => (
+              <Stack key={stat.label} spacing={jtSpacing.gap.sm}>
+                <Typography variant="displayNumber" component="p" sx={{ color: accent }}>
+                  {stat.value}
+                </Typography>
+                <Typography variant="body1">{stat.label}</Typography>
+              </Stack>
+            ))}
           </Stack>
         )}
         <Stack spacing={jtSpacing.gap.md}>
           {paragraphs.map((paragraph) => (
             <Typography key={paragraph} variant="body1" sx={{ color: 'base.100' }}>
-              {paragraph}
+              <CitedText text={paragraph} />
             </Typography>
           ))}
           {quote && (
@@ -308,50 +331,55 @@ function ConstructionSection({ story, accent }: SectionProps) {
         id="construction-title"
         accent={accent}
       />
-      <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '78ch' }}>
-        {intro}
+      <Typography
+        variant="body1"
+        sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.50' })}
+      >
+        <CitedText text={intro} />
       </Typography>
 
       {/* Key numbers behind the criterion, read before the step-by-step */}
-      <Box
-        component="dl"
-        sx={{
-          m: 0,
-          mt: jtSpacing.section.sm,
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: 'repeat(2, minmax(0, 1fr))',
-            md: `repeat(${facts.length}, minmax(0, 1fr))`,
-          },
-          borderTop: 1,
-          borderBottom: 1,
-          borderColor: 'border.subtle',
-        }}
-      >
-        {facts.map((fact, index) => (
-          <Box
-            key={fact.label}
-            sx={{
-              py: jtSpacing.component.md,
-              px: {
-                xs: index % 2 ? jtSpacing.component.md : 0,
-                md: index ? jtSpacing.component.md : 0,
-              },
-              // Width only, so the responsive values don't reset the divider color
-              borderLeftStyle: 'solid',
-              borderLeftWidth: { xs: index % 2 ? '1px' : 0, md: index ? '1px' : 0 },
-              borderLeftColor: 'border.subtle',
-            }}
-          >
-            <Typography component="dd" variant="numberTimeline" sx={{ m: 0, color: accent }}>
-              {fact.value}
-            </Typography>
-            <Typography component="dt" variant="body2" sx={{ color: 'base.100', mt: 0.5 }}>
-              {fact.label}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+      {facts.length > 0 && (
+        <Box
+          component="dl"
+          sx={{
+            m: 0,
+            mt: jtSpacing.section.sm,
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'repeat(2, minmax(0, 1fr))',
+              md: `repeat(${facts.length}, minmax(0, 1fr))`,
+            },
+            borderTop: 1,
+            borderBottom: 1,
+            borderColor: 'border.subtle',
+          }}
+        >
+          {facts.map((fact, index) => (
+            <Box
+              key={fact.label}
+              sx={{
+                py: jtSpacing.component.md,
+                px: {
+                  xs: index % 2 ? jtSpacing.component.md : 0,
+                  md: index ? jtSpacing.component.md : 0,
+                },
+                // Width only, so the responsive values don't reset the divider color
+                borderLeftStyle: 'solid',
+                borderLeftWidth: { xs: index % 2 ? '1px' : 0, md: index ? '1px' : 0 },
+                borderLeftColor: 'border.subtle',
+              }}
+            >
+              <Typography component="dd" variant="numberTimeline" sx={{ m: 0, color: accent }}>
+                {fact.value}
+              </Typography>
+              <Typography component="dt" variant="body2" sx={{ color: 'base.100', mt: 0.5 }}>
+                {fact.label}
+              </Typography>
+            </Box>
+          ))}
+        </Box>
+      )}
 
       {/* Steps in order along a rail; each node carries the step number */}
       <Box component="ol" sx={{ m: 0, p: 0, mt: jtSpacing.section.sm, listStyle: 'none' }}>
@@ -396,7 +424,13 @@ function ConstructionSection({ story, accent }: SectionProps) {
                 {String(index + 1).padStart(2, '0')}
               </Typography>
             </Box>
-            <Stack spacing={jtSpacing.gap.xs} sx={{ pt: 0.75, maxWidth: '78ch' }}>
+            <Stack
+              spacing={jtSpacing.gap.xs}
+              sx={(theme) => ({
+                ...methodologyTextColumnSx(theme),
+                pt: 0.75,
+              })}
+            >
               {step.when && (
                 <Typography variant="navigationSubLabel" component="p" sx={{ color: accent }}>
                   {step.when}
@@ -406,7 +440,7 @@ function ConstructionSection({ story, accent }: SectionProps) {
                 {step.title}
               </Typography>
               <Typography variant="body1" sx={{ color: 'base.100' }}>
-                {step.body}
+                <CitedText text={step.body} />
               </Typography>
               {step.points && (
                 <Box
@@ -448,7 +482,7 @@ function ConstructionSection({ story, accent }: SectionProps) {
                         }}
                       />
                       <Typography variant="body2" sx={{ color: 'base.100' }}>
-                        {point}
+                        <CitedText text={point} />
                       </Typography>
                     </Box>
                   ))}
@@ -465,76 +499,90 @@ function ConstructionSection({ story, accent }: SectionProps) {
 /** The team's own regions, drawn over the Delta's channels, beside what each one is. */
 function RegionsSection({ regions, accent }: { regions: CriterionRegions; accent: string }) {
   const shapes = REGION_SHAPES.filter((shape) => shape.team === regions.mapTeam)
+  const teamViewBox = REGION_TEAM_VIEWBOX[regions.mapTeam]
   return (
-    <Box component="section" id="regions" aria-labelledby="regions-title" sx={sectionSx}>
-      <SectionHeading
-        variant="h3"
-        title="Which regions does this criterion cover?"
-        id="regions-title"
-        accent={accent}
-      />
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(260px, 380px)' },
-          gap: { xs: jtSpacing.gap.lg, md: jtSpacing.section.md },
-          alignItems: 'start',
-        }}
-      >
-        <Stack spacing={jtSpacing.gap.md} sx={{ maxWidth: '78ch' }}>
-          <Typography variant="body1" sx={{ color: 'base.100' }}>
-            {regions.intro}
-          </Typography>
-          <Box component="dl" sx={{ m: 0, borderTop: 1, borderColor: 'border.subtle' }}>
-            {regions.regions.map((region) => (
-              <Box
-                key={region.name}
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1.2fr)' },
-                  columnGap: jtSpacing.gap.md,
-                  py: jtSpacing.component.xs,
-                  borderBottom: 1,
-                  borderColor: 'border.subtle',
-                }}
-              >
-                <Typography component="dt" variant="body1" sx={{ color: 'common.white' }}>
-                  {region.name}
-                </Typography>
-                <Typography component="dd" variant="body2" sx={{ m: 0, color: 'base.200' }}>
-                  {region.note ?? ''}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
-          {regions.mapNote && (
-            <Typography variant="caption" sx={{ color: 'base.200' }}>
-              {regions.mapNote}
-            </Typography>
-          )}
-        </Stack>
-        <Box
-          component="svg"
-          viewBox={`0 0 ${REGION_VIEWBOX.width} ${REGION_VIEWBOX.height}`}
-          role="img"
-          aria-label={`Map of the Delta showing ${shapes.map((shape) => shape.name).join(', ')}`}
-          sx={{ width: '100%', maxWidth: 380, height: 'auto', display: 'block', mx: 'auto' }}
-        >
-          <path d={WATERWAY_PATH} fill="currentColor" opacity={0.12} />
-          {shapes.map((shape) => (
-            <path
-              key={shape.name}
-              d={shape.d}
-              fill={alpha(accent, 0.18)}
-              stroke={accent}
-              strokeWidth={3}
-              strokeLinejoin="round"
-            />
-          ))}
-          {shapes.map((shape) => (
-            <Label key={`label-${shape.name}`} shape={shape} size={32} />
+    <Box
+      component="section"
+      id="regions"
+      aria-labelledby="regions-title"
+      sx={{
+        ...sectionSx,
+        display: 'grid',
+        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'repeat(2, minmax(0, 1fr))' },
+        gridTemplateAreas: { xs: '"heading" "copy" "map"', md: '"heading heading" "copy map"' },
+        columnGap: { xs: 0, md: jtSpacing.section.md },
+        rowGap: jtSpacing.gap.lg,
+        alignItems: 'start',
+      }}
+    >
+      <Box sx={{ gridArea: 'heading' }}>
+        <SectionHeading
+          variant="h3"
+          title="Which regions does this criterion cover?"
+          id="regions-title"
+          accent={accent}
+        />
+      </Box>
+      <Stack spacing={jtSpacing.gap.md} sx={{ gridArea: 'copy', minWidth: 0 }}>
+        <Typography variant="body1" sx={{ color: 'base.100' }}>
+          <CitedText text={regions.intro} />
+        </Typography>
+        <Box component="dl" sx={{ m: 0, borderTop: 1, borderColor: 'border.subtle' }}>
+          {regions.regions.map((region) => (
+            <Box
+              key={region.name}
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1.2fr)' },
+                columnGap: jtSpacing.gap.md,
+                py: jtSpacing.component.xs,
+                borderBottom: 1,
+                borderColor: 'border.subtle',
+              }}
+            >
+              <Typography component="dt" variant="body1" sx={{ color: 'common.white' }}>
+                {region.name}
+              </Typography>
+              <Typography component="dd" variant="body2" sx={{ m: 0, color: 'base.200' }}>
+                <CitedText text={region.note ?? ''} />
+              </Typography>
+            </Box>
           ))}
         </Box>
+        {regions.mapNote && (
+          <Typography variant="caption" sx={{ color: 'base.200' }}>
+            <CitedText text={regions.mapNote} />
+          </Typography>
+        )}
+      </Stack>
+      <Box
+        component="svg"
+        viewBox={`${teamViewBox.x} ${teamViewBox.y} ${teamViewBox.width} ${teamViewBox.height}`}
+        role="img"
+        aria-label={`Map of the Delta showing ${shapes.map((shape) => shape.name).join(', ')}`}
+        sx={{
+          gridArea: 'map',
+          width: '100%',
+          maxWidth: 520,
+          height: 'auto',
+          display: 'block',
+          justifySelf: 'center',
+        }}
+      >
+        <path d={WATERWAY_PATH} fill="currentColor" opacity={0.12} />
+        {shapes.map((shape) => (
+          <path
+            key={shape.name}
+            d={shape.d}
+            fill={alpha(accent, 0.18)}
+            stroke={accent}
+            strokeWidth={3}
+            strokeLinejoin="round"
+          />
+        ))}
+        {shapes.map((shape) => (
+          <Label key={`label-${shape.name}`} shape={shape} size={32} />
+        ))}
       </Box>
     </Box>
   )
@@ -554,7 +602,10 @@ function ComponentsSection({ story, accent }: SectionProps) {
         accent={accent}
       />
       {intro && (
-        <Typography variant="body1" sx={{ color: 'base.100', maxWidth: '78ch' }}>
+        <Typography
+          variant="body1"
+          sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.100' })}
+        >
           {intro}
         </Typography>
       )}
@@ -588,8 +639,11 @@ function ComponentsSection({ story, accent }: SectionProps) {
         aria-labelledby={`component-tab-${active}`}
         sx={{ pt: jtSpacing.section.sm }}
       >
-        <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '78ch' }}>
-          {item.summary}
+        <Typography
+          variant="body1"
+          sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.50' })}
+        >
+          <CitedText text={item.summary} />
         </Typography>
 
         {/* Spec sheet beside the ordered method */}
@@ -651,7 +705,7 @@ function ComponentsSection({ story, accent }: SectionProps) {
                     {index + 1}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'base.100' }}>
-                    {step}
+                    <CitedText text={step} />
                   </Typography>
                 </Box>
               ))}
@@ -684,7 +738,7 @@ function ComponentsSection({ story, accent }: SectionProps) {
                   variant="body2"
                   sx={{ display: 'list-item', color: 'base.100', mt: 0.5 }}
                 >
-                  {caveat}
+                  <CitedText text={caveat} />
                 </Typography>
               ))}
             </Box>

@@ -65,11 +65,11 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
     places: {
       count: '8 estuarine subregions, 145 points',
       basis:
-        'The team adapted the regions from Pien et al. 2025 and Grimaldo et al. 2020, “grouped by temperature similarities, or by known regional divisions”, and **analysed all eight**, from South Bay in the west to the South Delta in the east. Our map can draw only five of them: the **shapefile we were given has no outlines for South Bay, Central Bay or San Pablo Bay**, so those three have results in the grids below but no shape on the map yet. The shapefile also draws Suisun Marsh separately, which the report counts within Suisun Bay.',
+        'The team adapted the regions from Pien et al. 2025 and Grimaldo et al. 2020, “grouped by temperature similarities, or by known regional divisions”, and **analysed all eight**, from South Bay in the west to the South Delta in the east. The map draws all eight regions. It also draws Suisun Marsh separately, which the report counts within Suisun Bay.',
       regions: [
-        { name: 'South Bay', drawn: false },
-        { name: 'Central Bay', drawn: false },
-        { name: 'San Pablo Bay', drawn: false },
+        { name: 'South Bay', drawn: true },
+        { name: 'Central Bay', drawn: true },
+        { name: 'San Pablo Bay', drawn: true },
         { name: 'Suisun Bay', drawn: true },
         { name: 'Confluence', drawn: true },
         { name: 'North Delta', drawn: true },
@@ -282,9 +282,9 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
     places: {
       count: '4 zones, plus Delta-wide',
       basis:
-        'Water agency boundaries define the **North, Central and South Delta** zones. The team also uses a **West Delta** section, which has no outline here yet. Suisun Marsh is outside these zones and appears only in the Eco Machine land-use estimate.',
+        'Water agency boundaries define the **North, Central and South Delta** zones. The team also uses a **West Delta** section, now shown with its merged boundary. Suisun Marsh is outside these zones and appears only in the Eco Machine land-use estimate.',
       regions: [
-        { name: 'West Delta', drawn: false },
+        { name: 'West Delta', drawn: true },
         { name: 'North Delta', drawn: true },
         { name: 'Central Delta', drawn: true },
         { name: 'South Delta', drawn: true },

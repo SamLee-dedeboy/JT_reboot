@@ -4,6 +4,14 @@ export const jtSpacing = {
   gap: { xs: 1, sm: 1.5, md: 2.5, lg: 3, xl: 4 },
   page: { x: { xs: 6, sm: 8, md: 10 }, y: { xs: 4, md: 6 } },
   paragraphMaxWidth: { default: '70ch', compact: '40ch' },
+  layout: {
+    /** Long-form, single-column prose. */
+    reading: { width: '70ch' },
+    /** Editorial pages that mix readable prose with maps, tables, or diagrams. */
+    hybrid: { width: '84dvw' },
+    /** Data-heavy pages whose primary visualization benefits from additional width. */
+    data: { width: '92dvw', maxWidth: 1600 },
+  },
   scenario: {
     panelHeaderInset: { xs: 2.5, md: 4.5 },
     panelContentInline: { xs: 2.5, md: 3 },

@@ -5,21 +5,10 @@ import { jtSpacing } from '../../../theme'
 import TagChip from '../../../ui/TagChip'
 import TeamIcon from '../../../ui/TeamIcon'
 import { criterionStories, evaluationTeams } from '../content'
+import { withEmphasis } from '../evaluation/emphasis'
 import { teamStyle, type EvaluationTeamId } from '../teamStyle'
 
-const teamRationales: Record<(typeof evaluationTeams)[number]['id'], string> = {
-  ecology:
-    'Delta decisions reshape habitat conditions, food webs, and the ability of native and introduced species to persist.',
-  'environmental-justice':
-    'Water-quality and flood effects are not distributed evenly, so community vulnerability must be considered explicitly.',
-  'ecocultural-restoration':
-    'A just transition must account for Tribal sovereignty, cultural access, Indigenous knowledge, and reciprocal ecosystem repair.',
-  recreation:
-    'Changes in water, habitat, and access affect how people fish, boat, hunt, visit, and maintain relationships with the Delta.',
-  economy:
-    'Scenario choices can alter agricultural production, employment, farm revenue, and connected regional businesses.',
-}
-
+// The chip group shown under each criterion's summary.
 const visibleEntityGroup: Record<(typeof evaluationTeams)[number]['id'], string> = {
   ecology: 'Species',
   'environmental-justice': 'People and communities',
@@ -47,29 +36,29 @@ export default function EvaluationFramework({
       {showIntroduction && (
         <>
           <Typography variant="h2" id="evaluation-criteria-title">
-            Evaluation teams and criteria
+            Evaluation criteria
           </Typography>
           <Typography
             variant="body1"
             sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
           >
-            Multidisciplinary teams evaluate every future from complementary ecological, cultural,
-            community, recreational, and economic perspectives. Together, their work makes the
-            trade-offs between scenarios visible without reducing every value to the same measure.
+            Five criteria examine each future from ecological, cultural, community, recreational,
+            and economic perspectives. Each criterion uses its own metrics and evidence to identify
+            benefits, burdens, and trade-offs across the Delta.
           </Typography>
         </>
       )}
 
       <Box sx={{ mt: showIntroduction ? jtSpacing.section.lg : 0 }}>
         <Typography variant="h3" component="h3">
-          Why these teams
+          Why these criteria
         </Typography>
-        {/* Each team stacked: its chip on top, the rationale beneath */}
+        {/* Each criterion stacked: its chip on top, the rationale beneath */}
         <Box sx={{ mt: jtSpacing.component.lg, display: 'grid', gap: jtSpacing.gap.lg }}>
           {evaluationTeams.map((team) => (
             <Stack key={team.id} spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
               <TagChip label={team.label} fill={teamColor(team.id)} />
-              <Typography variant="body2">{teamRationales[team.id]}</Typography>
+              <Typography variant="body2">{criterionStories[team.id].brief.rationale}</Typography>
             </Stack>
           ))}
         </Box>
@@ -113,42 +102,34 @@ export default function EvaluationFramework({
               }}
             >
               <Stack spacing={jtSpacing.component.md}>
-                <Stack spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                  <Box>
-                    <Typography variant="navigationLabel" component="h4">
-                      What is this criterion?
-                    </Typography>
-                    <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                      {criterionStories[team.id].brief.what}
-                    </Typography>
-                  </Box>
-                </Stack>
+                <Box>
+                  <Typography variant="navigationLabel" component="h4">
+                    What is this criterion?
+                  </Typography>
+                  <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                    {criterionStories[team.id].brief.what}
+                  </Typography>
+                </Box>
 
-                <Stack spacing={jtSpacing.gap.sm}>
-                  {team.entityGroups
-                    .filter((group) => group.label === visibleEntityGroup[team.id])
-                    .map((group) => (
-                      <Box key={group.label}>
-                        <Typography
-                          variant="captionSmall"
-                          component="h5"
-                          sx={{ color: 'base.100' }}
-                        >
-                          {group.label}
-                        </Typography>
-                        <Stack
-                          direction="row"
-                          useFlexGap
-                          spacing={jtSpacing.gap.xs}
-                          sx={{ mt: jtSpacing.gap.xs, flexWrap: 'wrap' }}
-                        >
-                          {group.items.map((entity) => (
-                            <TagChip key={entity} label={entity} fill={teamColor(team.id)} />
-                          ))}
-                        </Stack>
-                      </Box>
-                    ))}
-                </Stack>
+                {team.entityGroups
+                  .filter((group) => group.label === visibleEntityGroup[team.id])
+                  .map((group) => (
+                    <Box key={group.label}>
+                      <Typography variant="captionSmall" component="h5" sx={{ color: 'base.100' }}>
+                        {group.label}
+                      </Typography>
+                      <Stack
+                        direction="row"
+                        useFlexGap
+                        spacing={jtSpacing.gap.xs}
+                        sx={{ mt: jtSpacing.gap.xs, flexWrap: 'wrap' }}
+                      >
+                        {group.items.map((entity) => (
+                          <TagChip key={entity} label={entity} fill={teamColor(team.id)} />
+                        ))}
+                      </Stack>
+                    </Box>
+                  ))}
 
                 <Box>
                   <Typography variant="navigationLabel" component="h4">
@@ -171,7 +152,7 @@ export default function EvaluationFramework({
                     variant="outlined"
                     endIcon={<ArrowForwardIcon />}
                   >
-                    More about how this team evaluated
+                    Learn how this criterion was evaluated
                   </Button>
                   {scenario && (
                     <Button
@@ -187,7 +168,10 @@ export default function EvaluationFramework({
               </Stack>
               <Box>
                 <Typography variant="navigationLabel" component="h4">
-                  What are its components?
+                  Metrics
+                </Typography>
+                <Typography variant="body2" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                  This criterion brings together the following measures and forms of evidence.
                 </Typography>
                 <Stack spacing={0} sx={{ mt: jtSpacing.gap.sm }}>
                   {criterionStories[team.id].components.items.map((component, componentIndex) => (
@@ -217,7 +201,7 @@ export default function EvaluationFramework({
                         </Typography>
                       </Stack>
                       <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                        {component.summary}
+                        {withEmphasis(component.summary, teamColor(team.id))}
                       </Typography>
                     </Box>
                   ))}

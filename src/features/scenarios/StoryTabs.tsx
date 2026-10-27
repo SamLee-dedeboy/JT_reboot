@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
-import { jtSpacing } from '../../theme'
+import { jtSpacing, navigation } from '../../theme'
 import { scenarios } from './content'
 
 const scenarioOrder = [
@@ -43,7 +43,7 @@ export default function StoryTabs({
       aria-label="Adaptation scenarios"
       sx={{
         position: 'sticky',
-        top: { xs: 72, md: 76 },
+        top: navigation.barHeight,
         zIndex: 90,
         bgcolor: 'base.700',
         borderTop: 1,

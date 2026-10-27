@@ -626,7 +626,7 @@ function MobileNavbar() {
 export default function Navbar() {
   const theme = useTheme()
   const isDesktopNav = useMediaQuery(theme.breakpoints.up('md'))
-  const navHeight = isDesktopNav ? 76 : 72
+  const navHeight = isDesktopNav ? theme.navigation.barHeight.md : theme.navigation.barHeight.xs
 
   return (
     <AppBar

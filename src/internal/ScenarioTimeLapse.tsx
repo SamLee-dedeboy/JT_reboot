@@ -3,6 +3,7 @@ import type { MouseEvent } from 'react'
 import { Box, Button, CircularProgress, Stack, Typography } from '@mui/material'
 import Navbar from '../ui/Navbar'
 import { assetUrl } from '../utils/baseUrl'
+import { navigation } from '../theme'
 
 const DATA_URL = assetUrl('/data/scenario-time-lapse/scenario_region_ec_avg_avg_timeseries.json')
 const SALINITY_COLORS = [
@@ -189,7 +190,7 @@ export default function ScenarioTimeLapse() {
           '--row-height': `max(86px, calc((100dvh - 330px) / ${region.scenarios.length}))`,
           bgcolor: 'base.800',
           color: 'common.white',
-          minHeight: { xs: 'calc(100vh - 72px)', md: 'calc(100vh - 76px)' },
+          minHeight: navigation.belowBar('100vh'),
           minWidth: 980,
           overflow: 'hidden',
           position: 'relative',

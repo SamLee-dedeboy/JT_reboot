@@ -12,11 +12,11 @@ import { getConfig, getLegendItem } from '../../../map/layers/scenarios/config'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
-import NavRail from '../../../ui/NavRail'
+import PageRail from '../../../ui/PageRail'
 import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import StoryTabs from '../StoryTabs'
-import { scenarioBySlug } from '../content'
+import { scenarioBySlug, storyInReadingOrder } from '../content'
 import Highlight from './Highlight'
 import useMapState from './useMapState'
 
@@ -33,14 +33,6 @@ const paragraphHighlights = [
   'multi-benefit',
   'within the Delta',
   'its much larger watershed',
-] as const
-
-const threeSectionNavigationLabels = ['Motivation', 'Adaptation approach', 'Key Takeaway'] as const
-const fourSectionNavigationLabels = [
-  'Motivation',
-  'Adaptation approach',
-  'Supporting strategy',
-  'Key Takeaway',
 ] as const
 
 function HighlightedParagraph({ text }: { text: string }) {
@@ -90,6 +82,7 @@ export default function IntroductionPage() {
     mapConfig.bounds.delta
 
   if (!scenario) return <Navigate to="/scenarios" replace />
+  const chapters = storyInReadingOrder(scenario)
 
   return (
     <>
@@ -187,44 +180,17 @@ export default function IntroductionPage() {
               alignItems: 'start',
             }}
           >
-            <Box component="aside" sx={{ position: { lg: 'sticky' }, top: { lg: 148 } }}>
-              <Typography
-                variant="eyebrow"
-                sx={{ display: 'block', color: 'base.200', mb: jtSpacing.component.md }}
-              >
-                On this page
-              </Typography>
-              <NavRail
-                ariaLabel={`${scenario.title} sections`}
-                items={scenario.story.map((chapter, chapterIndex) => ({
-                  id: `chapter-${chapterIndex + 1}`,
-                  label:
-                    chapter.navigationLabel ??
-                    (isTieredOutflows
-                      ? chapter.title
-                      : ((scenario.story.length === 4
-                          ? fourSectionNavigationLabels
-                          : threeSectionNavigationLabels)[chapterIndex] ??
-                        `Section ${chapterIndex + 1}`)),
-                }))}
-                sx={{
-                  position: 'relative',
-                  inset: 'auto',
-                  transform: 'none',
-                  zIndex: 1,
-                  display: 'flex !important',
-                  alignItems: 'flex-start',
-                  '& button': { justifyContent: 'flex-start', flexDirection: 'row-reverse' },
-                }}
-              />
-            </Box>
+            <PageRail
+              ariaLabel={`${scenario.title} sections`}
+              items={chapters.map(({ anchor, label }) => ({ id: anchor, label }))}
+            />
 
             {/* Carries the reader through one continuous scenario narrative. */}
             <Stack spacing={jtSpacing.section.lg}>
-              {scenario.story.map((chapter, chapterIndex) => (
+              {chapters.map(({ chapter, anchor }) => (
                 <Box
                   component="section"
-                  id={`chapter-${chapterIndex + 1}`}
+                  id={anchor}
                   key={chapter.title}
                   sx={{
                     scrollMarginTop: (theme) => theme.spacing(jtSpacing.section.lg),
@@ -355,6 +321,26 @@ export default function IntroductionPage() {
                       >
                         {chapter.primaryAction.label}
                       </Button>
+                    )}
+                    {chapter.relatedLinks && (
+                      <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        useFlexGap
+                        spacing={jtSpacing.gap.sm}
+                        sx={{ flexWrap: 'wrap', mt: jtSpacing.component.md }}
+                      >
+                        {chapter.relatedLinks.map((link) => (
+                          <Button
+                            key={link.href}
+                            component={Link}
+                            to={link.href}
+                            variant="outlined"
+                            endIcon={<ArrowForwardIcon />}
+                          >
+                            {link.label}
+                          </Button>
+                        ))}
+                      </Stack>
                     )}
                   </Stack>
                 </Box>

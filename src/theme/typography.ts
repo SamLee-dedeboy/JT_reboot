@@ -212,6 +212,16 @@ export const typography = {
     textTransform: 'uppercase',
     color: palette.brand.primaryGreen,
   },
+  // Ordinal place in a ranking ("1st", "2nd"): numberArticle's size, kept lowercase so the
+  // suffix reads as a word, not a code.
+  numberRank: {
+    fontFamily: fontHeading,
+    fontSize: 'clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem)',
+    lineHeight: 1,
+    letterSpacing: '0.04em',
+    fontWeight: 400,
+    color: palette.brand.primaryGreen,
+  },
   numberTimeline: {
     fontFamily: fontHeading,
     fontSize: 'clamp(2.2rem, 4vw, 3rem)',

@@ -20,7 +20,7 @@ rows, and each one opens into the entities it is based on, in their own units.
 | Team         | Published criterion score              | Ranking scores                                          | Based on                                                           | Entities                                                                                      | Periods                                                            | Regions                                             |
 | ------------ | -------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------- |
 | Ecology      | No                                     | Landscape, Food webs, Species suitability (per species) | Acres; % of suitable days per species                              | 8 species / life stages                                                                       | WY 2019 (wet) and WY 2020 (dry), each Feb 1 – Jun 1                | 8 estuary regions, 145 points                       |
-| Recreation   | No                                     | Salinity and temperature scores per activity            | % of days over an activity threshold                               | 4 activities (salinity), 5 (temperature)                                                      | Whole run, wet season (Oct–Mar), dry season (Apr–Sep)              | Delta-wide + 4 regions, 32 points                   |
+| Recreation   | Yes, mean of 4 parts (26 Oct)          | Salinity, Temperature; Restoration, Economy (apart)     | % of days over an activity threshold                               | 4 activities (salinity), 5 (temperature)                                                      | Whole run, wet season (Oct–Mar), dry season (Apr–Sep)              | Delta-wide + 4 regions, 32 points                   |
 | Env. Justice | Yes, rounded mean of 3                 | Drinking water, Flood risk, Water age + temperature     | % of readings ≥ 1,050 µS/cm; qualitative judgement; water-age days | Drinking water: the 3 vulnerability classes (used as EJ's places); water age: 5 hotspot areas | Whole run, wet season, dry season; SLR runs by water year          | Moderate / High / Highest vulnerability (49 points) |
 | Economy      | Yes, one score shared by its 3 metrics | Gross revenue, Jobs, Value added                        | Dollars and jobs against Business as Usual                         | None by land use (see below)                                                                  | WY 2019 (wet), WY 2020 (dry); land conversion annualised; SLR runs | Delta-wide + 4 zones                                |
 | Eco-cultural | Yes, one overall score                 | Overall; Restoration (slide 55)                         | Restored acres + qualitative                                       | Habitat types (acres), not scored                                                             | None                                                               | In-Delta, upper watershed                           |
@@ -79,35 +79,50 @@ Delta 11, Confluence 16, Suisun Bay 25, San Pablo Bay 15, Central Bay 16, South 
 
 ## Recreation
 
-### Ranking scores (Delta-wide, whole run)
+### Criterion score
+
+"Recreation: the score" (Recreation The Score.xlsx, 26 Oct 2026, in
+`research/criteria-stories/Recreation/data-2026-10-26/`):
+(A + A SLR + B + B SLR) / 4, where A is the mean of the salinity activity scores and
+B of the temperature ones, whole run, today and with sea level rise. The app
+recomputes it from the activity scores and matches the sheet's Delta-wide and
+regional tables exactly. Not rounded; the table shows one decimal.
+
+| Place         | BAU | B&F     | ECO     | NGW     | COR vs CS | TUN vs CS |
+| ------------- | --- | ------- | ------- | ------- | --------- | --------- |
+| Delta-wide    | 0   | 0       | −0.375  | −0.375  | +0.0625   | −0.125    |
+| Suisun Marsh  | 0   | 0       | −1.825  | −1.825  | +0.4375   | −0.3125   |
+| Central Delta | 0   | −0.25   | +0.5625 | +0.5625 | +0.25     | −0.4125   |
+| North Delta   | 0   | 0       | 0       | 0       | 0         | −0.1      |
+| South Delta   | 0   | +0.0625 | +0.1875 | +0.125  | 0         | 0         |
+
+Calling on Reserves and A Tunnel are CalSim runs, scored against CalSim's own
+Business as Usual ("BAU CS"), in every workbook of the 26 Oct drop, today and with
+sea level rise. Against RMA's Business as Usual they had been −2.5 and −4. Their
+days over a threshold are shown as published, against that other baseline.
+
+### Ranking scores (Delta-wide, whole run, today's climate)
 
 1 point per percentage point of days over the threshold against Business as Usual,
 ±5 at five points or more. Scores also exist by region and season.
 
 | Activity (entity)   | Salinity threshold | Salinity BAU · ECO · NGW · B&F · COR · TUN | Temperature threshold    | Temperature |
 | ------------------- | ------------------ | ------------------------------------------ | ------------------------ | ----------- |
-| Day use & boating   | 1,000 µS/cm        | 0 · 0 · 0 · 0 · −2 · −4                    | 19 °C (algal bloom risk) | all 0*      |
-| Birding             | 2,640 µS/cm        | 0 · −1 · −1 · 0 · −2 · −4                  | > 20 °C                  | all 0*      |
-| Waterfowl hunting   | 3,600 µS/cm        | 0 · −1 · −1 · 0 · −2 · −3                  | 23 °C                    | all 0*      |
-| Angling             | 9,130 µS/cm        | 0 · −2 · −2 · 0 · −4 · −5                  | 18.4 / 22.3 °C           | all 0*      |
-| Day use, cold water | —                  | —                                          | < 18 °C                  | all 0*      |
-
-\*Calling on Reserves and A Tunnel have no temperature runs. The app's
-"Recreation: the score" is our mean of the four salinity scores; none is published.
+| Day use & boating   | 1,000 µS/cm        | 0 · 0 · 0 · 0 · 0 · 0                      | 19 °C (algal bloom risk) | all 0       |
+| Birding             | 2,640 µS/cm        | 0 · −1 · −1 · 0 · 0 · −1                   | > 20 °C                  | all 0       |
+| Waterfowl hunting   | 3,600 µS/cm        | 0 · −1 · −1 · 0 · 0 · 0                    | 23 °C                    | all 0       |
+| Angling             | 9,130 µS/cm        | 0 · −2 · −2 · 0 · 0 · 0                    | 18.4 / 22.3 °C           | all 0       |
+| Day use, cold water | —                  | —                                          | < 18 °C                  | all 0       |
 
 Not ranked: days over the threshold (the % scores are read from), overall and
 seasonal use (report), restoration acres, recreation economy. The scored workbook
 merges day use and boating; the report and slides treat them separately.
 
-Habitat restoration and recreation economy are shown as Recreation publishes them
-(Restoration Scenarios NGW and ECO.xlsx, 26 Oct 2026); nothing is calculated here, and
-anything the workbook does not give reads "awaiting subteam". A final table was
-requested from Recreation on 26 Oct.
-
-Habitat restoration score: Business as Usual, Bolster & Fortify, Calling on Reserves
-and A Tunnel are 0 (scoring email, 22 Oct). Eco Machine and New Green Watershed are
-awaiting: the workbook's "Overall Acres" scores compare New Green Watershed's 25/50/100%
-versions with its 50% version, not scenarios with Business as Usual.
+Habitat restoration (C) and recreation economy (D) are scored apart from the
+criterion (Recreation The Score.xlsx, table 3): restoration added on top of Business
+as Usual's protected areas scores Eco Machine +5 and New Green Watershed +5 at every
+bound, on both. Business as Usual, Bolster & Fortify, Calling on Reserves and A
+Tunnel restore nothing and are 0 (scoring email, 22 Oct).
 
 Restored acres beneath it, from the "Overall Restoration (Acres)" sheet (New Green
 Watershed at its middle, 50%, bound; Business as Usual as existing protected areas).
@@ -122,12 +137,11 @@ Reserves and A Tunnel read N/A:
 | New Green Watershed (50%) | 41,720 | 66,947  | 283,904 | 277,681 |
 
 Recreation economy ("Overall $"): four services, $M a year (2025), each scored by the
-team against Business as Usual at 1 point per 1%, capped at ±5; no single economy
-score is published, so the row reads "per service". Business as Usual is existing
-protected land (CPAD). New Green Watershed (50%) scores +5 Delta-wide (the sheet's score, which counts
-upland) and in every region but North (0, where the sheet carries existing protected land). The sheet has no
-Eco Machine, Bolster & Fortify, Calling on Reserves or A Tunnel column, so those
-cells read "NGW only".
+team against Business as Usual at 1 point per 1%, capped at ±5. Business as Usual is
+existing protected land (CPAD). New Green Watershed (50%) scores +5 Delta-wide (the
+sheet's score, which counts upland) and in every region but North (0, where the sheet
+carries existing protected land). Eco Machine is Delta-wide only: Business as Usual
+plus what its restoration adds (amenity +$16.1M, biodiversity +$7.0M, hunting +$4.0M, fishing +$12.3M), +5 on every service.
 
 | Service (activity)               | Suisun (NGW / BAU) | Central        | North           | South          |
 | -------------------------------- | ------------------ | -------------- | --------------- | -------------- |

@@ -3,6 +3,7 @@ import WaterDropIcon from '@mui/icons-material/WaterDrop'
 import { Box, Button, Stack, Typography, useTheme } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { assetUrl } from '../../utils/baseUrl'
+import { navigation } from '../../theme'
 
 const variations = [
   {
@@ -70,10 +71,10 @@ export default function OutflowPanel({
         position: 'relative',
         width: '100%',
         height: '100%',
-        minHeight: { xs: 980, md: 'calc(100svh - 76px)' },
+        minHeight: { xs: 980, md: navigation.belowBar('100svh').md },
         isolation: 'isolate',
         overflow: 'hidden',
-        backgroundImage: `url(${assetUrl('/images/scenarios/outflow.jpg')})`,
+        backgroundImage: `url(${assetUrl('/images/scenarios/web/outflow.webp')})`,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         '&::before': {

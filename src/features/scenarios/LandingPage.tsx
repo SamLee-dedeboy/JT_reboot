@@ -1,7 +1,7 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, Container, Stack, Typography, useTheme } from '@mui/material'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
@@ -10,6 +10,7 @@ import ScrollReveal from '../../ui/animation/ScrollReveal'
 import { assetUrl } from '../../utils/baseUrl'
 import AdaptationPanels from './AdaptationPanels'
 import OutflowPanel from './OutflowPanel'
+import { navigation } from '../../theme'
 
 const stickyPanels = [
   {
@@ -18,7 +19,7 @@ const stickyPanels = [
     title: 'Understand Current Operations',
     body: 'Review the current operations and understand the key parameters that shape how we model the Delta.',
     bgcolor: 'base.700',
-    image: '/images/scenarios/business-as-usual.jpg',
+    image: '/images/scenarios/web/business-as-usual.webp',
   },
   {
     id: 'tiered-outflows',
@@ -46,40 +47,67 @@ const stickyPanels = [
 const adaptationScenarioItems = [
   {
     title: 'Eco Machine',
-    image: assetUrl('/images/scenarios/eco-machine-2.JPG'),
+    image: assetUrl('/images/scenarios/web/eco-machine-2.webp'),
     eyebrow: '01',
     body: 'Where can tidal restoration be implemented in the Delta to strategically reduce salinity, while also creating ecological, eco-cultural, recreational, and community benefits?',
     href: '/scenarios/eco-machine',
   },
   {
     title: 'New Green Watershed',
-    image: assetUrl('/images/scenarios/new-green-watershed.jpg'),
+    image: assetUrl('/images/scenarios/web/new-green-watershed.webp'),
     eyebrow: '02',
     body: 'In addition to tidal restoration, what if the Delta and larger watershed were holistically restored to reduce systemic risks to the Delta’s water infrastructure, transition to a more regenerative and sustainable economy, and advance Indigenous sovereignty?',
     href: '/scenarios/new-green-watershed',
   },
   {
     title: 'Bolster and Fortify',
-    image: assetUrl('/images/scenarios/bolster-fortify-2.JPG'),
+    image: assetUrl('/images/scenarios/web/bolster-fortify-2.webp'),
     eyebrow: '03',
     body: 'What if reinforced levees combined with operable gates created a more resilient freshwater corridor through the Delta?',
     href: '/scenarios/bolster-and-fortify',
   },
   {
     title: 'Calling on Reserves',
-    image: assetUrl('/images/scenarios/calling-on-reserves.jpg'),
+    image: assetUrl('/images/scenarios/web/calling-on-reserves.webp'),
     eyebrow: '04',
     body: 'What if the state’s major dams and reservoirs were operated differently \u2013 mainly by changing when and how water is stored and released \u2013 to improve drought resilience, manage salinity, and better support aquatic ecosystems?',
     href: '/scenarios/calling-on-reserves',
   },
   {
     title: 'A Tunnel',
-    image: assetUrl('/images/scenarios/a-tunnel.jpg'),
+    image: assetUrl('/images/scenarios/web/a-tunnel.webp'),
     eyebrow: '05',
     body: 'What if a large tunnel \u2014 the Delta Conveyance Project, or DCP—were constructed to divert freshwater from the Sacramento River during high storm flows and convey that water underground to export pumps in the South Delta?',
     href: '/scenarios/a-tunnel',
   },
 ]
+
+/** Photos the sticky panels show further down the page, fetched once the hero has painted. */
+const panelImages = [
+  assetUrl(stickyPanels[0].image),
+  assetUrl('/images/scenarios/web/outflow.webp'),
+  ...adaptationScenarioItems.map((item) => item.image),
+]
+
+/** Warms the browser cache in idle time so each panel's photo is ready when it is reached. */
+function usePreloadImages(urls: string[]) {
+  useEffect(() => {
+    const load = () =>
+      urls.forEach((url) => {
+        const image = new Image()
+        image.decoding = 'async'
+        image.src = url
+      })
+    // Safari has no requestIdleCallback; a short timeout keeps the hero first there too.
+    if (typeof window.requestIdleCallback === 'function') {
+      // The timeout guarantees the load even when animation keeps the page from going idle.
+      const handle = window.requestIdleCallback(load, { timeout: 1500 })
+      return () => window.cancelIdleCallback(handle)
+    }
+    const handle = window.setTimeout(load, 200)
+    return () => window.clearTimeout(handle)
+  }, [urls])
+}
 
 const scenarioSectionLinks = stickyPanels.slice(0, 3).map((panel) => ({
   label: panel.title,
@@ -97,27 +125,20 @@ const scenarioRailItems = stickyPanels.map((panel) => ({ id: panel.id, label: pa
 const nextStepItems = [
   {
     number: '01',
-    title: 'Scenario modeling results',
-    body: 'Explore modeled salinity patterns through time and compare how each outflow variation and adaptation scenario changes conditions across the Delta.',
-    label: 'Explore modeling results',
-    href: '/scenarios/results',
+    title: 'Modeling',
+    body: 'See how each future is represented in the hydrodynamic model, then explore modeled salinity for the outflow variations, the adaptation scenarios, and the adaptation scenarios with two feet of sea-level rise.',
+    label: 'Explore modeling',
+    href: '/scenarios/modeling',
   },
   {
     number: '02',
-    title: 'Evaluation criteria',
-    body: 'Review the shared criteria used to evaluate each scenario, including salinity, ecology, communities, the economy, recreation, and Tribal values.',
-    label: 'Review evaluation criteria',
-    href: '/scenarios/results#evaluation-framework',
+    title: 'Evaluation',
+    body: 'Review the five criteria used to evaluate each scenario (ecology, environmental justice, eco-cultural restoration, recreation, and the economy) and how one scenario looks across all of them.',
+    label: 'Review evaluation',
+    href: '/scenarios/evaluation',
   },
   {
     number: '03',
-    title: 'Two feet of sea-level rise',
-    body: 'Revisit both the modeling results and evaluation criteria under two feet of sea-level rise to see how higher water levels change scenario performance and tradeoffs.',
-    label: 'Compare sea-level rise results',
-    href: '/scenarios/results#modeling-methodology',
-  },
-  {
-    number: '04',
     title: 'Scenario ranking',
     body: 'Use the ranking visualization to compare overall scenario scores and see how different priorities and weighting choices affect which futures rise to the top.',
     label: 'Open ranking visualization',
@@ -151,9 +172,8 @@ function WhatsNextPanel() {
           <Box component="span" sx={{ color: 'primary.main' }}>
             Dive deeper into the scenarios
           </Box>{' '}
-          {'—'} examine the modeling results for each future, review the criteria used to evaluate
-          them, test how scenarios change with two feet of sea-level rise, and compare the scenarios
-          from diverse perspectives through visualizations.
+          {'—'} see how each future is modeled, review how the criteria evaluate them, and compare
+          the scenarios from diverse perspectives through visualizations.
         </Typography>
 
         <Box
@@ -242,7 +262,7 @@ function StickyScenarioPanels() {
             width: 1,
             height: '1px',
             pointerEvents: 'none',
-            scrollMarginTop: '76px',
+            scrollMarginTop: navigation.barHeight,
           }}
         />
       ))}
@@ -250,8 +270,8 @@ function StickyScenarioPanels() {
       <Box
         sx={{
           position: 'sticky',
-          top: { xs: 72, md: 76 },
-          height: { xs: 'calc(100dvh - 72px)', md: 'calc(100dvh - 76px)' },
+          top: navigation.barHeight,
+          height: navigation.belowBar('100dvh'),
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', sm: '20dvw 80dvw', lg: '15dvw 85dvw' },
           overflow: 'hidden',
@@ -394,6 +414,7 @@ function StickyScenarioPanels() {
 
 export default function LandingPage() {
   const theme = useTheme()
+  usePreloadImages(panelImages)
 
   return (
     <>
@@ -403,7 +424,7 @@ export default function LandingPage() {
           component="header"
           sx={{
             position: 'relative',
-            height: { xs: 'calc(100dvh - 72px)', md: 'calc(100dvh - 76px)' },
+            height: navigation.belowBar('100dvh'),
             display: 'flex',
             alignItems: 'center',
             isolation: 'isolate',
@@ -411,7 +432,7 @@ export default function LandingPage() {
               content: '""',
               position: 'absolute',
               inset: 0,
-              backgroundImage: `linear-gradient(90deg, rgba(16,22,24,0.94) 0%, rgba(16,22,24,0.78) 44%, rgba(16,22,24,0.32) 100%), url(${assetUrl('/images/scenarios/cover.jpg')})`,
+              backgroundImage: `linear-gradient(90deg, rgba(16,22,24,0.94) 0%, rgba(16,22,24,0.78) 44%, rgba(16,22,24,0.32) 100%), url(${assetUrl('/images/scenarios/web/cover.webp')})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               zIndex: -1,

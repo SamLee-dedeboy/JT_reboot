@@ -6,9 +6,12 @@
 // outline at all (eco-cultural, by design).
 import type { TeamKey } from '../data'
 
-/** Five of Ecology's eight data regions have an outline; "Suisun Marsh" has an
- *  outline and no key, because the report folds it into Suisun Bay. */
+/** All eight Ecology data regions have an outline; "Suisun Marsh" has an
+ *  additional outline and no key, because the report folds it into Suisun Bay. */
 const ECOLOGY_REGION_KEY: Record<string, string> = {
+  'South Bay': 'southBay',
+  'Central Bay': 'centralBay',
+  'San Pablo Bay': 'sanPabloBay',
   'Suisun Bay': 'suisunBay',
   Confluence: 'confluence',
   Central: 'centralDelta',
@@ -16,11 +19,12 @@ const ECOLOGY_REGION_KEY: Record<string, string> = {
   'North Delta': 'northDelta',
 }
 
-/** Shapefile agency → the zone key. West Delta has values and no outline yet. */
+/** Displayed Economy region → the zone key. */
 const ECONOMY_ZONE_KEY: Record<string, string> = {
-  'North Delta Water Agency': 'north',
-  'Central Delta Water Agency': 'central',
-  'South Delta Water Agency': 'south',
+  'North Delta': 'north',
+  'Central Delta': 'central',
+  'South Delta': 'south',
+  'West Delta': 'west',
 }
 
 /**

@@ -20,7 +20,7 @@ const alternativeDeltaOutflows: ScenarioContent = {
   slug: 'alternative-delta-outflows',
   number: '01',
   title: 'Increasing Delta Outflow',
-  image: '/images/scenarios/outflow.jpg',
+  image: '/images/scenarios/web/outflow.webp',
   summary:
     'How does increasing or decreasing how much water flows through the Delta change salinity relative to current operations?',
   story: [],

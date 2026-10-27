@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { Box, Button, Stack, Typography } from '@mui/material'
 import Navbar from '../ui/Navbar'
 import { assetUrl } from '../utils/baseUrl'
+import { navigation } from '../theme'
 
 const DATASETS = {
   dailyMean: {
@@ -359,7 +360,7 @@ export default function BaselineExploration() {
           component="main"
           sx={{
             display: 'grid',
-            minHeight: { xs: 'calc(100vh - 72px)', md: 'calc(100vh - 76px)' },
+            minHeight: navigation.belowBar('100vh'),
             placeItems: 'center',
             bgcolor: 'base.900',
             color: 'base.100',
@@ -387,7 +388,7 @@ export default function BaselineExploration() {
             '--frame-right-pad': '20px',
             '--row-height': '74px',
           },
-          minHeight: { xs: 'calc(100vh - 72px)', md: 'calc(100vh - 76px)' },
+          minHeight: navigation.belowBar('100vh'),
           overflow: 'hidden',
           position: 'relative',
           color: 'common.white',

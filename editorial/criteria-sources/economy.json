@@ -1,0 +1,313 @@
+{
+  "report": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx",
+  "sections": {
+    "summary": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "What is the criterion: Economy"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Definitions"
+      },
+      {
+        "type": "paragraph",
+        "text": "This criterion asks a simple question: when the Delta's water gets saltier, or when land gets converted from farming to something else, what happens to the Delta's economy? We track that in three ways: how much money Delta farms bring in from selling what they grow (Gross Revenue), how many jobs depend on that activity plus the businesses tied to it (Employment), and how much that activity adds to the regional economy once wages and business income are counted (Value Added)."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Why does this criterion matter?"
+      },
+      {
+        "type": "paragraph",
+        "text": "The Delta supports a working economy: close to 500,000 acres of irrigated farmland, plus the packing houses, equipment dealers, and trucking that depend on it, plus tourism and recreation on the water. Every one of the six futures this study considers touches that economy somehow — some through saltwater reaching farm fields, others by converting farmland to wetland outright. Tracking the economic size of those effects, and where they land, is a basic way to compare the futures against each other."
+      },
+      {
+        "type": "paragraph",
+        "text": "In lay terms: people care about this criterion because it eventually shows up as someone's paycheck or a farm's bottom line. It's also one of the few criteria where the actual dollar and job effects, at least from salinity alone, turn out to be very small relative to a billion-dollar economy — a genuinely reassuring finding, detailed below."
+      }
+    ],
+    "what": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "What is the criterion: Economy"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Definitions"
+      },
+      {
+        "type": "paragraph",
+        "text": "This criterion asks a simple question: when the Delta's water gets saltier, or when land gets converted from farming to something else, what happens to the Delta's economy? We track that in three ways: how much money Delta farms bring in from selling what they grow (Gross Revenue), how many jobs depend on that activity plus the businesses tied to it (Employment), and how much that activity adds to the regional economy once wages and business income are counted (Value Added)."
+      }
+    ],
+    "why": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Why does this criterion matter?"
+      },
+      {
+        "type": "paragraph",
+        "text": "The Delta supports a working economy: close to 500,000 acres of irrigated farmland, plus the packing houses, equipment dealers, and trucking that depend on it, plus tourism and recreation on the water. Every one of the six futures this study considers touches that economy somehow — some through saltwater reaching farm fields, others by converting farmland to wetland outright. Tracking the economic size of those effects, and where they land, is a basic way to compare the futures against each other."
+      },
+      {
+        "type": "paragraph",
+        "text": "In lay terms: people care about this criterion because it eventually shows up as someone's paycheck or a farm's bottom line. It's also one of the few criteria where the actual dollar and job effects, at least from salinity alone, turn out to be very small relative to a billion-dollar economy — a genuinely reassuring finding, detailed below."
+      }
+    ],
+    "regions": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Subregional Map"
+      },
+      {
+        "type": "paragraph",
+        "text": "Below is a map showing land use in the Legal Delta in 2024, using Land Use information from the Department of Water Resources (https://data.cnra.ca.gov/dataset/statewide-crop-mapping )"
+      },
+      {
+        "type": "paragraph",
+        "text": "We subdivided the Legal delta into four subregions, three of them delimited by water agency (North, Central, and South Delta Water Agencies), and one section west of the Delta. Suisun Marsh lies outside of these four subregions; its land use (from the CDFW 2021 vegetation survey and 2024 DWR crop mapping) is used for the EcoMachine land-use estimate described below."
+      },
+      {
+        "type": "paragraph",
+        "text": "Because a Delta-wide total can hide a lot — some islands gain under a scenario that looks neutral overall, others lose — this criterion also reports results by four Delta zones (North, Central, West, South), shown below for one metric as an example."
+      },
+      {
+        "type": "paragraph",
+        "text": "Example subregional breakdown: change in total value added by Delta zone, dry year 2020, salinity pathway only, compared with Business As Usual in the same climate (current climate and 2 ft sea-level rise). New Green Watershed's and Eco Machine's land-use effects are reported separately. Calling on Reserves and A Tunnel: compared with their own RMA base run in the same climate."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Gross Revenue Change"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Location of Measurement"
+      },
+      {
+        "type": "paragraph",
+        "text": "Salinity-driven effects are measured Delta-wide and by the four Delta zones (North, Central, West, South), using the same OpenAg regional agricultural model areas as the manuscript's wet-year (2019) and dry-year (2020) runs. New Green Watershed's land-use effect is measured island-by-island using the DAP basecase's official Delta-wide crop acreage and revenue data, matched to its three restoration footprints, then summed Delta-wide and by zone (see the regional table under Results)."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Employment Change"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Location of Measurement"
+      },
+      {
+        "type": "paragraph",
+        "text": "Salinity-only pathway: Delta-wide and by the four Delta zones. New Green Watershed's land-use pathway: Delta-wide and by the four Delta zones, from Cai et al. IMPLAN run of the adjusted regional economic base case for each restoration level. Eco Machine’s land-use pathway: Suisun Marsh and Franks Tract, were calculated using the New Green Watershed factors for crop revenues, employment and value added."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Value Added Change"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Location of Measurement"
+      },
+      {
+        "type": "paragraph",
+        "text": "Same as Employment: salinity-only pathway Delta-wide and by zone; New Green Watershed's land-use pathway Delta-wide, from the same IMPLAN run; Eco Machine’s land-use pathway estimated as described under Gross Revenue Change above."
+      }
+    ],
+    "components": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "What are the components of this criterion?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Three metrics are scored for every scenario:"
+      },
+      {
+        "type": "paragraph",
+        "text": "● Gross Revenue Change — the change in total dollar sales from Delta farms."
+      },
+      {
+        "type": "paragraph",
+        "text": "● Employment Change — the change in full- and part-time jobs tied to that farm activity, directly and through supporting businesses."
+      },
+      {
+        "type": "paragraph",
+        "text": "● Value Added Change — the change in wages, business income, and taxes generated once that revenue works its way through the regional economy (approximately the change in regional GDP)."
+      },
+      {
+        "type": "paragraph",
+        "text": "Two further indicators — Applied Water Use Change and Land Use Change — are tracked narratively rather than scored on their own, since they are the mechanism behind the three scored metrics rather than separate economic outcomes."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Gross Revenue Change"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Methods"
+      },
+      {
+        "type": "paragraph",
+        "text": "What we are measuring (or estimating): total dollar sales from Delta agriculture (gross revenue), and how it changes under each scenario relative to doing nothing (Business As Usual)."
+      },
+      {
+        "type": "paragraph",
+        "text": "Origin of data: Business As Usual (Baseline), A Tunnel, Eco Machine, New Green Watershed (0.25MW / 0.5MW / Full MW), Calling on Reserves, Bolster and Fortify."
+      },
+      {
+        "type": "paragraph",
+        "text": "Origin of data:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Datasets: Agricultural land use and value were obtained from the OpenAg model at http://OpenAg.ucmerced.edu , which contains land use information from DWR."
+      },
+      {
+        "type": "paragraph",
+        "text": "Tiered Outflows: (not shown in the present analysis)."
+      },
+      {
+        "type": "item",
+        "text": "Historic Baseline"
+      },
+      {
+        "type": "item",
+        "text": "30% outflow increase from baseline"
+      },
+      {
+        "type": "item",
+        "text": "10% outflow decrease from baseline"
+      },
+      {
+        "type": "paragraph",
+        "text": "Adaptation Scenarios:"
+      },
+      {
+        "type": "item",
+        "text": "Business As Usual (Baseline)"
+      },
+      {
+        "type": "item",
+        "text": "A Tunnel"
+      },
+      {
+        "type": "item",
+        "text": "Eco Machine"
+      },
+      {
+        "type": "item",
+        "text": "New Green Watershed (Low 0.25 MW, Medium 0.5 MW, and full restoration)."
+      },
+      {
+        "type": "item",
+        "text": "Calling on Reserves"
+      },
+      {
+        "type": "item",
+        "text": "Bolster and Fortify"
+      },
+      {
+        "type": "paragraph",
+        "text": "Unit of measurement: In 2024 US Dollars, annualized."
+      },
+      {
+        "type": "paragraph",
+        "text": "Where are we measuring: the entire Delta and by the four Delta zones."
+      },
+      {
+        "type": "paragraph",
+        "text": "Climate conditions: current climate, and 2 feet of sea-level rise (RMA runs provided October 2026), each for a wet year (2019) and a dry year (2020). Calling on Reserves and A Tunnel are compared with the base run RMA delivered with them, in the same climate (current-climate runs provided 22 October 2026; sea-level-rise runs 25 October 2026)."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Employment Change"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Methods"
+      },
+      {
+        "type": "paragraph",
+        "text": "What we are measuring: full- and part-time jobs tied to Delta farm activity, directly and through supporting businesses, via IMPLAN. For the salinity pathway, revenue changes are converted to jobs with IMPLAN ratios by region, as described under Gross Revenue Change. For New Green Watershed's land-use effect, Cai et al (in preparation) adjusted the regional economic base case to reflect the actual converted land-use mix (remaining agriculture, new rice acreage, new wetland acreage) for each restoration level, then ran that adjusted base case through IMPLAN directly. This is a first-order, preliminary result."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Value Added Change"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Methods"
+      },
+      {
+        "type": "paragraph",
+        "text": "What we are measuring: wages, business income, and taxes generated by Delta farm activity once revenue works its way through the regional economy, via IMPLAN. As with Employment, New Green Watershed's land-use pathway uses Cai et al. IMPLAN run of the adjusted base case."
+      }
+    ],
+    "construction": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "How was this criterion constructed?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for that salinity effect. Resource Management Associates (RMA) simulated salinity for all six scenarios under current climate and with 2 feet of sea-level rise (A Tunnel and Calling on Reserves together with their own base run). That salinity effect was estimated by running the RMA salinity through crop salt-tolerance functions (yield loss), applying the yield loss to OpenAg farm revenue, and then applying IMPLAN regional economic ratios to get jobs and value added. New Green Watershed goes further: it converts subsided Delta farmland itself to wetland, rice, or paludiculture at three restoration intensities, which removes that land's revenue outright regardless of salinity. That land-use effect was modeled separately by Cai et al. in a manuscript in preparation — the DAP basecase's official Delta-wide crop acreage and revenue data, matched island-by-island to each restoration level's footprint, adjusted into a modified regional economic base case, and then run through IMPLAN directly to get Direct and Total (regional-multiplier) Revenue, Employment, and Value Added effects for all three restoration levels. Eco Machine's own land conversion (Suisun Marsh and the Franks Tract Futures’ design) was estimated separately: farm revenue lost on the converted land (from DWR’s 2024 land use and corresponding OpenAg revenue per acre), jobs and value added from the same IMPLAN ratios and multipliers as the New Green Watershed runs, carbon offset revenue from the Delta Island Adaptation greenhouse-gas rates, and one-time construction cost. It was not run through IMPLAN directly, but so little of that land is farmed that a direct run is unlikely to change the scenario score."
+      }
+    ],
+    "references": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "References"
+      },
+      {
+        "type": "paragraph",
+        "text": "References"
+      },
+      {
+        "type": "paragraph",
+        "text": "Cai, Y., Milligan, B., Medellín-Azuara, J. et al. \"Economic analysis of just land-use transitions in California's Sacramento-San Joaquin Delta.\" Manuscript in preparation, target journal: Journal of Hydrology: Regional Studies."
+      },
+      {
+        "type": "paragraph",
+        "text": "California Department of Fish and Wildlife. 2021. Vegetation – Suisun Marsh – 2021 [ds3187]. Sacramento, CA."
+      },
+      {
+        "type": "paragraph",
+        "text": "California Natural Resources Agency. Hill Slough Tidal Marsh Restoration Project, California EcoRestore project sheet. https://resources.ca.gov/CNRALegacyFiles/docs/ecorestore/projects/Hill_Slough_Tidal_Restoration.pdf"
+      },
+      {
+        "type": "paragraph",
+        "text": "Deverel, S. J., Olds, M., Burt, J. W., Hankins, D., Milligan, B., Kraus-Polk, A., Ohlson, D., Failing, E., Miller, T., & Ryan, R. (in press). Delta Island Adaptations: Development of regenerative land uses for subsided peatlands in the Sacramento–San Joaquin Delta; geospatial analysis of ecosystem, infrastructural and economic factors, and effects. San Francisco Estuary and Watershed Science."
+      },
+      {
+        "type": "paragraph",
+        "text": "Medellín-Azuara, J., Hanak, E., Howitt, R., & Lund, J. (2012). Transitions for the Delta Economy (p. 62). Public Policy Institute of California. http://www.ppic.org/"
+      },
+      {
+        "type": "paragraph",
+        "text": "UC Davis, California Department of Fish and Wildlife, and California Department of Water Resources. 2020. Franks Tract Futures Reimagined 2020: Final Report. https://franks-tract-futures-ucdavis.hub.arcgis.com/pages/final-report"
+      }
+    ]
+  }
+}

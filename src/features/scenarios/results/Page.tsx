@@ -3,7 +3,6 @@ import { Navigate, useParams, useSearchParams } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
-import { assetUrl } from '../../../utils/baseUrl'
 import StoryTabs from '../StoryTabs'
 import {
   adaptationScenarios,
@@ -13,16 +12,10 @@ import {
   tieredOutflowsScenario,
 } from '../content'
 import { FamilyNavigation, OutflowTabs, type ResultFamily } from './Navigation'
-import Overview from './Overview'
+import { explorerHref as explorerLink } from './explorerLinks'
+import ModelingOverview from './ModelingOverview'
+import ResultsHero from './ResultsHero'
 import ScenarioResults from './ScenarioResults'
-
-const explorerScenarioKeys: Record<string, string> = {
-  'eco-machine': 'ecomachine',
-  'new-green-watershed': 'newgreen',
-  'bolster-and-fortify': 'bolster',
-  'calling-on-reserves': 'reserve',
-  'a-tunnel': 'tunnel',
-}
 
 export default function Page() {
   const { scenarioSlug } = useParams()
@@ -33,7 +26,7 @@ export default function Page() {
   const isAdaptation = adaptationScenarios.some((item) => item.slug === scenarioSlug)
 
   if (!isOverview && (!scenario || (!isOutflow && !isAdaptation))) {
-    return <Navigate to="/scenarios/results" replace />
+    return <Navigate to="/scenarios/modeling" replace />
   }
 
   const variationId = searchParams.get('variation') ?? outflowResultVariations[0].id
@@ -50,7 +43,7 @@ export default function Page() {
         ? 'adaptation-slr'
         : 'adaptation'
   const heroImage = isOverview
-    ? '/images/scenarios/cover.jpg'
+    ? '/images/scenarios/web/cover.webp'
     : isOutflow
       ? tieredOutflowsScenario.image
       : scenario?.image
@@ -58,47 +51,33 @@ export default function Page() {
   const resultSummary = isOutflow
     ? variation.summary
     : `Review how ${scenario?.title} changes modeled outcomes relative to baseline operations.`
-  const explorerHref = isOutflow
-    ? `/pages/scenario-explorer?mode=tiered-outflows&scenario=${variation.explorerKey}`
-    : `/pages/scenario-explorer?scenario=${explorerScenarioKeys[scenarioSlug ?? '']}`
+  const explorerHref = explorerLink(
+    isOutflow
+      ? { outflowExplorerKey: variation.explorerKey }
+      : { scenarioSlug: scenarioSlug ?? '' },
+  )
 
   return (
     <>
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
-        <Box
-          component="header"
-          sx={{
-            position: 'relative',
-            isolation: 'isolate',
-            py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl },
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              inset: 0,
-              zIndex: -1,
-              backgroundImage: (theme) =>
-                `linear-gradient(90deg, ${theme.palette.translucent[900]} 0%, ${theme.palette.translucent[700]} 52%, ${theme.palette.translucent[300]} 100%), url(${assetUrl(heroImage ?? '/images/scenarios/cover.jpg')})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            },
-          }}
+        <ResultsHero
+          title={
+            isOverview ? 'How scenarios are modeled' : 'Modeling results and evaluation criteria'
+          }
+          summary={
+            isOverview
+              ? 'See how the hydrodynamic model represents each future, then open the modeled results for the outflow variations and adaptation scenarios.'
+              : 'Review modeled outcomes and the shared criteria used to compare each Delta future against baseline operations.'
+          }
+          image={heroImage}
         >
-          <Container maxWidth="lg">
-            <Stack spacing={jtSpacing.gap.lg} sx={{ maxWidth: '78ch' }}>
-              <Typography variant="h1">Modeling results and evaluation criteria</Typography>
-              <Typography variant="bodyLarge" sx={{ color: 'base.50' }}>
-                Review modeled outcomes and the shared criteria used to compare each Delta future
-                against baseline operations.
-              </Typography>
-              <FamilyNavigation
-                activeFamily={family}
-                scenarioSlug={isAdaptation ? scenarioSlug : undefined}
-                slrAvailable={slrAvailable}
-              />
-            </Stack>
-          </Container>
-        </Box>
+          <FamilyNavigation
+            activeFamily={family}
+            scenarioSlug={isAdaptation ? scenarioSlug : undefined}
+            slrAvailable={slrAvailable}
+          />
+        </ResultsHero>
 
         {isOutflow && <OutflowTabs activeVariation={variation.id} />}
         {isAdaptation && scenarioSlug && (
@@ -119,7 +98,7 @@ export default function Page() {
               py: 0,
             }}
           >
-            <Overview />
+            <ModelingOverview />
           </Container>
         ) : (
           <Container

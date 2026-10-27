@@ -10,7 +10,8 @@ import { ScoreBadge } from '../evaluation/shared'
 import { methodologyPath } from '../evaluation/paths'
 import { teamStyle, type EvaluationTeamId } from '../teamStyle'
 
-function ModelingResults({
+/** The simplified regional salinity view: saltier and fresher places, then when it happens. */
+export function ModelingResults({
   scenarioSlug,
   scenarioTitle,
   outflowVariation,
@@ -132,14 +133,15 @@ function CriteriaResults({
         variant="body1"
         sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
       >
-        Five teams judged {scenarioTitle} against criteria they designed with Delta communities.
-        Scores compare it with Business as Usual: positive is better, negative is worse.
+        Five criteria evaluate {scenarioTitle} from ecological, cultural, community, recreational,
+        and economic perspectives. Scores compare it with Business as Usual: positive is better,
+        negative is worse.
       </Typography>
 
       {/* Team selector: one tile per team with its overall score */}
       <Box
         role="tablist"
-        aria-label="Evaluation teams"
+        aria-label="Evaluation criteria"
         sx={{
           mt: jtSpacing.section.md,
           display: 'grid',
@@ -232,14 +234,14 @@ function CriteriaResults({
                 component="h4"
                 sx={{ mt: jtSpacing.component.lg, color: style.color }}
               >
-                The team’s interpretation
+                What the findings mean
               </Typography>
               <Typography
                 variant="body2"
                 sx={{ mt: jtSpacing.gap.xs, color: finding.narrative ? 'base.100' : 'base.200' }}
               >
                 {finding.narrative ??
-                  `The ${selectedTeam.label} team has not yet written an interpretation of these results.`}
+                  `An interpretation of the ${selectedTeam.label} results is still in preparation.`}
               </Typography>
               <Stack
                 direction="row"
@@ -263,7 +265,7 @@ function CriteriaResults({
               component="p"
               sx={{ mt: jtSpacing.component.lg, color: 'base.200' }}
             >
-              The {selectedTeam.label} team's scores for {scenarioTitle} are still being finalized.
+              The {selectedTeam.label} scores for {scenarioTitle} are still being finalized.
             </Typography>
           )}
           <Button
@@ -272,7 +274,7 @@ function CriteriaResults({
             variant="outlined"
             sx={{ mt: jtSpacing.component.lg }}
           >
-            How this team evaluates
+            How this criterion is evaluated
           </Button>
         </Box>
 

@@ -8,6 +8,7 @@ import LandingPage from '../features/scenarios/LandingPage'
 import BackgroundPage from '../features/scenarios/baseline/BackgroundPage'
 import KeyParametersPage from '../features/scenarios/baseline/KeyParametersPage'
 import IntroductionPage from '../features/scenarios/narration/IntroductionPage'
+import LegacyResultsRedirect from '../features/scenarios/results/LegacyResultsRedirect'
 import Results from '../features/scenarios/results/Page'
 import BaselineExploration from '../internal/BaselineExploration'
 import CoDesignTimelinePage from '../internal/CoDesignTimeline'
@@ -25,6 +26,7 @@ const RankVisualization = lazy(() => import('../internal/rank-visualization/Rank
 const BreakoutPage = lazy(() => import('../internal/rank-visualization/breakout/BreakoutPage'))
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
 const SiteMapPage = lazy(() => import('../internal/site-map/SiteMapPage'))
+const CriteriaCopyEditor = lazy(() => import('../internal/criteria-copy/CriteriaCopyEditor'))
 const TribalStewardshipSpectrum = lazy(() => import('../internal/TribalStewardshipSpectrum'))
 const EcoculturalMetricsArrow = lazy(() => import('../internal/EcoculturalMetricsArrow'))
 const TeamMethodologyPage = lazy(
@@ -32,6 +34,8 @@ const TeamMethodologyPage = lazy(
 )
 const TeamScenarioPage = lazy(() => import('../features/scenarios/evaluation/TeamScenarioPage'))
 const RankingPage = lazy(() => import('../features/scenarios/ranking/Page'))
+const EvaluationPage = lazy(() => import('../features/scenarios/results/EvaluationPage'))
+const FamiliesPage = lazy(() => import('../features/scenarios/results/FamiliesPage'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
 
@@ -42,7 +46,10 @@ export default function AppRouter() {
       <Route path="/scenarios" element={<LandingPage />} />
       <Route path="/scenarios/background-context" element={<BackgroundPage />} />
       <Route path="/scenarios/key-parameters" element={<KeyParametersPage />} />
-      <Route path="/scenarios/results" element={<Results />} />
+      <Route path="/scenarios/results" element={<LegacyResultsRedirect />} />
+      <Route path="/scenarios/modeling" element={<Results />} />
+      <Route path="/scenarios/evaluation" element={deferred(<EvaluationPage />)} />
+      <Route path="/scenarios/evaluation/families" element={deferred(<FamiliesPage />)} />
       <Route path="/scenarios/:scenarioSlug/results" element={<Results />} />
       <Route
         path="/scenarios/:scenarioSlug/results/:teamId"
@@ -80,6 +87,7 @@ export default function AppRouter() {
       <Route path="/pages/breakout" element={deferred(<BreakoutPage />)} />
       <Route path="/pages/co-design-timeline" element={<CoDesignTimelinePage />} />
       <Route path="/pages/site-map" element={deferred(<SiteMapPage />)} />
+      <Route path="/pages/criteria-copy" element={deferred(<CriteriaCopyEditor />)} />
       <Route
         path="/pages/tribal-stewardship-spectrum"
         element={deferred(<TribalStewardshipSpectrum />)}

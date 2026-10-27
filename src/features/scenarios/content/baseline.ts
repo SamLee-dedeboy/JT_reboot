@@ -4,7 +4,7 @@ export const baselineScenario: ScenarioContent = {
   slug: 'business-as-usual',
   number: '01',
   title: 'Business as Usual',
-  image: '/images/scenarios/business-as-usual.jpg',
+  image: '/images/scenarios/web/business-as-usual.webp',
   summary:
     'If current conditions and familiar water-management responses continue, how will the Delta change—and who will feel those changes first?',
   story: [
@@ -69,4 +69,3 @@ export const baselineKeyTerms = [
 
 export const keyParametersIntroduction =
   'Placeholder page for the baseline scenario parameters. This will hold the modeling assumptions, boundary conditions, and comparison inputs for the baseline scenario.'
-

@@ -39,7 +39,7 @@ import type { ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { evaluationCardSx } from '../../../features/scenarios/evaluation/styles'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, navigation } from '../../../theme'
 import { TEAMS, cellFill } from '../data'
 import type { TeamKey } from '../data'
 import { CellDetail } from '../drilldown/CellDetail'
@@ -132,7 +132,7 @@ function Table({ team, embedded }: { team: TeamKey; embedded: boolean }) {
       <TableTabs
         current={team}
         pathname={embedded ? '/scenarios/ranking/by-criterion' : '/pages/breakout'}
-        stickyTop={embedded ? { xs: 72, md: 76 } : 0}
+        stickyTop={embedded ? navigation.barHeight : 0}
       />
 
       {/* What is on screen, in one glance from the back row, and the host's opening words. */}

@@ -152,6 +152,12 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
       content: 'Article accordion index: Hammersmith One.',
     },
     {
+      label: 'Number Rank',
+      variantName: 'numberRank',
+      variant: theme.typography.numberRank as TypographyToken,
+      content: 'Ordinal place in a ranking (1st, 2nd): Hammersmith One.',
+    },
+    {
       label: 'Number Timeline',
       variantName: 'numberTimeline',
       variant: theme.typography.numberTimeline as TypographyToken,

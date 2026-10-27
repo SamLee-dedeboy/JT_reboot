@@ -9,6 +9,7 @@ import BaseMap from '../BaseMap'
 import MapLayerOrchestrator from '../MapLayerOrchestrator'
 import SalinityVector155Layer from '../layers/SalinityVector155Layer'
 import { HERO_MAP_STYLE, SUISUN_BAY_CENTER } from '../mapCameraView'
+import { navigation } from '../../theme'
 
 const mapContainerStyle = {
   position: 'absolute',
@@ -86,9 +87,9 @@ export default function HeroMapPilot() {
       id="top"
       sx={{
         position: 'sticky',
-        top: { xs: 72, md: 76 },
+        top: navigation.barHeight,
         width: '100%',
-        height: { xs: 'calc(100svh - 72px)', md: 'calc(100svh - 76px)' },
+        height: navigation.belowBar('100svh'),
         minHeight: { xs: 520, md: 600 },
         overflow: 'hidden',
         zIndex: 10,

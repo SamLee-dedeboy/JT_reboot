@@ -62,27 +62,25 @@ export const currentSections: Record<string, UISection[]> = {
     {
       label: "What's next?",
       children: [
-        { label: '01 Scenario modeling results', to: '/scenarios/results' },
-        {
-          label: '02 Evaluation criteria',
-          detail: '#evaluation-framework',
-          to: '/scenarios/results',
-        },
-        { label: '03 Two feet of sea-level rise', to: '/scenarios/results' },
-        { label: '04 Scenario ranking', to: '/scenarios/ranking' },
+        { label: '01 Modeling', to: '/scenarios/modeling' },
+        { label: '02 Evaluation', to: '/scenarios/evaluation' },
+        { label: '03 Scenario ranking', to: '/scenarios/ranking' },
       ],
     },
   ],
   '/scenarios/:scenarioSlug': [
     { label: 'Hero + scenario tabs', detail: 'Back to Choose a Future', to: '/scenarios' },
-    { label: 'Story chapters', detail: 'Scroll-driven map with a chapter rail' },
+    {
+      label: 'Story chapters',
+      detail: 'Adaptation: key benefits, motivation, design approach, then supporting strategy',
+    },
     {
       label: 'Explore modeling results and evaluation criteria',
       detail: 'Button',
       to: '/scenarios/:scenarioSlug/results',
     },
   ],
-  '/scenarios/results': [
+  '/scenarios/modeling': [
     {
       label: 'Hero + result family tabs',
       detail: familyList,
@@ -95,6 +93,21 @@ export const currentSections: Record<string, UISection[]> = {
       })),
     },
     {
+      label: 'Where does salinity change?',
+      detail: 'Pick a future: saltier and fresher places, then the timeline',
+      to: '/pages/scenario-explorer',
+    },
+    {
+      label: 'Next: how are scenarios evaluated?',
+      children: [
+        { label: 'How scenarios are evaluated', to: '/scenarios/evaluation' },
+        { label: 'Read more in detail', to: '/pages/regional-summary' },
+      ],
+    },
+  ],
+  '/scenarios/evaluation': [
+    { label: 'Hero', detail: 'How scenarios are evaluated' },
+    {
       label: 'How are scenarios evaluated?',
       detail: 'One block per team: criterion, why it matters, components',
       children: evaluationTeams.map((team) => ({
@@ -104,16 +117,21 @@ export const currentSections: Record<string, UISection[]> = {
       })),
     },
     {
-      label: 'How are scenarios compared?',
+      label: 'Scenario results',
+      detail: 'Each scenario across every criterion',
       children: [
-        { label: 'Scenario ranking', to: '/scenarios/ranking' },
+        { label: 'The three families at a glance', to: '/scenarios/evaluation/families' },
         { label: 'Outflow variation results', to: '/scenarios/:scenarioSlug/results' },
         { label: 'Adaptation scenario results', to: '/scenarios/:scenarioSlug/results' },
       ],
     },
+    {
+      label: 'How are scenarios compared?',
+      children: [{ label: 'Scenario ranking', to: '/scenarios/ranking' }],
+    },
   ],
   '/scenarios/:scenarioSlug/results': [
-    { label: 'Hero + result family tabs', detail: familyList, to: '/scenarios/results' },
+    { label: 'Hero + result family tabs', detail: familyList, to: '/scenarios/modeling' },
     {
       label: 'Scenario tabs',
       detail: `Adaptation scenarios, or ${outflowResultVariations.map((v) => v.label).join(' / ')}`,
@@ -133,14 +151,36 @@ export const currentSections: Record<string, UISection[]> = {
       ],
     },
   ],
+  '/scenarios/evaluation/families': [
+    { label: 'Hero', detail: 'The three families at a glance' },
+    {
+      label: '01 Outflow variations',
+      detail: 'Environmental justice finding; others not assessed',
+      to: '/scenarios/:scenarioSlug/results',
+    },
+    {
+      label: '02 Adaptation scenarios',
+      detail: 'Score grid: five scenarios by five criteria',
+      to: '/scenarios/ranking',
+    },
+    {
+      label: '03 With two feet of sea-level rise',
+      detail: 'Scenarios with +2 ft runs; criteria still reporting',
+      to: '/scenarios/:scenarioSlug/results',
+    },
+  ],
   '/scenarios/evaluation/:teamId': [
-    { label: 'Hero', detail: 'Criterion summary · Return to overview', to: '/scenarios/results' },
+    {
+      label: 'Hero',
+      detail: 'Criterion summary · Back to evaluation',
+      to: '/scenarios/evaluation',
+    },
     { label: 'Team tabs', detail: teamList, to: '/scenarios/evaluation/:teamId' },
     { label: 'What is this criterion?' },
     { label: 'Why does it matter?', detail: 'Key statistic and interview quote' },
-    { label: 'How was it constructed?', detail: 'Key numbers, then the steps in order' },
     { label: 'Which regions does it cover?', detail: 'Only for teams with mapped regions' },
     { label: 'What are its components?', detail: 'One tab per component' },
+    { label: 'How was it constructed?', detail: 'Key numbers, then the steps in order' },
     { label: 'References' },
   ],
   '/scenarios/:scenarioSlug/results/:teamId': [

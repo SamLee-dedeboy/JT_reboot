@@ -24,7 +24,9 @@ export { criterionRegions } from './criterionRegions'
 export type { CriterionRegions } from './criterionRegions'
 export { teamReports } from './evaluationReports'
 export type { ScenarioFinding, TeamReport } from './evaluationReports'
-export type { ScenarioChapter, ScenarioContent } from './types'
+export type { ChapterRole, ScenarioChapter, ScenarioContent } from './types'
+export { chapterRoles, storyInReadingOrder } from './chapterOrder'
+export type { OrderedChapter } from './chapterOrder'
 
 export const scenarios = [baselineScenario, tieredOutflowsScenario, ...adaptationScenarios]
 

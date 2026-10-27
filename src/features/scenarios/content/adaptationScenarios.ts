@@ -5,21 +5,21 @@ export const adaptationScenarios: ScenarioContent[] = [
     slug: 'eco-machine',
     number: '01',
     title: 'Eco Machine',
-    image: '/images/scenarios/eco-machine-2.JPG',
+    image: '/images/scenarios/web/eco-machine-2.webp',
     summary:
       'Implementing tidal wetland restoration where it can reduce salinity intrusion, while also creating ecological, eco-cultural, recreational and community benefits.',
     story: [
       {
+        role: 'motivation',
         title: 'Where can restoration be implemented in the Delta to help manage salinity?',
-        navigationLabel: 'Motivation',
         paragraphs: [
           'Each day, tides carry salt water from San Francisco Bay into the Delta. Freshwater flowing downstream helps resist that movement, but drought and sea level rise can allow salinity to travel farther inland, affecting ecosystems, communities, agriculture, and freshwater supplies.',
           "The shape of the Delta's landscapes and waterways also heavily influence how tidal water moves and where salt travels. These flow patterns can be intentionally altered by reconnecting and rebuilding tidal wetlands within the Delta. The Eco Machine scenario explores where tidal restoration could be implemented to manage salinity while providing ecological and community benefits.",
         ],
       },
       {
+        role: 'design',
         title: 'Two locations for multi-benefit restoration',
-        navigationLabel: 'Design Approach',
         paragraphs: [
           'Eco Machine explores restoration on Suisun Marsh and Franks Tract, two locations where changes to the landscape could influence tidal movement and salinity intrusion. Each location offers a different approach to managing salinity while supporting habitat restoration, recreation, and community use.',
         ],
@@ -44,18 +44,19 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'ecocultural',
         title: 'Eco-cultural opportunities',
-        navigationLabel: 'Eco-cultural',
         paragraphs: [
           'The new wetlands and restored habitats for both Suisun Marsh and Franks Tract would also offer potential opportunities for eco-cultural restoration and Indigenous stewardship, which would be integrated into planning and design.',
         ],
       },
       {
-        title: 'Restoration as Multi-Benefit, Landscape Infrastructure',
-        navigationLabel: 'Key Takeaway',
+        role: 'keyBenefits',
+        title: 'More habitat, at the cost of a saltier Suisun Marsh',
         paragraphs: [
-          'Restoration could do more than rebuild habitat. By changing how tidal water moves through the Delta, strategically designed wetlands and landforms could complement existing water infrastructure and help manage salinity.',
-          'By examining these possibilities in Suisun Marsh and Franks Tract, Eco Machine explores how restoration could contribute to salinity management while supporting ecological, recreational, and cultural goals.',
+          'Eco Machine adds tens of thousands of acres of tidal wetland in Suisun Marsh and Franks Tract that aquatic species can reach, with a small gain for the food web that feeds them. That restoration also opens eco-cultural opportunities, and conditions for recreation improve slightly in the Central Delta. Because almost none of the restored land is farmed, the effect on the agricultural economy is close to neutral.',
+          'The trade-offs are concentrated in Suisun Marsh, which becomes saltier and a little less suited to birding, waterfowl hunting, and angling. Conditions for harmful algal blooms are slightly worse than Business as Usual, and the restoration carries a one-time construction cost estimated at $0.85–1.5 billion.',
+          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -65,11 +66,12 @@ export const adaptationScenarios: ScenarioContent[] = [
     slug: 'new-green-watershed',
     number: '02',
     title: 'New Green Watershed',
-    image: '/images/scenarios/new-green-watershed.jpg',
+    image: '/images/scenarios/web/new-green-watershed.webp',
     summary:
       'The Delta and its watershed are restored as one connected system, allowing land and ecosystems to help manage water salinity, flooding, and climate risk.',
     story: [
       {
+        role: 'motivation',
         title: 'What if the landscape could help manage water?',
         paragraphs: [
           'Much of the Delta has been managed by draining wetlands for agriculture and holding water behind levees. This approach has supported farms and communities, but it has also contributed to a growing problem: when peat is exposed to air, it decomposes and releases greenhouse gases. Losing drying soil to decomposition also causes the land to sink, leading to growing differences in elevation between the Delta channels and the land behind the levees.',
@@ -78,6 +80,7 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'design',
         title: 'Adapting Delta lands by elevation',
         paragraphs: [
           'Land subsidence can be stopped and reversed through a variety of adaptive land-use strategies. No single intervention is appropriate everywhere. ',
@@ -130,6 +133,7 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'supporting',
         title: 'Restoring the watershed upstream',
         paragraphs: [
           "Adaptation does not stop at the Delta's boundary.",
@@ -195,11 +199,12 @@ export const adaptationScenarios: ScenarioContent[] = [
         },
       },
       {
-        title: 'One watershed, many connected strategies',
+        role: 'keyBenefits',
+        title: 'The largest benefits, and the largest cost to farming',
         paragraphs: [
-          'New Green Watershed is a long-term vision, not a claim that every proposed intervention will work everywhere.',
-          'The scenario connects actions across several scales: keeping Delta peat soils wet, matching land uses to elevation, reconnecting habitats from channels to uplands, and considering how upstream landscape restoration affects how water moves downstream. The scenario explores how landscape adaptation and restoration can reduce subsidence and flood risk, influence salinity, support habitat and cultural practices, and create new economic opportunities.',
-          'Rather than asking levees and other infrastructure to carry the entire burden, New Green Watershed considers how the landscape itself could become part of the region’s adaptation strategy.',
+          'New Green Watershed delivers the largest gains of any scenario for the Delta’s ecosystem: about 80,000 acres of tidal wetland that aquatic species can reach, the biggest boost to the food web, and the most restoration, both in the Delta and in the upper watershed. Keeping peat soils wet helps reverse subsidence, and upstream restoration cuts flood risk more than any other scenario, alongside a small improvement in drinking water for vulnerable communities.',
+          'Those benefits depend on converting farmland. Agricultural revenue falls by about $280 million a year in the version scored here, and by $210–500 million a year across the versions considered. Suisun Marsh also becomes saltier for birding, waterfowl hunting, and angling, and conditions for harmful algal blooms are moderately worse. As a long-term vision, it also asks the most of land use and governance.',
+          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -213,12 +218,12 @@ export const adaptationScenarios: ScenarioContent[] = [
     slug: 'calling-on-reserves',
     number: '04',
     title: 'Calling on Reserves',
-    image: '/images/scenarios/calling-on-reserves.jpg',
+    image: '/images/scenarios/web/calling-on-reserves.webp',
     summary: 'Adjusting the timing and amount of water released from large dam reservoirs.',
     story: [
       {
+        role: 'motivation',
         title: 'How can changes in reservoir operations help manage Delta salinity?',
-        navigationLabel: 'Motivation',
         paragraphs: [
           'Upstream reservoirs capture and store freshwater for communities, agriculture, and ecosystems. Water managers decide when to hold that water and when to release it downstream, balancing immediate needs against future shortages. These decisions become especially difficult during prolonged droughts, when water supplies are limited and future conditions are uncertain.',
           'Holding water in reserve can help protect against future shortages. Releasing it can increase freshwater flows into the Delta, help resist salinity intrusion, and support species that depend on seasonal river flows.',
@@ -226,8 +231,8 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'design',
         title: 'Rethinking reservoir releases',
-        navigationLabel: 'Design Approach',
         paragraphs: [
           'Calling on Reserves focuses on modeling a specific reservoir as an example, which is Shasta Dam and Reservoir, the largest reservoir in the Sacramento River watershed with a capacity of 4,552,000 acre-feet.',
         ],
@@ -242,18 +247,19 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'ecocultural',
         title: 'Eco-cultural benefits',
-        navigationLabel: 'Eco-cultural',
         paragraphs: [
           'Dam releases that attempt to functionally mimic more natural yearly flows and hydrographs can improve conditions and survival for migratory fish such as salmon, and additional reservoir storage can help support adequate river flows for fish during droughts.',
         ],
       },
       {
-        title: 'Balancing today’s needs with tomorrow’s uncertainty',
-        navigationLabel: 'Key Takeaway',
+        role: 'keyBenefits',
+        title: 'Modest gains without building anything new',
         paragraphs: [
-          "Calling on Reserves explores a different approach to adaptation: changing how existing water infrastructure is operated rather than constructing new facilities or altering the Delta's physical landscape.",
-          'The scenario asks whether more flexible reservoir operations can make better use of limited freshwater resources while maintaining the long-term reliability that stored water provides.',
+          'Calling on Reserves changes how existing reservoirs are operated rather than building new facilities or altering the Delta’s landscape. Against its own baseline it is close to neutral for the agricultural economy and for recreation, and slightly better for eco-cultural values. In the wet year it adds suitable days for juvenile Chinook salmon, and in the dry year it reduces them for the undesirable largemouth bass and Brazilian waterweed.',
+          'Drinking water is where it falls short: threshold exceedances rise for vulnerable communities, most of all in the wet season, and conditions for harmful algal blooms are slightly worse. It adds no habitat. Drawing on stored water also raises the question of whether more flexible releases can keep the long-term reliability that reservoirs provide.',
+          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -267,13 +273,13 @@ export const adaptationScenarios: ScenarioContent[] = [
     slug: 'bolster-and-fortify',
     number: '03',
     title: 'Bolster and Fortify',
-    image: '/images/scenarios/bolster-fortify-2.JPG',
+    image: '/images/scenarios/web/bolster-fortify-2.webp',
     summary:
       'Engineered gates and reinforced levees create a more controlled and reliable freshwater corridor through the Delta connected to the southern pumping plants.',
     story: [
       {
+        role: 'motivation',
         title: 'What if we could create a more reliable freshwater corridor?',
-        navigationLabel: 'Motivation',
         paragraphs: [
           'Freshwater supplies currently travel through a network of Delta channels, supplying water to in-Delta communities and for export to other regions and urban areas across California. During droughts, reduced river flows can allow salinity to move farther inland, impacting water quality as it moves through this system. Also, rising sea levels will continue to push tides and salty water further into the Delta.',
           'Much of the Delta’s leveed waterways run alongside deeply subsided islands, where water in the channels sits high above the surrounding land. A levee failure could flood communities and farmland, and threaten the pathways that move freshwater south.',
@@ -281,8 +287,8 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'design',
         title: 'Creating a managed freshwater corridor',
-        navigationLabel: 'Design Approach',
         paragraphs: [
           'Bolster and Fortify focuses on a proposed Through-Delta Corridor that guides freshwater from the San Joaquin River through Old River toward Clifton Court Forebay and the southern pumping plants.',
           'The corridor combines three interventions:',
@@ -312,12 +318,12 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
-        title: 'Further engineering the Delta',
-        navigationLabel: 'Key Takeaway',
+        role: 'keyBenefits',
+        title: 'A protected corridor, with little change elsewhere',
         paragraphs: [
-          'Bolster and Fortify explores a future in which engineered infrastructure provides greater control over freshwater movement through the Delta.',
-          'However, greater control comes with trade-offs. Gates can change water circulation and water quality beyond the protected corridor and impede boating navigation, while construction, maintenance, and long-term operations require substantial investment.',
-          'The scenario asks whether that control can provide lasting reliability — and whether the benefits justify the costs, disruptions, and unequal effects that a protected corridor could create elsewhere in the Delta.',
+          'Bolster and Fortify gives operators more control over freshwater moving through the Delta. Islands along the fortified corridor see a moderate cut in flood risk, and drinking-water conditions for vulnerable communities hold steady.',
+          'Beyond the corridor, little changes for habitat, species, recreation, or eco-cultural values, and the flood benefit reaches only the islands along it. Salinity costs agriculture a small amount in dry years, more with sea-level rise, and water in Franks Tract at times grows much older. Gates can also change circulation beyond the corridor and impede boating, and building and running them requires substantial investment.',
+          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -331,13 +337,13 @@ export const adaptationScenarios: ScenarioContent[] = [
     slug: 'a-tunnel',
     number: '05',
     title: 'A Tunnel',
-    image: '/images/scenarios/a-tunnel.jpg',
+    image: '/images/scenarios/web/a-tunnel.webp',
     summary:
       'Some Sacramento River water is diverted in the northern Delta and carried beneath the Delta to Bethany Reservoir through a more direct, protected route.',
     story: [
       {
+        role: 'motivation',
         title: 'What if some water traveled beneath the Delta?',
-        navigationLabel: 'Motivation',
         paragraphs: [
           'Freshwater bound for other parts of California currently travels through Delta channels before reaching the southern pumping plants. Along the way, salinity intrusion can affect water quality, while levee failures or earthquakes could disrupt the delivery system.',
           'A Tunnel proposes a different approach. When conditions allow, some Sacramento River water would be diverted into an underground tunnel to the existing water delivery system in the south. This alternative route would make statewide water deliveries less vulnerable to changing conditions in Delta channels.',
@@ -345,8 +351,8 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'design',
         title: 'Creating an underground freshwater route',
-        navigationLabel: 'Design Approach',
         paragraphs: [
           'A Tunnel is based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project. The design would create a new underground route connecting the Sacramento River in the northern Delta to Bethany Reservoir in the south, where water would enter the existing statewide conveyance system.',
         ],
@@ -375,11 +381,13 @@ export const adaptationScenarios: ScenarioContent[] = [
         ],
       },
       {
+        role: 'keyBenefits',
         title: 'A comparison, not an endorsement',
-        navigationLabel: 'Key Takeaway',
         paragraphs: [
           'Many project participants requested that A Tunnel be included because of its scale and importance in California water debates, not necessarily because they support its construction.',
-          'While A Tunnel creates an alternative conveyance route that is less directly exposed to salinity intrusion and levee failures within Delta channels, it also asks: Could bypassing parts of the Delta improve statewide water delivery reliability, and what consequences might that create for the Delta?',
+          'A Tunnel creates a conveyance route less exposed to salinity intrusion and levee failures within Delta channels. If its intakes intercept stormwater before it enters the Delta, it slightly cuts flood risk.',
+          'Its drawbacks fall inside the Delta. In dry years the tunnel shifts salinity from the western to the central Delta, at a small cost to farms there, and it is slightly worse for recreation. It scores below Business as Usual for eco-cultural values and adds no habitat. The draft environmental justice evaluation found it the worst adaptation scenario for drinking water; those results are being revised.',
+          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],

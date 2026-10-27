@@ -4,7 +4,7 @@ import { Box, Breadcrumbs, Container, Stack, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, navigation } from '../../../theme'
 import TeamIcon from '../../../ui/TeamIcon'
 import { assetUrl } from '../../../utils/baseUrl'
 import { evaluationTeams } from '../content'
@@ -109,10 +109,10 @@ export function TeamTabs({
   return (
     <Box
       component="nav"
-      aria-label="Evaluation teams"
+      aria-label="Evaluation criteria"
       sx={{
         position: sticky ? 'sticky' : 'static',
-        top: { xs: 72, md: 76 },
+        top: navigation.barHeight,
         zIndex: 90,
         bgcolor: 'base.700',
         borderTop: 1,

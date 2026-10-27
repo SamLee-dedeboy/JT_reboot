@@ -1,0 +1,703 @@
+{
+  "report": "Copy of ECOLOGY_ The Story Behind the Criterion.docx",
+  "sections": {
+    "summary": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "What is the criterion: Delta ecology"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Definitions"
+      },
+      {
+        "type": "paragraph",
+        "text": "Here, define your criterion and any relevant key terms."
+      },
+      {
+        "type": "paragraph",
+        "text": "The definition of a just transition is\"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we look to the idea of a just transition that includes the species, waterways, and habitats of the Delta, as well as the people who rely on them."
+      },
+      {
+        "type": "paragraph",
+        "text": "The Delta is widely regarded as a “novel ecosystem.” Novel ecosystems are defined as highly altered ecosystem states, usually as a result of intensive resource extraction, to the point where restoration to an earlier, historic state is considered unfeasible. Novel ecosystems are still functional, and may still provide benefits to different species, but may require creative management strategies to achieve those benefits (Hobbs et al. 2009)."
+      },
+      {
+        "type": "paragraph",
+        "text": "This criterion addresses the state of the Delta ecosystem through evaluating species fundamental niches, pelagic food webs, and habitat availability. Species fundamental niches are defined as the zone in which the minimum environmental conditions for species survival are met. Pelagic food webs measure the amount of food present in open-water areas, created by small, floating organisms called plankton; plankton have been declining in the Delta recently, and are necessary to sustain aquatic species. Habitat availability describes how much wetland habitat exists within the Delta for species to access. All together, these metrics characterize how the Delta ecosystem is functioning to benefit the species we care about."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Why does this criterion matter?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Due to the Central Valley Water Project, the damming and levying of California’s rivers, and widespread draining of wetlands for land reclamation, the Delta has lost over 90% of its historic wetland habitat (Whipple et al. 2014). Several species of key cultural and ecological importance in the region have become critically endangered, and populations of other species are in decline."
+      },
+      {
+        "type": "paragraph",
+        "text": "People rely on the Delta ecosystem for a multitude of reasons: subsistence, cultural practice, recreation. We also believe that inherent to the idea of a “just transition in the Delta” is ensuring a better future for non-human species that call the Delta home."
+      }
+    ],
+    "what": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "What is the criterion: Delta ecology"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Definitions"
+      },
+      {
+        "type": "paragraph",
+        "text": "Here, define your criterion and any relevant key terms."
+      },
+      {
+        "type": "paragraph",
+        "text": "The definition of a just transition is\"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we look to the idea of a just transition that includes the species, waterways, and habitats of the Delta, as well as the people who rely on them."
+      },
+      {
+        "type": "paragraph",
+        "text": "The Delta is widely regarded as a “novel ecosystem.” Novel ecosystems are defined as highly altered ecosystem states, usually as a result of intensive resource extraction, to the point where restoration to an earlier, historic state is considered unfeasible. Novel ecosystems are still functional, and may still provide benefits to different species, but may require creative management strategies to achieve those benefits (Hobbs et al. 2009)."
+      },
+      {
+        "type": "paragraph",
+        "text": "This criterion addresses the state of the Delta ecosystem through evaluating species fundamental niches, pelagic food webs, and habitat availability. Species fundamental niches are defined as the zone in which the minimum environmental conditions for species survival are met. Pelagic food webs measure the amount of food present in open-water areas, created by small, floating organisms called plankton; plankton have been declining in the Delta recently, and are necessary to sustain aquatic species. Habitat availability describes how much wetland habitat exists within the Delta for species to access. All together, these metrics characterize how the Delta ecosystem is functioning to benefit the species we care about."
+      }
+    ],
+    "why": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Why does this criterion matter?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Due to the Central Valley Water Project, the damming and levying of California’s rivers, and widespread draining of wetlands for land reclamation, the Delta has lost over 90% of its historic wetland habitat (Whipple et al. 2014). Several species of key cultural and ecological importance in the region have become critically endangered, and populations of other species are in decline."
+      },
+      {
+        "type": "paragraph",
+        "text": "People rely on the Delta ecosystem for a multitude of reasons: subsistence, cultural practice, recreation. We also believe that inherent to the idea of a “just transition in the Delta” is ensuring a better future for non-human species that call the Delta home."
+      }
+    ],
+    "regions": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Species fundamental niches"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Location of Measurement"
+      },
+      {
+        "type": "paragraph",
+        "text": "For the adaptation scenarios, we used points selected by the ecology subteam to be representative of the various subregions of the San Francisco Estuary. Certain points outside of the legal Delta were added in order to represent the whole estuary, particularly for anadromous and migratory species that may experience range shifts if Delta conditions are not viable. The subregions represented include:"
+      },
+      {
+        "type": "item",
+        "text": "North Delta - farthest upstream, with lowest tidal influence and largest input of water from Sacramento River; freshwater"
+      },
+      {
+        "type": "item",
+        "text": "Central Delta - subsided, low-flow region of the Delta; freshwater"
+      },
+      {
+        "type": "item",
+        "text": "South Delta - saltiest region of the Delta, with the greatest inputs from the San Joaquin River and close to export pumping plants; freshwater"
+      },
+      {
+        "type": "item",
+        "text": "Confluence - where Sacramento and San Joaquin Rivers meet, often the site of the LSZ (low salinity zone), historically identified as an important location for fishes (e.g. Kimmerer et al. 2013); freshwater"
+      },
+      {
+        "type": "item",
+        "text": "Suisun Bay/Marsh - a mixing zone with diverse habitat types; brackish"
+      },
+      {
+        "type": "item",
+        "text": "San Pablo Bay - a mixing zone with strong brackish influence from the Bay and variable freshwater inputs from upstream, dependent on water year and water management; brackish"
+      },
+      {
+        "type": "item",
+        "text": "Central Bay - open water, urbanized; saltwater"
+      },
+      {
+        "type": "item",
+        "text": "South Bay: largely open water with influence from salt pond restorations; saltwater"
+      },
+      {
+        "type": "paragraph",
+        "text": "Figure 1. Map of points delineated by estuarine sub-region for tired outflow analysis. Central Bay Points were omitted from the dataset."
+      },
+      {
+        "type": "paragraph",
+        "text": "Map 2: Map of regions for the adaptive scenario analysis. N = 145"
+      },
+      {
+        "type": "paragraph",
+        "text": "A note on mapmaking and justification:"
+      },
+      {
+        "type": "paragraph",
+        "text": "For our region assignments for both the tiered outflow calculations and the adaptive scenario calculations we assigned regions based off of Pien et al. 2024, which was also instrumental in determining suitability thresholds for many of our species. Pien et al. 2024 determined their regions by using a hierarchical clustering analysis using average daily temperature, with slight adjustments at the discretion of the authors. We believe that these regional assignments reflect other contemporary maps of regional determinations. Moreover, the spatial assignments determined by Pien et al. 2024 reflect a genuine clustering of data that create a replicable assignment of points that is based on an abiotic determinant. We believe that this method effectively removes arbitrary boundaries and anchors the analysis in a meaningful ecological context."
+      },
+      {
+        "type": "paragraph",
+        "text": "Regions west of Suisun, where Pien et al. 2024 ends, were determined by known points of contraction, summarized by Grimaldo et al. 2020 and presented below."
+      },
+      {
+        "type": "paragraph",
+        "text": "Figure 3: Pien et al. 2024 reference for regional assignment. Note: we combined Suisun Marsh and Suisun Bay in our regional assignments."
+      },
+      {
+        "type": "paragraph",
+        "text": "Figure 3: Grimaldo et al. 2020 map showing consistent regional assignments to estuary regions."
+      }
+    ],
+    "components": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "What are the components of this criterion?"
+      },
+      {
+        "type": "paragraph",
+        "text": "Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and temperature thresholds that are survivable for that species, as well as the number of consecutive days the location remained within those thresholds."
+      },
+      {
+        "type": "paragraph",
+        "text": "Pelagic food webs: Pelagic food webs and food web contributions will be measured through landscape contributions and water age, using relative contributions from different landscapes and their exports to nearby waterways. We will use the following equation to assess the food web contributions for each adaptive scenario:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Managed wetland acres*(x) + tidal wetland acres*(y)+ wet soil ag acres*(z) = Proxy for food web production"
+      },
+      {
+        "type": "paragraph",
+        "text": "Where x, y, z are constants that represent relative contributions of each landscape type on food web production, to be determined from literature."
+      },
+      {
+        "type": "paragraph",
+        "text": "We established proportion criteria for relative food web contributions from each habitat type. Our three habitat types considered are:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Tidal wetland acres: Acres of newly accessible tidal wetland under the various scenarios. We have assigned this value to 4.0 in our model, because, although the food web contributions are decidedly lower than managed wetlands when they are being managed for exports, they provide consistent exports of pelagic food that are not constrained seasonally. Despite being somewhat lacking in overall productivity, this is weighted higher than managed wetlands in the model because of availability and consistency (SFEI Delta Landscapes 2026)."
+      },
+      {
+        "type": "paragraph",
+        "text": "Managed wetland acres: Managed wetlands are known to, at specific times of managed flood pulses, produce 11 to 22 times the amount of zooplankton as tidal wetlands (Phillips et al. 2026). Despite this, managed wetlands are closed off to surrounding habitats for much of the year and managed can be sporadic. They are limited by barriers as well as management. Because of these sporadic, productive pulses, we have anchored managed wetlands as a 2.0 in our model."
+      },
+      {
+        "type": "paragraph",
+        "text": "Wet Soil Agriculture: Wet soil agriculture, including rice and paludiculture, is carefully managed hydrologically and can provide pulses of food and organic matter to surrounding waterways in the Delta, but are restricted by hydrological management and seasonality. Moreover, as a baseline these systems export less zooplankton and nutrients than managed wetlands do. They are a dramatic improvement from dry agriculture in the Delta with regard to food web imports, so they are anchored at 1.0 in our model."
+      },
+      {
+        "type": "paragraph",
+        "text": "In our model, we are incorporating the current acreage of wet soil agriculture and managed wetlands in the Delta and incorporating the difference between acreages in the scenarios."
+      },
+      {
+        "type": "paragraph",
+        "text": "Currently, our model estimates 248,815 total acres in the Delta (this is calculated from the summed total acreage of the mapped Delta islands). As of 2022, there were 17,178 acres of rice in the Delta (Agri-Pulse 2022). This value will be subtracted from our total simulated rice acres. According to the Delta Stewardship Council, there are approximately 5100 baseline managed wetland acres currently in the Delta (Delta Stewardship Council 2026). This value will also be subtracted from the model."
+      },
+      {
+        "type": "paragraph",
+        "text": "The proxy will reads as:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Total managed wetland acres-5100*(0.2) + additional tidal wetland acres*(0.4)+ total wet soil ag acres-17,178*(z) = Proxy for food web production"
+      },
+      {
+        "type": "paragraph",
+        "text": "If the total new managed wetland acres and wet soil acres are zero, that facet of the model will revert to zero, as opposed to a negative number (no additional acres will not detract from pre-existing acreage)."
+      },
+      {
+        "type": "paragraph",
+        "text": "Habitat availability: We calculated the area of newly available wetland habitat under each scenario. Rankings were then scaled from the maximum number of newly accessible habitat acres (New Green Watershed) and anchored at the baseline accessible acres (5)."
+      },
+      {
+        "type": "paragraph",
+        "text": "We are approaching habitat availability strictly from an accessible aquatic habitat perspective. We acknowledge that managed wetlands and rice may function as habitat for some floodplain spawning species, birds, mammals, and invertebrates, but we are strictly assessing the additional habitat that will be available to all aquatic species."
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Species fundamental niches"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Species of Interest"
+      },
+      {
+        "type": "paragraph",
+        "text": "Figure 1: Survey results from the June 2025 stakeholder workshop where participants were asked to indicate which species in the San Francisco Estuary they were most interested in seeing how adaptation scenarios would impact their abundance."
+      },
+      {
+        "type": "paragraph",
+        "text": "We selected species based on stakeholder interest, sensitivity to temperature and salinity such that our modeling results may help indicate their functional abiotic niches, and captured a wide range of thresholds for suitability."
+      },
+      {
+        "type": "paragraph",
+        "text": "Species of interest:"
+      },
+      {
+        "type": "item",
+        "text": "Longfin smelt juvenile - longfin smelt are a migratory, anadromous species. The adults migrate to freshwater reaches of the estuary to spawn. Larvae hatch in freshwater, then spend the first few weeks of life in fresh to brackish water before migrating to saltier regions."
+      },
+      {
+        "type": "item",
+        "text": "Longfin smelt adult - Adult longfin smelt migrate to freshwater to spawn, then vacate the fresh regions of the estuary for saltier areas, mostly within the Bay region itself rather than the eastern estuary. During the spring period captured in the model, post-spawning, adults who survived spawning are actively moving to saltwater."
+      },
+      {
+        "type": "item",
+        "text": "Egeria - Egeria densa is a non-native freshwater, submerged weed from South America that clogs waterways, decreases turbidity, and raises temperatures. In the SFE it has not been shown to be productive habitat for native or non-native fish species. It is a main culprit of landscape-level aquatic change in recent decades."
+      },
+      {
+        "type": "item",
+        "text": "Juvenile overbite clam - the overbite clam is a non-native planktivore (consuming both phytoplankton and microzooplankton) from Asia that has contributed to food web collapse in brackish regions. Adults are highly resilient to salinity swings, but juveniles require low to moderate amounts of salinity to survive and establish."
+      },
+      {
+        "type": "item",
+        "text": "Largemouth Bass - a non-native piscivorous fish from the Mississippi River drainage. In the SFE they are restricted to freshwater regions and have nearly no salinity tolerance (unlike individuals in their native range do). They do well in fresh, warm, conditions with some submerged vegetation."
+      },
+      {
+        "type": "item",
+        "text": "Striped Bass Juvenile - Striped bass are an introduced non-native piscivorous predator from the Eastern United States. Since their introduction in 1876 they have become naturalized in the system and are valuable sportfish. They are anadromous (salt to freshwater) spawners and juveniles are highly temperature sensitive."
+      },
+      {
+        "type": "item",
+        "text": "Striped Bass Adult - Like the juveniles, striped bass are anadromous and run up freshwater rivers in the Delta to spawn. They are temperature sensitive but have a wider threshold than the juveniles. They are highly prized sportfish."
+      },
+      {
+        "type": "item",
+        "text": "Juvenile Fall-Run Chinook Salmon - Chinook salmon are native, highly prized sportfish in the Delta. Adults spend the majority of their lives in the ocean, before migrating through the San Francisco Estuary to spawn on gravel beds in the Delta. Their populations are generally doing poorly because of anthropogenic alterations to the system. Juveniles migrate down from natal rivers and grow on floodplains in the Delta before migrating out to the ocean. Like striped bass they are anadromous, and are highly temperature sensitive."
+      },
+      {
+        "type": "paragraph",
+        "text": "Methods"
+      },
+      {
+        "type": "paragraph",
+        "text": "What we are measuring:"
+      },
+      {
+        "type": "item",
+        "text": "Proportion of total modeled days that salinity and temperature remained within species’ survival thresholds;"
+      },
+      {
+        "type": "item",
+        "text": "Average “streak length” of consecutive days where conditions at a given point remain within survival thresholds. This represents changes in duration of suitable time according to the different runs or scenarios."
+      },
+      {
+        "type": "paragraph",
+        "text": "Origin of data:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Datasets:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Tiered Outflows:"
+      },
+      {
+        "type": "item",
+        "text": "Historic Baseline"
+      },
+      {
+        "type": "item",
+        "text": "30% outflow increase from baseline"
+      },
+      {
+        "type": "item",
+        "text": "10% outflow decrease from baseline"
+      },
+      {
+        "type": "paragraph",
+        "text": "Adaptation Scenarios:"
+      },
+      {
+        "type": "item",
+        "text": "Business As Usual (Baseline)"
+      },
+      {
+        "type": "item",
+        "text": "A Tunnel"
+      },
+      {
+        "type": "item",
+        "text": "Eco Machine"
+      },
+      {
+        "type": "item",
+        "text": "New Green Watershed"
+      },
+      {
+        "type": "item",
+        "text": "Calling on Reserves"
+      },
+      {
+        "type": "item",
+        "text": "Bolster and Fortify"
+      },
+      {
+        "type": "paragraph",
+        "text": "Unit of measurement:"
+      },
+      {
+        "type": "item",
+        "text": "For proportion of total suitable days: Suitable days/total number of days in model run"
+      },
+      {
+        "type": "item",
+        "text": "For average streak lengths: Suitable days"
+      },
+      {
+        "type": "paragraph",
+        "text": "Where are we measuring: Point locations across estuarine subregions (see map above)"
+      },
+      {
+        "type": "paragraph",
+        "text": "Total run: 145 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "North Delta: 30 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "Central Delta: 23 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "South Delta: 11 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "Confluence: 16 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "Suisun Bay: 25 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "San Pablo Bay: 15 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "Central Bay: 16 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "South Bay: 9 points"
+      },
+      {
+        "type": "paragraph",
+        "text": "Output data measurement: A score of 0 (unsuitable) or 1 (suitable) is assigned to each point, for each day, across the entire run. Those data are then used to calculate proportions of total suitable days and streak lengths."
+      },
+      {
+        "type": "paragraph",
+        "text": "Calculation:"
+      },
+      {
+        "type": "item",
+        "text": "Proportion of total suitable days: We summed the number of suitable days (values of 1) and divided by the total number of days per run to calculate the proportion of total suitable days at each point. We then used beta regression models, within the R package “glmmTBB,” to assess how proportions of suitable days varied across adaptation or flow scenarios, years (wet vs. dry year), and estuarine subregions. The final model uses proportion of total suitable days as an outcome variable, with an interaction between scenario and subregion as predictors. To account for the effects of water year type, we created separate models for 2019 and 2020 for each species of interest."
+      },
+      {
+        "type": "item",
+        "text": "Average streak length: “Streaks” of suitable conditions were calculated by counting consecutive 1 (suitable) values noted at each point. The lengths of streaks at each point were then averaged. Streak lengths were not analyzed at the subregion level."
+      },
+      {
+        "type": "paragraph",
+        "text": "Threshold: Thresholds were determined by referencing the literature (see references) on salinity and temperature tolerances for each species, beyond which survival is impossible:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Table 1: Physiological tolerance thresholds for species of interest."
+      },
+      {
+        "type": "table",
+        "rows": [
+          [
+            "Species",
+            "Salinity",
+            "Temperature"
+          ],
+          [
+            "Egeria densa",
+            "< 5 psu",
+            "3-26C"
+          ],
+          [
+            "Largemouth Bass",
+            "< 4 psu",
+            "3-28C"
+          ],
+          [
+            "Juvenile Overbite Clam",
+            "5 psu-25 psu",
+            "3-26C"
+          ],
+          [
+            "Juvenile Striped Bass",
+            "0-35 psu",
+            "12-27C"
+          ],
+          [
+            "Juvenile Chinook Salmon",
+            "0-35 psu",
+            "10-25 C"
+          ],
+          [
+            "Juvenile Longfin Smelt",
+            "0.4-10 psu",
+            "9-15 C"
+          ],
+          [
+            "Adult Longfin Smelt",
+            "15-30 psu",
+            "9-18 C"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Pelagic Food Webs"
+      },
+      {
+        "type": "paragraph",
+        "text": "We sought to assess how adaptation scenarios contributed to landscape-level changes in open-water food availability. Pelagic food is notoriously difficult to measure (see Lehman et al. 2015, Smits et al. 2023); therefore, we took the approach of assessing how much additional shallow-water habitat (managed and tidal wetland area) is contributed by each scenario relative to baseline, with the assumption that wetlands contribute to regional food availability (Lucas et al. 2006, Phillips et al 2026). We also assume additional wet soil agriculture can provide food resources similar to natural floodplains (Katz et al. 2017)."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Methods"
+      },
+      {
+        "type": "paragraph",
+        "text": "What we are measuring: Effects of increased wetted acreage compared to baseline on pelagic food webs"
+      },
+      {
+        "type": "paragraph",
+        "text": "Origin of data: Mapping based on adaptation scenarios"
+      },
+      {
+        "type": "paragraph",
+        "text": "Datasets:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Adaptation Scenarios:"
+      },
+      {
+        "type": "item",
+        "text": "Eco Machine"
+      },
+      {
+        "type": "item",
+        "text": "New Green Watershed"
+      },
+      {
+        "type": "item",
+        "text": "100% restoration"
+      },
+      {
+        "type": "item",
+        "text": "50% restoration, 50% wet soil agriculture"
+      },
+      {
+        "type": "item",
+        "text": "25% restoration, 75% wet soil agriculture"
+      },
+      {
+        "type": "paragraph",
+        "text": "NOTE: Only Eco Machine and New Green Watershed result in an increase in wetted acres on the landscape, so only these scenarios are evaluated."
+      },
+      {
+        "type": "paragraph",
+        "text": "Calculation: We summed additional wetted acres under each scenario, and multiplied the acres of each habitat type by a constant, determined by proportional contributions of each habitat type to food webs:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Total baseline managed wetland acres-5100*(0.2) + additional tidal wetland acres*(0.4)+ total wet soil ag acres-17,178*(0.1) = Proxy for food web production"
+      },
+      {
+        "type": "paragraph",
+        "text": "Note that 5100 acres of managed habitat is subtracted, as those wetlands are converted to tidal habitat under both scenarios."
+      },
+      {
+        "type": "paragraph",
+        "text": "The total acreages of the three different landscape types are below:"
+      },
+      {
+        "type": "table",
+        "rows": [
+          [
+            "Scenario",
+            "Total managed wetland acreage",
+            "Total additional tidal wetland acreage",
+            "Total wet soil ag acreage"
+          ],
+          [
+            "Eco Machine",
+            "5,100 (baseline)",
+            "53,000",
+            "17,178 (baseline)"
+          ],
+          [
+            "New Green Watershed 1 (100% managed)",
+            "248,815",
+            "80,000",
+            "17,178 (baseline)"
+          ],
+          [
+            "New Green Watershed 2 (50% managed, 50% wet soil ag)",
+            "120,814",
+            "80,000",
+            "128,001"
+          ],
+          [
+            "New Green Watershed 3 (25% managed, 75% wet soil ag)",
+            "61,257",
+            "80,000",
+            "187,558"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "Metric: Accessible Aquatic Habitat"
+      },
+      {
+        "type": "paragraph",
+        "text": "This was calculated simply by summing the total additional tidal wetland acres in each of our two restoration scenarios. The major difference between the two scenarios is that New Green Watershed restores a large portion of the Cache-Lindsay Slough Complex in the North Delta, a known hotspot for fish and food web activity. This restoration does not mediate salinity in those areas and was restored in the scenario solely for aquatic community benefit. This adds an additional ~27,000 to our restoration acreage."
+      },
+      {
+        "type": "paragraph",
+        "text": "In addition to habitat function, we also assessed the impacts of habitat acreage increases for species to access. This evaluates only tidal habitat, as managed wetlands and wet soil agriculture require periodic draining, so the habitat is not available year-round."
+      },
+      {
+        "type": "paragraph",
+        "text": "What we are measuring: Increased tidal wetland area compared to baseline"
+      },
+      {
+        "type": "paragraph",
+        "text": "Origin of data: Mapping based on adaptation scenarios"
+      },
+      {
+        "type": "paragraph",
+        "text": "Datasets:"
+      },
+      {
+        "type": "paragraph",
+        "text": "Adaptation Scenarios:"
+      },
+      {
+        "type": "item",
+        "text": "Eco Machine"
+      },
+      {
+        "type": "item",
+        "text": "New Green Watershed"
+      },
+      {
+        "type": "paragraph",
+        "text": "NOTE: Only Eco Machine and New Green Watershed result in an increase in wetted acres on the landscape, so only these scenarios are evaluated. The sub-scenarios of New Green Watershed also do not vary in tidal wetland acreage, so we did not evaluate them separately."
+      },
+      {
+        "type": "paragraph",
+        "text": "Calculation: We simply summed additional wetted acres under each scenario compared to baseline."
+      }
+    ],
+    "construction": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "How was this criterion constructed?"
+      },
+      {
+        "type": "paragraph",
+        "text": "After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various scenario conditions. We also considered what outcomes we could evaluate, given the hydrological model results. The hydrological models provided to us included salinity, temperature, and water age at several locations across the Delta. Relying on our conceptual understanding of the ecosystem, we decided to use salinity and temperature to report on species fundamental niches, and water age to evaluate pelagic food webs. We also decided to include habitat availability as a separate metric, which we could characterize by measuring the amount of wetland area designated under each scenario."
+      },
+      {
+        "type": "paragraph",
+        "text": "In order to pinpoint which species the public(s) might be interested in, we distributed a survey at the second Just Transitions Public Workshop. Overall, participants were strongly interested in fishes like Chinook salmon, as a cultural resource and a federally listed endangered species. Some participants were also invested in other native species of concern, such as longfin smelt, as well as recreationally important species like bass. Participants also emphasized the importance of considering invasive ecosystem engineer species, like Brazilian waterweed and overbite clam. In the end, we decided to characterize the fundamental niches of six species: Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed."
+      }
+    ],
+    "references": [
+      {
+        "type": "heading",
+        "level": 1,
+        "text": "References"
+      },
+      {
+        "type": "paragraph",
+        "text": "Delta Stewardship Council. (2026). Delta Plan Performance Measures: Acres of Natural Communities Restored Dashboard. State of California. Retrieved September 2026, from ca.gov"
+      },
+      {
+        "type": "paragraph",
+        "text": "Agri-Pulse. (2026). Environmental group presses for more rice farming in the Delta. Agri-Pulse Communications, Inc. Retrieved September 2026, from agri-pulse.com"
+      },
+      {
+        "type": "paragraph",
+        "text": "San Francisco Estuary Institute-Aquatic Science Center (SFEI-ASC). (2026). Delta Landscapes Primary Production Project. Richmond, CA. Retrieved September 2026, from sfei.org"
+      },
+      {
+        "type": "paragraph",
+        "text": "Pien, C., Hartman, R., Bush, E., Lehman, P., & Davis, B. (2025). Thermal Stress and Suitability for Aquatic Species in the San Francisco Estuary. San Francisco Estuary and Watershed Science, 23(2)"
+      },
+      {
+        "type": "paragraph",
+        "text": "Moyle, P. B. (2002). Inland Fishes of California (Revised and Expanded ed.). University of California Press."
+      },
+      {
+        "type": "paragraph",
+        "text": "Boyer, K., & Sutula, M. (2015). Factors Controlling Submersed and Floating Macrophytes in the Sacramento-San Joaquin Delta. Southern California Coastal Water Research Project (Technical Report 870)."
+      },
+      {
+        "type": "paragraph",
+        "text": "Hardy, J. D. (1978). Development of fishes of the Mid-Atlantic Bight: An atlas of egg, larval and juvenile stages. U.S. Fish and Wildlife Service."
+      },
+      {
+        "type": "paragraph",
+        "text": "Carlton, J. T., et al. (1990). Remarkable invasion of San Francisco Bay by the Asian clam Potamocorbula amurensis. Marine Ecology Progress Series."
+      },
+      {
+        "type": "paragraph",
+        "text": "Parchaso, F., & Thompson, J. K. (2002). Influence of hydrologic processes on reproduction of the introduced bivalve Potamocorbula amurensis in the San Francisco Bay estuary. Marine Ecology Progress Series."
+      },
+      {
+        "type": "paragraph",
+        "text": "Myrick, C. A., & Cech, J. J. (2004). Temperature effects on juvenile anadromous salmonids in California's central valley: what don't we know? Reviews in Fish Biology and Fisheries."
+      },
+      {
+        "type": "paragraph",
+        "text": "Yanagitsiru, C. R., et al. (2021). Effects of Temperature and Salinity on the Physiological Performance and Growth of Larval and Juvenile Longfin Smelt. UC Davis / California Sea Grant Framework."
+      },
+      {
+        "type": "paragraph",
+        "text": "Rosenfield, J. A., & Baxter, R. D. (2007). Population dynamics and distribution patterns of longfin smelt in the San Francisco Estuary. Transactions of the American Fisheries Society."
+      },
+      {
+        "type": "paragraph",
+        "text": "Moyle, P. B., & Cech, J. J. (2000). Estuarine Fishes. In Fishes: An Introduction to Ichthyology (4th ed.). Prentice Hal"
+      },
+      {
+        "type": "paragraph",
+        "text": "Kimmerer, W. J. (2004). Open water processes of the San Francisco Estuary: From physical forcing to biological responses. San Francisco Estuary and Watershed Science, 2(1)."
+      }
+    ]
+  }
+}
