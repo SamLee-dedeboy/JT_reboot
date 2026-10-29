@@ -362,7 +362,24 @@ function recreationEconomy(): CriterionNode {
   })
 }
 
+/**
+ * Recreation reports restoration levels only for restoration and its recreation
+ * economy; every other row comes from the one New Green Watershed water run, so its
+ * value is the same at 25%, 50% and 100% wetland.
+ */
+function sameAtAllLevels(row: CriterionNode): CriterionNode {
+  return {
+    ...row,
+    levelsSame: row.ngwLevels ? undefined : true,
+    children: row.children?.map(sameAtAllLevels),
+  }
+}
+
 function recreationTree(): CriterionNode {
+  return sameAtAllLevels(recreationRoot())
+}
+
+function recreationRoot(): CriterionNode {
   return adapt(node('recreation'), {
     children: [
       thresholdRow(

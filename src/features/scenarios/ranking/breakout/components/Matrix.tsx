@@ -12,7 +12,7 @@ import type { MouseEvent, ReactNode } from 'react'
 import { ranking } from '../../../../../theme'
 import { TEAMS, cellFill } from '../../../../../internal/rank-visualization/data'
 import { rankAt } from '../../../../../internal/rank-visualization/drilldown/cellValue'
-import { fmtValue } from '../../../../../internal/rank-visualization/drilldown/model'
+import { ANY, fmtValue } from '../../../../../internal/rank-visualization/drilldown/model'
 import type {
   CriterionNode,
   ScenarioKey,
@@ -495,6 +495,7 @@ export function Matrix({
                   score={ranked}
                   signedText={diff}
                   fallback={cell}
+                  whole={state.place === ANY}
                 />
               ) : (
                 <MotionBox
@@ -604,6 +605,7 @@ function LevelCells({
   score,
   signedText,
   fallback,
+  whole,
 }: {
   node: CriterionNode
   depth: 0 | 1
@@ -613,6 +615,8 @@ function LevelCells({
   signedText: boolean
   /** The column's own cell, for a row with no levels. */
   fallback: { value: number | null; why: string }
+  /** Every place together: the only slice the levels are reported for. */
+  whole: boolean
 }) {
   const box = (key: string, columns: number, children: ReactNode) => (
     <MotionBox
@@ -628,10 +632,10 @@ function LevelCells({
       {children}
     </MotionBox>
   )
-  const cell = (value: number | null, note?: string) => (
+  const cell = (value: number | null, note?: string, why: string = UI.forthcoming) => (
     <Cell
       value={value}
-      why={value === null ? UI.forthcoming : ''}
+      why={value === null ? why : ''}
       unit={node.unit}
       score={score}
       lowerBetter={lowerIsBetter(node.id)}
@@ -639,7 +643,21 @@ function LevelCells({
       note={note}
     />
   )
-  const levels = node.ngwLevels
+  // Levels are reported Delta-wide only; at one place, the row shows its own value.
+  const levels = whole ? node.ngwLevels : undefined
+  if (node.levelsSame || (node.ngwLevels && !levels))
+    return box(
+      'levels',
+      3,
+      cell(
+        fallback.value ?? null,
+        fallback.value === null ? undefined : UI.sameAtAllLevels,
+        fallback.why,
+      ),
+    )
+  // Levels hold the runs' own values; as differences they move by what the 50% cell
+  // does (its baseline), so a level beside Business as Usual reads as its change too.
+  const shift = levels?.[1] != null && fallback.value !== null ? fallback.value - levels[1] : 0
   // No value at 25% or 100%: the cell stays empty, but a measure keeps its hairline.
   const blank = (
     <Box
@@ -655,9 +673,10 @@ function LevelCells({
         {box('level-2', 1, blank)}
       </>
     )
-  if (levels.every((value) => value === levels[0]))
-    return box('levels', 3, cell(levels[0], UI.sameAtAllLevels))
-  return <>{levels.map((value, index) => box(`level-${index}`, 1, cell(value)))}</>
+  const shown = levels.map((value) => (value === null ? null : value + shift))
+  if (shown.every((value) => value === shown[0]))
+    return box('levels', 3, cell(shown[0], UI.sameAtAllLevels))
+  return <>{shown.map((value, index) => box(`level-${index}`, 1, cell(value)))}</>
 }
 
 /** The small outlined tag after a qualitative row's name. */

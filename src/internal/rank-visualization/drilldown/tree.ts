@@ -537,11 +537,15 @@ function byRecRegion(by: Partial<Record<ScenarioKey, (number | null)[]>>) {
  * as Usual (Delta-wide first, as the sheet scores it). `emAdded` is what Eco
  * Machine's restoration adds on top of Business as Usual, Delta-wide only
  * ("Recreation The Score.xlsx", table 2), where every service scores +5.
+ * `quarter` and `full` are New Green Watershed at 25% and 100% restoration, by
+ * region, from the same sheet's "Ecosystem service value by scenario" table.
  */
 const REC_ECONOMY_SERVICES: {
   key: string
   label: string
   ngw: number[]
+  quarter: number[]
+  full: number[]
   bau: number[]
   score: number[]
   emAdded: number
@@ -550,6 +554,8 @@ const REC_ECONOMY_SERVICES: {
     key: 'amenity',
     label: 'Amenity and recreation · day use and boating',
     ngw: [15.613, 15.747, 20.865, 23.127],
+    quarter: [15.613, 10.939, 20.865, 10.541],
+    full: [15.613, 15.747, 22.767, 54.682],
     bau: [6.757, 8.875, 20.865, 3.845],
     score: [5, 5, 5, 0, 5],
     emAdded: 16.127,
@@ -558,6 +564,8 @@ const REC_ECONOMY_SERVICES: {
     key: 'biodiversity',
     label: 'Biodiversity · birding',
     ngw: [6.791, 6.849, 9.075, 10.059],
+    quarter: [6.791, 4.758, 9.075, 4.585],
+    full: [6.791, 6.849, 9.903, 23.785],
     bau: [2.939, 3.86, 9.075, 1.672],
     score: [5, 5, 5, 0, 5],
     emAdded: 7.015,
@@ -566,6 +574,8 @@ const REC_ECONOMY_SERVICES: {
     key: 'hunting',
     label: 'Recreational hunting · waterfowl',
     ngw: [3.903, 3.937, 5.216, 5.782],
+    quarter: [3.903, 2.735, 5.216, 2.635],
+    full: [3.903, 3.937, 5.691, 13.67],
     bau: [1.689, 2.219, 5.216, 0.961],
     score: [5, 5, 5, 0, 5],
     emAdded: 4.032,
@@ -574,6 +584,8 @@ const REC_ECONOMY_SERVICES: {
     key: 'fishing',
     label: 'Recreational fishing · angling',
     ngw: [11.868, 11.97, 15.86, 17.58],
+    quarter: [11.868, 8.315, 15.86, 8.013],
+    full: [11.868, 11.97, 17.306, 41.567],
     bau: [5.136, 6.746, 15.86, 2.923],
     score: [5, 5, 5, 0, 5],
     emAdded: 12.259,
@@ -1191,6 +1203,10 @@ function recService(spec: (typeof REC_ECONOMY_SERVICES)[number]): CriterionNode 
       }),
     },
     ranks: byRecPlace({ ngw: spec.score, bau: spec.score.map(() => 0), em: [5] }),
+    // Delta-wide (the four regions' sum) at 25%, 50% and 100% restoration.
+    ngwLevels: [spec.quarter, spec.ngw, spec.full].map(
+      (regions) => Math.round(regions.reduce((sum, v) => sum + v, 0) * 1000) / 1000,
+    ) as [number, number, number],
   }
 }
 

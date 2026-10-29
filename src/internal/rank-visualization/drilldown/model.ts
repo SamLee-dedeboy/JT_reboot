@@ -181,6 +181,12 @@ export interface CriterionNode {
    */
   ngwLevels?: [number | null, number | null, number | null]
   /**
+   * The row has one New Green Watershed value that holds at every restoration level
+   * (its model run has a single New Green Watershed), so opening the levels shows
+   * that value once across all three.
+   */
+  levelsSame?: boolean
+  /**
    * A qualitative row: the team's judgement in steps per scenario, +n better, −n
    * worse, 0 no change. A scenario left out is not yet assessed.
    */
