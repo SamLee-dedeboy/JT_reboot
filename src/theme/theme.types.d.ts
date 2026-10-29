@@ -27,6 +27,8 @@ declare module '@mui/material/styles' {
     chartTitle: CSSProperties
     chartLabel: CSSProperties
     chartSentenceValue: CSSProperties
+    tableValueStrong: CSSProperties
+    sentenceValueLarge: CSSProperties
     chartColumnHead: CSSProperties
     chartAxis: CSSProperties
     chartValue: CSSProperties
@@ -34,6 +36,7 @@ declare module '@mui/material/styles' {
     numberGhost: CSSProperties
     numberArticle: CSSProperties
     numberRank: CSSProperties
+    numberScore: CSSProperties
     numberTimeline: CSSProperties
     numberBadge: CSSProperties
   }
@@ -109,6 +112,8 @@ declare module '@mui/material/Typography' {
     chartTitle: true
     chartLabel: true
     chartSentenceValue: true
+    tableValueStrong: true
+    sentenceValueLarge: true
     chartColumnHead: true
     chartAxis: true
     chartValue: true
@@ -116,6 +121,7 @@ declare module '@mui/material/Typography' {
     numberGhost: true
     numberArticle: true
     numberRank: true
+    numberScore: true
     numberTimeline: true
     numberBadge: true
   }

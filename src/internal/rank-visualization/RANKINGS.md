@@ -12,7 +12,7 @@ Scenario order throughout: **BAU · ECO · NGW · B&F · COR · TUN** (Business 
 Eco Machine, New Green Watershed, Bolster & Fortify, Calling on Reserves, A Tunnel).
 Every score is −5…+5 against Business as Usual (0) unless noted.
 
-The breakout table (`breakout/`) follows this document: ranking scores are the main
+The breakout table (`src/features/scenarios/ranking/breakout/`) follows this document: ranking scores are the main
 rows, and each one opens into the entities it is based on, in their own units.
 
 ## Overview
@@ -51,9 +51,16 @@ slides 12–13. Unlisted cells are 0; Bolster & Fortify is 0 for every species.
 | Chinook salmon, juvenile              | COR +1         | 0                      |
 | Striped bass, juvenile                | 0              | 0                      |
 | Striped bass, adult                   | 0              | 0                      |
-| Largemouth bass (undesirable)         | 0              | ECO +2, NGW +2, COR +2 |
-| Overbite clam, juvenile (undesirable) | 0              | ECO −1, NGW −1, COR −1 |
-| Brazilian waterweed (undesirable)     | 0              | ECO +1, NGW +1, COR +2 |
+| Largemouth bass (undesirable)         | 0              | ECO +2, NGW +2, TUN −2 |
+| Overbite clam, juvenile (undesirable) | 0              | ECO −1, NGW −1, TUN +2 |
+| Brazilian waterweed (undesirable)     | 0              | ECO +1, NGW +1, TUN −2 |
+
+COR and TUN come from Ecology's 27 Oct 2026 rerun ("Adaptation Scenarios - New Base,
+Calling on Reserves update, a tunnel"; `drilldown/ecologyRerun.ts`), read against the
+rerun's own New CalSIM Base with the same rule. Every COR cell is now 0; the earlier
+COR ranks (Chinook +1, largemouth bass +2, overbite clam −1, Brazilian waterweed +2)
+came from the superseded run. These two columns' ranks are ours; the slides predate
+the rerun. Their values are Delta-wide only: the rerun pools its regions over both years.
 
 The streak grids (slides 14–15) mark most species as one "all others" group, do not
 reproduce from either streak table in the report, and slide 15 uses a 0–10 scale; they
@@ -268,6 +275,24 @@ Not ranked: land access, Indigenous science / TEK, sovereignty & governance
 entities: restored acres by habitat type (tidal wetland, managed wetland, wet-soil
 agriculture; forests, meadows, floodplains), none scored.
 
+## Tiered outflow runs (breakout table's outflow tab, `breakout/model/outflowModel.ts`)
+
+SCHISM runs 15 (Historic Baseline), 16 (+30% outflow) and 17 (−10% outflow), Oct 2020 –
+Jan 2022. Every score is −5…+5 against the Historic Baseline (0), never against
+Business as Usual, so they are a separate set and never ranked with the adaptations.
+
+| Team         | Criterion score (+30% / −10%) | Source                                                                                                                                |
+| ------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Ecology      | forthcoming                   | Report Tables 2–6: suitable days for 5 species by region, no rank; "Overall rankings" is still a to-do                                |
+| Recreation   | forthcoming                   | Workbooks `Tiered Outflows {Salinity,Temperature} Analyzed.xlsx` (26 Oct): every activity's score and days; report's ranking is empty |
+| Env. Justice | +4 / −2                       | Report: drinking water only (flood and water age not assessed); −1 in every cut but stated −1.5 → −2                                  |
+| Economy      | forthcoming                   | Report: "Tiered Outflows modeled from SCHISM: (not shown in the present analysis)"                                                    |
+| Eco-cultural | +3 / −2                       | Report: one overall score; restoration not applicable                                                                                 |
+
+Recreation's activity data are regenerated with `python -I scripts/build-recreation-outflow.py
+"research/criteria-stories/Recreation/data-2026-10-26"`. Landscape, food webs, restoration,
+recreation economy, flood risk and water age are N/A: the runs change flow only.
+
 ## Discrepancies found
 
 1. Ecology species work covers Feb 1 – Jun 1, not whole water years; there is no whole run.
@@ -278,3 +303,5 @@ agriculture; forests, meadows, floodplains), none scored.
 6. EJ water age: report −2 / −1 / 0 (NGW / ECO / B&F); slides −3 / −2 / −1. The app follows the slides.
 7. Recreation report writes the waterfowl threshold as "3.6–10.1 µS/cm" (evidently mS/cm); slides say 3,600 µS/cm.
 8. Economy: one NGW value is needed per scenario; the app uses the 50% version (−4). The salinity baseline is 7,720 direct / 11,860 total jobs, the NGW land-use run 7,650 / 11,814; v16 does not reconcile them.
+9. EJ outflow: −10% scores −1 for the whole run, wet and dry seasons, yet the table's average reads −1.5 and the overall −2. The app uses the stated −2.
+10. EJ outflow wet season, high vulnerability: 11% vs 27% (16 points less) maps to +4 on its own scale, but the report assigns +5. The app uses +5.

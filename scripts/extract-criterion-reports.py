@@ -24,7 +24,7 @@ REPORTS = {
     'environmental-justice': 'tmp/pdfs/EJ and vulnerable communities/Environmental Justice_ The Story Behind the Criterion.docx',
     'ecocultural-restoration': 'tmp/pdfs/Eco-cultural/Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx',
     'recreation': 'tmp/pdfs/Recreation/Copy of Recreation_ The Story Behind the Criterion.docx',
-    'economy': 'D:/Downloads/JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx',
+    'economy': 'tmp/pdfs/Economy/Economic_Analysis__ The Story Behind the Criterion.docx',
 }
 
 
@@ -72,10 +72,17 @@ def extract(path: Path) -> list[dict]:
             if not text:
                 continue
             level = heading_level(element, styles)
+            # The Economy report (v18) lost the Heading 1 style on its first chapter title.
+            if not level and re.match(r'what is the criterion\b', text, re.I):
+                level = 1
+            # ...and types its bullets as a Wingdings "l" instead of list formatting.
+            typed_bullet = re.match(r'[l•▪]\s+(?=\S)', text)
             if level:
                 blocks.append({'type': 'heading', 'level': level, 'text': text})
             elif element.find(f'{W}pPr/{W}numPr') is not None:
                 blocks.append({'type': 'item', 'text': text})
+            elif typed_bullet:
+                blocks.append({'type': 'item', 'text': text[typed_bullet.end():]})
             else:
                 blocks.append({'type': 'paragraph', 'text': text})
         elif element.tag == f'{W}tbl':

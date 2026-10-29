@@ -1,8 +1,9 @@
 // Generated from the Ecology report's species tables (research/criteria-stories/
 // Ecology/*.docx, Tables 8–16). Proportion of days inside both the salinity and
 // temperature tolerance of each species, by estuarine region and water year, under
-// the five adaptation scenarios the niche analysis covers. A Tunnel is absent from
-// this analysis entirely — it is not a missing value, it was never run.
+// the five adaptation scenarios the niche analysis covers. A Tunnel is absent here:
+// it was first run on 27 Oct 2026, on a new baseline of its own, so it lives in
+// ./ecologyRerun.ts and is never read against this Business as Usual.
 //
 // This is the Ecology criterion's richest evidence and none of it reaches its score:
 // the score comes from the two acreage ranks instead. See ./tree.ts.
@@ -67,6 +68,8 @@ export type EcologySpeciesKey = (typeof ECOLOGY_SPECIES)[number]['key']
 
 /** [2019 wet, 2020 dry] proportion of suitable days. `delta` is the report's own
  *  Delta-wide summary row (Table 16), not an average of the regions. */
+// Largemouth bass, Bolster & Fortify, WY 2019: the report table reads 71.16%, a typo;
+// the team's CSV (all_scenarios_summary_by_year.csv, 29 Oct 2026) gives 72.16%, used here.
 export const ECOLOGY_NICHE: Record<
   EcologySpeciesKey,
   Record<string, Record<EcologyRegionKey | 'delta', [number, number]>>
@@ -377,7 +380,7 @@ export const ECOLOGY_NICHE: Record<
       sanPabloBay: [0.004, 0.0],
       centralBay: [0.0, 0.0],
       southBay: [0.0, 0.0],
-      delta: [0.7116, 0.6313],
+      delta: [0.7216, 0.6313],
     },
     em: {
       northDelta: [1.0, 0.998],

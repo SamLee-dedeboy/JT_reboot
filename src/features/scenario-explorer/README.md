@@ -37,7 +37,7 @@ python scripts/scenario-explorer/build_calsim_dashboards.py
 python scripts/scenario-explorer/build_d1641_calsim.py \
   --processor ../JT_exploration/RMA/scripts/process_rma_d1641.py \
   --data-dir ../JT_exploration/RMA/data \
-  --output-dir public/data/scenario-explorer/d1641_calsim_source \
+  --output-dir ../JT_exploration/RMA/derived/d1641_calsim_source \
   --json-output public/data/scenario-explorer/d1641_calsim.json
 ```
 

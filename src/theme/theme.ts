@@ -66,11 +66,39 @@ export const ranking = {
   rowHeight: 58,
   /** A team row inside an expanded scenario, and the −5…+5 track it draws on. */
   trackHeight: 34,
-  /** One team's priority control: name, slider, weight. */
+  /** One criterion's priority buttons; also their minimum touch target. */
   controlHeight: 44,
-  /** Score bar; an illustrative (inferred) score is drawn as a dashed outline instead. */
-  bar: { height: 16, zeroMarkWidth: 4, outlineWidth: 2 },
-  zeroLine: { width: 2, color: palette.base[300] },
+  priorityButton: { minWidth: 52, radius: 999 },
+  /** Pill-shaped controls (the place menu): inset in spacing units, and radius. */
+  setToggle: { inset: 0.5, radius: 999 },
+  /** Compact controls in the breakout table; the outer tray adds its inset around them. */
+  breakoutControl: { minHeight: 38, inset: 0.25 },
+  /** By scenario / By criterion choices in the hero. */
+  viewCard: { columns: 'repeat(2, minmax(0, 360px))' },
+  /** Numbered heads-up points before the weighting tool. */
+  headsUp: { columns: '56px minmax(0, 1fr)' },
+  bar: { height: 16 },
+  /** A criterion's score inside an expanded scenario: a dot on a hairline stem from zero. */
+  dot: { size: 12, stemWidth: 2, stemOpacity: 0.55, rowHeight: 28 },
+  /** The breakout table's rail of controls, beside the table. */
+  breakoutRail: { md: '240px minmax(0, 1fr)', xl: '260px minmax(0, 1fr)' },
+  /** The breakout table's least row heights on the site (px): a score, and a measure under it. */
+  breakoutRow: { score: 52, entity: 38 },
+  /** The pill after New Green Watershed's name that opens its restoration levels (px). */
+  levelsPill: { height: 24 },
+  /** The 25% and 100% wetland columns: never so narrow that −$212M is cut off (px). */
+  levelColumnMin: 96,
+  /**
+   * Vertical guides at every whole point: zero strongest, the ±5 edges plain, and the
+   * points between dotted and faint, so the row dividers still read as the structure.
+   */
+  zeroLine: { width: 2, style: 'solid', color: palette.base[300] },
+  /** A bar in the breakout table (blue, orange or grey), softened so it sits behind its number. */
+  barOpacity: 0.7,
+  /** The info cards (explainers): a text card, and one led by a map. */
+  explainer: { width: 440, wide: 720, mapHeight: 460 },
+  gridLine: { width: 1, style: 'solid', color: 'border.subtle' },
+  gridLineMinor: { width: 1, style: 'dotted', color: 'translucent.100' },
   teamIconSize: 18,
   legend: { swatchWidth: 28, swatchHeight: 6 },
   links: {
@@ -85,7 +113,6 @@ export const ranking = {
   columns: {
     /** Priorities beside the linked rankings. */
     layout: { xs: '1fr', lg: 'minmax(300px, .55fr) minmax(0, 1.45fr)' },
-    control: '128px minmax(0, 1fr) 40px',
     overall: {
       xs: `${rankWidth.xs} minmax(120px, .8fr) 64px`,
       md: `${rankWidth.sm} 240px minmax(320px, 1fr) 72px`,

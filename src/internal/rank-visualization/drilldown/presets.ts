@@ -26,7 +26,7 @@ export const PIVOT_PRESETS: PivotPreset[] = [
     key: 'ballots',
     label: 'The five ballots',
     finding:
-      'The chart shows every subteam’s score for every scenario. New Green Watershed draws the widest disagreement. Ecology gives it +4.5, while Economy gives it −4.',
+      'The chart shows every subteam’s score for every scenario. New Green Watershed draws the widest disagreement. Ecology gives it +5, while Economy gives it −4.',
     criteria: ['ecology', 'recreation', 'environmentalJustice', 'economy', 'ecoCultural'],
     scenarios: ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau'],
   },

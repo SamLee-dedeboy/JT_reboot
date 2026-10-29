@@ -40,7 +40,7 @@ Current route groups:
 - Scenarios: `/scenarios`, `/scenarios/background-context`, `/scenarios/key-parameters`, `/scenarios/:scenarioSlug`, the next steps `/scenarios/modeling` (with per-scenario results at `/scenarios/:scenarioSlug/results`), `/scenarios/evaluation` (with the families overview at `/scenarios/evaluation/families` and criterion pages at `/scenarios/evaluation/:teamId`), and performance/ranking at `/scenarios/ranking` and `/scenarios/ranking/by-criterion`. `/scenarios/results` is a legacy redirect to modeling or evaluation
 - Repository: `/pages/project-documentation`, `/pages/service-learning`, and `/pages/resources`
 - Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/scenario-explorer/d1641`, `/pages/regional-summary`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
-- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/scenario-time-lapse`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/breakout` (offline breakout-table kiosk over the rank-visualization data; one route, the team in `?team=`), `/pages/co-design-timeline`, `/pages/tribal-stewardship-spectrum`, `/pages/site-map`, `/pages/criteria-copy`, and `/design-system`
+- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/scenario-time-lapse`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/breakout` (a compatibility kiosk route for the ranking feature's breakout table; one route, the team in `?team=`), `/pages/co-design-timeline`, `/pages/tribal-stewardship-spectrum`, `/pages/site-map`, `/pages/criteria-copy`, and `/design-system`
 
 ## Source Architecture
 
@@ -48,7 +48,7 @@ The `src` directory is organized by application role and feature:
 
 - `src/app/`: providers, shared application shell, and route configuration.
 - `src/features/home/`: public home page, its section components, and home content.
-- `src/features/scenarios/`: scenario landing composition and shared navigation helpers. Baseline pages live in `baseline/`, adaptation and tiered-outflow introductions in `narration/`, modeling and criteria pages in `results/`, text/data in `content/`, and retired implementations in `archived/`.
+- `src/features/scenarios/`: scenario landing composition and shared navigation helpers. Baseline pages live in `baseline/`, adaptation and tiered-outflow introductions in `narration/`, modeling and criteria pages in `results/`, public performance views in `ranking/` (including the shared breakout table under `ranking/breakout/`), text/data in `content/`, and retired implementations in `archived/`.
 - Scenario copy is split by domain under `src/features/scenarios/content/`: baseline, tiered outflows, adaptation scenarios, results/evaluation, and shared types. Consumers should import from the folder index instead of reaching into a domain file directly.
 - `src/features/repository/`: repository routes, shared repository layout, cards, tabs, timelines, and data.
 - `src/features/scenario-explorer/`: scenario explorer page, charts, controls, types, and feature-local utilities.

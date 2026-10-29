@@ -10,6 +10,10 @@ export const palette = {
     blue: '#79e1e4',
     red: '#e03214',
     orange: '#f77c3b',
+    // The score scale's "worse": a brick red, deeper and cooler than Recreation's
+    // orange so a team and a score never share a hue; the lighter one is for text.
+    brick: '#d6453d',
+    brickText: '#f0665d',
     yellow: '#f2c820',
     purple: '#b280ff',
     pink: '#ff677d',
@@ -42,12 +46,15 @@ export const palette = {
     primaryGreen: 'rgba(126,217,87,0.18)',
     primaryBlue: 'rgba(81,162,189,0.15)',
     primaryBlueSubtle: 'rgba(81,162,189,0.10)',
+    primaryGreenSubtle: 'rgba(126,217,87,0.08)',
     primaryBlueStrong: 'rgba(81,162,189,0.68)',
     primaryBlueGlow: 'rgba(81,162,189,0.80)',
     accentBlueBalanced: 'rgba(121,225,228,0.32)',
     accentBlueVibrant: 'rgba(121,225,228,0.52)',
     primaryPink: 'rgba(251,1,105,0.18)',
     orange: 'rgba(247,124,59,0.18)',
+    orangeSubtle: 'rgba(247,124,59,0.10)',
+    brickSubtle: 'rgba(214,69,61,0.10)',
     textShadow: 'rgba(16,22,24,0.6)',
     blackShadow: 'rgba(0,0,0,0.18)',
     darkSurface: 'rgba(20,29,31,0.74)',
@@ -60,13 +67,16 @@ export const palette = {
   },
   // Team identity hues. Chosen outside the heavily used
   // brand green / blue-teal-cyan / magenta families and away from the score pair
-  // (brand blue = good, accent orange = unacceptable); >= ΔE 15 (OKLab) from those
+  // (brand blue = good, brick red = unacceptable); >= ΔE 15 (OKLab) from those
   // site colors and mutually distinct incl. protan/deutan simulation.
   teams: {
     // Best-separated set found (teams >= ΔE 24 apart,
     // >= ΔE 19.7 under protan/deutan, >= ΔE 15.8 from the score blue/orange).
     envJustice: '#f0a8e8',
-    recreation: '#ff7f5c',
+    // Moved from coral #ff7f5c to the old score orange (29 Oct 2026) when the score
+    // scale took brick red; the separations above are not re-measured for it.
+    // #f77c3b
+    recreation: '#f87c4c',
     economy: '#7f86ff',
     // Fifth team (eco-cultural). Clear of the others to normal vision (>= ΔE 15);
     // ΔE ~7 from cobalt/score-blue under protan-deutan, which the per-team icons

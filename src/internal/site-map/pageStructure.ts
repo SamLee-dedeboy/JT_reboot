@@ -202,19 +202,32 @@ export const currentSections: Record<string, UISection[]> = {
   '/scenarios/ranking': [
     { label: 'Hero', detail: 'Performance and ranking' },
     {
-      label: 'View tabs',
+      label: 'View choices',
       detail: 'By scenario · By criterion',
       to: '/scenarios/ranking/by-criterion',
     },
-    { label: '01 The overall ranking', detail: 'Criteria equally weighted; sorted by rank' },
-    { label: '02 Change what matters most', detail: 'Interactive weighted matrix' },
+    {
+      label: 'What you’re looking at',
+      detail: 'How the five criteria are scored · Read the methodology',
+      to: '/scenarios/evaluation',
+    },
+    { label: 'The overall ranking', detail: 'Criteria equally weighted; sorted by rank' },
+    { label: 'A note on changing the weights', detail: 'Three points before the weighting tool' },
+    { label: 'Change what matters most', detail: 'Priority buttons beside the linked rankings' },
   ],
   '/scenarios/ranking/:view': [
-    { label: 'Hero', detail: 'Performance and ranking' },
-    { label: 'View tabs', detail: 'By scenario · By criterion', to: '/scenarios/ranking' },
+    { label: 'Hero', detail: 'Shared with By scenario: view choices' },
+    { label: 'View choices', detail: 'By scenario · By criterion', to: '/scenarios/ranking' },
     { label: 'Criterion tabs', detail: teamList },
-    { label: 'Breakout table controls', detail: 'Scenarios · place · period · measures' },
-    { label: 'Breakout table or map', detail: 'Published values for the selected criterion' },
+    { label: 'How the score is built', detail: 'Team name · the team’s takeaway' },
+    {
+      label: 'Breakout controls',
+      detail: 'Conditions · scenarios in two groups · place menu with study area · time period',
+    },
+    {
+      label: 'Breakout table or map',
+      detail: 'Scores, then the measures behind each, as numbers or bars',
+    },
   ],
   '/pages/rank-visualization': [
     { label: '1 The overall ranking', detail: 'Equal weights' },

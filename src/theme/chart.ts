@@ -47,12 +47,17 @@ export const chart = {
       callingOnReserves: palette.accent.indigo,
       deltaTunnel: palette.accent.red,
       businessAsUsual: palette.base[200],
+      // Tiered outflow runs: fresher (more outflow) and saltier (less outflow).
+      moreOutflow: palette.accent.blue,
+      lessOutflow: palette.accent.pink,
     },
     // Diverging score scale, matching the site's Good / Unacceptable thresholds
-    // (Playground): blue = better than today, orange = worse; grey = no change.
-    // Hue by sign, alpha scaled by magnitude at the call site.
+    // (Playground): blue = better than today, brick red = worse; grey = no change.
+    // Hue by sign, alpha scaled by magnitude at the call site. `belowText` is the
+    // red lightened for numbers on the dark ground.
     above: palette.brand.primaryBlue,
-    below: palette.accent.orange,
+    below: palette.accent.brick,
+    belowText: palette.accent.brickText,
     baseline: palette.translucent[300],
     overall: palette.common.white,
     spread: palette.base[100],

@@ -1,5 +1,5 @@
 {
-  "report": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx",
+  "report": "Economic_Analysis__ The Story Behind the Criterion.docx",
   "sections": {
     "summary": [
       {
@@ -95,7 +95,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Salinity-driven effects are measured Delta-wide and by the four Delta zones (North, Central, West, South), using the same OpenAg regional agricultural model areas as the manuscript's wet-year (2019) and dry-year (2020) runs. New Green Watershed's land-use effect is measured island-by-island using the DAP basecase's official Delta-wide crop acreage and revenue data, matched to its three restoration footprints, then summed Delta-wide and by zone (see the regional table under Results)."
+        "text": "Salinity-driven effects are measured Delta-wide and by the four Delta zones (North, Central, West, South), using the same OpenAg regional agricultural model areas as the wet-year (2019) and dry-year (2020) runs. New Green Watershed's land-use effect is measured island-by-island using the DAP basecase's official Delta-wide crop acreage and revenue data, matched to its three restoration footprints, then summed Delta-wide and by zone (see the regional table under Results)."
       },
       {
         "type": "heading",
@@ -180,7 +180,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Tiered Outflows: (not shown in the present analysis)."
+        "text": "Tiered Outflows modeled from SCHISM: (not shown in the present analysis)."
       },
       {
         "type": "item",
@@ -196,7 +196,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Adaptation Scenarios:"
+        "text": "Adaptation Scenarios modeled from RMA[1]:"
       },
       {
         "type": "item",
@@ -307,6 +307,14 @@
       {
         "type": "paragraph",
         "text": "UC Davis, California Department of Fish and Wildlife, and California Department of Water Resources. 2020. Franks Tract Futures Reimagined 2020: Final Report. https://franks-tract-futures-ucdavis.hub.arcgis.com/pages/final-report"
+      },
+      {
+        "type": "paragraph",
+        "text": "van Genuchten, M. Th., & Hoffman, G. J. (1984). Analysis of crop salt tolerance data. In I. Shainberg & J. Shalhevet (Eds.), Soil salinity under irrigation: Processes and management (Ecological Studies, Vol. 51, pp. 258–271). Springer-Verlag."
+      },
+      {
+        "type": "paragraph",
+        "text": "[1] The baseline (Business As Usual) and five adaptation scenarios (A Tunnel, Eco Machine, New Green Watershed, Calling on Reserves, and Bolster and Fortify) have their salinity pathway modeled by RMA under current climate and 2 feet of sea-level rise. Eco Machine and New Green Watershed additionally have a land-use pathway, from converting farmland to managed wetland and rice, modeled separately from the salinity runs."
       }
     ]
   }

@@ -17,7 +17,7 @@ import { fullBleedBand } from './styles'
 
 const overviewNavigation = [
   { id: 'how-modeled', label: 'How are scenarios modeled?' },
-  { id: 'shared-baseline', label: 'A shared baseline', indent: true },
+  { id: 'shared-baseline', label: 'Two baselines', indent: true },
   { id: 'model-setup', label: 'Space and time', indent: true },
   { id: 'what-is-modeled', label: 'What is modeled', indent: true },
   { id: 'scenario-implementations', label: 'How each future is built', indent: true },
@@ -31,6 +31,7 @@ const implementationDetails = [
     slug: 'eco-machine',
     label: 'Eco Machine',
     title: 'Eco Machine',
+    basis: 'Changes the geometry · runs with Base flows · compared with Base',
     description:
       'A restoration scenario focused on Suisun Marsh and Franks Tract Futures. Large restored areas are represented as connections to marsh sloughs, changing how tidal energy moves into the Delta.',
     mechanism:
@@ -46,6 +47,7 @@ const implementationDetails = [
     slug: 'new-green-watershed',
     label: 'New Green Watershed',
     title: 'New Green Watershed',
+    basis: 'Changes the geometry · runs with Base flows · compared with Base',
     description:
       'An expanded restoration scenario that includes Suisun Marsh, Franks Tract Futures, Dutch Slough, Egbert Tract, Hastings Tract, and the northern Cache Slough Complex.',
     mechanism:
@@ -61,6 +63,7 @@ const implementationDetails = [
     slug: 'bolster-and-fortify',
     label: 'Bolster and Fortify',
     title: 'Bolster and Fortify',
+    basis: 'Changes the geometry · runs with Base flows · compared with Base',
     description:
       'A Franks Tract operations scenario that builds up the eastern levee, blocks selected channels, and operates gates in response to salinity conditions.',
     mechanism:
@@ -69,6 +72,37 @@ const implementationDetails = [
       'Franks Tract levee and channel-block geometry',
       'Operable gate locations and status',
       'Gate-operation timeline for 2018–2020',
+    ],
+  },
+  {
+    id: 'tunnel',
+    slug: 'a-tunnel',
+    label: 'A Tunnel',
+    title: 'A Tunnel',
+    basis: 'Changes the flows · runs on Base geometry · compared with CalSim Base',
+    description:
+      'A flow scenario based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project. The Delta’s geometry stays as in Base; what changes is the flow entering it, as some Sacramento River water is diverted at new intakes in the northern Delta.',
+    mechanism:
+      'Water taken at the northern intakes travels beneath the Delta instead of through its channels, so less Sacramento River water moves through parts of the Delta. That changes net Delta outflow, and with it how far salinity reaches into the Delta.',
+    assets: [
+      'Northern Delta intake locations',
+      'Tunnel alignment to Bethany Reservoir',
+      'Modeled net Delta outflow, CalSim Base and A Tunnel',
+    ],
+  },
+  {
+    id: 'reserves',
+    slug: 'calling-on-reserves',
+    label: 'Calling on Reserves',
+    title: 'Calling on Reserves',
+    basis: 'Changes the flows · runs on Base geometry · compared with CalSim Base',
+    description:
+      'A flow scenario that changes how Shasta Reservoir is operated, aiming to raise its year-to-year carryover storage by 20% by reducing Central Valley Project allocations and timing releases to benefit fish. The Delta’s geometry stays as in Base.',
+    mechanism:
+      'Higher storage can mean larger or more frequent flood releases in wet winters, adding Delta inflow, while reduced allocations can lower export pumping. Together these shift salinity in different parts of the Delta.',
+    assets: [
+      'Modeled net Delta outflow, CalSim Base and Calling on Reserves',
+      'Shasta Reservoir, upstream of the model area',
     ],
   },
 ] as const
@@ -86,6 +120,15 @@ const modeledOutputs = [
     title: 'Water temperature',
     body: 'Modeled temperature helps identify when and where conditions may support or stress temperature-sensitive species.',
   },
+] as const
+
+const monitoringStations = [
+  'Clifton Court',
+  'Tracy Pumping Plant',
+  'San Joaquin River at Jersey Point',
+  'Sacramento River at Emmaton',
+  'Montezuma Slough near Beldons Landing',
+  'Lindsey Slough at the Big Ditch',
 ] as const
 
 type OverviewSectionId = (typeof overviewNavigation)[number]['id']
@@ -220,7 +263,9 @@ export default function ModelingOverview() {
           </Typography>
           <Typography variant="body1" sx={{ mt: jtSpacing.gap.md, color: 'base.100' }}>
             We used the two-dimensional RMA Bay-Delta hydrodynamic and water-quality model to test
-            how four Delta geometries change salinity, water age, and water temperature.
+            five futures: three that change the shape of the Delta and two that change the flows
+            entering it. Every run tracks salinity, water temperature, and water age, with and
+            without sea level rise.
           </Typography>
           <Box
             id="shared-baseline"
@@ -234,14 +279,25 @@ export default function ModelingOverview() {
             }}
           >
             <Typography variant="h4" component="h3">
-              A shared baseline for comparison
+              Two baselines for comparison
             </Typography>
             <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-              The Base run represents a near-future “business as usual” condition, including planned
-              restoration at sites such as Little Egbert Tract and Prospect Island. Every future is
-              compared with this same reference—not treated as a fourth choice visitors need to
-              select. Outputs from every run are sampled at the same monitoring locations so
-              differences can be compared consistently through time and across regions.
+              The three geometry futures (Eco Machine, New Green Watershed, and Bolster and Fortify)
+              keep the Base run’s flows and change only the shape of the Delta. They are compared
+              with Base, a near-future “business as usual” condition that includes planned
+              restoration at sites such as Little Egbert Tract and Prospect Island.
+            </Typography>
+            <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+              The two flow futures (A Tunnel and Calling on Reserves) keep the Base geometry and
+              change the flows entering the Delta. They are compared with CalSim Base, a run on the
+              same geometry driven by CalSim flows. Each future is read only against its own
+              baseline, so the difference reflects the one thing that future changes.
+            </Typography>
+            <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+              Every run was repeated with sea level rise, and those runs are compared with the
+              matching baseline that also has sea level rise. Outputs from every run are sampled at
+              the same monitoring locations, so differences can be compared consistently through
+              time and across regions.
             </Typography>
           </Box>
           <Box
@@ -277,9 +333,49 @@ export default function ModelingOverview() {
                 Simulation time
               </Typography>
               <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                The simulation runs from October 2018 through November 2020, capturing contrasting
-                hydrologic conditions: water year 2019 was wet, while water year 2020 was dry.
+                The simulation runs from August 2018 through November 2020. August and September
+                2018 are spin-up, letting the model settle, so results start in October 2018. That
+                span covers contrasting hydrologic conditions: water year 2019 was wet, while water
+                year 2020 was dry.
               </Typography>
+            </Box>
+            <Box
+              component="section"
+              aria-labelledby="monitoring-stations-title"
+              sx={{
+                gridColumn: { md: '1 / -1' },
+                p: jtSpacing.component.lg,
+                borderTop: 3,
+                borderColor: 'primary.main',
+              }}
+            >
+              <Typography id="monitoring-stations-title" variant="h4" component="h3">
+                Monitoring stations
+              </Typography>
+              <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                Model output is sampled at six stations spread across the Delta, from the south
+                Delta export facilities to Suisun Marsh in the west and the Cache Slough Complex in
+                the north.
+              </Typography>
+              <Box
+                component="ul"
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                  columnGap: jtSpacing.gap.md,
+                  rowGap: jtSpacing.gap.xs,
+                  mt: jtSpacing.gap.md,
+                  mb: 0,
+                  pl: jtSpacing.component.md,
+                  color: 'base.100',
+                }}
+              >
+                {monitoringStations.map((station) => (
+                  <Typography component="li" variant="body2" key={station}>
+                    {station}
+                  </Typography>
+                ))}
+              </Box>
             </Box>
           </Box>
           <Box id="what-is-modeled" sx={{ mt: jtSpacing.section.md, scrollMarginTop: 110 }}>
@@ -287,8 +383,8 @@ export default function ModelingOverview() {
               What is modeled
             </Typography>
             <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-              Each scenario run produces the same set of physical water-quality outputs, allowing
-              differences to be traced across both space and time.
+              Each scenario run produces the same three water-quality outputs, allowing differences
+              to be traced across both space and time.
             </Typography>
             <Stack spacing={0} sx={{ mt: jtSpacing.component.lg }}>
               {modeledOutputs.map((output) => (
@@ -330,6 +426,9 @@ export default function ModelingOverview() {
           <Box sx={{ pt: jtSpacing.component.lg }}>
             <Typography variant="h3" component="h3">
               {selectedImplementation.title}
+            </Typography>
+            <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs, color: 'primary.main' }}>
+              {selectedImplementation.basis}
             </Typography>
             <Typography variant="body1" sx={{ mt: jtSpacing.gap.md, color: 'base.100' }}>
               {selectedImplementation.description}

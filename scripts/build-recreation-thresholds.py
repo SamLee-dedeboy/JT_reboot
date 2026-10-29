@@ -88,12 +88,13 @@ def read_overall(path):
                         ] = None if value is None else int(value)
         # ---- exceedance blocks: "<SCENARIO> % EXCEEDANCES", regions two rows down.
         # The CalSim runs add "(CalSIM)", and their baseline ("BAU CS …" or
-        # "BAU … (CalSIM)") must not overwrite RMA's Business as Usual.
+        # "BAU … (CalSIM)") is kept apart from RMA's Business as Usual as `csbau`:
+        # the run Calling on Reserves and A Tunnel are read against.
         if "% EXCEEDANC" in cells[2]:
             scenario = SCENARIO[cells[2].split()[0]]
             calsim = "CALSIM" in cells[2] or cells[2].split()[1] == "CS"
             if scenario == "bau" and calsim:
-                continue
+                scenario = "csbau"
             regions = [REGION[v] for v in [norm(v) for v in rows[i + 2][3:18]] if v]
             r = i + 3
             while r < len(rows) and norm(rows[r][2]):
@@ -131,7 +132,7 @@ def main(salinity_path, temperature_path, slr_salinity_path=None, slr_temperatur
 // scale: one point per percentage point of exceedance against Business as Usual,
 // ±5 at five points or more. Calling on Reserves and A Tunnel are CalSim runs,
 // scored against CalSim's own Business as Usual, so their days over a threshold
-// compare with that baseline (not shown) rather than with RMA's.
+// compare with that baseline (`csbau` in the days tables) rather than with RMA's.
 import type {{ ScenarioKey }} from './model'
 
 export type RecActivityKey = 'dayUseBoating' | 'birding' | 'waterfowl' | 'angling' | 'dayUseCold'

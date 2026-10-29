@@ -5,12 +5,24 @@
 // The four drill-down intents the design has to support — scenario-, subteam-,
 // metric- and entity-driven — are not four flows. They are which dimension is
 // pinned while the others vary, which is why one selection state serves them all.
-import { SCENARIOS, TEAMS } from '../data'
+import { OUTFLOW_SCENARIOS, SCENARIOS, TEAMS } from '../data'
 import type { Score, TeamKey } from '../data'
 
-/** Scenario ids, in the order SCENARIOS is declared in ../data.ts. */
+/** Adaptation scenario ids, in the order SCENARIOS is declared in ../data.ts. */
 export const SCENARIO_KEYS = ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau'] as const
-export type ScenarioKey = (typeof SCENARIO_KEYS)[number]
+/**
+ * Tiered outflow run ids, in the order OUTFLOW_SCENARIOS is declared: +30% (run 16),
+ * −10% (run 17), Historic Baseline (run 15). A separate set, never ranked with the
+ * adaptations; only the breakout table's outflow tab reads them.
+ */
+export const OUTFLOW_KEYS = ['more', 'less', 'hist'] as const
+/**
+ * CalSim's own Business as Usual: the run Calling on Reserves and A Tunnel are read
+ * against. Never a column; a baseline only, held where a team has published it.
+ */
+export const CALSIM_BAU = 'csbau'
+export type ScenarioKey =
+  (typeof SCENARIO_KEYS)[number] | (typeof OUTFLOW_KEYS)[number] | typeof CALSIM_BAU
 
 /** The six scenarios with the names and colors ../data.ts already defines for them. */
 export const DRILL_SCENARIOS = SCENARIOS.map((scenario, i) => ({
@@ -19,9 +31,11 @@ export const DRILL_SCENARIOS = SCENARIOS.map((scenario, i) => ({
   color: scenario.color,
 }))
 
-export const SCENARIO_NAME = Object.fromEntries(
-  DRILL_SCENARIOS.map((scenario) => [scenario.key, scenario.name]),
-) as Record<ScenarioKey, string>
+export const SCENARIO_NAME = Object.fromEntries([
+  ...DRILL_SCENARIOS.map((scenario) => [scenario.key, scenario.name]),
+  ...OUTFLOW_SCENARIOS.map((scenario, i) => [OUTFLOW_KEYS[i], scenario.name]),
+  [CALSIM_BAU, 'Business as Usual (CalSim)'],
+]) as Record<ScenarioKey, string>
 
 /** Depth in the criterion tree. */
 export type NodeLevel = 'team' | 'metric' | 'entity'
@@ -139,6 +153,10 @@ export interface CriterionNode {
   inferredSlices?: string[]
   /** Scenarios the subteam marks as not applicable: no number exists, and none is coming. */
   notApplicable?: ScenarioKey[]
+  /** The subteam has not published this yet, though it is expected: every empty cell says so. */
+  forthcoming?: boolean
+  /** The same, for some scenarios only: the +30% outflow run where a team has not published it. */
+  forthcomingFor?: ScenarioKey[]
   /** The same, for one scenario at some places only: Eco Machine restores nothing in the North or South Delta. */
   notApplicableAt?: Partial<Record<ScenarioKey, string[]>>
   /** Rich grid with its own renderer, where one scalar would misreport the source. */
@@ -157,6 +175,18 @@ export interface CriterionNode {
   ranks?: Partial<Record<ScenarioKey, SliceValues>>
   /** What this row's children are, for a row scored per child: "species", "activity". */
   entityNoun?: string
+  /**
+   * New Green Watershed at its three restoration levels, 25%, 50% and 100% wetland,
+   * where the team reports each. `values.ngw` holds the 50% level, the default.
+   */
+  ngwLevels?: [number | null, number | null, number | null]
+  /**
+   * A qualitative row: the team's judgement in steps per scenario, +n better, −n
+   * worse, 0 no change. A scenario left out is not yet assessed.
+   */
+  steps?: Partial<Record<ScenarioKey, number>>
+  /** A condition under a qualitative row: the scenarios where it is in place. */
+  metBy?: ScenarioKey[]
   children?: CriterionNode[]
 }
 
