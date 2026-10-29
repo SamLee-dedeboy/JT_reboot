@@ -23,7 +23,7 @@ const ScenarioExplorerPage = lazy(
 const RegionalSummaryPage = lazy(() => import('../features/regional-summary/RegionalSummaryPage'))
 const Watershed = lazy(() => import('../internal/Watershed'))
 const RankVisualization = lazy(() => import('../internal/rank-visualization/RankVisualization'))
-const BreakoutPage = lazy(() => import('../internal/rank-visualization/breakout/BreakoutPage'))
+const BreakoutPage = lazy(() => import('../features/scenarios/ranking/breakout/BreakoutPage'))
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
 const SiteMapPage = lazy(() => import('../internal/site-map/SiteMapPage'))
 const CriteriaCopyEditor = lazy(() => import('../internal/criteria-copy/CriteriaCopyEditor'))

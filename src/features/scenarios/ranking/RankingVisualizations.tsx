@@ -1,28 +1,36 @@
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
-import { Box, Button, ButtonBase, Collapse, Slider, Stack, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
 import type { Breakpoint, Theme } from '@mui/material/styles'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { jtSpacing, numbering, ranking } from '../../../theme'
 import TeamIcon from '../../../ui/TeamIcon'
 import {
   EQUAL_WEIGHTS,
-  RANKED,
-  SCENARIOS,
   TEAMS,
   fmtScore,
+  fmtWeight,
+  roundScore,
   weightedRanking,
 } from '../../../internal/rank-visualization/data'
-import type { WeightedScenario } from '../../../internal/rank-visualization/data'
+import type { Scenario, WeightedScenario } from '../../../internal/rank-visualization/data'
 
 const SCORE_MIN = -5
 const SCORE_MAX = 5
 
 const scorePosition = (score: number) => `${((score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)) * 100}%`
 
+/** Every whole point on the track, −5…+5: a gridline and a label each. */
+const TICKS = Array.from({ length: SCORE_MAX - SCORE_MIN + 1 }, (_, i) => SCORE_MIN + i)
+
 /** Ordinal ranks (1st, 2nd…), kept apart from the 01/02 numbering used elsewhere on the site. */
 const rankLabel = (rank: number) => `${rank}${['th', 'st', 'nd', 'rd'][rank] ?? 'th'}`
+
+/** Rank and score text for a scenario no criterion has scored yet. */
+const UNRANKED = '—'
+const NOT_SCORED = 'Forthcoming'
 
 const scoreColor = (score: number, theme: Theme) =>
   score > 0
@@ -31,59 +39,87 @@ const scoreColor = (score: number, theme: Theme) =>
       ? theme.chart.voting.below
       : theme.chart.voting.baseline
 
+const LEGEND = [
+  { label: 'Better than today', color: (theme: Theme) => theme.chart.voting.above },
+  { label: 'Worse than today', color: (theme: Theme) => theme.chart.voting.below },
+]
+
 function Legend() {
   return (
-    <Stack
-      direction={{ xs: 'column', sm: 'row' }}
-      spacing={jtSpacing.gap.md}
-      sx={{ color: 'base.100' }}
-    >
-      <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center' }}>
-        <Box
-          sx={(theme) => ({
-            width: ranking.legend.swatchWidth,
-            borderTop: ranking.legend.swatchHeight,
-            borderColor: theme.chart.voting.above,
-          })}
-        />
-        <Typography variant="captionSmall">Reported score</Typography>
-      </Stack>
-      <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center' }}>
-        <Box
-          sx={{
-            width: ranking.legend.swatchWidth,
-            borderTop: ranking.bar.outlineWidth,
-            borderStyle: 'dashed',
-            borderColor: 'base.100',
-          }}
-        />
-        <Typography variant="captionSmall">Illustrative value—data not yet available</Typography>
-      </Stack>
+    <Stack direction="row" spacing={jtSpacing.gap.md} sx={{ color: 'base.100', flexWrap: 'wrap' }}>
+      {LEGEND.map(({ label, color }) => (
+        <Stack key={label} direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center' }}>
+          <Box
+            sx={(theme) => ({
+              width: ranking.legend.swatchWidth,
+              borderTop: ranking.legend.swatchHeight,
+              borderColor: color(theme),
+            })}
+          />
+          <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
+            {label}
+          </Typography>
+        </Stack>
+      ))}
     </Stack>
   )
 }
 
+/** Column heads over the ranking rows: small capitals, spaced. */
+const COLUMN_HEAD = { textTransform: 'uppercase', letterSpacing: '0.06em', color: 'base.100' }
+
+/** Words beside the number at the ends and at zero; every other point is just its number. */
+const SCALE_WORDS: Record<number, string> = {
+  [SCORE_MIN]: 'worse',
+  0: 'as usual',
+  [SCORE_MAX]: 'better',
+}
+
+/**
+ * Whole-point labels over the track. The ends sit flush with the track's edges so their
+ * words stay inside it; the rest center on their gridlines. ±4 and ±1 sit beside the
+ * worded labels (the ends, and zero), so they drop out first when the track narrows,
+ * then ±2…3 below that.
+ */
 function Scale() {
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', color: 'base.200' }}>
-      <Typography variant="captionSmall">−5 worse</Typography>
-      <Typography variant="captionSmall">0 baseline</Typography>
-      <Typography variant="captionSmall" sx={{ textAlign: 'right' }}>
-        +5 better
-      </Typography>
+    <Box
+      sx={{
+        position: 'relative',
+        height: '1.2em',
+        typography: 'captionSmall',
+        containerType: 'inline-size',
+      }}
+    >
+      {TICKS.map((tick) => {
+        const word = SCALE_WORDS[tick]
+        const hideBelow =
+          Math.abs(tick) === SCORE_MAX - 1 ? 1000 : Math.abs(tick) === 1 ? 640 : word ? null : 450
+        return (
+          <Typography
+            key={tick}
+            variant="captionSmall"
+            sx={{
+              ...COLUMN_HEAD,
+              position: 'absolute',
+              whiteSpace: 'nowrap',
+              ...(tick === SCORE_MIN
+                ? { left: 0 }
+                : tick === SCORE_MAX
+                  ? { right: 0 }
+                  : { left: scorePosition(tick), transform: 'translateX(-50%)' }),
+              ...(hideBelow && { [`@container (max-width: ${hideBelow}px)`]: { display: 'none' } }),
+            }}
+          >
+            {word ? `${fmtScore(tick)} ${word}` : fmtScore(tick)}
+          </Typography>
+        )
+      })}
     </Box>
   )
 }
 
-function ScoreBar({
-  score,
-  provisional,
-  color,
-}: {
-  score: number
-  provisional: boolean
-  color?: string
-}) {
+function ScoreBar({ score }: { score: number }) {
   const left = score < 0 ? scorePosition(score) : '50%'
   const right = score < 0 ? '50%' : scorePosition(score)
 
@@ -92,8 +128,6 @@ function ScoreBar({
       sx={{
         position: 'relative',
         height: ranking.trackHeight,
-        borderBottom: 1,
-        borderColor: 'border.subtle',
       }}
     >
       {score !== 0 && (
@@ -105,35 +139,55 @@ function ScoreBar({
             top: '50%',
             height: ranking.bar.height,
             transform: 'translateY(-50%)',
-            bgcolor: provisional ? 'transparent' : (color ?? scoreColor(score, theme)),
-            border: provisional ? ranking.bar.outlineWidth : 0,
-            borderStyle: provisional ? 'dashed' : 'solid',
-            borderColor: color ?? scoreColor(score, theme),
+            bgcolor: scoreColor(score, theme),
           })}
-        />
-      )}
-      {score === 0 && color && (
-        <Box
-          sx={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            width: ranking.bar.zeroMarkWidth,
-            height: ranking.bar.height,
-            bgcolor: color,
-            transform: 'translate(-50%, -50%)',
-          }}
         />
       )}
     </Box>
   )
 }
 
+/** One criterion's score as a dot, on a stem from zero so its direction still reads. */
+function ScoreDot({ score, color }: { score: number | null; color: string }) {
+  if (score === null) return <Box sx={{ height: ranking.dot.rowHeight }} />
+  const from = score < 0 ? scorePosition(score) : '50%'
+  const to = score < 0 ? '50%' : scorePosition(score)
+
+  return (
+    <Box sx={{ position: 'relative', height: ranking.dot.rowHeight }}>
+      <Box
+        sx={{
+          position: 'absolute',
+          left: from,
+          width: `calc(${to} - ${from})`,
+          top: '50%',
+          height: ranking.dot.stemWidth,
+          transform: 'translateY(-50%)',
+          bgcolor: color,
+          opacity: ranking.dot.stemOpacity,
+        }}
+      />
+      <Box
+        sx={{
+          position: 'absolute',
+          left: scorePosition(score),
+          top: '50%',
+          width: ranking.dot.size,
+          height: ranking.dot.size,
+          borderRadius: '50%',
+          bgcolor: color,
+          transform: 'translate(-50%, -50%)',
+        }}
+      />
+    </Box>
+  )
+}
+
 /**
- * Zero line through a list's score-bar column, drawn on a grid that mirrors the rows so it
- * lands on the bars' center at every width.
+ * Gridlines through a list's score-bar column, one per whole point with zero drawn
+ * stronger, on a grid that mirrors the rows so they land on the bars' scale at every width.
  */
-function ZeroGuide({
+function ScaleGuide({
   columns,
   columnGap,
   column,
@@ -156,24 +210,39 @@ function ZeroGuide({
         pointerEvents: 'none',
       }}
     >
-      <Box
-        sx={{
-          gridColumn: column,
-          justifySelf: 'center',
-          borderLeft: ranking.zeroLine.width,
-          borderColor: ranking.zeroLine.color,
-        }}
-      />
+      <Box sx={{ gridColumn: column, position: 'relative' }}>
+        {TICKS.map((tick) => {
+          const line =
+            tick === 0
+              ? ranking.zeroLine
+              : Math.abs(tick) === SCORE_MAX
+                ? ranking.gridLine
+                : ranking.gridLineMinor
+          return (
+            <Box
+              key={tick}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: scorePosition(tick),
+                transform: 'translateX(-50%)',
+                borderLeft: `${line.width}px ${line.style}`,
+                borderColor: line.color,
+              }}
+            />
+          )
+        })}
+      </Box>
     </Box>
   )
 }
 
-function TeamBreakdown({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
+function TeamBreakdown({ scenario }: { scenario: Scenario }) {
   return (
-    <Stack spacing={jtSpacing.gap.xs} sx={{ py: jtSpacing.component.md }}>
+    <Stack sx={{ py: jtSpacing.component.sm }}>
       {TEAMS.map((team, index) => {
-        const score = scenario.scores[index] ?? 0
-        const provisional = scenario.provisional[index]
+        const score = scenario.scores[index]
 
         return (
           <Box
@@ -183,7 +252,7 @@ function TeamBreakdown({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
               gridTemplateColumns: ranking.columns.team,
               gap: jtSpacing.gap.md,
               alignItems: 'center',
-              minHeight: ranking.trackHeight,
+              minHeight: ranking.dot.rowHeight,
             }}
           >
             <Stack
@@ -197,17 +266,17 @@ function TeamBreakdown({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
               </Typography>
             </Stack>
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <ScoreBar score={score} provisional={provisional} color={team.color} />
+              <ScoreDot score={score} color={team.color} />
             </Box>
             <Typography
-              variant={provisional ? 'captionSmall' : 'chartValueLarge'}
+              variant={score === null ? 'captionSmall' : 'chartValueLarge'}
               sx={{
-                color: provisional ? 'base.200' : team.color,
+                color: score === null ? 'base.200' : team.color,
                 textAlign: { md: 'right' },
                 whiteSpace: 'nowrap',
               }}
             >
-              {provisional ? `Illustrative ${fmtScore(score)}` : fmtScore(score)}
+              {score === null ? NOT_SCORED : fmtScore(score)}
             </Typography>
           </Box>
         )
@@ -216,43 +285,65 @@ function TeamBreakdown({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
   )
 }
 
-const average = (scores: (number | null)[]) => {
-  const values = scores.filter((score): score is number => score !== null)
-  return values.reduce((sum, score) => sum + score, 0) / values.length
+function ScoreValue({ scenario }: { scenario: WeightedScenario }) {
+  if (!scenario.hasScores) {
+    return (
+      <Typography variant="captionSmall" sx={{ textAlign: 'right', color: 'base.200' }}>
+        {NOT_SCORED}
+      </Typography>
+    )
+  }
+  return (
+    <Typography
+      variant="numberScore"
+      sx={(theme) => ({ textAlign: 'right', color: scoreColor(roundScore(scenario.wAvg), theme) })}
+    >
+      {fmtScore(scenario.wAvg)}
+    </Typography>
+  )
 }
 
 const OVERALL_GAP = { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md }
 
-export function OverallRankingChart() {
-  const [expanded, setExpanded] = useState(() => new Set(SCENARIOS.map(({ name }) => name)))
-  const allExpanded = expanded.size === SCENARIOS.length
-  const ranked = useMemo(
-    () =>
-      SCENARIOS.map((scenario) => ({
-        ...scenario,
-        average: average(scenario.scores),
-        hasProvisional: scenario.provisional.some(Boolean),
-      })).sort((a, b) => b.average - a.average),
-    [],
-  )
+/**
+ * Equal-weight ranking of one scenario set; remount it (`key`) when the set changes.
+ * `heading` opens the toolbar, ahead of the legend and the expand button.
+ */
+export function OverallRankingChart({
+  scenarios,
+  heading,
+}: {
+  scenarios: Scenario[]
+  heading?: ReactNode
+}) {
+  const [expanded, setExpanded] = useState(() => new Set(scenarios.map(({ name }) => name)))
+  const allExpanded = expanded.size === scenarios.length
+  const ranked = useMemo(() => weightedRanking(EQUAL_WEIGHTS, scenarios), [scenarios])
 
   return (
     <Stack spacing={jtSpacing.component.lg}>
       <Stack
-        direction={{ xs: 'column', sm: 'row' }}
+        direction={{ xs: 'column', lg: 'row' }}
         spacing={jtSpacing.gap.md}
-        sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
+        sx={{ alignItems: { lg: 'center' }, justifyContent: 'space-between' }}
       >
-        <Legend />
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() =>
-            setExpanded(allExpanded ? new Set() : new Set(SCENARIOS.map(({ name }) => name)))
-          }
+        {heading}
+        <Stack
+          direction="row"
+          spacing={jtSpacing.gap.lg}
+          useFlexGap
+          sx={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}
         >
-          {allExpanded ? 'Collapse all scenarios' : 'Expand all scenarios'}
-        </Button>
+          <Legend />
+          <Button
+            variant="outlined"
+            onClick={() =>
+              setExpanded(allExpanded ? new Set() : new Set(scenarios.map(({ name }) => name)))
+            }
+          >
+            {allExpanded ? 'Collapse all' : 'Expand all'}
+          </Button>
+        </Stack>
       </Stack>
       <Box>
         <Box
@@ -261,21 +352,28 @@ export function OverallRankingChart() {
             gridTemplateColumns: ranking.columns.overall,
             columnGap: OVERALL_GAP,
             alignItems: 'end',
+            pt: jtSpacing.component.md,
             pb: jtSpacing.component.sm,
+            borderTop: 1,
+            borderColor: 'border.subtle',
           }}
         >
-          <Typography variant="captionSmall">Rank</Typography>
-          <Typography variant="captionSmall">Scenario</Typography>
+          <Typography variant="captionSmall" sx={COLUMN_HEAD}>
+            Rank
+          </Typography>
+          <Typography variant="captionSmall" sx={COLUMN_HEAD}>
+            Scenario
+          </Typography>
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <Scale />
           </Box>
-          <Typography variant="captionSmall" sx={{ textAlign: 'right' }}>
+          <Typography variant="captionSmall" sx={{ ...COLUMN_HEAD, textAlign: 'right' }}>
             Score
           </Typography>
         </Box>
         <Box sx={{ position: 'relative' }}>
           {/* The guide follows the scenario rows' columns, not the indented team rows. */}
-          <ZeroGuide
+          <ScaleGuide
             columns={ranking.columns.overall}
             columnGap={OVERALL_GAP}
             column={3}
@@ -310,7 +408,9 @@ export function OverallRankingChart() {
                     '&:hover, &.Mui-focusVisible': { bgcolor: 'translucent.100' },
                   }}
                 >
-                  <Typography variant="numberRank">{rankLabel(index + 1)}</Typography>
+                  <Typography variant="numberRank">
+                    {scenario.hasScores ? rankLabel(index + 1) : UNRANKED}
+                  </Typography>
                   <Stack
                     direction="row"
                     sx={{ alignItems: 'center', justifyContent: 'space-between' }}
@@ -325,17 +425,9 @@ export function OverallRankingChart() {
                     />
                   </Stack>
                   <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                    <ScoreBar score={scenario.average} provisional={scenario.hasProvisional} />
+                    <ScoreBar score={scenario.wAvg} />
                   </Box>
-                  <Typography
-                    variant="chartValueLarge"
-                    sx={(theme) => ({
-                      textAlign: 'right',
-                      color: scoreColor(scenario.average, theme),
-                    })}
-                  >
-                    {fmtScore(scenario.average)}
-                  </Typography>
+                  <ScoreValue scenario={scenario} />
                 </ButtonBase>
                 <Collapse in={open} timeout={ranking.motion.expandMs}>
                   {/* Team rows start under the scenario name, past the rank column. */}
@@ -359,9 +451,8 @@ export function OverallRankingChart() {
   )
 }
 
-/** The only priority levels a visitor can pick; the slider steps through them evenly. */
+/** The only priority levels a visitor can pick, one button each. */
 const PRIORITY_STEPS = [0.5, 1, 2, 3]
-const PRIORITY_MARKS = PRIORITY_STEPS.map((_, index) => ({ value: index }))
 const RERANK_TRANSITION = { duration: ranking.motion.rerankSeconds, ease: 'easeOut' } as const
 
 const rowCenter = (index: number) => ranking.rowHeight / 2 + index * ranking.rowHeight
@@ -369,33 +460,56 @@ const rowCenter = (index: number) => ranking.rowHeight / 2 + index * ranking.row
 function PriorityControls({
   weights,
   onChange,
+  onReset,
 }: {
   weights: number[]
   onChange: (teamIndex: number, weight: number) => void
+  onReset: () => void
 }) {
   return (
     <Box>
       <Stack
         direction="row"
         spacing={jtSpacing.gap.sm}
-        sx={{ alignItems: 'center', mb: jtSpacing.component.sm }}
+        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
       >
-        <TuneRoundedIcon sx={{ color: 'primary.main' }} />
-        <Typography variant="h4" component="h3" sx={{ whiteSpace: 'nowrap' }}>
-          Set your priorities
-        </Typography>
+        <Stack direction="row" spacing={jtSpacing.gap.sm} sx={{ alignItems: 'center' }}>
+          <TuneRoundedIcon sx={{ color: 'primary.main' }} />
+          <Typography variant="h4" component="h3" sx={{ whiteSpace: 'nowrap' }}>
+            Set your priorities
+          </Typography>
+        </Stack>
+        <ButtonBase
+          onClick={onReset}
+          sx={{
+            typography: 'meta',
+            whiteSpace: 'nowrap',
+            minHeight: ranking.controlHeight,
+            color: 'primary.main',
+            textDecoration: 'underline',
+            '&:hover, &.Mui-focusVisible': { color: 'common.white' },
+          }}
+        >
+          Reset to equal
+        </ButtonBase>
       </Stack>
-      {/* One line per team: name, stepped slider, current weight. */}
+      <Typography variant="captionSmall" component="p" sx={{ mb: jtSpacing.component.sm }}>
+        ×½ halves a criterion’s influence; ×3 triples it.
+      </Typography>
+      {/* One line per criterion: name, then a button per priority level. */}
       <Stack>
         {TEAMS.map((team, index) => (
           <Box
             key={team.key}
+            role="group"
+            aria-label={`${team.name} priority`}
             sx={{
-              display: 'grid',
-              gridTemplateColumns: ranking.columns.control,
-              gap: jtSpacing.gap.sm,
+              display: 'flex',
+              flexWrap: 'wrap',
               alignItems: 'center',
-              minHeight: ranking.controlHeight,
+              justifyContent: 'space-between',
+              gap: jtSpacing.gap.sm,
+              py: jtSpacing.component.sm,
               borderTop: 1,
               borderColor: 'border.subtle',
             }}
@@ -410,22 +524,35 @@ function PriorityControls({
                 {team.name}
               </Typography>
             </Stack>
-            <Slider
-              size="small"
-              min={0}
-              max={PRIORITY_STEPS.length - 1}
-              step={1}
-              marks={PRIORITY_MARKS}
-              scale={(step) => PRIORITY_STEPS[step]}
-              value={PRIORITY_STEPS.indexOf(weights[index])}
-              onChange={(_, step) => onChange(index, PRIORITY_STEPS[step as number])}
-              getAriaValueText={(weight) => `×${weight}`}
-              aria-label={`${team.name} priority weight`}
-              sx={{ color: team.color }}
-            />
-            <Typography variant="chartValueLarge" sx={{ textAlign: 'right' }}>
-              ×{weights[index]}
-            </Typography>
+            <Stack direction="row" spacing={jtSpacing.gap.xs}>
+              {PRIORITY_STEPS.map((step) => {
+                const active = weights[index] === step
+                return (
+                  <ButtonBase
+                    key={step}
+                    aria-pressed={active}
+                    onClick={() => onChange(index, step)}
+                    sx={{
+                      typography: 'chartValue',
+                      minWidth: ranking.priorityButton.minWidth,
+                      height: ranking.controlHeight,
+                      px: jtSpacing.component.sm,
+                      borderRadius: ranking.priorityButton.radius,
+                      border: 1,
+                      borderColor: active ? team.color : 'border.default',
+                      bgcolor: active ? team.color : 'transparent',
+                      color: active ? 'common.black' : 'base.100',
+                      '&:hover, &.Mui-focusVisible': {
+                        borderColor: team.color,
+                        color: active ? 'common.black' : 'common.white',
+                      },
+                    }}
+                  >
+                    ×{fmtWeight(step)}
+                  </ButtonBase>
+                )
+              })}
+            </Stack>
           </Box>
         ))}
       </Stack>
@@ -433,66 +560,58 @@ function PriorityControls({
   )
 }
 
-function CurrentRanking({
-  scenarios,
-  weights,
-}: {
-  scenarios: WeightedScenario[]
-  weights: number[]
-}) {
+function CurrentRanking({ scenarios }: { scenarios: WeightedScenario[] }) {
   const reduceMotion = useReducedMotion()
 
   return (
     <Box sx={{ position: 'relative' }}>
-      <ZeroGuide
+      <ScaleGuide
         columns={{ sm: ranking.columns.current.sm }}
         columnGap={jtSpacing.gap.sm}
         column={3}
         from="sm"
       />
-      {scenarios.map((scenario, index) => {
-        const provisional = scenario.provisional.some(
-          (value, teamIndex) => value && weights[teamIndex] > 0,
-        )
-        return (
-          <Box
-            key={scenario.name}
-            component={motion.div}
-            layout="position"
-            transition={reduceMotion ? { duration: 0 } : RERANK_TRANSITION}
-            sx={{
-              position: 'relative',
-              display: 'grid',
-              gridTemplateColumns: ranking.columns.current,
-              gap: jtSpacing.gap.sm,
-              alignItems: 'center',
-              height: ranking.rowHeight,
-              borderTop: 1,
-              borderColor: 'border.subtle',
-            }}
-          >
-            <Typography variant="numberRank">{rankLabel(index + 1)}</Typography>
-            <Typography variant="navigationLabel">{scenario.name}</Typography>
-            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <ScoreBar score={scenario.wAvg} provisional={provisional} />
-            </Box>
-            <Typography
-              variant="chartValueLarge"
-              sx={(theme) => ({ textAlign: 'right', color: scoreColor(scenario.wAvg, theme) })}
-            >
-              {fmtScore(scenario.wAvg)}
-            </Typography>
+      {scenarios.map((scenario, index) => (
+        <Box
+          key={scenario.name}
+          component={motion.div}
+          layout="position"
+          transition={reduceMotion ? { duration: 0 } : RERANK_TRANSITION}
+          sx={{
+            position: 'relative',
+            display: 'grid',
+            gridTemplateColumns: ranking.columns.current,
+            gap: jtSpacing.gap.sm,
+            alignItems: 'center',
+            height: ranking.rowHeight,
+            borderTop: 1,
+            borderColor: 'border.subtle',
+          }}
+        >
+          <Typography variant="numberRank">
+            {scenario.hasScores ? rankLabel(index + 1) : UNRANKED}
+          </Typography>
+          <Typography variant="navigationLabel">{scenario.name}</Typography>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <ScoreBar score={scenario.wAvg} />
           </Box>
-        )
-      })}
+          <ScoreValue scenario={scenario} />
+        </Box>
+      ))}
     </Box>
   )
 }
 
-function RankingLinks({ scenarios }: { scenarios: WeightedScenario[] }) {
+function RankingLinks({
+  scenarios,
+  equal,
+}: {
+  scenarios: WeightedScenario[]
+  equal: WeightedScenario[]
+}) {
   const reduceMotion = useReducedMotion()
   const { width, bend, strokeWidth, opacity, color } = ranking.links
-  const height = ranking.rowHeight * RANKED.length
+  const height = ranking.rowHeight * equal.length
 
   return (
     <Box
@@ -504,7 +623,7 @@ function RankingLinks({ scenarios }: { scenarios: WeightedScenario[] }) {
       sx={{ display: 'block', overflow: 'visible', color }}
     >
       {scenarios.map((scenario, now) => {
-        const before = RANKED.findIndex(({ name }) => name === scenario.name)
+        const before = equal.findIndex(({ name }) => name === scenario.name)
         const moved = before !== now
         return (
           <motion.path
@@ -527,10 +646,10 @@ function RankingLinks({ scenarios }: { scenarios: WeightedScenario[] }) {
   )
 }
 
-function EqualRanking() {
+function EqualRanking({ equal }: { equal: WeightedScenario[] }) {
   return (
     <Box>
-      {RANKED.map((scenario) => (
+      {equal.map((scenario) => (
         <Box
           key={scenario.name}
           sx={{
@@ -544,7 +663,7 @@ function EqualRanking() {
           }}
         >
           <Typography variant="numberRank" sx={{ color: 'base.200' }}>
-            {rankLabel(scenario.rank)}
+            {scenario.hasScores ? rankLabel(scenario.rank) : UNRANKED}
           </Typography>
           <Typography variant="navigationLabel" sx={{ color: 'base.100' }}>
             {scenario.name}
@@ -555,9 +674,11 @@ function EqualRanking() {
   )
 }
 
-export function WeightedRankingChart() {
+/** Priorities beside the reweighted ranking of one scenario set. */
+export function WeightedRankingChart({ scenarios: set }: { scenarios: Scenario[] }) {
   const [weights, setWeights] = useState([...EQUAL_WEIGHTS])
-  const scenarios = useMemo(() => weightedRanking(weights), [weights])
+  const scenarios = useMemo(() => weightedRanking(weights, set), [weights, set])
+  const equal = useMemo(() => weightedRanking(EQUAL_WEIGHTS, set), [set])
   const setWeight = (teamIndex: number, weight: number) =>
     setWeights((current) => current.map((value, i) => (i === teamIndex ? weight : value)))
 
@@ -570,7 +691,11 @@ export function WeightedRankingChart() {
         alignItems: 'start',
       }}
     >
-      <PriorityControls weights={weights} onChange={setWeight} />
+      <PriorityControls
+        weights={weights}
+        onChange={setWeight}
+        onReset={() => setWeights([...EQUAL_WEIGHTS])}
+      />
 
       {/* Current ranking, linked row by row to the equal-weight ranking. */}
       <Box>
@@ -604,12 +729,12 @@ export function WeightedRankingChart() {
             Equal weights
           </Typography>
 
-          <CurrentRanking scenarios={scenarios} weights={weights} />
+          <CurrentRanking scenarios={scenarios} />
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <RankingLinks scenarios={scenarios} />
+            <RankingLinks scenarios={scenarios} equal={equal} />
           </Box>
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <EqualRanking />
+            <EqualRanking equal={equal} />
           </Box>
         </Box>
         <Box sx={{ mt: jtSpacing.component.md }}>

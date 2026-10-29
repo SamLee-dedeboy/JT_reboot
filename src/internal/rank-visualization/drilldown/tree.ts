@@ -33,6 +33,7 @@ import type { RecActivityKey, RecTable } from './recreationThresholds'
 import { ECOLOGY_SLR_DELTA, ECOLOGY_SLR_REGION, EJ_SLR_DRINKING } from './seaLevelRise'
 import { ANY, sliceKey } from './model'
 import type { ClimateRun, CriterionNode, Facet, ScenarioKey, SliceValues, Source } from './model'
+import { roundScore } from '../data'
 import type { TeamKey } from '../data'
 
 const NO_FACET: Facet[] = [{ key: ANY, label: 'Not broken out' }]
@@ -136,7 +137,7 @@ function speciesNode(species: (typeof ECOLOGY_SPECIES)[number]): CriterionNode {
     provenance: 'reported',
     unit: 'share',
     betterHigher: true,
-    note: `Proportion of days within ${species.salinity} and ${species.temperature}; A Tunnel was never run.`,
+    note: `Proportion of days within ${species.salinity} and ${species.temperature}; A Tunnel was run only on the 27 Oct base, shown on the Ecology page.`,
     places: ECO_PLACES,
     periods: YEARS,
     values,
@@ -155,10 +156,10 @@ const ECOLOGY: CriterionNode = {
   provenance: 'inferred',
   unit: 'score',
   betterHigher: true,
-  note: 'Neither source gives an overall score, so this acreage score is the mean of two acreage ranks: landscape and food web. The species work now ranks each species, but those ranks do not affect this score.',
+  note: 'Neither source gives an overall score, so this acreage score is the mean of two acreage ranks, landscape and food web, rounded to a whole point. The species work now ranks each species, but those ranks do not affect this score.',
   places: NO_FACET,
   periods: NO_FACET,
-  values: flat({ ngw: 4.5, em: 2, bf: 0, cor: 0, tunnel: 0, bau: 0 }),
+  values: flat({ ngw: roundScore((5 + 4) / 2), em: 2, bf: 0, cor: 0, tunnel: 0, bau: 0 }),
   children: [
     {
       id: 'eco-niche',
@@ -583,7 +584,7 @@ const REC_ECONOMY_SERVICES: {
  * The criterion score as Recreation computes it ("Recreation The Score.xlsx", 26 Oct
  * 2026): the whole-run activity means for salinity and temperature, today and with
  * sea level rise, averaged with equal weight, (A + A SLR + B + B SLR) / 4, at each
- * place. It reproduces the sheet's Delta-wide and regional tables.
+ * place, rounded to a whole point (the sheet keeps the decimals).
  */
 function recCriterion(
   ...means: Partial<Record<ScenarioKey, SliceValues>>[]
@@ -595,9 +596,7 @@ function recCriterion(
       const parts = means.map((mean) => mean[scenario]?.[sliceKey(place.key, 'run')] ?? null)
       series[sliceKey(place.key, ANY)] = parts.some((part) => part === null)
         ? null
-        : Math.round(
-            (parts.reduce<number>((sum, part) => sum + (part ?? 0), 0) / parts.length) * 10000,
-          ) / 10000
+        : roundScore(parts.reduce<number>((sum, part) => sum + (part ?? 0), 0) / parts.length)
     }
     out[scenario] = series
   }
@@ -625,7 +624,7 @@ const RECREATION: CriterionNode = {
   provenance: 'reported',
   unit: 'score',
   betterHigher: true,
-  note: 'Recreation’s own score (26 Oct 2026): the mean of four equally weighted parts, salinity and temperature, each today and with sea level rise, where each part is the mean of its activity scores over the whole run. Delta-wide: Calling on Reserves +0.06, Business as Usual and Bolster & Fortify 0, A Tunnel −0.13, Eco Machine and New Green Watershed −0.38. Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual. Suisun Marsh drives the losses (Eco Machine and New Green Watershed −1.83 there) and the Central Delta the gains (+0.56). Habitat restoration and recreation economy are scored separately and do not enter it.',
+  note: 'Recreation’s own score (26 Oct 2026): the mean of four equally weighted parts, salinity and temperature, each today and with sea level rise, where each part is the mean of its activity scores over the whole run, rounded to a whole point. Delta-wide every scenario rounds to 0 (unrounded: Calling on Reserves +0.06, A Tunnel −0.13, Eco Machine and New Green Watershed −0.38). Calling on Reserves and A Tunnel are scored against CalSim’s Business as Usual. Suisun Marsh drives the losses (Eco Machine and New Green Watershed −1.83 there, −2 rounded) and the Central Delta the gains (+0.56). Habitat restoration and recreation economy are scored separately and do not enter it.',
   places: REC_PLACES,
   periods: NO_FACET,
   values: REC_CRITERION,
@@ -1545,7 +1544,7 @@ const SOURCES: Record<string, Source[]> = {
       doc: 'ours',
       where: 'Mean of the two ranked metrics',
       quote:
-        'Neither source gives Ecology a criterion score. We average Landscape and Food webs, which at New Green Watershed is (5 + 4) / 2 = 4.5.',
+        'Neither source gives Ecology a criterion score. We average Landscape and Food webs, which at New Green Watershed is (5 + 4) / 2 = 4.5, rounded to +5.',
     },
   ],
   'eco-niche': [
@@ -1751,7 +1750,7 @@ const SOURCE_PREFIXES: [string, Source[]][] = [
         doc: 'report',
         where: 'Species fundamental niches — region × water year tables',
         quote:
-          'Share of days inside each species’ salinity and temperature bracket, by region, for water years 2019 and 2020. A Tunnel was never run.',
+          'Share of days inside each species’ salinity and temperature bracket, by region, for water years 2019 and 2020. A Tunnel is not in these tables; it was first run on the 27 Oct base.',
       },
     ],
   ],

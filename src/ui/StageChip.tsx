@@ -3,7 +3,8 @@ import { Chip } from '@mui/material'
 
 /**
  * A small pill for a variant of a row, such as a life stage. As a picker it is
- * green when on; with `plain` it is an off-white label inside a table row.
+ * green when on; with `plain` it is a quiet tag inside a table row, never brighter
+ * than the label it qualifies.
  */
 export default function StageChip({
   label,
@@ -22,9 +23,9 @@ export default function StageChip({
       label={label}
       sx={{
         flex: 'none',
-        typography: 'meta',
-        color: plain ? 'base.50' : on ? 'common.white' : 'base.200',
-        borderColor: plain ? 'base.50' : on ? 'primary.main' : 'border.default',
+        typography: plain ? 'controlLabel' : 'meta',
+        color: plain ? 'base.200' : on ? 'common.white' : 'base.200',
+        borderColor: plain ? 'border.strong' : on ? 'primary.main' : 'border.default',
         bgcolor: !plain && on ? 'translucent.primaryGreen' : 'transparent',
       }}
     />

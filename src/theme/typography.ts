@@ -113,8 +113,8 @@ export const typography = {
   navigationLabel: {
     fontFamily: fontBody,
     fontSize: 'clamp(1rem, 0.7rem + 0.5vw, 1.2rem)',
-    fontWeight: 600,
-    letterSpacing: '0.015em',
+    fontWeight: 500,
+    letterSpacing: '0.08em',
     lineHeight: 1.25,
   },
   // Nested rail entry under an eyebrow parent (e.g. team sections); one step smaller.
@@ -156,6 +156,8 @@ export const typography = {
   chartTitle: {
     fontFamily: fontHeading,
     fontSize: '1.1rem',
+    // Hammersmith One has one weight; an h3 or h4 would otherwise draw a fake bold.
+    fontWeight: 400,
     lineHeight: 1.2,
     letterSpacing: '0.02em',
     textTransform: 'uppercase',
@@ -177,6 +179,22 @@ export const typography = {
     fontWeight: 700,
     letterSpacing: '0.02em',
     textTransform: 'uppercase',
+  },
+  // chartSentenceValue at bodyLarge's size, for a data-state sentence set large.
+  sentenceValueLarge: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.1875rem, 0.95rem + 0.5vw, 1.875rem)',
+    lineHeight: 1.3,
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
+  // A table value that leads its row (the breakout's best in row): body2, bold.
+  tableValueStrong: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
+    lineHeight: 1.25,
+    fontWeight: 700,
   },
   chartColumnHead: {
     fontFamily: fontBody,
@@ -221,6 +239,14 @@ export const typography = {
     letterSpacing: '0.04em',
     fontWeight: 400,
     color: palette.brand.primaryGreen,
+  },
+  // A scenario's overall score at the end of a ranking row: the number the row is about.
+  numberScore: {
+    fontFamily: fontHeading,
+    fontSize: 'clamp(1.5rem, 1.2rem + 0.6vw, 1.9rem)',
+    lineHeight: 1,
+    letterSpacing: '0.02em',
+    fontWeight: 400,
   },
   numberTimeline: {
     fontFamily: fontHeading,

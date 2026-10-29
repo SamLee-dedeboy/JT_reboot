@@ -14,11 +14,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Here, define your criterion and any relevant key terms."
-      },
-      {
-        "type": "paragraph",
-        "text": "The definition of a just transition is\"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we look to the idea of a just transition that includes the species, waterways, and habitats of the Delta, as well as the people who rely on them."
+        "text": "The definition of a just transition is \"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we look to the idea of a just transition that includes the species, waterways, and habitats of the Delta, as well as the people who rely on them."
       },
       {
         "type": "paragraph",
@@ -55,11 +51,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Here, define your criterion and any relevant key terms."
-      },
-      {
-        "type": "paragraph",
-        "text": "The definition of a just transition is\"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we look to the idea of a just transition that includes the species, waterways, and habitats of the Delta, as well as the people who rely on them."
+        "text": "The definition of a just transition is \"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we look to the idea of a just transition that includes the species, waterways, and habitats of the Delta, as well as the people who rely on them."
       },
       {
         "type": "paragraph",
@@ -169,11 +161,11 @@
       },
       {
         "type": "paragraph",
-        "text": "Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and temperature thresholds that are survivable for that species, as well as the number of consecutive days the location remained within those thresholds."
+        "text": "Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and temperature thresholds that are survivable for that species, as well as the number of consecutive days the location remained within those thresholds (streak lengths)."
       },
       {
         "type": "paragraph",
-        "text": "Pelagic food webs: Pelagic food webs and food web contributions will be measured through landscape contributions and water age, using relative contributions from different landscapes and their exports to nearby waterways. We will use the following equation to assess the food web contributions for each adaptive scenario:"
+        "text": "Pelagic food webs: Pelagic food webs were measured using estimates of relative contributions from different habitat types and their exports to nearby waterways. We used the following equation to assess the food web contributions for each adaptive scenario:"
       },
       {
         "type": "paragraph",
@@ -181,7 +173,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Where x, y, z are constants that represent relative contributions of each landscape type on food web production, to be determined from literature."
+        "text": "Where x, y, z are constants that represent relative contributions of each landscape type on food web production, based on the literature. We chose to base our assessment of food web contributions on land cover of productive habitat acreage alone, rather than factoring in residence time across all Delta waterways, because we do not have the precision of data to determine how changes in water age might affect plankton production."
       },
       {
         "type": "paragraph",
@@ -189,27 +181,27 @@
       },
       {
         "type": "paragraph",
-        "text": "Tidal wetland acres: Acres of newly accessible tidal wetland under the various scenarios. We have assigned this value to 4.0 in our model, because, although the food web contributions are decidedly lower than managed wetlands when they are being managed for exports, they provide consistent exports of pelagic food that are not constrained seasonally. Despite being somewhat lacking in overall productivity, this is weighted higher than managed wetlands in the model because of availability and consistency (SFEI Delta Landscapes 2026)."
+        "text": "Tidal wetland acres: Acres of newly accessible tidal wetland under the various scenarios. We have assigned this value to 4.0 in our model, because, although the food web contributions are decidedly lower than managed seasonal wetlands, they provide consistent exports of pelagic food throughout the year. Despite being somewhat lacking in overall productivity, this is weighted higher than managed wetlands in the model because of availability and consistency (SFEI Delta Landscapes 2026)."
       },
       {
         "type": "paragraph",
-        "text": "Managed wetland acres: Managed wetlands are known to, at specific times of managed flood pulses, produce 11 to 22 times the amount of zooplankton as tidal wetlands (Phillips et al. 2026). Despite this, managed wetlands are closed off to surrounding habitats for much of the year and managed can be sporadic. They are limited by barriers as well as management. Because of these sporadic, productive pulses, we have anchored managed wetlands as a 2.0 in our model."
+        "text": "Managed wetland acres: Managed wetlands are known to, at specific times of managed flood pulses, produce 11 to 22 times the amount of zooplankton as tidal wetlands (Phillips et al. 2026). Despite this, managed wetlands are closed off to surrounding habitats for much of the year and contributions can be sporadic. Because of their temporal constraints,, we have anchored managed wetlands as a 2.0 in our model."
       },
       {
         "type": "paragraph",
-        "text": "Wet Soil Agriculture: Wet soil agriculture, including rice and paludiculture, is carefully managed hydrologically and can provide pulses of food and organic matter to surrounding waterways in the Delta, but are restricted by hydrological management and seasonality. Moreover, as a baseline these systems export less zooplankton and nutrients than managed wetlands do. They are a dramatic improvement from dry agriculture in the Delta with regard to food web imports, so they are anchored at 1.0 in our model."
+        "text": "Wet Soil Agriculture: Wet soil agriculture, including rice and paludiculture, is carefully managed hydrologically and can provide pulses of food and organic matter to surrounding waterways in the Delta. However, wet soil agriculture can still be restricted by management cycles and seasonality. Moreover, as a baseline these systems export less plankton than managed wetlands do. They are still a dramatic improvement from dry agriculture in the Delta with regard to food web imports, so they are anchored at 1.0 in our model."
       },
       {
         "type": "paragraph",
-        "text": "In our model, we are incorporating the current acreage of wet soil agriculture and managed wetlands in the Delta and incorporating the difference between acreages in the scenarios."
+        "text": "In our model, we incorporate the current acreage of wet soil agriculture and managed wetlands in the Delta, as well as differences between acreages in the scenarios."
       },
       {
         "type": "paragraph",
-        "text": "Currently, our model estimates 248,815 total acres in the Delta (this is calculated from the summed total acreage of the mapped Delta islands). As of 2022, there were 17,178 acres of rice in the Delta (Agri-Pulse 2022). This value will be subtracted from our total simulated rice acres. According to the Delta Stewardship Council, there are approximately 5100 baseline managed wetland acres currently in the Delta (Delta Stewardship Council 2026). This value will also be subtracted from the model."
+        "text": "Currently, our model estimates 248,815 total acres in the Delta (this is calculated from the summed total acreage of the mapped Delta islands). As of 2022, there were 17,178 acres of rice in the Delta (Agri-Pulse 2022). This value was subtracted from our total simulated rice acres. According to the Delta Stewardship Council, there are approximately 5100 baseline managed wetland acres currently in the Delta (Delta Stewardship Council 2026). This value was also subtracted from the model."
       },
       {
         "type": "paragraph",
-        "text": "The proxy will reads as:"
+        "text": "The final model reads as:"
       },
       {
         "type": "paragraph",
@@ -221,11 +213,11 @@
       },
       {
         "type": "paragraph",
-        "text": "Habitat availability: We calculated the area of newly available wetland habitat under each scenario. Rankings were then scaled from the maximum number of newly accessible habitat acres (New Green Watershed) and anchored at the baseline accessible acres (5)."
+        "text": "Habitat availability: We calculated the area of newly available wetland habitat under each scenario. Rankings were scaled from the maximum number of newly accessible habitat acres (New Green Watershed) and anchored at the baseline accessible acres (5)."
       },
       {
         "type": "paragraph",
-        "text": "We are approaching habitat availability strictly from an accessible aquatic habitat perspective. We acknowledge that managed wetlands and rice may function as habitat for some floodplain spawning species, birds, mammals, and invertebrates, but we are strictly assessing the additional habitat that will be available to all aquatic species."
+        "text": "We approached habitat availability strictly from an accessible aquatic habitat perspective. We acknowledge that managed wetlands and rice may function as habitat for some floodplain spawning species, birds, mammals, and invertebrates, but we are strictly assessing the additional habitat that will be available to all aquatic species."
       },
       {
         "type": "heading",
@@ -359,7 +351,7 @@
       },
       {
         "type": "item",
-        "text": "For average streak lengths: Suitable days"
+        "text": "For average streak lengths: Consecutive suitable days"
       },
       {
         "type": "paragraph",
@@ -697,6 +689,10 @@
       {
         "type": "paragraph",
         "text": "Kimmerer, W. J. (2004). Open water processes of the San Francisco Estuary: From physical forcing to biological responses. San Francisco Estuary and Watershed Science, 2(1)."
+      },
+      {
+        "type": "paragraph",
+        "text": "Whipple"
       }
     ]
   }

@@ -44,5 +44,11 @@ __pycache__/
 # Offline basemap Overpass downloads (scripts/build-offline-basemap.mjs)
 .cache/
 
+# Non-runtime analysis outputs; keep these outside production deployments.
+public/data/regional-summary/archived/
+public/data/regional-summary/raw/
+public/data/scenario-explorer/update/
+public/data/scenario-explorer/d1641_calsim_source/
+
 # macOS Finder duplicates ("foo 2.tsx") must never land in the repo
 * 2.*

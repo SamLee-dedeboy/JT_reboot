@@ -16,6 +16,12 @@ import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
 import { ECOLOGY_NICHE, ECOLOGY_REGIONS, ECOLOGY_SPECIES } from '../drilldown/ecologyNiche'
 import type { EcologyRegionKey, EcologySpeciesKey } from '../drilldown/ecologyNiche'
+import {
+  ECOLOGY_RERUN_DELTA,
+  ECOLOGY_RERUN_REGION,
+  ECOLOGY_RERUN_SCENARIOS,
+} from '../drilldown/ecologyRerun'
+import type { RerunScenario } from '../drilldown/ecologyRerun'
 import { SCENARIO_NAME } from '../drilldown/model'
 import { cellFill } from '../data'
 import { SUBTEAM_PROFILES } from './profiles'
@@ -431,6 +437,8 @@ export default function EcologyView() {
         )}
       </Panel>
 
+      <RerunPanel />
+
       <Panel
         title="What moves these numbers more: the scenario, or the water year?"
         intro="For each species, in any one region: **how far apart are the five scenarios** at most, and **how far apart are the two water years** at most? Both are read on the same axis, as a gap between two percentages of the season. ==Where the pink dot sits far to the right of the teal one, the water year moves that species more than any scenario does.=="
@@ -444,6 +452,138 @@ export default function EcologyView() {
         />
       </Panel>
     </SubteamPage>
+  )
+}
+
+/**
+ * The 27 Oct rerun: a new CalSIM baseline, an updated Calling on Reserves, and A
+ * Tunnel for the first time. It has its own baseline, so it gets its own grid
+ * rather than joining the five scenarios above. Delta-wide is split by water year;
+ * each region is one number for 2019 and 2020 together, as the report gives it.
+ */
+function RerunPanel() {
+  const [scenario, setScenario] = useState<RerunScenario>('tunnel')
+  const [reading, setReading] = useState<'level' | 'change'>('change')
+  const columns = [
+    ...YEARS.map((year) => ({
+      key: `delta-${year.key}`,
+      label: `Delta, ${year.tag} ${year.key}`,
+      of: (species: EcologySpeciesKey, at: RerunScenario) =>
+        ECOLOGY_RERUN_DELTA[species][at][year.index],
+    })),
+    ...ECOLOGY_REGIONS.map((region) => ({
+      key: region.key,
+      label: region.label,
+      of: (species: EcologySpeciesKey, at: RerunScenario) =>
+        ECOLOGY_RERUN_REGION[species][at][region.key],
+    })),
+  ]
+  const diffOf = (species: EcologySpeciesKey, column: (typeof columns)[number]) =>
+    column.of(species, scenario) - column.of(species, 'base')
+  const diffMax = Math.max(
+    0.01,
+    ...ECOLOGY_SPECIES.flatMap((species) =>
+      columns.map((column) => Math.abs(diffOf(species.key, column))),
+    ),
+  )
+  const options = ECOLOGY_RERUN_SCENARIOS.filter(
+    (option) => reading === 'level' || option.key !== 'base',
+  )
+  const name = (at: RerunScenario) =>
+    ECOLOGY_RERUN_SCENARIOS.find((option) => option.key === at)?.label ?? at
+
+  return (
+    <Panel
+      title="A Tunnel, and Calling on Reserves again, on a new base"
+      intro="On **27 October** the team reran the niche analysis on a **new CalSIM baseline**, with an updated Calling on Reserves and **A Tunnel for the first time**. This run has its own baseline, so read it against **New CalSIM Base**, not against Business as Usual above. Delta-wide is split by water year; **each region is one number for 2019 and 2020 together**, as the report gives it. ==None of this enters the criterion score.=="
+    >
+      <Choice
+        label="Show"
+        value={reading}
+        onChange={(key) => {
+          setReading(key)
+          if (key === 'change' && scenario === 'base') setScenario('tunnel')
+        }}
+        options={[
+          { key: 'level', label: 'the value' },
+          { key: 'change', label: 'the difference from New CalSIM Base' },
+        ]}
+      />
+      <Choice
+        label="Scenario"
+        value={scenario}
+        onChange={setScenario}
+        options={options.map((option) => ({ key: option.key, label: option.label }))}
+      />
+      <Box sx={{ overflowX: 'auto', overflowY: 'hidden', mt: 0.5 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: `150px repeat(${columns.length}, minmax(80px, 1fr))`,
+            columnGap: 0.5,
+            rowGap: 0.75,
+            minWidth: 960,
+            alignItems: 'end',
+          }}
+        >
+          <Box />
+          {columns.map((column) => (
+            <ColumnHead key={column.key}>{column.label}</ColumnHead>
+          ))}
+          {GROUPS.map((group) =>
+            group.stages.map((entry, i) => (
+              <Box key={entry.key} sx={{ display: 'contents' }}>
+                <SpeciesHead
+                  name={group.name}
+                  stage={entry.stage}
+                  first={i === 0}
+                  invasive={INVASIVE.has(entry.key)}
+                />
+                {columns.map((column) => {
+                  const here = column.of(entry.key, scenario)
+                  const base = column.of(entry.key, 'base')
+                  if (reading === 'level') {
+                    return (
+                      <HeatCell
+                        key={column.key}
+                        value={here}
+                        max={1}
+                        tone="salinity.teal"
+                        text={pct(here)}
+                        title={`${column.label}, ${name(scenario)}`}
+                      />
+                    )
+                  }
+                  const diff = here - base
+                  const pts = Math.round(diff * 100)
+                  return (
+                    <HeatCell
+                      key={column.key}
+                      value={pts}
+                      max={1}
+                      tone="salinity.teal"
+                      fill={diff === 0 ? undefined : cellFill((diff / diffMax) * 5)}
+                      text={pts === 0 ? '0' : `${pts > 0 ? '+' : '−'}${Math.abs(pts)}%`}
+                      title={`${column.label}: ${pct(base)} under New CalSIM Base, ${pct(here)} under ${name(scenario)}`}
+                    />
+                  )
+                })}
+              </Box>
+            )),
+          )}
+        </Box>
+      </Box>
+      {reading === 'change' ? (
+        <DivergingLegend
+          label="Difference from New CalSIM Base, not a score: the gap between the two percentages. Hover a cell for both values."
+          min={`−${Math.round(diffMax * 100)}%`}
+          max={`+${Math.round(diffMax * 100)}%`}
+          note="Blue: more suitable days than the new base; orange: fewer. The ends of the ramp are the largest gaps on this grid. For the three invasives the team reads fewer as the better outcome."
+        />
+      ) : (
+        <ScaleLegend tone="salinity.teal" label="Proportion of suitable days" min="0%" max="100%" />
+      )}
+    </Panel>
   )
 }
 

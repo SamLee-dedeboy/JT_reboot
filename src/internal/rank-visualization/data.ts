@@ -11,8 +11,11 @@
 //     its two published metric ranks. EJ's Calling on Reserves and A Tunnel are
 //     marked pending by their subteam and carry stand-ins here. None of these are
 //     the subteams' own numbers. Recreation's column is its own score (26 Oct 2026).
-// Only the six adaptation scenarios are shown; the tiered outflow runs use a
-// different increment and are not comparable with them.
+//     The public ranking page (features/scenarios/ranking) shows these like any other
+//     score, so the PLACEHOLDER notes on each `scores` line below are the record of
+//     which values are stand-ins.
+// The six adaptation scenarios and the tiered outflow runs are separate sets: the
+// outflow runs use a different increment and are never ranked with the adaptations.
 import { alpha } from '@mui/material/styles'
 import { chart } from '../../theme'
 
@@ -35,7 +38,10 @@ export interface Scenario {
   color: string
   /** One score per team, in TEAMS order. */
   scores: Score[]
-  /** Per-team flags: true where the score is INFERRED rather than the subteam's own. */
+  /**
+   * Per-team flags: true where the score is INFERRED rather than the subteam's own
+   * (a placeholder). Internal views mark these with *; the public page does not.
+   */
   provisional: boolean[]
 }
 
@@ -67,7 +73,7 @@ export const SCENARIOS: Scenario[] = [
     // apart from it.
     name: 'New Green Watershed',
     color: voting.scenario.newGreenWatershed,
-    scores: [4.5, -0.375, 1, -4, 4],
+    scores: [4.5, -0.375, 1, -4, 4], // PLACEHOLDER: Ecology
     provisional: [true, false, false, false, false],
   },
   {
@@ -76,14 +82,14 @@ export const SCENARIOS: Scenario[] = [
     // Recreation: the same activity scores as NGW, so the same −0.375.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
-    scores: [2, -0.375, 0, 0, 2],
+    scores: [2, -0.375, 0, 0, 2], // PLACEHOLDER: Ecology
     provisional: [true, false, false, false, false],
   },
   {
     // Recreation: 0 on every activity, Delta-wide.
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
-    scores: [0, 0, 0, -1, 0],
+    scores: [0, 0, 0, -1, 0], // PLACEHOLDER: Ecology
     provisional: [true, false, false, false, false],
   },
   {
@@ -96,7 +102,7 @@ export const SCENARIOS: Scenario[] = [
     // Sept report published.
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [0, 0.0625, -1, 0, 1],
+    scores: [0, 0.0625, -1, 0, 1], // PLACEHOLDER: Ecology, Env. Justice
     provisional: [true, false, true, false, false],
   },
   {
@@ -108,14 +114,48 @@ export const SCENARIOS: Scenario[] = [
     // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0, -0.125, -2, -1, -2],
+    scores: [0, -0.125, -2, -1, -2], // PLACEHOLDER: Ecology, Env. Justice
     provisional: [true, false, true, false, false],
   },
   {
     name: 'Business as Usual',
     color: voting.scenario.businessAsUsual,
-    scores: [0, 0, 0, 0, 0],
+    scores: [0, 0, 0, 0, 0], // PLACEHOLDER: Ecology
     provisional: [true, false, false, false, false],
+  },
+]
+
+const NOT_INFERRED = [false, false, false, false, false]
+
+/**
+ * The tiered outflow runs (SCHISM runs 16 and 17) beside their own Historic
+ * Baseline (run 15), which every team scores them against; Business as Usual is
+ * the adaptation runs' baseline, not theirs. Only EJ and Eco-cultural publish an
+ * outflow criterion score (Oct 2026 reports). Ecology, Recreation and Economy are
+ * null, forthcoming: Recreation scores each activity (breakout table) but not the
+ * criterion, Ecology reports suitable days but no rank, and Economy has not run them.
+ */
+export const OUTFLOW_SCENARIOS: Scenario[] = [
+  {
+    // EJ: drinking water only (+4 in every cut); Eco-cultural: one overall score.
+    name: 'More outflow (+30%)',
+    color: voting.scenario.moreOutflow,
+    scores: [null, null, 4, null, 3],
+    provisional: NOT_INFERRED,
+  },
+  {
+    // EJ publishes −1 for the whole run and both seasons, then an "average" of −1.5
+    // rounded to −2; −2 is the overall score it states, so it is the one used.
+    name: 'Less outflow (−10%)',
+    color: voting.scenario.lessOutflow,
+    scores: [null, null, -2, null, -2],
+    provisional: NOT_INFERRED,
+  },
+  {
+    name: 'Historic Baseline',
+    color: voting.scenario.businessAsUsual,
+    scores: [null, null, 0, null, 0],
+    provisional: NOT_INFERRED,
   },
 ]
 
@@ -138,12 +178,16 @@ export const WEIGHT_PRESETS: { name: string; weights: Weights }[] = [
 /** Score (−5…+5) → percentage position along a centered track. */
 export const toPct = (score: number) => 50 + (score / SCORE_MAX) * 50
 
-/** Signed label with a typographic minus, rounded to one decimal. */
+/**
+ * Scores display as whole points: the nearest one, halves away from zero
+ * (+4.5 → +5, −0.375 → 0). Ranking and positions keep the decimals.
+ */
+export const roundScore = (value: number): number => Math.sign(value) * Math.round(Math.abs(value))
+
+/** Signed whole-point label with a typographic minus. */
 export function fmtScore(value: number): string {
-  // Unrounded, as the subteams give them (0.0625 stays 0.0625); four places only
-  // trims floating-point noise from weighted means.
-  const rounded = Math.round(value * 10000) / 10000
-  if (rounded === 0) return '0'
+  const rounded = roundScore(value)
+  if (rounded === 0) return '0' // also catches −0
   return rounded > 0 ? `+${rounded}` : `−${Math.abs(rounded)}`
 }
 
@@ -171,6 +215,8 @@ export const sameWeights = (a: Weights, b: Weights) => a.every((v, i) => v === b
 // ---------- derived stats ----------
 
 export interface ScenarioStats extends Scenario {
+  /** False until at least one criterion has scored the scenario. */
+  hasScores: boolean
   total: number
   avg: number
   /** Spread span: left edge and width, both in % of the −5…+5 track. */
@@ -184,10 +230,11 @@ export const scored = (scores: Score[]): number[] => scores.filter((s) => s !== 
 function withStats(scenario: Scenario): ScenarioStats {
   const values = scored(scenario.scores)
   const total = values.reduce((a, b) => a + b, 0)
-  const min = Math.min(...values)
-  const max = Math.max(...values)
+  const min = values.length ? Math.min(...values) : 0
+  const max = values.length ? Math.max(...values) : 0
   return {
     ...scenario,
+    hasScores: values.length > 0,
     total,
     avg: values.length ? total / values.length : 0,
     spanLeft: toPct(min),
@@ -223,12 +270,31 @@ export interface WeightedScenario extends ScenarioStats {
   delta: number
 }
 
-/** Scenarios ranked by weighted average, with movement vs. the equal-weight order. */
-export function weightedRanking(weights: Weights): WeightedScenario[] {
-  const baseOrder = RANKED.map((s) => s.name)
-  return SCENARIO_STATS.map((s) => ({ ...s, wAvg: weightedAverage(s.scores, weights) }))
-    .sort((a, b) => b.wAvg - a.wAvg)
-    .map((s, i) => ({ ...s, rank: i + 1, delta: baseOrder.indexOf(s.name) - i }))
+/** Scored scenarios by weighted average, highest first; unscored ones follow in set order. */
+function byWeightedAverage(stats: ScenarioStats[], weights: Weights) {
+  return stats
+    .map((s) => ({ ...s, wAvg: weightedAverage(s.scores, weights) }))
+    .sort((a, b) => Number(b.hasScores) - Number(a.hasScores) || b.wAvg - a.wAvg)
+}
+
+/**
+ * Scenarios ranked by weighted average, with movement vs. the equal-weight order.
+ * Ranks the adaptation scenarios unless another set is given.
+ */
+export function weightedRanking(
+  weights: Weights,
+  scenarios: Scenario[] = SCENARIOS,
+): WeightedScenario[] {
+  const stats = scenarios === SCENARIOS ? SCENARIO_STATS : scenarios.map(withStats)
+  const baseOrder =
+    scenarios === SCENARIOS
+      ? RANKED.map((s) => s.name)
+      : byWeightedAverage(stats, EQUAL_WEIGHTS).map((s) => s.name)
+  return byWeightedAverage(stats, weights).map((s, i) => ({
+    ...s,
+    rank: i + 1,
+    delta: baseOrder.indexOf(s.name) - i,
+  }))
 }
 
 /** Rank (1 = best) of every scenario under each preset lens, keyed by scenario name. */

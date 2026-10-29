@@ -3,7 +3,7 @@
 // same axis: the dashed overall line runs on through them (the average) and
 // dashed grey guides mark the lowest and highest ballot (the spread).
 //
-// The ballots are the breakout table's team scores (../breakout/teamScores.ts), so
+// The ballots are the breakout table's team scores, so
 // this chart and each team's table share one number per scenario. A score the
 // table shows as "awaiting subteam" is not a ballot here either. Rows keep the
 // table's column order by default; Rank order sorts them by overall score.
@@ -22,9 +22,9 @@ import { SCENARIOS, TEAMS, fmtScore, scored, toPct } from '../data'
 import type { Score } from '../data'
 import { SCENARIO_KEYS } from '../drilldown/model'
 import type { ScenarioKey } from '../drilldown/model'
-import { publishedTeamScore } from '../breakout/teamScores'
-import { BREAKOUT_SCENARIOS } from '../breakout/useBreakout'
-import { UI } from '../breakout/labels'
+import { UI } from '../../../features/scenarios/ranking/breakout/model/labels'
+import { publishedTeamScore } from '../../../features/scenarios/ranking/breakout/model/teamScores'
+import { BREAKOUT_SCENARIOS } from '../../../features/scenarios/ranking/breakout/useBreakout'
 
 interface RankedScenario {
   key: ScenarioKey

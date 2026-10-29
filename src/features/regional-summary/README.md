@@ -203,16 +203,13 @@ Court Forebay and Freshwater Corridor polygons are the supplied candidate
 waterway regions from
 `JT_exploration/RMA/BDSC_regional_summary/inputs/waterway_regions/`
 (`clifton_court_forebay.geojson` and `freshwater_corridor_narrow.geojson`).
-`scripts/promote-bf-waterway-regions.py` copies them into `raw/` and promotes
-them, along with the corridor's shortlisted fresher pattern and its 7-day chart
-series, into the three runtime files.
-Files under `public/data/regional-summary/raw/` preserve the broad discovery
-shortlist, source selections, full event-series output, stations, and working
-geometries. The application never loads the `raw/` directory. Future analysis
-and shortlist generation should happen there; only explicitly approved records
-and matching chart series and geometries should be promoted to the three runtime
-files above. Superseded legacy exports live under
-`public/data/regional-summary/archived/` and are also never loaded.
+`scripts/promote-bf-waterway-regions.py` promotes them, along with the corridor's
+shortlisted fresher pattern and its 7-day chart series, into the three runtime
+files. Broad discovery outputs, source selections, full event-series output,
+stations, and working geometries are not retained under `public/`; keep those
+non-runtime artifacts in an external analysis workspace. Only explicitly
+approved records and matching chart series and geometries should be promoted to
+the runtime files above.
 
 ### Bolster and Fortify gate schedule
 
@@ -247,8 +244,8 @@ responses occurring before, during, across, or after each inferred release.
 
 The broad discovery builder is `scripts/build-regional-summary-interface-data.mjs`.
 The reproducible selection step is `scripts/select-regional-summary-patterns.mjs`.
-Their inputs and outputs should remain under `raw/` unless a reviewed subset is
-being deliberately promoted to the curated runtime files.
+Keep their inputs and working outputs outside `public/` unless a reviewed subset
+is being deliberately promoted to the curated runtime files.
 
 Selecting a place enables **View regional patterns**. The next screen presents
 dated detected events as a Gantt timeline across the shared October

@@ -9,7 +9,7 @@
 // scale: one point per percentage point of exceedance against Business as Usual,
 // ±5 at five points or more. Calling on Reserves and A Tunnel are CalSim runs,
 // scored against CalSim's own Business as Usual, so their days over a threshold
-// compare with that baseline (not shown) rather than with RMA's.
+// compare with that baseline (`csbau` in the days tables) rather than with RMA's.
 import type { ScenarioKey } from './model'
 
 export type RecActivityKey = 'dayUseBoating' | 'birding' | 'waterfowl' | 'angling' | 'dayUseCold'
@@ -739,6 +739,33 @@ export const REC_SALINITY_DAYS: RecTable<number | null> = {
         dry: 0.0,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.3358,
+        wet: 0.342,
+        dry: 0.2942,
+      },
+      suisun: {
+        run: 0.8422,
+        wet: 0.8418,
+        dry: 0.8159,
+      },
+      centralDelta: {
+        run: 0.4244,
+        wet: 0.4381,
+        dry: 0.3209,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0207,
+        wet: 0.0298,
+        dry: 0.0,
+      },
+    },
     cor: {
       delta: {
         run: 0.3313,
@@ -891,6 +918,33 @@ export const REC_SALINITY_DAYS: RecTable<number | null> = {
         run: 0.1054,
         wet: 0.0974,
         dry: 0.0893,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.2613,
+        wet: 0.2595,
+        dry: 0.2391,
+      },
+      suisun: {
+        run: 0.7689,
+        wet: 0.7627,
+        dry: 0.736,
+      },
+      centralDelta: {
+        run: 0.2456,
+        wet: 0.2447,
+        dry: 0.1958,
       },
       northDelta: {
         run: 0.0,
@@ -1067,6 +1121,33 @@ export const REC_SALINITY_DAYS: RecTable<number | null> = {
         dry: 0.0,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.2428,
+        wet: 0.2432,
+        dry: 0.2215,
+      },
+      suisun: {
+        run: 0.7398,
+        wet: 0.739,
+        dry: 0.6964,
+      },
+      centralDelta: {
+        run: 0.2058,
+        wet: 0.2079,
+        dry: 0.1685,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
     cor: {
       delta: {
         run: 0.2403,
@@ -1219,6 +1300,33 @@ export const REC_SALINITY_DAYS: RecTable<number | null> = {
         run: 0.022,
         wet: 0.0164,
         dry: 0.0103,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.1577,
+        wet: 0.147,
+        dry: 0.144,
+      },
+      suisun: {
+        run: 0.5276,
+        wet: 0.4921,
+        dry: 0.4908,
+      },
+      centralDelta: {
+        run: 0.0918,
+        wet: 0.0852,
+        dry: 0.0756,
       },
       northDelta: {
         run: 0.0,
@@ -2221,6 +2329,33 @@ export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {
         dry: 0.1755,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.5471,
+        wet: 0.9269,
+        dry: 0.1669,
+      },
+      suisun: {
+        run: 0.5312,
+        wet: 0.9044,
+        dry: 0.1527,
+      },
+      centralDelta: {
+        run: 0.5424,
+        wet: 0.9209,
+        dry: 0.1661,
+      },
+      northDelta: {
+        run: 0.5827,
+        wet: 0.9728,
+        dry: 0.1926,
+      },
+      southDelta: {
+        run: 0.5422,
+        wet: 0.9224,
+        dry: 0.1633,
+      },
+    },
     cor: {
       delta: {
         run: 0.5472,
@@ -2383,6 +2518,33 @@ export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {
         run: 0.3746,
         wet: 0.0074,
         dry: 0.7368,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.3599,
+        wet: 0.0068,
+        dry: 0.7302,
+      },
+      suisun: {
+        run: 0.3495,
+        wet: 0.0121,
+        dry: 0.7203,
+      },
+      centralDelta: {
+        run: 0.371,
+        wet: 0.0037,
+        dry: 0.7465,
+      },
+      northDelta: {
+        run: 0.3265,
+        wet: 0.0,
+        dry: 0.6849,
+      },
+      southDelta: {
+        run: 0.3801,
+        wet: 0.0098,
+        dry: 0.7529,
       },
     },
     cor: {
@@ -2549,6 +2711,33 @@ export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {
         dry: 0.4156,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.1152,
+        wet: 0.0,
+        dry: 0.2462,
+      },
+      suisun: {
+        run: 0.0475,
+        wet: 0.0,
+        dry: 0.1018,
+      },
+      centralDelta: {
+        run: 0.1256,
+        wet: 0.0,
+        dry: 0.269,
+      },
+      northDelta: {
+        run: 0.0748,
+        wet: 0.0,
+        dry: 0.1603,
+      },
+      southDelta: {
+        run: 0.1918,
+        wet: 0.0,
+        dry: 0.4092,
+      },
+    },
     cor: {
       delta: {
         run: 0.1146,
@@ -2713,6 +2902,33 @@ export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {
         dry: 0.8139,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.4328,
+        wet: 0.0544,
+        dry: 0.8119,
+      },
+      suisun: {
+        run: 0.4464,
+        wet: 0.0783,
+        dry: 0.82,
+      },
+      centralDelta: {
+        run: 0.4327,
+        wet: 0.0554,
+        dry: 0.8051,
+      },
+      northDelta: {
+        run: 0.399,
+        wet: 0.0152,
+        dry: 0.7887,
+      },
+      southDelta: {
+        run: 0.4433,
+        wet: 0.0585,
+        dry: 0.827,
+      },
+    },
     cor: {
       delta: {
         run: 0.4328,
@@ -2875,6 +3091,33 @@ export const REC_TEMPERATURE_DAYS: RecTable<number | null> = {
         run: 0.4192,
         wet: 0.0385,
         dry: 0.7948,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.4076,
+        wet: 0.0345,
+        dry: 0.7869,
+      },
+      suisun: {
+        run: 0.4137,
+        wet: 0.0488,
+        dry: 0.79,
+      },
+      centralDelta: {
+        run: 0.4121,
+        wet: 0.0372,
+        dry: 0.7848,
+      },
+      northDelta: {
+        run: 0.3707,
+        wet: 0.0074,
+        dry: 0.7564,
+      },
+      southDelta: {
+        run: 0.4222,
+        wet: 0.0369,
+        dry: 0.8066,
       },
     },
     cor: {
@@ -3705,6 +3948,33 @@ export const REC_SLR_SALINITY_DAYS: RecTable<number | null> = {
         dry: 0.0088,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.3582,
+        wet: 0.3757,
+        dry: 0.2967,
+      },
+      suisun: {
+        run: 0.8331,
+        wet: 0.839,
+        dry: 0.8012,
+      },
+      centralDelta: {
+        run: 0.443,
+        wet: 0.4608,
+        dry: 0.3388,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.09,
+        wet: 0.1293,
+        dry: 0.0039,
+      },
+    },
     cor: {
       delta: {
         run: 0.3517,
@@ -3857,6 +4127,33 @@ export const REC_SLR_SALINITY_DAYS: RecTable<number | null> = {
         run: 0.2022,
         wet: 0.1653,
         dry: 0.1612,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.2701,
+        wet: 0.2739,
+        dry: 0.2402,
+      },
+      suisun: {
+        run: 0.7891,
+        wet: 0.7922,
+        dry: 0.7531,
+      },
+      centralDelta: {
+        run: 0.2589,
+        wet: 0.2696,
+        dry: 0.1846,
       },
       northDelta: {
         run: 0.0,
@@ -4033,6 +4330,33 @@ export const REC_SLR_SALINITY_DAYS: RecTable<number | null> = {
         dry: 0.0,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.2456,
+        wet: 0.243,
+        dry: 0.2215,
+      },
+      suisun: {
+        run: 0.751,
+        wet: 0.75,
+        dry: 0.7131,
+      },
+      centralDelta: {
+        run: 0.2058,
+        wet: 0.1973,
+        dry: 0.1536,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
     cor: {
       delta: {
         run: 0.2438,
@@ -4185,6 +4509,33 @@ export const REC_SLR_SALINITY_DAYS: RecTable<number | null> = {
         run: 0.0497,
         wet: 0.0377,
         dry: 0.0337,
+      },
+      northDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+      southDelta: {
+        run: 0.0,
+        wet: 0.0,
+        dry: 0.0,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.1484,
+        wet: 0.144,
+        dry: 0.1271,
+      },
+      suisun: {
+        run: 0.5276,
+        wet: 0.5087,
+        dry: 0.4727,
+      },
+      centralDelta: {
+        run: 0.0585,
+        wet: 0.0597,
+        dry: 0.0319,
       },
       northDelta: {
         run: 0.0,
@@ -5187,6 +5538,33 @@ export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {
         dry: 0.1736,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.5417,
+        wet: 0.923,
+        dry: 0.1656,
+      },
+      suisun: {
+        run: 0.5261,
+        wet: 0.9034,
+        dry: 0.154,
+      },
+      centralDelta: {
+        run: 0.538,
+        wet: 0.9175,
+        dry: 0.1636,
+      },
+      northDelta: {
+        run: 0.577,
+        wet: 0.9714,
+        dry: 0.1881,
+      },
+      southDelta: {
+        run: 0.5355,
+        wet: 0.9135,
+        dry: 0.1627,
+      },
+    },
     cor: {
       delta: {
         run: 0.5419,
@@ -5349,6 +5727,33 @@ export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {
         run: 0.382,
         wet: 0.0225,
         dry: 0.7404,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.3708,
+        wet: 0.008,
+        dry: 0.7287,
+      },
+      suisun: {
+        run: 0.3659,
+        wet: 0.0107,
+        dry: 0.7162,
+      },
+      centralDelta: {
+        run: 0.3769,
+        wet: 0.0046,
+        dry: 0.7441,
+      },
+      northDelta: {
+        run: 0.3448,
+        wet: 0.0,
+        dry: 0.6849,
+      },
+      southDelta: {
+        run: 0.3865,
+        wet: 0.0142,
+        dry: 0.7538,
       },
     },
     cor: {
@@ -5515,6 +5920,33 @@ export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {
         dry: 0.4329,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.1241,
+        wet: 0.0,
+        dry: 0.2465,
+      },
+      suisun: {
+        run: 0.0495,
+        wet: 0.0,
+        dry: 0.0984,
+      },
+      centralDelta: {
+        run: 0.136,
+        wet: 0.0,
+        dry: 0.2702,
+      },
+      northDelta: {
+        run: 0.0773,
+        wet: 0.0,
+        dry: 0.1535,
+      },
+      southDelta: {
+        run: 0.2097,
+        wet: 0.0,
+        dry: 0.4165,
+      },
+    },
     cor: {
       delta: {
         run: 0.1242,
@@ -5679,6 +6111,33 @@ export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {
         dry: 0.8142,
       },
     },
+    csbau: {
+      delta: {
+        run: 0.4384,
+        wet: 0.059,
+        dry: 0.8128,
+      },
+      suisun: {
+        run: 0.4522,
+        wet: 0.0789,
+        dry: 0.8204,
+      },
+      centralDelta: {
+        run: 0.4379,
+        wet: 0.0631,
+        dry: 0.8075,
+      },
+      northDelta: {
+        run: 0.4051,
+        wet: 0.0162,
+        dry: 0.7887,
+      },
+      southDelta: {
+        run: 0.449,
+        wet: 0.0656,
+        dry: 0.8273,
+      },
+    },
     cor: {
       delta: {
         run: 0.4382,
@@ -5841,6 +6300,33 @@ export const REC_SLR_TEMPERATURE_DAYS: RecTable<number | null> = {
         run: 0.4242,
         wet: 0.0518,
         dry: 0.7957,
+      },
+    },
+    csbau: {
+      delta: {
+        run: 0.4137,
+        wet: 0.0377,
+        dry: 0.7847,
+      },
+      suisun: {
+        run: 0.4211,
+        wet: 0.0506,
+        dry: 0.7865,
+      },
+      centralDelta: {
+        run: 0.4136,
+        wet: 0.0419,
+        dry: 0.7802,
+      },
+      northDelta: {
+        run: 0.3854,
+        wet: 0.0092,
+        dry: 0.7564,
+      },
+      southDelta: {
+        run: 0.4263,
+        wet: 0.0409,
+        dry: 0.8063,
       },
     },
     cor: {
