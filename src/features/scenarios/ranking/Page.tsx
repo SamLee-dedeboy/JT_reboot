@@ -1,4 +1,3 @@
-import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
@@ -11,6 +10,7 @@ import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIOS } from '../../../internal/rank-visualization/data'
 import { BreakoutTable } from './breakout/BreakoutPage'
 import { OverallRankingChart, WeightedRankingChart } from './RankingVisualizations'
+import { RANK_LABEL } from './styles'
 
 type RankingView = 'by-scenario' | 'by-criterion'
 
@@ -32,7 +32,6 @@ const views: { id: RankingView; label: string; href: string; description: string
 
 /** The scenarios ranked on this page: the six adaptation scenarios. */
 const scenarioSet = {
-  sentence: 'six adaptation scenarios',
   baseline: 'against today’s Delta, where Business as Usual sits at zero.',
   scenarios: SCENARIOS,
 }
@@ -120,7 +119,7 @@ function ByScenario() {
             <Typography
               component={Link}
               to="/scenarios/ranking/by-criterion"
-              variant="meta"
+              variant="body2"
               sx={{ color: 'primary.main', '&:hover': { color: 'common.white' } }}
             >
               Or compare one criterion at a time
@@ -136,10 +135,7 @@ function ByScenario() {
         introduction="Every criterion counts equally here. Scores above zero beat today’s baseline; scores below zero fall short of it. Open a future to see the five scores behind its rank."
         background="base.700"
       >
-        <OverallRankingChart
-          scenarios={scenarioSet.scenarios}
-          heading={<SetSentence set={scenarioSet.sentence} weights="equal weights" />}
-        />
+        <OverallRankingChart scenarios={scenarioSet.scenarios} />
       </RankingSection>
 
       <HeadsUp />
@@ -151,10 +147,7 @@ function ByScenario() {
         introduction="There is no single right way to balance Delta outcomes. Adjust the priorities to see which futures rise—and which trade-offs become more visible."
         background="base.700"
       >
-        <Stack spacing={jtSpacing.component.lg}>
-          <SetSentence set={scenarioSet.sentence} />
-          <WeightedRankingChart scenarios={scenarioSet.scenarios} />
-        </Stack>
+        <WeightedRankingChart scenarios={scenarioSet.scenarios} />
       </RankingSection>
     </>
   )
@@ -234,42 +227,20 @@ function ViewCard({
       <Box sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.xs }}>
         <Typography
           component="span"
-          variant="numberBadge"
+          variant="chartTitle"
           sx={{ color: active ? 'common.black' : 'primary.main' }}
         >
           {String(index + 1).padStart(2, '0')}
         </Typography>
-        <Typography component="span" variant="button">
+        <Typography component="span" variant="chartTitle">
           {view.label}
         </Typography>
         <Icon fontSize="small" sx={{ ml: 'auto' }} />
       </Box>
-      <Typography variant="meta" sx={{ color: active ? 'common.black' : 'base.100' }}>
+      <Typography variant="body2" sx={{ color: active ? 'common.black' : 'base.100' }}>
         {view.description}
       </Typography>
     </Box>
-  )
-}
-
-/** "Ranking SIX ADAPTATION SCENARIOS with EQUAL WEIGHTS": what the chart below shows. */
-function SetSentence({ set, weights }: { set: string; weights?: string }) {
-  const value = { typography: 'chartSentenceValue', color: 'common.white' }
-  return (
-    <Typography variant="body2">
-      Ranking{' '}
-      <Box component="span" sx={value}>
-        {set}
-      </Box>
-      {weights && (
-        <>
-          {' '}
-          with{' '}
-          <Box component="span" sx={value}>
-            {weights}
-          </Box>
-        </>
-      )}
-    </Typography>
   )
 }
 
@@ -280,7 +251,7 @@ const headsUpPoints = [
   },
   {
     title: 'Zero means today, not neutral',
-    body: 'Every score is measured against Business as Usual. A future at zero performs like today’s Delta; it isn’t a middle ground.',
+    body: 'Every score is measured against Business as Usual. A future at zero performs like today’s Delta.',
   },
   {
     title: 'Close scores are near ties',
@@ -316,21 +287,6 @@ function HeadsUp() {
               Next, you decide which outcomes matter most. Weights change the order, never the
               evidence. Keep three things in mind as you explore.
             </Typography>
-            <Typography
-              component="a"
-              href="#weighted-ranking"
-              variant="meta"
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: jtSpacing.gap.xs,
-                color: 'primary.main',
-                '&:hover': { color: 'common.white' },
-              }}
-            >
-              Skip to your priorities
-              <ArrowDownwardRoundedIcon fontSize="small" />
-            </Typography>
           </Stack>
           <Box component="ol" sx={{ listStyle: 'none', m: 0, p: 0 }}>
             {headsUpPoints.map((point, index) => (
@@ -347,14 +303,14 @@ function HeadsUp() {
                   borderColor: 'border.default',
                 }}
               >
-                <Typography variant="numberArticle">
+                <Typography variant="chartValueLarge" sx={RANK_LABEL}>
                   {String(index + 1).padStart(2, '0')}
                 </Typography>
                 <Stack spacing={jtSpacing.gap.xs}>
-                  <Typography variant="cardTitle" component="h3">
+                  <Typography variant="navigationLabel" component="h3">
                     {point.title}
                   </Typography>
-                  <Typography variant="cardBody" sx={{ color: 'base.100' }}>
+                  <Typography variant="body1" sx={{ color: 'base.100' }}>
                     {point.body}
                   </Typography>
                 </Stack>

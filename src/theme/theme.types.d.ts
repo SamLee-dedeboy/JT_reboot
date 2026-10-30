@@ -10,6 +10,7 @@ declare module '@mui/material/styles' {
   interface TypographyVariants {
     bodyLarge: CSSProperties
     captionSmall: CSSProperties
+    columnHead: CSSProperties
     eyebrow: CSSProperties
     logo: CSSProperties
     logoHero: CSSProperties
@@ -95,6 +96,7 @@ declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     bodyLarge: true
     captionSmall: true
+    columnHead: true
     eyebrow: true
     logo: true
     logoHero: true

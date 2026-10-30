@@ -80,6 +80,15 @@ export const typography = {
     lineHeight: 1.2,
     color: palette.base[100],
   },
+  // A heading over a table's or chart's columns: small, uppercase, tracked.
+  columnHead: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+    lineHeight: 1.2,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    color: palette.base[100],
+  },
   eyebrow: {
     fontFamily: fontHeading,
     fontSize: 'clamp(0.8rem, 0.82rem + 0.2vw, 1rem)',

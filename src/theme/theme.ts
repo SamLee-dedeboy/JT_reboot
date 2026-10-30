@@ -60,7 +60,7 @@ export const navigation = {
 // Scenario performance and ranking charts (/scenarios/ranking). Heights and widths are px
 // numbers because the link lines are SVG drawn from them; grid tracks are CSS strings.
 const rankWidth = numbering.rank.width
-const linkWidth = 96
+const linkWidth = 64
 export const ranking = {
   /** A scenario row; the link lines land on its vertical center. */
   rowHeight: 58,
@@ -68,7 +68,9 @@ export const ranking = {
   trackHeight: 34,
   /** One criterion's priority buttons; also their minimum touch target. */
   controlHeight: 44,
-  priorityButton: { minWidth: 52, radius: 999 },
+  /** Helper/legend row beneath the weighted-ranking column headings. */
+  weightedSubheadHeight: 44,
+  priorityButton: { minWidth: 48, height: 34, radius: 999 },
   /** Pill-shaped controls (the place menu): inset in spacing units, and radius. */
   setToggle: { inset: 0.5, radius: 999 },
   /** Compact controls in the breakout table; the outer tray adds its inset around them. */
@@ -79,7 +81,9 @@ export const ranking = {
   headsUp: { columns: '56px minmax(0, 1fr)' },
   bar: { height: 16 },
   /** A criterion's score inside an expanded scenario: a dot on a hairline stem from zero. */
-  dot: { size: 12, stemWidth: 2, stemOpacity: 0.55, rowHeight: 28 },
+  dot: { size: 12, stemWidth: 2, stemOpacity: 0.55, rowHeight: 22 },
+  /** A scenario's own row in the overall ranking (the weighted chart keeps rowHeight). */
+  overallRowHeight: 46,
   /** The breakout table's rail of controls, beside the table. */
   breakoutRail: { md: '240px minmax(0, 1fr)', xl: '260px minmax(0, 1fr)' },
   /** The breakout table's least row heights on the site (px): a score, and a measure under it. */
@@ -95,6 +99,10 @@ export const ranking = {
   zeroLine: { width: 2, style: 'solid', color: palette.base[300] },
   /** A bar in the breakout table (blue, orange or grey), softened so it sits behind its number. */
   barOpacity: 0.7,
+  /** The map view's region table: the width of its region-name column. */
+  mapRegionLabel: 190,
+  /** The map view's row of maps, when the region table sits beneath it. */
+  mapMinHeight: 300,
   /** The info cards (explainers): a text card, and one led by a map. */
   explainer: { width: 440, wide: 720, mapHeight: 460 },
   gridLine: { width: 1, style: 'solid', color: 'border.subtle' },
@@ -112,17 +120,20 @@ export const ranking = {
   motion: { rerankSeconds: 0.25, expandMs: 180 },
   columns: {
     /** Priorities beside the linked rankings. */
-    layout: { xs: '1fr', lg: 'minmax(300px, .55fr) minmax(0, 1.45fr)' },
+    layout: { xs: '1fr', lg: '330px minmax(0, 1fr)' },
     overall: {
       xs: `${rankWidth.xs} minmax(120px, .8fr) 64px`,
-      md: `${rankWidth.sm} 240px minmax(320px, 1fr) 72px`,
+      md: `${rankWidth.sm} 300px minmax(260px, 1fr) 72px`,
     },
-    team: { xs: 'minmax(130px, 1fr) 72px', md: '240px minmax(320px, 1fr) 72px' },
+    team: { xs: 'minmax(130px, 1fr) 72px', md: '300px minmax(260px, 1fr) 72px' },
     current: {
       xs: `${rankWidth.xs} minmax(0, 1fr) 56px`,
-      sm: `${rankWidth.sm} minmax(150px, 190px) minmax(80px, 1fr) 56px`,
+      sm: `${rankWidth.sm} minmax(190px, 220px) minmax(50px, 1fr) 56px`,
     },
-    linked: { xs: 'minmax(0, 1fr)', md: `minmax(0, 1fr) ${linkWidth}px minmax(180px, 230px)` },
+    linked: {
+      xs: 'minmax(0, 1fr)',
+      md: `minmax(0, 1fr) ${linkWidth}px minmax(210px, 250px)`,
+    },
     equal: `${rankWidth.sm} minmax(0, 1fr)`,
   },
 } as const

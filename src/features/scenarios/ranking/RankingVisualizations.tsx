@@ -6,6 +6,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { jtSpacing, numbering, ranking } from '../../../theme'
+import { RANK_LABEL } from './styles'
 import TeamIcon from '../../../ui/TeamIcon'
 import {
   EQUAL_WEIGHTS,
@@ -66,12 +67,11 @@ function Legend() {
 }
 
 /** Column heads over the ranking rows: small capitals, spaced. */
-const COLUMN_HEAD = { textTransform: 'uppercase', letterSpacing: '0.06em', color: 'base.100' }
 
 /** Words beside the number at the ends and at zero; every other point is just its number. */
 const SCALE_WORDS: Record<number, string> = {
   [SCORE_MIN]: 'worse',
-  0: 'as usual',
+  0: 'today',
   [SCORE_MAX]: 'better',
 }
 
@@ -98,9 +98,8 @@ function Scale() {
         return (
           <Typography
             key={tick}
-            variant="captionSmall"
+            variant="columnHead"
             sx={{
-              ...COLUMN_HEAD,
               position: 'absolute',
               whiteSpace: 'nowrap',
               ...(tick === SCORE_MIN
@@ -305,6 +304,29 @@ function ScoreValue({ scenario }: { scenario: WeightedScenario }) {
 
 const OVERALL_GAP = { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md }
 
+/** The run every other scenario is scored against: 0 on every criterion. */
+const BASELINES = new Set(['Business as Usual', 'Historic Baseline'])
+
+/** Beside the baseline's zero line: which side is better and which worse than today. */
+function BaselineSides() {
+  const side = {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    color: 'common.white',
+  } as const
+  return (
+    <Box sx={{ position: 'relative', height: ranking.trackHeight }}>
+      <Typography variant="captionSmall" sx={{ ...side, right: 'calc(50% + 10px)' }}>
+        Above: better than today
+      </Typography>
+      <Typography variant="captionSmall" sx={{ ...side, left: 'calc(50% + 10px)' }}>
+        Below: worse than today
+      </Typography>
+    </Box>
+  )
+}
+
 /**
  * Equal-weight ranking of one scenario set; remount it (`key`) when the set changes.
  * `heading` opens the toolbar, ahead of the legend and the expand button.
@@ -316,8 +338,14 @@ export function OverallRankingChart({
   scenarios: Scenario[]
   heading?: ReactNode
 }) {
-  const [expanded, setExpanded] = useState(() => new Set(scenarios.map(({ name }) => name)))
-  const allExpanded = expanded.size === scenarios.length
+  const expandableScenarios = useMemo(
+    () => scenarios.filter(({ name }) => !BASELINES.has(name)),
+    [scenarios],
+  )
+  const [expanded, setExpanded] = useState(
+    () => new Set(scenarios.filter(({ name }) => !BASELINES.has(name)).map(({ name }) => name)),
+  )
+  const allExpanded = expanded.size === expandableScenarios.length
   const ranked = useMemo(() => weightedRanking(EQUAL_WEIGHTS, scenarios), [scenarios])
 
   return (
@@ -332,13 +360,20 @@ export function OverallRankingChart({
           direction="row"
           spacing={jtSpacing.gap.lg}
           useFlexGap
-          sx={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            ml: { lg: heading ? 0 : 'auto' },
+          }}
         >
           <Legend />
           <Button
             variant="outlined"
             onClick={() =>
-              setExpanded(allExpanded ? new Set() : new Set(scenarios.map(({ name }) => name)))
+              setExpanded(
+                allExpanded ? new Set() : new Set(expandableScenarios.map(({ name }) => name)),
+              )
             }
           >
             {allExpanded ? 'Collapse all' : 'Expand all'}
@@ -358,16 +393,12 @@ export function OverallRankingChart({
             borderColor: 'border.subtle',
           }}
         >
-          <Typography variant="captionSmall" sx={COLUMN_HEAD}>
-            Rank
-          </Typography>
-          <Typography variant="captionSmall" sx={COLUMN_HEAD}>
-            Scenario
-          </Typography>
+          <Typography variant="columnHead">Rank</Typography>
+          <Typography variant="columnHead">Scenario</Typography>
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <Scale />
           </Box>
-          <Typography variant="captionSmall" sx={{ ...COLUMN_HEAD, textAlign: 'right' }}>
+          <Typography variant="columnHead" sx={{ textAlign: 'right' }}>
             Score
           </Typography>
         </Box>
@@ -380,52 +411,99 @@ export function OverallRankingChart({
             from="md"
           />
           {ranked.map((scenario, index) => {
-            const open = expanded.has(scenario.name)
+            // The baseline is a band the others are read against; the rest alternate
+            // a faint ground so each scenario's block reads as one.
+            const baseline = BASELINES.has(scenario.name)
+            const open = !baseline && expanded.has(scenario.name)
+            const shade = ranked
+              .slice(0, index)
+              .filter((other) => !BASELINES.has(other.name)).length
             return (
               <Box
                 key={scenario.name}
-                sx={{ position: 'relative', borderTop: 1, borderColor: 'border.subtle' }}
+                sx={{
+                  position: 'relative',
+                  ...(baseline
+                    ? {
+                        borderTop: 2,
+                        borderBottom: 2,
+                        borderColor: 'primary.main',
+                        bgcolor: 'translucent.primaryGreenSubtle',
+                        zIndex: 1,
+                      }
+                    : {
+                        borderTop: 1,
+                        borderColor: 'border.default',
+                        bgcolor: shade % 2 === 0 ? 'translucent.50' : 'transparent',
+                      }),
+                }}
               >
                 <ButtonBase
-                  onClick={() =>
-                    setExpanded((current) => {
-                      const next = new Set(current)
-                      if (next.has(scenario.name)) next.delete(scenario.name)
-                      else next.add(scenario.name)
-                      return next
-                    })
+                  component={baseline ? 'div' : 'button'}
+                  onClick={
+                    baseline
+                      ? undefined
+                      : () =>
+                          setExpanded((current) => {
+                            const next = new Set(current)
+                            if (next.has(scenario.name)) next.delete(scenario.name)
+                            else next.add(scenario.name)
+                            return next
+                          })
                   }
-                  aria-expanded={open}
-                  aria-label={`${open ? 'Hide' : 'Show'} ${scenario.name} criterion scores`}
+                  aria-expanded={baseline ? undefined : open}
+                  aria-label={
+                    baseline
+                      ? undefined
+                      : `${open ? 'Hide' : 'Show'} ${scenario.name} criterion scores`
+                  }
                   sx={{
                     width: '100%',
                     display: 'grid',
                     gridTemplateColumns: ranking.columns.overall,
                     columnGap: OVERALL_GAP,
                     alignItems: 'center',
-                    minHeight: ranking.rowHeight,
+                    minHeight: ranking.overallRowHeight,
+                    py: baseline ? jtSpacing.component.xs : 0,
                     textAlign: 'left',
-                    '&:hover, &.Mui-focusVisible': { bgcolor: 'translucent.100' },
+                    ...(!baseline && {
+                      '&:hover, &.Mui-focusVisible': { bgcolor: 'translucent.100' },
+                    }),
                   }}
                 >
-                  <Typography variant="numberRank">
+                  <Typography variant="chartValueLarge" sx={RANK_LABEL}>
                     {scenario.hasScores ? rankLabel(index + 1) : UNRANKED}
                   </Typography>
                   <Stack
                     direction="row"
                     sx={{ alignItems: 'center', justifyContent: 'space-between' }}
                   >
-                    <Typography variant="navigationLabel">{scenario.name}</Typography>
-                    <ExpandMoreRoundedIcon
-                      sx={{
-                        color: 'base.100',
-                        transform: open ? 'rotate(180deg)' : 'none',
-                        transition: `transform ${ranking.motion.expandMs}ms ease`,
-                      }}
-                    />
+                    <Box>
+                      <Typography variant="navigationLabel" sx={{ whiteSpace: 'nowrap' }}>
+                        {scenario.name}
+                      </Typography>
+                      {baseline && (
+                        <Typography
+                          variant="captionSmall"
+                          component="p"
+                          sx={{ color: 'primary.main' }}
+                        >
+                          Today’s Delta: the baseline
+                        </Typography>
+                      )}
+                    </Box>
+                    {!baseline && (
+                      <ExpandMoreRoundedIcon
+                        sx={{
+                          color: 'base.100',
+                          transform: open ? 'rotate(180deg)' : 'none',
+                          transition: `transform ${ranking.motion.expandMs}ms ease`,
+                        }}
+                      />
+                    )}
                   </Stack>
                   <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                    <ScoreBar score={scenario.wAvg} />
+                    {baseline ? <BaselineSides /> : <ScoreBar score={scenario.wAvg} />}
                   </Box>
                   <ScoreValue scenario={scenario} />
                 </ButtonBase>
@@ -460,18 +538,20 @@ const rowCenter = (index: number) => ranking.rowHeight / 2 + index * ranking.row
 function PriorityControls({
   weights,
   onChange,
-  onReset,
 }: {
   weights: number[]
   onChange: (teamIndex: number, weight: number) => void
-  onReset: () => void
 }) {
   return (
     <Box>
       <Stack
         direction="row"
         spacing={jtSpacing.gap.sm}
-        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+        sx={{
+          minHeight: ranking.controlHeight,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
       >
         <Stack direction="row" spacing={jtSpacing.gap.sm} sx={{ alignItems: 'center' }}>
           <TuneRoundedIcon sx={{ color: 'primary.main' }} />
@@ -479,23 +559,12 @@ function PriorityControls({
             Set your priorities
           </Typography>
         </Stack>
-        <ButtonBase
-          onClick={onReset}
-          sx={{
-            typography: 'meta',
-            whiteSpace: 'nowrap',
-            minHeight: ranking.controlHeight,
-            color: 'primary.main',
-            textDecoration: 'underline',
-            '&:hover, &.Mui-focusVisible': { color: 'common.white' },
-          }}
-        >
-          Reset to equal
-        </ButtonBase>
       </Stack>
-      <Typography variant="captionSmall" component="p" sx={{ mb: jtSpacing.component.sm }}>
-        ×½ halves a criterion’s influence; ×3 triples it.
-      </Typography>
+      <Box sx={{ minHeight: ranking.weightedSubheadHeight, display: 'flex', alignItems: 'center' }}>
+        <Typography variant="captionSmall" component="p">
+          ×½ halves a criterion’s influence; ×3 triples it.
+        </Typography>
+      </Box>
       {/* One line per criterion: name, then a button per priority level. */}
       <Stack>
         {TEAMS.map((team, index) => (
@@ -504,11 +573,8 @@ function PriorityControls({
             role="group"
             aria-label={`${team.name} priority`}
             sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: jtSpacing.gap.sm,
+              display: 'grid',
+              gap: jtSpacing.gap.xs,
               py: jtSpacing.component.sm,
               borderTop: 1,
               borderColor: 'border.subtle',
@@ -524,7 +590,7 @@ function PriorityControls({
                 {team.name}
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={jtSpacing.gap.xs}>
+            <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ width: '100%' }}>
               {PRIORITY_STEPS.map((step) => {
                 const active = weights[index] === step
                 return (
@@ -533,10 +599,11 @@ function PriorityControls({
                     aria-pressed={active}
                     onClick={() => onChange(index, step)}
                     sx={{
-                      typography: 'chartValue',
+                      typography: 'chartValueLarge',
                       minWidth: ranking.priorityButton.minWidth,
-                      height: ranking.controlHeight,
-                      px: jtSpacing.component.sm,
+                      height: ranking.priorityButton.height,
+                      px: jtSpacing.component.xs,
+                      flex: 1,
                       borderRadius: ranking.priorityButton.radius,
                       border: 1,
                       borderColor: active ? team.color : 'border.default',
@@ -588,10 +655,12 @@ function CurrentRanking({ scenarios }: { scenarios: WeightedScenario[] }) {
             borderColor: 'border.subtle',
           }}
         >
-          <Typography variant="numberRank">
+          <Typography variant="chartValueLarge" sx={RANK_LABEL}>
             {scenario.hasScores ? rankLabel(index + 1) : UNRANKED}
           </Typography>
-          <Typography variant="navigationLabel">{scenario.name}</Typography>
+          <Typography variant="navigationLabel" sx={{ whiteSpace: 'nowrap' }}>
+            {scenario.name}
+          </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             <ScoreBar score={scenario.wAvg} />
           </Box>
@@ -662,10 +731,10 @@ function EqualRanking({ equal }: { equal: WeightedScenario[] }) {
             borderColor: 'border.subtle',
           }}
         >
-          <Typography variant="numberRank" sx={{ color: 'base.200' }}>
+          <Typography variant="chartValueLarge" sx={{ color: 'base.200' }}>
             {scenario.hasScores ? rankLabel(scenario.rank) : UNRANKED}
           </Typography>
-          <Typography variant="navigationLabel" sx={{ color: 'base.100' }}>
+          <Typography variant="navigationLabel" sx={{ color: 'base.100', whiteSpace: 'nowrap' }}>
             {scenario.name}
           </Typography>
         </Box>
@@ -691,11 +760,7 @@ export function WeightedRankingChart({ scenarios: set }: { scenarios: Scenario[]
         alignItems: 'start',
       }}
     >
-      <PriorityControls
-        weights={weights}
-        onChange={setWeight}
-        onReset={() => setWeights([...EQUAL_WEIGHTS])}
-      />
+      <PriorityControls weights={weights} onChange={setWeight} />
 
       {/* Current ranking, linked row by row to the equal-weight ranking. */}
       <Box>
@@ -709,7 +774,11 @@ export function WeightedRankingChart({ scenarios: set }: { scenarios: Scenario[]
         >
           <Stack
             direction="row"
-            sx={{ justifyContent: 'space-between', alignItems: 'end', mb: jtSpacing.component.sm }}
+            sx={{
+              minHeight: ranking.controlHeight,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
           >
             <Typography variant="h4" component="h3">
               Your ranking
@@ -721,13 +790,26 @@ export function WeightedRankingChart({ scenarios: set }: { scenarios: Scenario[]
             variant="h4"
             component="h3"
             sx={{
-              display: { xs: 'none', md: 'block' },
-              mb: jtSpacing.component.sm,
+              display: { xs: 'none', md: 'flex' },
+              minHeight: ranking.controlHeight,
+              alignItems: 'center',
               color: 'base.100',
             }}
           >
             Equal weights
           </Typography>
+
+          <Box
+            sx={{
+              minHeight: ranking.weightedSubheadHeight,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <Legend />
+          </Box>
+          <Box sx={{ display: { xs: 'none', md: 'block' } }} />
+          <Box sx={{ display: { xs: 'none', md: 'block' } }} />
 
           <CurrentRanking scenarios={scenarios} />
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
@@ -736,9 +818,6 @@ export function WeightedRankingChart({ scenarios: set }: { scenarios: Scenario[]
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <EqualRanking equal={equal} />
           </Box>
-        </Box>
-        <Box sx={{ mt: jtSpacing.component.md }}>
-          <Legend />
         </Box>
       </Box>
     </Box>
