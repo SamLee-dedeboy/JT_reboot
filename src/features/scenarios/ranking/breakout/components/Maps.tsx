@@ -2,10 +2,13 @@
 import { Box } from '@mui/material'
 import { useEffect, useState } from 'react'
 import type { TeamKey } from '../../../../../internal/rank-visualization/data'
+import { ANY } from '../../../../../internal/rank-visualization/drilldown/model'
+import type { ScenarioKey } from '../../../../../internal/rank-visualization/drilldown/model'
 import { RegionValues } from '../../../../../internal/rank-visualization/subteams/RegionValues'
 import type { MapScale } from '../../../../../internal/rank-visualization/subteams/RegionValues'
+import type { Inspect } from './CellCards'
 import { Segmented } from './controls'
-import { capitalise, lifeStage, unitWord } from '../model/cells'
+import { capitalise, lifeStage, pointAt, unitWord } from '../model/cells'
 import { UI } from '../model/labels'
 import { MAP_REGION_KEY, NESTED_MAP_TABS, entityTabs, mapItems } from '../model/mapModel'
 import type { MapItem } from '../model/mapModel'
@@ -20,10 +23,12 @@ export function Maps({
   state,
   team,
   onScale,
+  onInspect,
 }: {
   state: Breakout
   team: TeamKey
   onScale: (scale: MapScale | null) => void
+  onInspect: (inspect: Inspect) => void
 }) {
   const keys = MAP_REGION_KEY[team] ?? {}
   const items = mapItems(state, team)
@@ -31,6 +36,7 @@ export function Maps({
   const [picked, setPicked] = useState<string | null>(null)
   const active = items.find((item) => item.node.id === picked) ?? items[0]
   const dimmed = state.columns.filter((scenario) => !state.scenarios.includes(scenario))
+  const pickedRegion = Object.entries(keys).find(([, place]) => place === state.place)?.[0] ?? null
   useEffect(() => {
     if (!active) onScale(null)
   }, [active, onScale])
@@ -142,6 +148,28 @@ export function Maps({
           unitLabel={unitWord(node)}
           hideInferred
           showValues
+          pickedRegion={pickedRegion}
+          onPickedRegionChange={(region) => state.setPlace(region ? keys[region] : ANY)}
+          onInspect={(anchor, coords) =>
+            onInspect({
+              anchor,
+              node,
+              point: pointAt(
+                { ...state, place: coords.place },
+                node,
+                coords.scenario as ScenarioKey,
+                coords.period,
+              ),
+              diff: state.reading === 'change',
+              outflowSet: state.setId === 'outflow',
+              coords,
+            })
+          }
+          regionTable={{
+            hint: UI.mapPickRegion,
+            pickedHint: UI.mapPickedRegion,
+            noValue: UI.forthcoming,
+          }}
         />
       </Box>
     </Box>

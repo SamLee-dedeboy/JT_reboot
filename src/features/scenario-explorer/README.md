@@ -47,13 +47,29 @@ intermediate compliance tables, adds all-date display metrics, and assembles the
 
 ## Sea-level-rise (SLR) scenarios
 
-`slr_scenarios_dashboard.json` is generated alongside the live data but is not yet loaded by the UI. It keeps every `ScenarioDataset` field of `salinity_dashboard.json` and adds four delivered SLR runs.
+`slr_scenarios_dashboard.json` powers public modes 03 and 04. It keeps every `ScenarioDataset`
+field of `salinity_dashboard.json` and includes both the original RMA-baseline family and the newer
+CalSim-baseline COR/TUN family.
 
 ```bash
 python scripts/scenario-explorer/build_slr_scenarios_dashboard.py --slr-root <path to RMA/SLR_data>
 ```
 
 `RMA_SLR_DATA_DIR` may be used in place of `--slr-root`. `RMA_DATA_DIR` (or `--current-data-dir`) points to the current-condition RMA data and defaults to the sibling `JT_exploration/RMA/data`. `SCENARIO_EXPLORER_OUTPUT_DIR` (or `--output-dir`) defaults to `public/data/scenario-explorer`.
+
+After that base build, update COR and TUN from the October 29, 2026 seven-scenario deliveries:
+
+```bash
+python scripts/scenario-explorer/update_cor_tun_dashboards.py
+```
+
+The updater defaults to `JT_exploration/RMA/EC_current_2018_2020_7scen` and
+`JT_exploration/RMA/EC_SLR_2018_2020_7scen`; override them with `--current-root` and `--slr-root`.
+It updates `salinity_dashboard.json` and `slr_scenarios_dashboard.json`. COR and TUN are always
+represented relative to the matching `BaseCalSim` run. The UI consequently locks those scenarios
+to `baseline-calsim` in public mode 01 and `baseline-calsim-slr` in public mode 03. Public mode 04
+uses each scenario's current counterpart, so the common CalSim baseline cancels and the displayed
+difference is SLR scenario minus current scenario.
 
 Inputs:
 
@@ -63,9 +79,13 @@ Inputs:
 Representation:
 
 - `referenceStationValues` is the current-condition BAU absolute daily EC, copied from the live file. The builder recomputes it from the raw baseline files and stops if any station-day differs.
-- Every scenario value is an offset from that reference: `offset = scenario absolute − current BAU absolute`, and `absolute = reference + offset`. The current offsets (`bolster` … `tunnel`) are copied unchanged. The SLR keys are `baseline-slr`, `bolster-slr`, `ecomachine-slr`, and `newgreen-slr`. Two derived comparisons follow directly from this: SLR vs. current adaptation is `SLR offset − current offset`, and SLR B vs. SLR A is `B offset − A offset`.
+- Original-family scenario values are offsets from the current RMA BAU reference. COR/TUN-family
+  values use current `BaseCalSim` as their reference. The SLR keys additionally include
+  `baseline-calsim-slr`, `reserve-slr`, and `tunnel-slr`. Within either family, SLR vs. current is
+  `SLR offset − current offset`, and SLR B vs. SLR A is `B offset − A offset`.
 - `baseline-slr` is the delivered SLR Base run. It is not the zero-valued synthetic `baseline` option in the UI.
-- Each scenario carries `scenarioFamily`, `climateCondition` (`current` or `slr`), and `currentCounterpart`. `reserve-slr` and `tunnel-slr` are listed as unavailable under `slrAvailability` because they require reruns. They are never emitted as scenarios.
+- Each scenario carries `scenarioFamily`, `climateCondition` (`current` or `slr`), and, for SLR
+  scenarios, `currentCounterpart`. `slrAvailability` now lists COR and TUN as delivered.
 - Offsets are computed at full precision and rounded to two decimals when written. Region values are the mean of the available unrounded station offsets. Missing values are `null`.
 - Station #247 and, in the EcoMach and NGW runs, #283 appear in more than one team file with different values. `DUPLICATE_RESOLUTION` in the builder uses the EJdef column for both, which is the same source the live dataset uses. Any other conflict in the SLR inputs stops the build. `provenance.inputFiles` records a SHA-256 hash for each input file.
 
@@ -73,7 +93,9 @@ Representation:
 
 ## D-1641 metrics for SLR scenarios
 
-`d1641_rma_slr.json` uses the same `D1641Dataset` shape as `d1641_rma.json` and covers the four delivered SLR runs. `d1641_rma.json` is not modified.
+`d1641_rma_slr.json` uses the same `D1641Dataset` shape as `d1641_rma.json` and covers the four
+original SLR runs. The seven-scenario update supplies EC-AVG-AVG explorer series only; it does not
+yet add COR/TUN D-1641 compliance calculations. `d1641_rma.json` is not modified.
 
 ```bash
 python scripts/scenario-explorer/build_d1641_slr.py --processor <path to RMA/scripts/process_rma_d1641.py> --slr-root <path to RMA/SLR_data>
@@ -82,7 +104,9 @@ python scripts/scenario-explorer/build_d1641_slr.py --processor <path to RMA/scr
 The environment variables `RMA_D1641_PROCESSOR`, `RMA_SLR_DATA_DIR`, `D1641_SLR_INTERMEDIATE_DIR`, and `D1641_SLR_OUTPUT` may be used in place of the flags. `RMA_DATA_DIR` (or `--station-data-dir`) supplies `all_point_stations_finalized.csv`.
 
 - **Inputs:** `raw/{baseline,bolster,ecomachine,newgreen}/ec/*_EC.csv` from the SLR delivery. These are instantaneous EC files, five team files per run. D-1641 needs daily means built from exactly 96 valid 15-minute instantaneous samples per day, so the `ec-avg-avg/` files are never read.
-- **Scenario keys:** `baseline` → `baseline-slr`, `bolster` → `bolster-slr`, `ecomachine` → `ecomachine-slr`, `newgreen` → `newgreen-slr`. SLR runs for Calling on Reserves and A Tunnel have not been delivered and are not emitted.
+- **Scenario keys:** `baseline` → `baseline-slr`, `bolster` → `bolster-slr`, `ecomachine` →
+  `ecomachine-slr`, `newgreen` → `newgreen-slr`. COR and TUN are absent from this D-1641 file
+  because its pipeline has not yet processed the newer seven-scenario instantaneous-EC delivery.
 - **Method:** the authoritative `process_rma_d1641.py` is loaded unchanged. Only its scenario list, file discovery, and output directory are redirected, so station identity, thresholds, windows, completeness rules, and exceedance semantics come from that file. All-date tooltip metrics come from `display_metric_rows` in `build_d1641_display_metrics.py`. Regulations are generated from the processor's threshold schedule. The JSON is assembled by a Python port of `build-d1641-data.mjs`, which the validator checks by rebuilding the live `d1641_rma.json` byte for byte.
 - **Intermediate files:** the six `rma_d1641_*.csv` tables are written to `RMA/SLR_data/processed/d1641_rma_slr/`.
 - **Final files:** `d1641_rma_slr.json` and `d1641_rma_slr_validation.json` in this directory.

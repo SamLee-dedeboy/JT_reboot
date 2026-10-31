@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Six maps with a selectable region table</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&amp;family=Hammersmith+One&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 820px; box-sizing: border-box; padding: 28px 32px; background: #141c1e; color: #e9ebeb; font-family: Figtree, system-ui, sans-serif; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <h2 style="margin: 0; font-weight: 400; font-size: 22px">Difference from Business as Usual for <span style="font-weight: 700; letter-spacing: 0.02em">ALL SIX SCENARIOS</span></h2>
+    <div role="group" aria-label="View" style="display: flex; padding: 3px; border: 1px solid rgba(155,162,164,0.24); border-radius: 999px; font-size: 15px">
+      <button type="button" style="padding: 5px 14px; border: 0; border-radius: 999px; background: transparent; color: #e9ebeb; font: inherit">Table</button>
+      <button type="button" aria-pressed="true" style="padding: 5px 14px; border: 0; border-radius: 999px; background: #7ed957; color: #101618; font: inherit">Map</button>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 16px; font-size: 14px; color: #bbc0c2">
+    <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; background: #51a2bd"></span>More value</span>
+    <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; background: #d6453d"></span>Less value</span>
+    <span style="color: #9ba2a4">{{hint}}</span>
+  </div>
+  <div style="display: flex; gap: 8px; font-size: 15px">
+    <button type="button" style="padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(155,162,164,0.4); background: transparent; color: #e9ebeb; font: inherit">Economic value added · score</button>
+    <button type="button" aria-pressed="true" style="padding: 5px 14px; border-radius: 999px; border: 1px solid #7ed957; background: rgba(126,217,87,0.18); color: #e9ebeb; font: inherit">Dry-year salinity effects by Delta area</button>
+  </div>
+
+  <div style="display: flex; flex-direction: column">
+    <div style="display: grid; grid-template-columns: 160px repeat(3, minmax(0, 1fr)) 24px repeat(3, minmax(0, 1fr)); column-gap: 10px; align-items: end">
+      <span></span>
+      <span style="grid-column: span 3; font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957; padding-bottom: 6px; border-bottom: 1px solid rgba(155,162,164,0.24)">CHANGES TO LANDSCAPE</span>
+      <span></span>
+      <span style="grid-column: span 3; font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957; padding-bottom: 6px; border-bottom: 1px solid rgba(155,162,164,0.24)">CHANGES TO WATER FLOW</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 160px repeat(3, minmax(0, 1fr)) 24px repeat(3, minmax(0, 1fr)); column-gap: 10px; row-gap: 8px; align-items: end; padding-top: 8px">
+      <span></span>
+      <sc-for list="{{cols}}" as="c" hint-placeholder-count="7">
+        <span style="{{c.headStyle}}">{{c.name}}</span>
+      </sc-for>
+      <span style="font-size: 13px; color: #9ba2a4; align-self: center">Score</span>
+      <sc-for list="{{cols}}" as="c" hint-placeholder-count="7">
+        <span style="{{c.tile}}">{{c.scoreText}}</span>
+      </sc-for>
+      <span></span>
+      <sc-for list="{{cols}}" as="c" hint-placeholder-count="7">
+        <span style="display: block">
+          <sc-if value="{{c.isMap}}" hint-placeholder-val="{{c.isMap}}">
+            <svg viewBox="420 20 470 800" role="img" aria-label="{{c.aria}}" style="width: 100%; height: 230px; display: block">
+              <sc-for list="{{c.regions}}" as="r" hint-placeholder-count="4">
+                <path d="{{r.d}}" fill="{{r.fill}}" fill-opacity="{{r.opacity}}" stroke="{{r.stroke}}" stroke-width="{{r.width}}" stroke-dasharray="{{r.dash}}"></path>
+              </sc-for>
+              <sc-for list="{{c.regions}}" as="r" hint-placeholder-count="4">
+                <text x="{{r.x}}" y="{{r.yNum}}" text-anchor="middle" font-size="40" font-family="Hammersmith One, sans-serif" fill="{{r.numInk}}" stroke="#141c1e" stroke-width="8" paint-order="stroke">{{r.n}}</text>
+              </sc-for>
+            </svg>
+          </sc-if>
+        </span>
+      </sc-for>
+    </div>
+
+    <div role="group" aria-label="Delta areas: pick one to highlight it on every map" style="display: flex; flex-direction: column; margin-top: 10px; border-top: 1px solid rgba(155,162,164,0.24)">
+      <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+        <button type="button" onClick="{{row.pick}}" aria-pressed="{{row.on}}" style="{{row.style}}">
+          <span style="display: flex; align-items: center; gap: 8px; font-size: 15px; text-align: left"><span style="{{row.badge}}">{{row.n}}</span>{{row.name}}</span>
+          <sc-for list="{{row.cells}}" as="c" hint-placeholder-count="7">
+            <span style="{{c.style}}">{{c.text}}</span>
+          </sc-for>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":820}}'>
+// A's six maps over ONE table of the Delta areas, each area named once. Pick a row
+// and that area is outlined on every map (the rest dim); pick it again to clear.
+// With nothing picked, no area is outlined.
+const SHAPES = [{"name":"South Delta","d":"M774 553L794 563L818 577L813 589L820 624L824 655L824 661L828 667L826 670L832 685L844 710L869 740L875 746L868 765L859 781L833 804L818 791L796 782L802 818L784 801L760 782L754 770L717 760L723 745L680 728L642 672L646 646L655 639L653 623L687 597L714 624L741 620L741 606L729 583L748 562L774 553Z","x":766,"y":698,"i":2},{"name":"Central Delta","d":"M765 529L750 562L727 593L691 599L644 622L629 611L636 594L640 578L639 550L636 550L632 540L632 522L632 506L629 495L641 491L639 477L628 468L630 442L641 418L626 404L639 394L668 400L685 404L679 388L679 377L688 363L719 358L741 336L757 421L766 454L771 491L766 497L766 519L765 529Z","x":705,"y":461,"i":1},{"name":"North Delta","d":"M516 171L534 154L534 129L564 94L589 28L669 52L673 106L696 172L699 197L698 212L686 231L746 274L758 306L741 328L680 368L683 396L641 402L637 415L590 429L526 479L493 460L558 368L515 319L479 300L479 276L491 251L467 180L498 190Z","x":590,"y":254,"i":0},{"name":"West Delta","d":"M555 592L526 577L520 547L508 537L522 529L508 520L490 516L448 505L411 498L394 493L416 454L506 434L492 477L495 490L529 483L564 428L610 418L625 450L577 456L563 472L582 493L626 526L609 541L618 586L636 588L628 621L645 646L616 649L596 639L590 618L562 595Z","x":565,"y":535,"i":3}];
+const SCEN = [
+  { name: 'ECO MACHINE', score: 0, v: [605, -712, 1813, 2529] },
+  { name: 'NEW GREEN WATERSHED', score: -4, v: [463, -1993, 1113, 2327] },
+  { name: 'BOLSTER & FORTIFY', score: -1, v: [-528, -8548, -1084, 2104] },
+  { name: 'CALLING ON RESERVES', score: 0, v: [138, 1311, 705, 512] },
+  { name: 'A TUNNEL', score: -1, v: [-251, -18821, -2513, -2405] },
+  { name: 'INCREASED DELTA OUTFLOW', score: null, v: null },
+];
+const ORDER = ['North Delta', 'Central Delta', 'South Delta', 'West Delta'];
+const MAX = 18821;
+const BLUE = [81, 162, 189], RED = [214, 69, 61];
+const rgba = (c, a) => 'rgba(' + c.join(',') + ',' + a + ')';
+function fill(v) {
+  if (v === null) return 'transparent';
+  if (v === 0) return '#2b3437';
+  return rgba(v > 0 ? BLUE : RED, 0.22 + 0.6 * Math.sqrt(Math.abs(v) / MAX));
+}
+const money = (v) => (v > 0 ? '+$' : v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('en-US');
+function tile(s) {
+  const box = 'height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 3px; font-family: \'Hammersmith One\', sans-serif; font-size: 15px;';
+  if (s === null) return box + ' border: 1px solid rgba(155,162,164,0.4); color: #9ba2a4; font-family: Figtree, sans-serif';
+  const bg = s === 0 ? '#2b3437' : rgba(s > 0 ? BLUE : RED, 0.18 + Math.abs(s) / 5 * 0.62);
+  return box + ' color: #f2f0ef; background: ' + bg;
+}
+const scoreText = (s) => (s === null ? 'Forthcoming' : s > 0 ? '+' + s : s < 0 ? '−' + Math.abs(s) : '0');
+const GRID = 'display: grid; grid-template-columns: 160px repeat(3, minmax(0, 1fr)) 24px repeat(3, minmax(0, 1fr)); column-gap: 10px; align-items: center; height: 44px; width: 100%; padding: 0; border: 0; border-bottom: 1px solid rgba(155,162,164,0.16); font: inherit; color: #e9ebeb; cursor: pointer; ';
+
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: null }; }
+  renderVals() {
+    const picked = this.state.picked;
+    // Per scenario: the area to outline, only ever the one picked in the table.
+    const outlined = SCEN.map((s) => (s.v && picked !== null ? picked : null));
+    const scen = SCEN.map((s, k) => ({
+      isMap: true,
+      name: s.name,
+      headStyle: 'font-family: \'Hammersmith One\', sans-serif; font-size: 12px; letter-spacing: 0.04em; text-align: center; min-height: 30px; display: flex; align-items: flex-end; justify-content: center',
+      tile: tile(s.score),
+      scoreText: scoreText(s.score),
+      aria: s.name + ': ' + (s.v ? ORDER.map((n, i) => n + ' ' + money(s.v[i])).join(', ') : 'forthcoming'),
+      regions: SHAPES.map((r) => {
+        const v = s.v ? s.v[r.i] : null;
+        const on = outlined[k] === r.i;
+        const dim = picked !== null && !on;
+        return {
+          d: r.d, x: r.x, yNum: r.y + 14, n: r.i + 1,
+          fill: fill(v),
+          opacity: dim ? 0.3 : 1,
+          stroke: v === null ? '#6d777a' : on ? '#f2f0ef' : '#141c1e',
+          width: on ? 6 : 3,
+          dash: v === null ? '10 8' : 'none',
+          numInk: dim ? '#6d777a' : '#f2f0ef',
+        };
+      }),
+    }));
+    // The grid has a spacer column between the two groups.
+    const spacer = { isMap: false, name: '', headStyle: '', tile: '', scoreText: '', aria: '', regions: [] };
+    const cols = [...scen.slice(0, 3), spacer, ...scen.slice(3)];
+
+    const rows = ORDER.map((name, i) => {
+      const on = picked === i;
+      const cells = SCEN.map((s, k) => {
+        const v = s.v ? s.v[i] : null;
+        return {
+          text: v === null ? 'Forthcoming' : money(v),
+          style: 'text-align: center; font-variant-numeric: tabular-nums; font-size: ' + (v === null ? '13px' : '15px') + '; color: ' + (v === null ? '#9ba2a4' : v > 0 ? '#51a2bd' : v < 0 ? '#f0665d' : '#6d777a'),
+        };
+      });
+      return {
+        n: i + 1, name, on,
+        pick: () => this.setState({ picked: on ? null : i }),
+        style: GRID + 'background: ' + (on ? 'rgba(126,217,87,0.10)' : 'transparent') + '; box-shadow: ' + (on ? 'inset 3px 0 0 #7ed957' : 'none'),
+        badge: 'width: 22px; height: 22px; flex: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: \'Hammersmith One\', sans-serif; font-size: 13px; ' + (on ? 'background: #f2f0ef; color: #101618' : 'border: 1px solid rgba(155,162,164,0.5); color: #e9ebeb'),
+        cells: [...cells.slice(0, 3), { text: '', style: '' }, ...cells.slice(3)],
+      };
+    });
+    return {
+      cols, rows,
+      hint: picked === null
+        ? 'Pick a Delta area below to outline it on every map.'
+        : ORDER[picked] + ' is outlined on every map. Pick it again to clear.',
+    };
+  }
+}
+</script>
+</body>
+</html>

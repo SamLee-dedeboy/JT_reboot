@@ -11,8 +11,9 @@
 // because dropping them would change the frame between maps. And a region click
 // is a cell: it has a criterion, a scenario, a place and a period, which is
 // exactly what the provenance modal takes.
-import { Box, Typography, useTheme } from '@mui/material'
+import { Box, ButtonBase, Typography, useTheme } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
+import { jtSpacing, ranking } from '../../../theme'
 import { cellFill } from '../data'
 import type { TeamKey } from '../data'
 import { CellDetail } from '../drilldown/CellDetail'
@@ -20,6 +21,7 @@ import { valueAt } from '../drilldown/cellValue'
 import type { Cell, Coords } from '../drilldown/cellValue'
 import { SCENARIO_NAME, fmtValue, isSigned } from '../drilldown/model'
 import type { ScenarioKey } from '../drilldown/model'
+import { REGION_DISPLAY_ORDER } from './regionKeys'
 import { REGION_SHAPES, REGION_VIEWBOX, WATERWAY_PATH } from './regionShapes'
 import { Choice, DivergingLegend, Swatch } from './SubteamFrame'
 
@@ -73,6 +75,18 @@ export interface RegionValuesProps {
    * baseline itself is 0. Without it the panel's range is spread over the palette.
    */
   scorePerPoint?: number
+  /**
+   * Number the regions on the maps and list every value in one table beneath,
+   * a row per region under the maps' own columns. Picking a row outlines that
+   * region on every map and dims the rest; `hint` says so above the table.
+   */
+  regionTable?: { hint: string; pickedHint: (region: string) => string; noValue: string }
+  /** Control the region outlined across every map from the owning page. */
+  pickedRegion?: string | null
+  /** Keep map-table picks and external place controls in sync. */
+  onPickedRegionChange?: (region: string | null) => void
+  /** Open the owning page's cell card instead of this component's legacy detail. */
+  onInspect?: (anchor: HTMLElement, coords: Coords) => void
 }
 
 const SCORE_SPAN = 5
@@ -98,17 +112,37 @@ export function RegionValues({
   scoreScale,
   onScale,
   scorePerPoint,
+  regionTable,
+  pickedRegion,
+  onPickedRegionChange,
+  onInspect,
 }: RegionValuesProps) {
   const theme = useTheme()
-  const shapes = REGION_SHAPES.filter((shape) => shape.team === team)
+  const shapes = useMemo(() => {
+    const order = new Map<string, number>(REGION_DISPLAY_ORDER.map((name, index) => [name, index]))
+    return REGION_SHAPES.filter((shape) => shape.team === team).toSorted(
+      (a, b) =>
+        (order.get(a.name) ?? Number.MAX_SAFE_INTEGER) -
+        (order.get(b.name) ?? Number.MAX_SAFE_INTEGER),
+    )
+  }, [team])
   const [readingState, setReading] = useState<Reading>('level')
   const reading = readingProp ?? readingState
   const [inspect, setInspect] = useState<Coords | null>(null)
+  /** The region picked in the table, outlined on every map. */
+  const [pickedState, setPickedState] = useState<string | null>(null)
+  const picked = pickedRegion === undefined ? pickedState : pickedRegion
+  const setPicked = (region: string | null) => {
+    if (pickedRegion === undefined) setPickedState(region)
+    onPickedRegionChange?.(region)
+  }
 
-  // Every cell in the panel, so one scale serves every map.
+  // Every cell in the panel, so one scale serves every map, and Business as
+  // Usual's even when it is not a column: a difference is read against it.
   const grid = useMemo(() => {
     const out = new Map<string, { coords: Coords; cell: Cell } | null>()
-    for (const scenario of scenarios) {
+    const read: ScenarioKey[] = scenarios.includes('bau') ? scenarios : [...scenarios, 'bau']
+    for (const scenario of read) {
       for (const shape of shapes) {
         const coords = coordsFor(shape.name, scenario)
         const cell = coords ? valueAt(coords) : null
@@ -229,6 +263,21 @@ export function RegionValues({
   }, [scaleKey, onScale])
   const unmapped = shapes.filter((shape) => !coordsFor(shape.name, scenarios[0])).length
   const outline = theme.palette.base[200]
+  // With the table: the regions that have a cell anywhere, numbered in map order,
+  // and a lead column on the maps' row so the table's values sit under their maps.
+  const listed = regionTable
+    ? shapes.filter((shape) => scenarios.some((scenario) => at(scenario, shape.name)))
+    : []
+  const number = (region: string) => listed.findIndex((shape) => shape.name === region) + 1
+  const columns = `repeat(${scenarios.length}, minmax(0, 1fr))`
+  const tableColumns = `${ranking.mapRegionLabel}px ${columns}`
+  /** A region's value in the table: blue where better, red where worse, as the table. */
+  const toneFor = (value: number | null) =>
+    value === null || value === 0 || reading !== 'change'
+      ? theme.palette.base[value === null ? 300 : 50]
+      : direction * value > 0
+        ? theme.chart.voting.above
+        : theme.chart.voting.belowText
 
   return (
     <Box
@@ -239,7 +288,10 @@ export function RegionValues({
           ? {
               height: 1,
               minHeight: 0,
-              gridTemplateRows: 'minmax(0, 1fr)',
+              // With the table beneath, the maps keep a height of their own.
+              gridTemplateRows: regionTable
+                ? `minmax(${ranking.mapMinHeight}px, 1fr) auto auto`
+                : 'minmax(0, 1fr)',
             }
           : {}),
       }}
@@ -269,13 +321,14 @@ export function RegionValues({
           gap: 1.5,
           ...(fit
             ? {
-                gridTemplateColumns: `repeat(${scenarios.length}, minmax(0, 1fr))`,
+                gridTemplateColumns: regionTable ? tableColumns : columns,
                 gridTemplateRows: 'minmax(0, 1fr)',
                 minHeight: 0,
               }
             : {}),
         }}
       >
+        {regionTable && <Box aria-hidden />}
         {scenarios.map((scenario) => (
           <Box
             key={scenario}
@@ -332,19 +385,30 @@ export function RegionValues({
                     const entry = at(scenario, shape.name)
                     const value = reads(scenario, shape.name)
                     const paint = paintAt(scenario, shape.name, value)
+                    const lit = picked === shape.name
+                    // A picked region gets a crisp brand outline; the full map remains legible.
+                    const fade = picked !== null && !lit ? 0.62 : 1
                     return (
                       <path
                         key={shape.name}
                         d={shape.d}
                         fill={paint?.fill ?? 'none'}
-                        fillOpacity={paint?.opacity ?? 0}
-                        stroke={outline}
-                        strokeWidth={entry ? 2.5 : 2}
+                        fillOpacity={(paint?.opacity ?? 0) * fade}
+                        stroke={lit ? theme.palette.primary.main : outline}
+                        strokeWidth={lit ? 4.5 : entry ? 2.5 : 2}
                         strokeDasharray={entry ? undefined : '8 6'}
                         strokeLinejoin="round"
                         opacity={entry ? 1 : 0.45}
                         cursor={entry ? 'pointer' : undefined}
-                        onClick={entry ? () => setInspect(entry.coords) : undefined}
+                        onClick={
+                          entry
+                            ? (event) => {
+                                const anchor = event.currentTarget.ownerSVGElement?.parentElement
+                                if (onInspect && anchor) onInspect(anchor, entry.coords)
+                                else setInspect(entry.coords)
+                              }
+                            : undefined
+                        }
                       >
                         <title>
                           {entry
@@ -357,7 +421,27 @@ export function RegionValues({
                     )
                   })}
                 </Box>
+                {regionTable &&
+                  listed.map((shape) => (
+                    <Typography
+                      key={shape.name}
+                      variant="chartTitle"
+                      aria-hidden
+                      sx={{
+                        position: 'absolute',
+                        left: `${(shape.label[0] / REGION_VIEWBOX.width) * 100}%`,
+                        top: `${(shape.label[1] / REGION_VIEWBOX.height) * 100}%`,
+                        transform: 'translate(-50%, -50%)',
+                        pointerEvents: 'none',
+                        color: picked && picked !== shape.name ? 'base.300' : 'common.white',
+                        textShadow: (t) => `0 0 4px ${t.palette.base[900]}`,
+                      }}
+                    >
+                      {number(shape.name)}
+                    </Typography>
+                  ))}
                 {showValues &&
+                  !regionTable &&
                   shapes.map((shape) => {
                     const value = reads(scenario, shape.name)
                     if (value === null || !at(scenario, shape.name)) return null
@@ -397,6 +481,97 @@ export function RegionValues({
           </Box>
         ))}
       </Box>
+
+      {regionTable && (
+        <Typography variant="body2" sx={{ color: 'base.200' }}>
+          {picked ? regionTable.pickedHint(picked) : regionTable.hint}
+        </Typography>
+      )}
+      {regionTable && (
+        <Box
+          role="group"
+          aria-label={regionTable.hint}
+          sx={{ display: 'grid', borderTop: 1, borderColor: 'border.default' }}
+        >
+          {listed.map((shape) => {
+            const on = picked === shape.name
+            return (
+              <ButtonBase
+                key={shape.name}
+                aria-pressed={on}
+                onClick={() => setPicked(on ? null : shape.name)}
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: tableColumns,
+                  columnGap: 1.5,
+                  alignItems: 'center',
+                  justifyItems: 'center',
+                  minHeight: ranking.breakoutRow.score,
+                  borderBottom: 1,
+                  borderColor: 'border.subtle',
+                  bgcolor: on ? 'translucent.100' : 'transparent',
+                  boxShadow: on ? `inset 0 0 0 1px ${theme.palette.primary.main}` : 'none',
+                  '&:hover': { bgcolor: 'translucent.100' },
+                  '&.Mui-focusVisible': { outline: 2, outlineColor: 'primary.main' },
+                }}
+              >
+                <Box
+                  sx={{
+                    justifySelf: 'start',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    pl: jtSpacing.component.sm,
+                  }}
+                >
+                  <Typography
+                    variant="captionSmall"
+                    component="span"
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      flex: 'none',
+                      borderRadius: '50%',
+                      display: 'grid',
+                      placeItems: 'center',
+                      border: 1,
+                      borderColor: on ? 'primary.main' : 'border.strong',
+                      bgcolor: on ? 'primary.main' : 'transparent',
+                      color: on ? 'common.black' : 'base.50',
+                    }}
+                  >
+                    {number(shape.name)}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    component="span"
+                    sx={{ color: on ? 'primary.light' : 'base.50' }}
+                  >
+                    {shape.name}
+                  </Typography>
+                </Box>
+                {scenarios.map((scenario) => {
+                  const value = at(scenario, shape.name) ? reads(scenario, shape.name) : null
+                  return (
+                    <Typography
+                      key={scenario}
+                      variant="body2"
+                      component="span"
+                      sx={{
+                        color: toneFor(value),
+                        opacity: dimmed.includes(scenario) ? 0.2 : 1,
+                        fontVariantNumeric: 'tabular-nums',
+                      }}
+                    >
+                      {value === null ? regionTable.noValue : mapText(value)}
+                    </Typography>
+                  )
+                })}
+              </ButtonBase>
+            )
+          })}
+        </Box>
+      )}
 
       {/* One legend for the row: the scale the fills share, then the dashed case. */}
       {hideLegend ? null : !anyValue ? (
@@ -450,7 +625,7 @@ export function RegionValues({
         </Box>
       )}
 
-      <CellDetail coords={inspect} onClose={() => setInspect(null)} />
+      {!onInspect && <CellDetail coords={inspect} onClose={() => setInspect(null)} />}
     </Box>
   )
 }

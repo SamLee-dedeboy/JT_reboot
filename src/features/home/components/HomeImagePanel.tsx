@@ -1,6 +1,7 @@
-import { Box, Button, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import ScrollReveal from '../../../ui/animation/ScrollReveal'
 import { assetUrl } from '../../../utils/baseUrl'
+import { HomeCta } from './HomeActions'
 
 type ResponsiveValue<T> = T | Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', T>>
 
@@ -12,7 +13,8 @@ interface HomeImagePanelProps {
   backgroundSize?: object | string
   text: string
   buttonLabel: string
-  buttonHref: string
+  /** Route, `#anchor` or external URL; leave it out to show the button as forthcoming. */
+  buttonHref?: string
   textWidth?: string
   /** Vertical center of the text block within the image panel. */
   textPositionY?: ResponsiveValue<string | number>
@@ -75,13 +77,9 @@ export default function HomeImagePanel({
           >
             {text}
           </Typography>
-          <Button
-            href={buttonHref}
-            variant="contained"
-            sx={{ mt: theme.jtSpacing.component.lg, minWidth: { xs: '100%', sm: '18rem' } }}
-          >
-            {buttonLabel}
-          </Button>
+          <Box sx={{ mt: theme.jtSpacing.component.lg }}>
+            <HomeCta label={buttonLabel} href={buttonHref} />
+          </Box>
         </ScrollReveal>
       </Box>
     </Box>

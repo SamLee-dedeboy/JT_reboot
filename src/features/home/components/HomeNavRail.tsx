@@ -4,7 +4,7 @@ const homeRailItems: NavRailItem[] = [
   { id: 'whatif', label: 'What If?' },
   { id: 'foundations', label: 'What Futures?' },
   { id: 'stakes', label: "What's at Stake?" },
-  { id: 'works', label: 'How It Works' },
+  { id: 'works', label: 'How It Works?' },
 ]
 
 export default function HomeNavRail() {

@@ -1,27 +1,53 @@
-import { Box, Button, Typography, useTheme } from '@mui/material'
+import { alpha, Box, Typography, useTheme } from '@mui/material'
 import ScrollReveal from '../../../ui/animation/ScrollReveal'
+import { HomeTextLink, type HomeActionTarget } from './HomeActions'
 
-const workSteps = [
-  [
-    '01',
-    'Public collaborations to prioritize values and design future scenarios',
-    'Co-Design Dashboard',
-  ],
-  [
-    '02',
-    'Speculative planning strategies that compare a broad range of adaptations',
-    'Scenario Adaptations',
-  ],
-  ['03', 'Community engagement, dialogue, co-learning, and responsive research', 'Co-Learning'],
-  [
-    '04',
-    'Advanced model simulations and geo spatial-temporal data visualizations',
-    'Modeling & Evaluation',
-  ],
-] as const
+interface WorkStep {
+  title: string
+  text: string
+  links: HomeActionTarget[]
+}
+
+const workSteps: WorkStep[] = [
+  {
+    title: 'Scenario Co-Design',
+    text: 'Interviews and workshops surfaced public values and concerns about Delta salinity, which guided how each future scenario was designed.',
+    links: [{ label: 'Explore the co-design dashboard', href: '/pages/co-design-dashboard' }],
+  },
+  {
+    title: 'Scenario Adaptations',
+    text: 'Starting from current operations, outflow variations and five adaptation pathways show what different Delta futures ask of communities, ecosystems, and water systems.',
+    links: [{ label: 'Choose a future', href: '/scenarios' }],
+  },
+  {
+    title: 'Scenario Modeling & Evaluation',
+    text: 'We model salinity, water temperature, and water age in adaptation scenarios, with and without sea level rise. Five criteria then examine what each future means for ecology, recreation, environmental justice, the economy, and eco-cultural outcomes.',
+    links: [
+      { label: 'Salinity modeling', href: '/scenarios/modeling' },
+      { label: 'Evaluation criteria', href: '/scenarios/evaluation' },
+    ],
+  },
+  {
+    title: 'Scenario Ranking',
+    text: 'Compare how the futures perform across five criteria. Rank them with equal weight, test how different priorities change the order, or trace each score back to its underlying evidence.',
+    links: [{ label: 'Rank the futures', href: '/scenarios/ranking' }],
+  },
+  {
+    title: 'Governance & Co-Learning',
+    text: 'Shared learning across community knowledge, research, and practice helps reveal what a just transition asks of planning in the Delta.',
+    links: [{ label: 'How to act' }, { label: 'Read the reflections' }],
+  },
+]
+
+// Ladder geometry (px): every step marker sits on one vertical line, like soundings on a depth line.
+const MARKER_SIZE = 44
+const LADDER_INSET = 72
 
 export default function WorksPanel() {
   const theme = useTheme()
+  const blue = theme.palette.brand.primaryBlue
+  // Markers fade with each step so the list reads from shallow to deep.
+  const depthTone = (index: number) => alpha(blue, 1 - (index / workSteps.length) * 0.7)
 
   return (
     <Box
@@ -46,7 +72,10 @@ export default function WorksPanel() {
           pl: 'var(--home-rail-inset)',
           pr: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '11rem minmax(0, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            lg: 'var(--home-panel-rail-column) minmax(0, 1fr)',
+          },
           gap: { xs: theme.jtSpacing.gap.lg, lg: theme.jtSpacing.section.md },
         }}
       >
@@ -56,13 +85,13 @@ export default function WorksPanel() {
               The Project
             </Typography>
             <Typography variant="h2" component="h2" sx={{ mt: 1, color: 'common.white' }}>
-              How it works
+              How it works?
             </Typography>
             <Typography
               variant="bodyLarge"
               sx={{
                 mt: theme.jtSpacing.component.lg,
-                color: 'common.white',
+                color: 'base.100',
                 maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
               }}
             >
@@ -70,52 +99,98 @@ export default function WorksPanel() {
               of the tradeoffs involved in managing the Sacramento-San Joaquin Delta amid future
               droughts and rising sea levels.
             </Typography>
+          </ScrollReveal>
+          <ScrollReveal sx={{ mt: theme.jtSpacing.section.md }}>
             <Typography
               variant="editorialEmphasis"
               component="p"
-              sx={{ mt: theme.jtSpacing.section.md, fontStyle: 'italic', color: 'common.white' }}
+              sx={{ fontStyle: 'italic', color: 'common.white' }}
             >
               We deliver this through
             </Typography>
           </ScrollReveal>
           <Box
+            component="ol"
             sx={{
+              listStyle: 'none',
+              m: 0,
+              mt: theme.jtSpacing.gap.lg,
+              p: 0,
+              pl: `${LADDER_INSET}px`,
               display: 'flex',
               flexDirection: 'column',
-              maxWidth: 'max-content',
-              gap: theme.jtSpacing.section.md,
-              mt: theme.jtSpacing.section.md,
+              gap: theme.jtSpacing.section.sm,
             }}
           >
-            {workSteps.map(([number, text, label], index) => (
+            {workSteps.map((step, index) => (
               <ScrollReveal
-                key={number}
-                component="article"
+                key={step.title}
+                component="li"
                 delay={index * 0.06}
                 sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 9fr)',
-                  gridTemplateRows: 'auto auto',
-                  columnGap: theme.jtSpacing.gap.md,
-                  rowGap: theme.jtSpacing.gap.sm,
-                  alignItems: 'start',
+                  position: 'relative',
+                  // Each step draws the line down to the next marker, so it ends at the last one.
+                  '&:not(:last-of-type)::after': {
+                    content: '""',
+                    position: 'absolute',
+                    left: MARKER_SIZE / 2 - 1 - LADDER_INSET,
+                    top: MARKER_SIZE,
+                    height: `calc(100% - ${MARKER_SIZE}px + ${theme.spacing(theme.jtSpacing.section.sm)})`,
+                    width: 2,
+                    background: `linear-gradient(180deg, ${depthTone(index)}, ${depthTone(index + 1)})`,
+                  },
                 }}
               >
-                <Typography variant="numberBadge" component="p" sx={{ gridColumn: 1, gridRow: 1 }}>
-                  {number}
+                <Box
+                  aria-hidden="true"
+                  sx={{
+                    position: 'absolute',
+                    left: -LADDER_INSET,
+                    top: 0,
+                    width: MARKER_SIZE,
+                    height: MARKER_SIZE,
+                    boxSizing: 'border-box',
+                    borderRadius: '50%',
+                    border: 2,
+                    borderColor: depthTone(index),
+                    bgcolor: 'base.900',
+                    display: 'grid',
+                    placeItems: 'center',
+                  }}
+                >
+                  <Typography variant="numberBadge" component="span" sx={{ color: 'common.white' }}>
+                    {String(index + 1).padStart(2, '0')}
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="editorialEmphasis"
+                  component="h3"
+                  sx={{ pt: 1, color: 'common.white' }}
+                >
+                  {step.title}
                 </Typography>
                 <Typography
-                  variant="bodyLarge"
-                  sx={{ gridColumn: 2, gridRow: 1, color: 'common.white' }}
+                  variant="body1"
+                  sx={{
+                    mt: theme.jtSpacing.gap.xs,
+                    color: 'base.100',
+                    maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
+                  }}
                 >
-                  {text}
+                  {step.text}
                 </Typography>
-                <Button
-                  variant="contained"
-                  sx={{ gridColumn: 2, gridRow: 2, width: 'max-content' }}
+                <Box
+                  sx={{
+                    mt: theme.jtSpacing.gap.xs,
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    columnGap: theme.jtSpacing.gap.lg,
+                  }}
                 >
-                  {label}
-                </Button>
+                  {step.links.map((link) => (
+                    <HomeTextLink key={link.label} {...link} />
+                  ))}
+                </Box>
               </ScrollReveal>
             ))}
           </Box>

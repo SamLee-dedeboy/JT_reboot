@@ -269,7 +269,7 @@ function placeGroups(options: { value: string; label: string; name: string }[], 
   const parts = options.filter((o) => o.value !== all)
   const grouped = PLACE_TRAYS.map((tray) => ({
     label: tray.heading,
-    options: parts.filter((o) => tray.places.includes(o.name)),
+    options: tray.places.flatMap((name) => parts.filter((option) => option.name === name)),
   }))
   const rest = parts.filter((o) => !PLACE_TRAYS.some((tray) => tray.places.includes(o.name)))
   return [

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>One map with a scenario picker</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&amp;family=Hammersmith+One&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 660px; box-sizing: border-box; padding: 28px 32px; background: #141c1e; color: #e9ebeb; font-family: Figtree, system-ui, sans-serif; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <h2 style="margin: 0; font-weight: 400; font-size: 22px">Difference from Business as Usual for <span style="font-weight: 700; letter-spacing: 0.02em">{{pickedUpper}}</span></h2>
+    <div role="group" aria-label="View" style="display: flex; padding: 3px; border: 1px solid rgba(155,162,164,0.24); border-radius: 999px; font-size: 15px">
+      <button type="button" style="padding: 5px 14px; border: 0; border-radius: 999px; background: transparent; color: #e9ebeb; font: inherit">Table</button>
+      <button type="button" aria-pressed="true" style="padding: 5px 14px; border: 0; border-radius: 999px; background: #7ed957; color: #101618; font: inherit">Map</button>
+    </div>
+  </div>
+  <div style="display: flex; gap: 8px; font-size: 15px">
+    <button type="button" style="padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(155,162,164,0.4); background: transparent; color: #e9ebeb; font: inherit">Economic value added · score</button>
+    <button type="button" aria-pressed="true" style="padding: 5px 14px; border-radius: 999px; border: 1px solid #7ed957; background: rgba(126,217,87,0.18); color: #e9ebeb; font: inherit">Dry-year salinity effects by Delta area</button>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 500px minmax(0, 1fr); gap: 32px; flex: 1; min-height: 0">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div role="group" aria-label="Scenario on the map" style="display: flex; flex-wrap: wrap; gap: 6px">
+        <sc-for list="{{pills}}" as="p" hint-placeholder-count="6">
+          <button type="button" onClick="{{p.pick}}" aria-pressed="{{p.on}}" style="{{p.style}}">{{p.name}}</button>
+        </sc-for>
+      </div>
+      <svg viewBox="380 20 510 800" role="img" aria-label="{{mapAria}}" style="width: 100%; height: 440px; display: block">
+        <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+          <path d="{{r.d}}" fill="{{r.fill}}" stroke="{{r.stroke}}" stroke-width="2.5" stroke-dasharray="{{r.dash}}"></path>
+        </sc-for>
+        <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+          <text x="{{r.x}}" y="{{r.yName}}" text-anchor="middle" font-size="22" font-family="Figtree, sans-serif" fill="#bbc0c2" stroke="#141c1e" stroke-width="6" paint-order="stroke">{{r.name}}</text>
+        </sc-for>
+        <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+          <text x="{{r.x}}" y="{{r.yValue}}" text-anchor="middle" font-size="30" font-family="Figtree, sans-serif" font-weight="600" fill="{{r.ink}}" stroke="#141c1e" stroke-width="7" paint-order="stroke">{{r.text}}</text>
+        </sc-for>
+      </svg>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 40px">
+      <div style="display: grid; grid-template-columns: 130px repeat(6, minmax(0, 1fr)); column-gap: 4px; align-items: end; font-family: 'Hammersmith One', sans-serif; font-size: 11px; letter-spacing: 0.04em; color: #bbc0c2; padding-bottom: 6px; border-bottom: 1px solid rgba(155,162,164,0.24)">
+        <span>REGION</span>
+        <sc-for list="{{heads}}" as="h" hint-placeholder-count="6"><span style="{{h.style}}">{{h.name}}</span></sc-for>
+      </div>
+      <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+        <div style="display: grid; grid-template-columns: 130px repeat(6, minmax(0, 1fr)); column-gap: 4px; align-items: center; height: 40px; border-bottom: 1px solid rgba(155,162,164,0.16)">
+          <span style="font-size: 15px">{{row.name}}</span>
+          <sc-for list="{{row.cells}}" as="c" hint-placeholder-count="6"><span style="{{c.style}}">{{c.text}}</span></sc-for>
+        </div>
+      </sc-for>
+      <p style="margin: 8px 0 0; font-size: 13px; color: #9ba2a4">The picked scenario's column is shaded; its regions are on the map.</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":660}}'>
+const SHAPES = [{"name":"South Delta","d":"M774 553L794 563L818 577L813 589L820 624L824 655L824 661L828 667L826 670L832 685L844 710L869 740L875 746L868 765L859 781L833 804L818 791L796 782L802 818L784 801L760 782L754 770L717 760L723 745L680 728L642 672L646 646L655 639L653 623L687 597L714 624L741 620L741 606L729 583L748 562L774 553Z","x":766,"y":698,"i":2},{"name":"Central Delta","d":"M765 529L750 562L727 593L691 599L644 622L629 611L636 594L640 578L639 550L636 550L632 540L632 522L632 506L629 495L641 491L639 477L628 468L630 442L641 418L626 404L639 394L668 400L685 404L679 388L679 377L688 363L719 358L741 336L757 421L766 454L771 491L766 497L766 519L765 529Z","x":705,"y":461,"i":1},{"name":"North Delta","d":"M516 171L534 154L534 129L564 94L589 28L669 52L673 106L696 172L699 197L698 212L686 231L746 274L758 306L741 328L680 368L683 396L641 402L637 415L590 429L526 479L493 460L558 368L515 319L479 300L479 276L491 251L467 180L498 190Z","x":590,"y":254,"i":0},{"name":"West Delta","d":"M555 592L526 577L520 547L508 537L522 529L508 520L490 516L448 505L411 498L394 493L416 454L506 434L492 477L495 490L529 483L564 428L610 418L625 450L577 456L563 472L582 493L626 526L609 541L618 586L636 588L628 621L645 646L616 649L596 639L590 618L562 595Z","x":565,"y":535,"i":3}];
+const SCEN = [
+  { name: 'Eco Machine', short: 'ECO MACHINE', v: [605, -712, 1813, 2529] },
+  { name: 'New Green Watershed', short: 'NEW GREEN WATERSHED', v: [463, -1993, 1113, 2327] },
+  { name: 'Bolster & Fortify', short: 'BOLSTER & FORTIFY', v: [-528, -8548, -1084, 2104] },
+  { name: 'Calling on Reserves', short: 'CALLING ON RESERVES', v: [138, 1311, 705, 512] },
+  { name: 'A Tunnel', short: 'A TUNNEL', v: [-251, -18821, -2513, -2405] },
+  { name: 'Increased Delta outflow', short: 'INCREASED DELTA OUTFLOW', v: null },
+];
+const REGION_ORDER = ['North Delta', 'Central Delta', 'South Delta', 'West Delta'];
+const MAX = 18821;
+const BLUE = [81, 162, 189], RED = [214, 69, 61];
+const rgba = (c, a) => 'rgba(' + c.join(',') + ',' + a + ')';
+function fill(v) {
+  if (v === null) return 'transparent';
+  if (v === 0) return '#2b3437';
+  return rgba(v > 0 ? BLUE : RED, 0.22 + 0.6 * Math.sqrt(Math.abs(v) / MAX));
+}
+const money = (v) => (v > 0 ? '+$' : v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('en-US');
+const ink = (v) => (v === null || v === 0 ? '#6d777a' : v > 0 ? '#51a2bd' : '#f0665d');
+
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { picked: 4 }; }
+  renderVals() {
+    const picked = this.state.picked;
+    const s = SCEN[picked];
+    const pills = SCEN.map((x, i) => ({
+      name: x.name,
+      on: i === picked,
+      pick: () => this.setState({ picked: i }),
+      style: 'padding: 4px 11px; border-radius: 999px; font: inherit; font-size: 13px; cursor: pointer; '
+        + (i === picked ? 'border: 1px solid #7ed957; background: rgba(126,217,87,0.18); color: #e9ebeb' : 'border: 1px solid rgba(155,162,164,0.32); background: transparent; color: #bbc0c2'),
+    }));
+    const regions = SHAPES.map((r) => {
+      const v = s.v ? s.v[r.i] : null;
+      return {
+        d: r.d, x: r.x, yName: r.y - 22, yValue: r.y + 16, name: r.name,
+        fill: fill(v),
+        stroke: v === null ? '#6d777a' : '#141c1e',
+        dash: v === null ? '10 8' : 'none',
+        ink: v === null ? '#9ba2a4' : '#f2f0ef',
+        text: v === null ? 'Forthcoming' : money(v),
+      };
+    });
+    const heads = SCEN.map((x, i) => ({
+      name: x.short,
+      style: 'text-align: center; padding: 4px 2px; ' + (i === picked ? 'color: #e9ebeb; background: rgba(126,217,87,0.08)' : ''),
+    }));
+    const rows = REGION_ORDER.map((name, ri) => ({
+      name,
+      cells: SCEN.map((x, i) => {
+        const v = x.v ? x.v[ri] : null;
+        return {
+          text: v === null ? 'Forthcoming' : money(v),
+          style: 'text-align: center; font-size: ' + (v === null ? '12px' : '14px') + '; height: 40px; line-height: 40px; color: ' + ink(v) + (i === picked ? '; background: rgba(126,217,87,0.08)' : ''),
+        };
+      }),
+    }));
+    return {
+      pills, regions, heads, rows,
+      pickedUpper: s.name.toUpperCase(),
+      mapAria: s.name + ': ' + regions.map((r) => r.name + ' ' + r.text).join(', '),
+    };
+  }
+}
+</script>
+</body>
+</html>

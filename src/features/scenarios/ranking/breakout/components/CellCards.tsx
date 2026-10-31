@@ -104,7 +104,7 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
         {label}
       </Typography>
       <Typography
-        variant={lead ? 'h4' : 'body1'}
+        variant={lead ? 'numberScore' : 'body1'}
         component="span"
         sx={{ color: color ?? (lead ? 'common.white' : 'base.100'), whiteSpace: 'nowrap' }}
       >

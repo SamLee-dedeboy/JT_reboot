@@ -21,7 +21,9 @@ const ScenarioExplorerPage = lazy(
   () => import('../features/scenario-explorer/ScenarioExplorerPage'),
 )
 const RegionalSummaryPage = lazy(() => import('../features/regional-summary/RegionalSummaryPage'))
-const Watershed = lazy(() => import('../internal/Watershed'))
+const UpstreamRestorationPage = lazy(
+  () => import('../features/watershed/UpstreamRestorationPage'),
+)
 const RankVisualization = lazy(() => import('../internal/rank-visualization/RankVisualization'))
 const BreakoutPage = lazy(() => import('../features/scenarios/ranking/breakout/BreakoutPage'))
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
@@ -81,7 +83,7 @@ export default function AppRouter() {
       />
       <Route path="/pages/regional-summary" element={deferred(<RegionalSummaryPage />)} />
       <Route path="/pages/co-design-dashboard/*" element={deferred(<CoDesignDashboard />)} />
-      <Route path="/pages/watershed" element={deferred(<Watershed />)} />
+      <Route path="/pages/watershed" element={deferred(<UpstreamRestorationPage />)} />
       <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
       <Route path="/pages/rank-visualization" element={deferred(<RankVisualization />)} />
       <Route path="/pages/breakout" element={deferred(<BreakoutPage />)} />

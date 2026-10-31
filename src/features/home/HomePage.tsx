@@ -22,6 +22,7 @@ export default function HomePage() {
           sx={(theme) => ({
             position: 'relative',
             '--home-rail-inset': theme.spacing(3),
+            '--home-panel-rail-column': '13rem',
             [theme.breakpoints.up('md')]: { '--home-rail-inset': theme.spacing(8) },
             [theme.breakpoints.up('lg')]: { '--home-rail-inset': theme.spacing(10) },
           })}
@@ -64,9 +65,9 @@ export default function HomePage() {
             >
               <HomeNavRail />
             </Box>
-            <PanelSlant color="#384550" attachment="before" tilt="up-right" />
+            <PanelSlant color="#1e4b56" attachment="before" tilt="up-right" />
             <WhatIfPanel />
-            <PanelSlant color="#384550" attachment="after" tilt="down-right" />
+            <PanelSlant color="#1e4b56" attachment="after" tilt="down-right" />
             <HomeImagePanel
               id="futures-photo"
               ariaLabel="What is a just transition?"
@@ -76,7 +77,6 @@ export default function HomePage() {
               backgroundPosition={{ xs: '62% center', md: 'center 57%', lg: '0% 35%' }}
               text="The term Just Transition is used in the domains of climate, energy, and environmental justice and refers to efforts to reduce inequity in society. This project seeks to advance such efforts by democratizing science and decision making in the Delta through a participatory scenario planning process."
               buttonLabel="What is a just transition?"
-              buttonHref="#foundations"
             />
             <PanelSlant color="base.500" attachment="before" tilt="down-right" />
             <FuturesPanel />
@@ -89,7 +89,7 @@ export default function HomePage() {
               textWidth="60ch"
               text="By envisioning diverse ways in which climate, governance, and ecosystems might co-evolve, scenario-based planning offers tools to reflect on current actions and goals, and in turn, fosters shared learning and socio-technical innovation."
               buttonLabel="Participatory Scenario Planning"
-              buttonHref="#stakes"
+              buttonHref="https://delta-just-transitions-ucdavis.hub.arcgis.com/pages/scenario-planning"
             />
             <PanelSlant color="base.800" attachment="before" tilt="down-right" />
             <StakesPanel />
@@ -102,7 +102,6 @@ export default function HomePage() {
               backgroundPosition={{ xs: '62% center', md: 'center 42%', lg: 'center bottom 10%' }}
               text="Salinity management in the Delta during drought has historically been done on an emergency basis. However, with future droughts and sea-level rise more likely, long-range planning that creatively visions new futures for salinity management while holistically considering the tradeoffs associated with those futures is needed."
               buttonLabel="A Delta in Transition"
-              buttonHref="#works"
               textWidth="75ch"
             />
             <PanelSlant color="base.900" attachment="before" tilt="down-right" />

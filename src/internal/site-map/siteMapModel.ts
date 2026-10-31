@@ -1,7 +1,7 @@
 // Turns the generated route/link scan plus the navbar config into a layered
 // graph: navbar -> menu sections -> pages -> nested views, with in-page links.
 import type { SiteMapLink, SiteMapRoute } from 'virtual:site-map'
-import type { DropdownItem, NavItem } from '../../ui/navigation'
+import { menuEntries, type DropdownItem, type NavItem } from '../../ui/navigation'
 import type { ProposedPage, UISection } from './pageStructure'
 
 export type SiteNodeKind = 'chrome' | 'section' | 'page' | 'planned' | 'block'
@@ -167,7 +167,7 @@ export function buildSiteGraph(
   const menu = proposal?.menu
   const navItems = menu
     ? declaredNav.map((item) =>
-        item.label === menu.section ? { ...item, dropdown: menu.items } : item,
+        item.label === menu.section ? { ...item, dropdown: menu.items, groups: undefined } : item,
       )
     : declaredNav
   // A page is still a proposal until AppRouter declares it; a worked example
@@ -191,7 +191,7 @@ export function buildSiteGraph(
   // Which routes the navbar lists, and which only appear under "Internal".
   const listedBy = new Map<string, Set<string>>()
   for (const item of navItems) {
-    for (const entry of item.dropdown ?? []) {
+    for (const entry of menuEntries(item)) {
       if (entry.disabled || entry.external) continue
       const route = matchRoute(entry.href, routes)
       if (!route) continue
@@ -345,7 +345,7 @@ export function buildSiteGraph(
     if (item.label === INTERNAL_SECTION_LABEL && !options.showInternal) continue
     const sectionId = `section:${item.label}`
     addSection(sectionId, item.label)
-    for (const entry of item.dropdown ?? []) {
+    for (const entry of menuEntries(item)) {
       if (entry.disabled) {
         if (!options.showPlanned) continue
         const id = `planned:${item.label}:${entry.label}`

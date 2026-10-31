@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Six maps with the biggest change called out</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&amp;family=Hammersmith+One&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 700px; box-sizing: border-box; padding: 28px 32px; background: #141c1e; color: #e9ebeb; font-family: Figtree, system-ui, sans-serif; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <h2 style="margin: 0; font-weight: 400; font-size: 22px">Difference from Business as Usual for <span style="font-weight: 700; letter-spacing: 0.02em">ALL SIX SCENARIOS</span></h2>
+    <div role="group" aria-label="View" style="display: flex; padding: 3px; border: 1px solid rgba(155,162,164,0.24); border-radius: 999px; font-size: 15px">
+      <button type="button" style="padding: 5px 14px; border: 0; border-radius: 999px; background: transparent; color: #e9ebeb; font: inherit">Table</button>
+      <button type="button" aria-pressed="true" style="padding: 5px 14px; border: 0; border-radius: 999px; background: #7ed957; color: #101618; font: inherit">Map</button>
+    </div>
+  </div>
+  <div style="display: flex; align-items: center; gap: 16px; font-size: 14px; color: #bbc0c2">
+    <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; background: #51a2bd"></span>More value</span>
+    <span style="display: flex; align-items: center; gap: 6px"><span style="width: 12px; height: 12px; background: #d6453d"></span>Less value</span>
+    <span style="color: #9ba2a4">Stronger colour, larger change · the largest change in each scenario is called out</span>
+  </div>
+  <div style="display: flex; gap: 8px; font-size: 15px">
+    <button type="button" style="padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(155,162,164,0.4); background: transparent; color: #e9ebeb; font: inherit">Economic value added · score</button>
+    <button type="button" aria-pressed="true" style="padding: 5px 14px; border-radius: 999px; border: 1px solid #7ed957; background: rgba(126,217,87,0.18); color: #e9ebeb; font: inherit">Dry-year salinity effects by Delta area</button>
+  </div>
+
+  <div style="display: flex; gap: 24px">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="2">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+        <div style="font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957; padding-bottom: 6px; border-bottom: 1px solid rgba(155,162,164,0.24)">{{g.label}}</div>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <sc-for list="{{g.scenarios}}" as="s" hint-placeholder-count="3">
+            <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+              <div style="font-family: 'Hammersmith One', sans-serif; font-size: 13px; letter-spacing: 0.04em; text-align: center; min-height: 34px; display: flex; align-items: flex-end; justify-content: center">{{s.name}}</div>
+              <div style="{{s.tile}}">{{s.scoreText}}</div>
+              <svg viewBox="420 20 470 800" role="img" aria-label="{{s.aria}}" style="width: 100%; height: 300px; display: block">
+                <sc-for list="{{s.regions}}" as="r" hint-placeholder-count="4">
+                  <path d="{{r.d}}" fill="{{r.fill}}" stroke="{{r.stroke}}" stroke-width="{{r.width}}" stroke-dasharray="{{r.dash}}"></path>
+                </sc-for>
+                <sc-if value="{{s.hasTop}}" hint-placeholder-val="{{s.hasTop}}">
+                  <circle cx="{{s.top.x}}" cy="{{s.top.y}}" r="9" fill="#f2f0ef"></circle>
+                </sc-if>
+              </svg>
+              <div style="{{s.calloutStyle}}">
+                <span style="font-size: 12px; color: #9ba2a4">{{s.calloutLabel}}</span>
+                <span style="{{s.calloutValueStyle}}">{{s.calloutValue}}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":700}}'>
+// A's six maps without a number in every region: each map's largest change is
+// marked with a dot and named beneath, the rest left to colour (and a hover).
+const SHAPES = [{"name":"South Delta","d":"M774 553L794 563L818 577L813 589L820 624L824 655L824 661L828 667L826 670L832 685L844 710L869 740L875 746L868 765L859 781L833 804L818 791L796 782L802 818L784 801L760 782L754 770L717 760L723 745L680 728L642 672L646 646L655 639L653 623L687 597L714 624L741 620L741 606L729 583L748 562L774 553Z","x":766,"y":698,"i":2},{"name":"Central Delta","d":"M765 529L750 562L727 593L691 599L644 622L629 611L636 594L640 578L639 550L636 550L632 540L632 522L632 506L629 495L641 491L639 477L628 468L630 442L641 418L626 404L639 394L668 400L685 404L679 388L679 377L688 363L719 358L741 336L757 421L766 454L771 491L766 497L766 519L765 529Z","x":705,"y":461,"i":1},{"name":"North Delta","d":"M516 171L534 154L534 129L564 94L589 28L669 52L673 106L696 172L699 197L698 212L686 231L746 274L758 306L741 328L680 368L683 396L641 402L637 415L590 429L526 479L493 460L558 368L515 319L479 300L479 276L491 251L467 180L498 190Z","x":590,"y":254,"i":0},{"name":"West Delta","d":"M555 592L526 577L520 547L508 537L522 529L508 520L490 516L448 505L411 498L394 493L416 454L506 434L492 477L495 490L529 483L564 428L610 418L625 450L577 456L563 472L582 493L626 526L609 541L618 586L636 588L628 621L645 646L616 649L596 639L590 618L562 595Z","x":565,"y":535,"i":3}];
+const SCEN = [
+  { name: 'ECO MACHINE', score: 0, v: [605, -712, 1813, 2529] },
+  { name: 'NEW GREEN WATERSHED', score: -4, v: [463, -1993, 1113, 2327] },
+  { name: 'BOLSTER & FORTIFY', score: -1, v: [-528, -8548, -1084, 2104] },
+  { name: 'CALLING ON RESERVES', score: 0, v: [138, 1311, 705, 512] },
+  { name: 'A TUNNEL', score: -1, v: [-251, -18821, -2513, -2405] },
+  { name: 'INCREASED DELTA OUTFLOW', score: null, v: null },
+];
+const MAX = 18821;
+const BLUE = [81, 162, 189], RED = [214, 69, 61];
+const rgba = (c, a) => 'rgba(' + c.join(',') + ',' + a + ')';
+function fill(v) {
+  if (v === null) return 'transparent';
+  if (v === 0) return '#2b3437';
+  return rgba(v > 0 ? BLUE : RED, 0.22 + 0.6 * Math.sqrt(Math.abs(v) / MAX));
+}
+const money = (v) => (v > 0 ? '+$' : v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('en-US');
+function tile(s) {
+  const box = 'height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 3px; font-family: \'Hammersmith One\', sans-serif; font-size: 15px;';
+  if (s === null) return box + ' border: 1px solid rgba(155,162,164,0.4); color: #9ba2a4; font-family: Figtree, sans-serif';
+  const bg = s === 0 ? '#2b3437' : rgba(s > 0 ? BLUE : RED, 0.18 + Math.abs(s) / 5 * 0.62);
+  return box + ' color: #f2f0ef; background: ' + bg;
+}
+const scoreText = (s) => (s === null ? 'Forthcoming' : s > 0 ? '+' + s : s < 0 ? '−' + Math.abs(s) : '0');
+
+class Component extends DCLogic {
+  renderVals() {
+    const scenarios = SCEN.map((s) => {
+      const top = s.v ? SHAPES.reduce((a, b) => (Math.abs(s.v[b.i]) > Math.abs(s.v[a.i]) ? b : a)) : null;
+      const tv = top ? s.v[top.i] : null;
+      return {
+        name: s.name,
+        tile: tile(s.score),
+        scoreText: scoreText(s.score),
+        hasTop: !!top,
+        top: top ? { x: top.x, y: top.y } : { x: 0, y: 0 },
+        aria: s.name + ': ' + (s.v ? SHAPES.map((r) => r.name + ' ' + money(s.v[r.i])).join(', ') : 'forthcoming'),
+        calloutStyle: 'display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 6px; border-top: 1px solid ' + (top ? 'rgba(155,162,164,0.24)' : 'transparent'),
+        calloutLabel: top ? 'Largest: ' + top.name : 'Forthcoming',
+        calloutValue: top ? money(tv) : '',
+        calloutValueStyle: 'font-size: 17px; font-weight: 600; color: ' + (tv > 0 ? '#51a2bd' : '#f0665d'),
+        regions: SHAPES.map((r) => {
+          const v = s.v ? s.v[r.i] : null;
+          const isTop = top && r.i === top.i;
+          return {
+            d: r.d,
+            fill: fill(v),
+            stroke: v === null ? '#6d777a' : isTop ? '#f2f0ef' : '#141c1e',
+            width: isTop ? 5 : 3,
+            dash: v === null ? '10 8' : 'none',
+          };
+        }),
+      };
+    });
+    return {
+      groups: [
+        { label: 'CHANGES TO LANDSCAPE', scenarios: scenarios.slice(0, 3) },
+        { label: 'CHANGES TO WATER FLOW', scenarios: scenarios.slice(3) },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

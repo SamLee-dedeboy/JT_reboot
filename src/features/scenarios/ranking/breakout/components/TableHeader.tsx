@@ -37,7 +37,7 @@ export function Sentence({ state, compact }: { state: Breakout; compact?: boolea
     </Box>
   )
   return (
-    <Typography variant="bodyLarge" component="p" sx={{ color: 'common.white' }}>
+    <Typography variant="body1" component="p" sx={{ color: 'common.white' }}>
       {state.reading === 'change' ? UI.comparingChange(scenarioName(state.baseline)) : UI.comparing}
       {em(
         n === state.columns.length

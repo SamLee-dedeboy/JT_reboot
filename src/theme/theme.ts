@@ -45,6 +45,8 @@ export const navigation = {
   drawerPanelBackground: palette.base[900],
   panelBorder: `1px solid ${palette.translucent.primaryGreen}`,
   panelRadius: '8px',
+  /** A grouped dropdown (headed sections, captions, nested shortcuts) needs a wider panel. */
+  groupedPanelWidth: { min: 400, max: 440 },
   dropdownShadow: `0 20px 48px ${palette.translucent.cardShadow}`,
   drawerShadow: `-18px 0 46px ${palette.translucent.blackShadow}`,
   spacing: {
@@ -54,6 +56,8 @@ export const navigation = {
     mobileButtonBlock: 1.25,
     subItemInline: 1.25,
     subItemBlock: 1,
+    /** How far a nested shortcut sits in from the page it belongs to. */
+    nestedIndent: 1.75,
   },
 } as const
 

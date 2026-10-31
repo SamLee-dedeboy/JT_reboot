@@ -17,6 +17,7 @@ export function EvaluationHero({
   title,
   summary,
   accent,
+  titleColor,
   icon,
   summaryVariant = 'bodyLarge',
   children,
@@ -28,6 +29,8 @@ export function EvaluationHero({
   summary: string
   /** Team color for the eyebrow and title; defaults to the theme's own colors. */
   accent?: string
+  /** Optional title color when it should differ from the eyebrow accent. */
+  titleColor?: string
   /** Shown before the title, e.g. the team icon. */
   icon?: ReactNode
   /** Type style for the summary; the methodology pages keep body copy at body1. */
@@ -81,7 +84,12 @@ export function EvaluationHero({
           )}
           <Typography
             variant="h1"
-            sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.md, color: accent }}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: jtSpacing.gap.md,
+              color: titleColor ?? accent,
+            }}
           >
             {icon}
             {title}

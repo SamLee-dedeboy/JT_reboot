@@ -23,7 +23,10 @@ export interface MapItem {
 }
 
 /** Teams whose map shows only the measures under a score, not the score's own map. */
-const MAP_ENTITIES_ONLY: TeamKey[] = ['environmentalJustice']
+const MAP_ENTITIES_ONLY: TeamKey[] = ['recreation', 'environmentalJustice']
+
+/** Recreation scores that remain in the table but do not belong in its map picker. */
+const RECREATION_MAP_EXCLUDED_SCORES = new Set(['bk-rec-restoration', 'bk-rec-economy'])
 
 /**
  * Every measure the map can draw, whatever is open in the table: each ranking
@@ -36,7 +39,12 @@ export function mapItems(state: Breakout, team: TeamKey): MapItem[] {
     node.places[0]?.key !== ANY &&
     Object.keys(inClimate(node, state.climate).values).some((key) => !key.startsWith(`${ANY}|`))
   return state.rows
-    .filter((row) => row.depth === 0 && row.node.level !== 'team')
+    .filter(
+      (row) =>
+        row.depth === 0 &&
+        row.node.level !== 'team' &&
+        !(team === 'recreation' && RECREATION_MAP_EXCLUDED_SCORES.has(row.node.id)),
+    )
     .flatMap(({ node }) => [
       ...(ownMap && mapped(node) ? [{ node, score: node }] : []),
       ...(node.children ?? []).filter(mapped).map((child) => ({ node: child, score: node })),

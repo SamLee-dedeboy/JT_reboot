@@ -122,7 +122,7 @@ export const typography = {
   navigationLabel: {
     fontFamily: fontBody,
     fontSize: 'clamp(1rem, 0.7rem + 0.5vw, 1.2rem)',
-    fontWeight: 500,
+    fontWeight: 700,
     letterSpacing: '0.08em',
     lineHeight: 1.25,
   },
@@ -134,6 +134,14 @@ export const typography = {
     letterSpacing: '0.04em',
     lineHeight: 1.2,
     textTransform: 'uppercase',
+  },
+  // A shortcut nested under a dropdown page; a quieter, sentence-case step below navigationLabel.
+  navigationShortcut: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.3vw, 1rem)',
+    fontWeight: 600,
+    letterSpacing: '0.02em',
+    lineHeight: 1.25,
   },
   displayNumber: {
     fontFamily: fontHeading,

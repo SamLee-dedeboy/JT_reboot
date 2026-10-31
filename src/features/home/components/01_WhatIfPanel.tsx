@@ -1,7 +1,6 @@
-import { Box, Button, Typography, useTheme } from '@mui/material'
-import { Link } from 'react-router-dom'
-import Icon from '../../../ui/Icon'
+import { Box, Typography, useTheme } from '@mui/material'
 import ScrollReveal from '../../../ui/animation/ScrollReveal'
+import { HomeCta } from './HomeActions'
 
 export default function WhatIfPanel() {
   const theme = useTheme()
@@ -20,7 +19,7 @@ export default function WhatIfPanel() {
         alignItems: 'center',
         pt: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg },
         pb: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
-        bgcolor: '#384550',
+        bgcolor: '#1e4b56',
         color: 'brand.primaryBlue',
       }}
     >
@@ -35,7 +34,10 @@ export default function WhatIfPanel() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', lg: '11rem minmax(0, 1fr)' },
+            gridTemplateColumns: {
+              xs: '1fr',
+              lg: 'var(--home-panel-rail-column) minmax(0, 1fr)',
+            },
             gap: { xs: theme.jtSpacing.gap.lg, lg: theme.jtSpacing.section.md },
             alignItems: 'start',
           }}
@@ -70,7 +72,7 @@ export default function WhatIfPanel() {
                   What would these scenarios look like?
                 </Box>
                 <Box component="span" sx={{ display: 'block' }}>
-                  How might these water futures compare amongst the many social and ecological
+                  How might these futures compare across the many social and ecological
                   factors at play?
                 </Box>
               </Typography>
@@ -108,19 +110,9 @@ export default function WhatIfPanel() {
                 Sacramento-San Joaquin Delta?
               </Typography>
 
-              <Button
-                component={Link}
-                to="/scenarios"
-                variant="contained"
-                endIcon={<Icon name="arrow-right" size={18} />}
-                sx={{
-                  mt: theme.jtSpacing.component.lg,
-                  bgcolor: 'brand.primaryBlue',
-                  color: 'base.900',
-                }}
-              >
-                View Future Scenarios
-              </Button>
+              <Box sx={{ mt: theme.jtSpacing.component.lg }}>
+                <HomeCta label="View Future Scenarios" href="/scenarios" />
+              </Box>
             </ScrollReveal>
           </Box>
         </Box>

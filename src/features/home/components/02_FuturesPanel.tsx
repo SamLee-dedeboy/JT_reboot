@@ -8,11 +8,11 @@ const futures = [
   },
   {
     title: 'What is participatory scenario planning?',
-    body: 'Participatory scenario planning is a “bottom up” approach that involves working directly with public contributors to create and evaluate future scenarios for a particular place.',
+    body: 'Participatory scenario planning is an inclusive, “bottom up” approach that involves working directly with public contributors (particularly those who might be affected by planning outcomes) to create and evaluate future scenarios for a particular place.',
   },
   {
     title: 'Why participatory scenario planning?',
-    body: 'Scenario planning is an approach increasingly used in conservation and climate change adaptation research, especially when uncertainty, vulnerability, and divergent stakeholder interests create conflicting mandates.',
+    body: 'Scenario planning is increasingly used in conservation and climate change adaptation research, especially when uncertainty, vulnerability, and divergent stakeholder interests create conflicting mandates.',
   },
 ]
 
@@ -42,7 +42,10 @@ export default function FuturesPanel() {
           pl: 'var(--home-rail-inset)',
           pr: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '11rem minmax(0, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            lg: 'var(--home-panel-rail-column) minmax(0, 1fr)',
+          },
           gap: { xs: theme.jtSpacing.gap.lg, lg: theme.jtSpacing.section.md },
         }}
       >

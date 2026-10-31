@@ -96,14 +96,14 @@ export const placeName = (label: string, team: TeamKey) => PLACE_LABELS[team]?.[
  * is read out to screen readers, not shown.
  */
 export const PLACE_TRAYS: { heading: string; places: string[] }[] = [
-  { heading: 'Bay area', places: ['South Bay', 'Central Bay', 'San Pablo Bay'] },
+  { heading: 'Bay area', places: ['Central Bay', 'South Bay', 'San Pablo Bay'] },
   {
     heading: 'Delta',
     places: [
-      'Suisun Bay',
+      'North Delta',
       'Suisun Marsh',
       'Confluence',
-      'North Delta',
+      'Suisun Bay',
       'Central Delta',
       'South Delta',
       'West Delta',
@@ -176,13 +176,13 @@ export const MEASURE_LABELS: Record<string, string> = {
   // Eco-cultural
   'bk-ecoCultural': 'Eco-cultural',
   'bk-ec-restoration': 'Habitat restoration',
-  'bk-ec-restoration-acres': 'Total restored area',
-  'bk-ec-restoration-managed': 'Managed wetlands',
-  'bk-ec-restoration-rice': 'Wet-soil agriculture (rice)',
+  'bk-ec-restoration-managed': 'Transitional wetlands',
+  'bk-ec-restoration-rice': 'Wet-soil agriculture',
   'bk-ec-restoration-tidal': 'Tidal wetlands',
-  'bk-ec-restoration-uplandWetland': 'Upland wetlands',
+  'bk-ec-restoration-uplandWetland': 'Wetlands',
   'bk-ec-restoration-meadow': 'Meadows',
   'bk-ec-restoration-floodplain': 'Floodplains',
+  'bk-ec-restoration-functional-flow': 'Improved functional flow',
   'bk-ec-access': 'Tribal land access',
   'bk-ec-tek': 'Indigenous science & Traditional Ecological Knowledge (TEK)',
   'bk-ec-sovereignty': 'Tribal sovereignty',
@@ -311,6 +311,10 @@ export const UI = {
   mapScoreTab: 'The score',
   mapScorePicker: 'Ranking score',
   mapMeasurePicker: 'Measure on the map',
+  /** Above the map view's region table. */
+  mapPickRegion: 'Pick an area below to outline it on every map.',
+  mapPickedRegion: (region: string) =>
+    `${region} is outlined on every map. Pick it again to clear.`,
   lifeStagePicker: 'Life stage',
 
   // The info cards (explainers) and the cell cards (lookups).

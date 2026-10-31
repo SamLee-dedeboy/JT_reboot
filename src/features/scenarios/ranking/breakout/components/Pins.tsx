@@ -79,7 +79,7 @@ export function Pins({ state, name }: { state: Breakout; name: string }) {
                 label={`${i + 1}. ${p.note || summarise(p, state)}`}
                 onClick={() => state.restore(p)}
                 onDelete={() => state.unpin(p.id)}
-                sx={{ typography: 'meta', borderColor: 'border.strong', maxWidth: '100%' }}
+                sx={{ typography: 'body2', borderColor: 'border.strong', maxWidth: '100%' }}
               />
             ))}
           </Box>

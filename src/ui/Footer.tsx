@@ -1,6 +1,5 @@
-// Shared site footer with funding copy, UC branding, contact link, and wordmark.
+// Shared site footer with funding copy, contact link, and wordmark.
 import { Box, Container, Link, Typography, useTheme } from '@mui/material'
-import { assetUrl } from '../utils/baseUrl'
 import { LogoWordmark } from './Logo'
 
 export default function Footer() {
@@ -15,20 +14,15 @@ export default function Footer() {
         overflow: 'hidden',
         bgcolor: 'base.900',
         color: 'common.white',
-        paddingBlock: { xs: theme.jtSpacing.section.sm, md: theme.jtSpacing.section.md },
+        paddingBlock: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.section.sm },
       }}
     >
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'minmax(0, 1fr) minmax(88px, 27vw)',
-              sm: 'minmax(0, 1fr) minmax(150px, 250px)',
-              md: 'minmax(0, 1fr) auto',
-            },
-            gap: { xs: theme.jtSpacing.gap.sm, md: theme.jtSpacing.section.sm },
-            alignItems: 'center',
+            maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
+            marginInline: 'auto',
+            textAlign: 'left',
           }}
         >
           <Box>
@@ -46,10 +40,6 @@ export default function Footer() {
               component="blockquote"
               sx={{
                 margin: 0,
-                maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
-                paddingLeft: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
-                borderLeft: '3px solid',
-                borderColor: 'primary.main',
                 typography: 'body1',
                 fontSize: { xs: '0.95rem', sm: theme.typography.body1.fontSize },
                 lineHeight: { xs: 1.55, sm: theme.typography.body1.lineHeight },
@@ -61,36 +51,18 @@ export default function Footer() {
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              justifySelf: 'end',
-              alignSelf: 'center',
-              width: { xs: '100%', md: 270 },
-              maxWidth: '100%',
-            }}
-          >
-            <Box
-              component="img"
-              src={assetUrl('/images/uc-logo-white.png')}
-              alt="University of California"
-              sx={{
-                display: 'block',
-                width: '100%',
-                height: 'auto',
-              }}
-            />
-          </Box>
         </Box>
 
         <Box
           sx={{
             display: 'flex',
             flexWrap: 'wrap',
-            justifyContent: { xs: 'flex-start', md: 'space-between' },
+            justifyContent: 'flex-start',
             gap: theme.jtSpacing.gap.sm,
-            alignItems: { xs: 'flex-start', md: 'center' },
-            marginTop: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.section.sm },
-            paddingTop: theme.jtSpacing.component.md,
+            alignItems: 'center',
+            maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
+            marginInline: 'auto',
+            marginTop: theme.jtSpacing.component.lg,
             color: 'base.200',
             textAlign: 'left',
           }}
@@ -99,6 +71,7 @@ export default function Footer() {
             sx={{
               display: 'flex',
               flexWrap: 'wrap',
+              justifyContent: 'flex-start',
               gap: { xs: theme.jtSpacing.gap.xs, sm: theme.jtSpacing.gap.sm },
               alignItems: 'center',
             }}
@@ -120,6 +93,7 @@ export default function Footer() {
             sx={{
               display: 'flex',
               flexWrap: 'wrap',
+              justifyContent: 'flex-start',
               gap: { xs: theme.jtSpacing.gap.xs, sm: theme.jtSpacing.gap.sm },
               alignItems: 'center',
             }}

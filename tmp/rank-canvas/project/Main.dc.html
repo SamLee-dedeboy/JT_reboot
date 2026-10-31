@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>By scenario ranking</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&amp;family=Hammersmith+One&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1100px; box-sizing: border-box; padding: 28px 32px; background: #182124; color: #e9ebeb; font-family: Figtree, system-ui, sans-serif; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px">
+    <h2 style="margin: 0; font-weight: 400; font-size: 20px">Ranking <b style="letter-spacing: 0.02em">SIX ADAPTATION SCENARIOS</b> with <b style="letter-spacing: 0.02em">EQUAL WEIGHTS</b></h2>
+    <div style="display: flex; align-items: center; gap: 16px; font-size: 14px; color: #bbc0c2">
+      <span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 5px; background: #51a2bd"></span>Better than today</span>
+      <span style="display: flex; align-items: center; gap: 6px"><span style="width: 18px; height: 5px; background: #d6453d"></span>Worse than today</span>
+    </div>
+  </div>
+
+  <sc-if value="{{pinned}}" hint-placeholder-val="{{pinned}}">
+    <div style="display: grid; grid-template-columns: 56px 230px 640px 60px; align-items: center; padding: 10px 12px; border: 1px dashed rgba(126,217,87,0.55); border-radius: 6px; background: rgba(126,217,87,0.06)">
+      <span style="font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957">BASE</span>
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 17px; font-weight: 600">Business as Usual</span><span style="font-size: 13px; color: #bbc0c2">Today's Delta. Every score below is a change from it.</span></span>
+      <div style="position: relative; height: 40px">
+        <span style="position: absolute; left: 320px; top: -10px; bottom: -14px; border-left: 2px solid #7ed957"></span>
+        <span style="position: absolute; left: 330px; top: 11px; font-size: 13px; color: #7ed957; white-space: nowrap">0 on every criterion: the zero line below</span>
+      </div>
+      <span style="text-align: right; font-family: 'Hammersmith One', sans-serif; font-size: 18px; color: #7ed957">0</span>
+    </div>
+  </sc-if>
+
+  <div style="display: grid; grid-template-columns: 56px 230px 640px 60px; align-items: end; padding: 0 12px 6px; border-bottom: 1px solid rgba(155,162,164,0.24); font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.05em; color: #bbc0c2">
+    <span>RANK</span><span>SCENARIO</span>
+    <div style="position: relative; height: 18px">
+      <sc-for list="{{ticks}}" as="t" hint-placeholder-count="11"><span style="{{t.style}}">{{t.text}}</span></sc-for>
+    </div>
+    <span style="text-align: right">SCORE</span>
+  </div>
+
+  <div style="{{listStyle}}">
+    <sc-for list="{{items}}" as="s" hint-placeholder-count="6">
+      <sc-if value="{{s.isDivider}}" hint-placeholder-val="{{s.isDivider}}">
+        <div style="display: grid; grid-template-columns: 56px 230px 640px 60px; align-items: center; padding: 8px 12px; background: rgba(126,217,87,0.10); border-top: 2px solid #7ed957; border-bottom: 2px solid #7ed957">
+          <span style="font-family: 'Hammersmith One', sans-serif; font-size: 14px; color: #7ed957">{{s.rank}}</span>
+          <span style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 16px; font-weight: 600">Business as Usual</span><span style="font-size: 12px; color: #bbc0c2">Today's Delta: the baseline</span></span>
+          <div style="position: relative; height: 34px">
+            <span style="position: absolute; left: 320px; top: -10px; bottom: -10px; border-left: 2px solid #7ed957"></span>
+            <span style="position: absolute; right: 336px; top: 0; font-size: 12px; color: #bbc0c2; white-space: nowrap">above: better than today</span>
+            <span style="position: absolute; left: 330px; top: 18px; font-size: 12px; color: #bbc0c2; white-space: nowrap">below: worse than today</span>
+          </div>
+          <span style="text-align: right; font-family: 'Hammersmith One', sans-serif; font-size: 18px; color: #7ed957">0</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{s.isCard}}" hint-placeholder-val="{{s.isCard}}">
+        <div style="{{s.cardStyle}}">
+          <div style="display: grid; grid-template-columns: 56px 230px 640px 60px; align-items: center; height: 34px">
+            <span style="font-family: 'Hammersmith One', sans-serif; font-size: 14px; color: #7ed957">{{s.rank}}</span>
+            <span style="font-size: 16px; font-weight: 600">{{s.name}}</span>
+            <div style="position: relative; height: 100%">
+              <span style="position: absolute; left: 320px; top: 0; bottom: 0; border-left: 1px solid #9ba2a4"></span>
+              <span style="{{s.bar}}"></span>
+            </div>
+            <span style="{{s.scoreStyle}}">{{s.scoreText}}</span>
+          </div>
+          <sc-for list="{{s.crit}}" as="c" hint-placeholder-count="5">
+            <div style="display: grid; grid-template-columns: 56px 230px 640px 60px; align-items: center; height: 21px">
+              <span></span>
+              <span style="{{c.label}}">{{c.name}}</span>
+              <div style="position: relative; height: 100%">
+                <span style="position: absolute; left: 320px; top: 0; bottom: 0; border-left: 1px solid #9ba2a4"></span>
+                <span style="{{c.line}}"></span>
+                <span style="{{c.dot}}"></span>
+              </div>
+              <span style="{{c.val}}">{{c.text}}</span>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{s.isCompact}}" hint-placeholder-val="{{s.isCompact}}">
+        <div style="{{s.cardStyle}}">
+          <div style="display: grid; grid-template-columns: 56px 230px 640px 60px; align-items: center; min-height: 52px">
+            <span style="font-family: 'Hammersmith One', sans-serif; font-size: 14px; color: #7ed957">{{s.rank}}</span>
+            <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600">{{s.name}}</span><span style="font-size: 12px; color: #bbc0c2">{{s.driver}}</span></span>
+            <div style="position: relative; height: 40px">
+              <span style="position: absolute; left: 320px; top: 0; bottom: 0; border-left: 1px solid #9ba2a4"></span>
+              <span style="{{s.bar}}"></span>
+              <sc-for list="{{s.crit}}" as="c" hint-placeholder-count="5"><span style="{{c.dot}}"></span></sc-for>
+            </div>
+            <span style="{{s.scoreStyle}}">{{s.scoreText}}</span>
+          </div>
+        </div>
+      </sc-if>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{compactKey}}" hint-placeholder-val="{{compactKey}}">
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #bbc0c2; padding-top: 4px">
+      <span>Dots, one per criterion:</span>
+      <sc-for list="{{teams}}" as="t" hint-placeholder-count="5"><span style="display: flex; align-items: center; gap: 6px"><span style="{{t.dot}}"></span>{{t.name}}</span></sc-for>
+      <span>· Open a scenario for its five scores</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["cards","divider","compact"],"default":"cards"},"$preview":{"width":1100,"height":1080}}'>
+// Equal-weight scores from src/internal/rank-visualization/data.ts.
+const TEAMS = [
+  { name: 'Ecology', c: '#ffb347' },
+  { name: 'Recreation', c: '#f77c3b' },
+  { name: 'Env. Justice', c: '#f0a8e8' },
+  { name: 'Economy', c: '#7f86ff' },
+  { name: 'Eco-cultural', c: '#ffe6b0' },
+];
+const SCEN = [
+  { name: 'New Green Watershed', s: [4.5, -0.375, 1, -4, 4] },
+  { name: 'Eco Machine', s: [2, -0.375, 0, 0, 2] },
+  { name: 'Calling on Reserves', s: [0, 0.0625, -1, 0, 1] },
+  { name: 'Business as Usual', s: [0, 0, 0, 0, 0], bau: true },
+  { name: 'Bolster & Fortify', s: [0, 0, 0, -1, 0] },
+  { name: 'A Tunnel', s: [0, -0.125, -2, -1, -2] },
+];
+const MID = 320, HALF = 300;
+const X = (v) => MID + (v / 5) * HALF;
+const sign = (v) => { const r = Math.round(v); return r > 0 ? '+' + r : r < 0 ? '−' + Math.abs(r) : '0'; };
+const ORD = ['1st', '2nd', '3rd', '4th', '5th', '6th'];
+
+class Component extends DCLogic {
+  renderVals() {
+    const variant = this.props.variant ?? 'cards';
+    const pinned = variant === 'cards';
+    const list = (pinned ? SCEN.filter((s) => !s.bau) : SCEN);
+    const items = list.map((sc, i) => {
+      const mean = sc.s.reduce((a, b) => a + b, 0) / sc.s.length;
+      const r = Math.round(mean);
+      const zebra = i % 2 === 0 ? 'rgba(255,255,255,0.035)' : 'transparent';
+      const cardStyle = variant === 'cards'
+        ? 'padding: 6px 12px 10px; background: #1f2a2d; border: 1px solid rgba(155,162,164,0.18); border-radius: 6px'
+        : 'padding: 4px 12px 8px; background: ' + zebra + '; border-bottom: 1px solid rgba(155,162,164,0.28)';
+      const bar = 'position: absolute; top: ' + (variant === 'compact' ? '13px' : '10px') + '; height: 14px; border-radius: 2px; background: ' + (mean >= 0 ? '#51a2bd' : '#d6453d') + '; opacity: 0.85; '
+        + (mean >= 0 ? 'left: ' + MID + 'px' : 'left: ' + X(mean) + 'px') + '; width: ' + Math.max(2, Math.abs(mean) / 5 * HALF) + 'px';
+      const crit = sc.s.map((v, k) => {
+        const t = TEAMS[k];
+        const x = X(v);
+        const dotY = variant === 'compact' ? (4 + k * 7) + 'px' : '5px';
+        return {
+          name: t.name,
+          label: 'font-size: 14px; font-weight: 600; color: ' + t.c + '; padding-left: 14px',
+          line: 'position: absolute; top: 10px; height: 1px; background: ' + t.c + '; opacity: 0.7; left: ' + Math.min(x, MID) + 'px; width: ' + Math.abs(x - MID) + 'px',
+          dot: 'position: absolute; top: ' + dotY + '; width: 11px; height: 11px; border-radius: 50%; background: ' + t.c + '; border: 1.5px solid #182124; left: ' + (x - 6) + 'px',
+          val: 'text-align: right; font-family: \'Hammersmith One\', sans-serif; font-size: 13px; color: ' + t.c,
+          text: sign(v),
+        };
+      });
+      const best = sc.s.reduce((b, v, k) => (v > sc.s[b] ? k : b), 0);
+      const worst = sc.s.reduce((b, v, k) => (v < sc.s[b] ? k : b), 0);
+      const parts = [];
+      if (Math.round(sc.s[best]) > 0) parts.push(TEAMS[best].name + ' ' + sign(sc.s[best]));
+      if (Math.round(sc.s[worst]) < 0) parts.push(TEAMS[worst].name + ' ' + sign(sc.s[worst]));
+      return {
+        rank: pinned ? ORD[i] : ORD[i],
+        name: sc.name,
+        isDivider: !!sc.bau && !pinned,
+        isCard: !sc.bau && variant !== 'compact',
+        isCompact: !sc.bau && variant === 'compact',
+        cardStyle, bar, crit,
+        driver: parts.length ? 'Biggest: ' + parts.join(', ') : 'No criterion moves',
+        scoreText: sign(mean),
+        scoreStyle: 'text-align: right; font-family: \'Hammersmith One\', sans-serif; font-size: 18px; color: ' + (r > 0 ? '#51a2bd' : r < 0 ? '#f0665d' : '#9ba2a4'),
+      };
+    });
+    const ticks = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5].map((v) => ({
+      text: v === -5 ? '−5 WORSE' : v === 5 ? '+5 BETTER' : v === 0 ? '0 = TODAY' : (v > 0 ? '+' + v : '−' + Math.abs(v)),
+      style: 'position: absolute; bottom: 0; white-space: nowrap; transform: translateX(-50%); left: ' + X(v) + 'px; color: ' + (v === 0 ? '#7ed957' : '#bbc0c2'),
+    }));
+    return {
+      pinned, items, ticks,
+      listStyle: 'display: flex; flex-direction: column; gap: ' + (variant === 'cards' ? '10px' : '0'),
+      compactKey: variant === 'compact',
+      teams: TEAMS.map((t) => ({ name: t.name, dot: 'width: 10px; height: 10px; border-radius: 50%; background: ' + t.c })),
+    };
+  }
+}
+</script>
+</body>
+</html>

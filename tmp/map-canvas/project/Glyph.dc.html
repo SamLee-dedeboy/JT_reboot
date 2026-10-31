@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>One map with six bars in each region</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&amp;family=Hammersmith+One&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1000px; height: 860px; box-sizing: border-box; padding: 28px 32px; background: #141c1e; color: #e9ebeb; font-family: Figtree, system-ui, sans-serif; display: flex; flex-direction: column; gap: 12px">
+  <h2 style="margin: 0; font-weight: 400; font-size: 22px">Difference from Business as Usual for <span style="font-weight: 700; letter-spacing: 0.02em">ALL SIX SCENARIOS</span></h2>
+  <div style="display: flex; gap: 8px; font-size: 15px">
+    <button type="button" style="padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(155,162,164,0.4); background: transparent; color: #e9ebeb; font: inherit">Economic value added · score</button>
+    <button type="button" aria-pressed="true" style="padding: 5px 14px; border-radius: 999px; border: 1px solid #7ed957; background: rgba(126,217,87,0.18); color: #e9ebeb; font: inherit">Dry-year salinity effects by Delta area</button>
+  </div>
+  <div style="display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 24px; flex: 1; min-height: 0">
+    <svg viewBox="380 20 520 820" role="img" aria-label="{{aria}}" style="width: 100%; height: 700px; display: block">
+      <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+        <path d="{{r.d}}" fill="rgba(155,162,164,0.10)" stroke="#6d777a" stroke-width="2"></path>
+      </sc-for>
+      <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+        <rect x="{{r.px}}" y="{{r.py}}" width="150" height="250" rx="8" fill="rgba(20,28,30,0.82)" stroke="rgba(155,162,164,0.3)"></rect>
+      </sc-for>
+      <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+        <text x="{{r.x}}" y="{{r.ty}}" text-anchor="middle" font-size="20" font-family="Figtree, sans-serif" fill="#e9ebeb">{{r.name}}</text>
+      </sc-for>
+      <sc-for list="{{regions}}" as="r" hint-placeholder-count="4">
+        <line x1="{{r.lx1}}" x2="{{r.lx2}}" y1="{{r.base}}" y2="{{r.base}}" stroke="#9ba2a4" stroke-width="1.5"></line>
+      </sc-for>
+      <sc-for list="{{bars}}" as="b" hint-placeholder-count="24">
+        <rect x="{{b.x}}" y="{{b.y}}" width="16" height="{{b.h}}" fill="{{b.fill}}" stroke="{{b.stroke}}" stroke-dasharray="{{b.dash}}" stroke-width="1.5"></rect>
+      </sc-for>
+      <sc-for list="{{bars}}" as="b" hint-placeholder-count="24">
+        <text x="{{b.cx}}" y="{{b.ny}}" text-anchor="middle" font-size="12" font-family="Hammersmith One, sans-serif" fill="#9ba2a4">{{b.n}}</text>
+      </sc-for>
+    </svg>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; font-size: 14px; padding-top: 12px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957">CHANGES TO LANDSCAPE</span>
+        <span>1 · Eco Machine</span><span>2 · New Green Watershed</span><span>3 · Bolster &amp; Fortify</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <span style="font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957">CHANGES TO WATER FLOW</span>
+        <span>4 · Calling on Reserves</span><span>5 · A Tunnel</span><span>6 · Increased Delta outflow</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(155,162,164,0.24); color: #bbc0c2">
+        <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; background: #51a2bd"></span>Up: more value than Business as Usual</span>
+        <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; background: #d6453d"></span>Down: less value</span>
+        <span style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border: 1px dashed #9ba2a4"></span>Forthcoming</span>
+        <span style="color: #9ba2a4">Bar height grows with the square root of the change, so small changes stay visible.</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1000,"height":860}}'>
+const SHAPES = [{"name":"South Delta","d":"M774 553L794 563L818 577L813 589L820 624L824 655L824 661L828 667L826 670L832 685L844 710L869 740L875 746L868 765L859 781L833 804L818 791L796 782L802 818L784 801L760 782L754 770L717 760L723 745L680 728L642 672L646 646L655 639L653 623L687 597L714 624L741 620L741 606L729 583L748 562L774 553Z","x":775,"y":700,"i":2},{"name":"Central Delta","d":"M765 529L750 562L727 593L691 599L644 622L629 611L636 594L640 578L639 550L636 550L632 540L632 522L632 506L629 495L641 491L639 477L628 468L630 442L641 418L626 404L639 394L668 400L685 404L679 388L679 377L688 363L719 358L741 336L757 421L766 454L771 491L766 497L766 519L765 529Z","x":790,"y":440,"i":1},{"name":"North Delta","d":"M516 171L534 154L534 129L564 94L589 28L669 52L673 106L696 172L699 197L698 212L686 231L746 274L758 306L741 328L680 368L683 396L641 402L637 415L590 429L526 479L493 460L558 368L515 319L479 300L479 276L491 251L467 180L498 190Z","x":590,"y":220,"i":0},{"name":"West Delta","d":"M555 592L526 577L520 547L508 537L522 529L508 520L490 516L448 505L411 498L394 493L416 454L506 434L492 477L495 490L529 483L564 428L610 418L625 450L577 456L563 472L582 493L626 526L609 541L618 586L636 588L628 621L645 646L616 649L596 639L590 618L562 595Z","x":500,"y":600,"i":3}];
+const COLS = [
+  [605, -712, 1813, 2529],
+  [463, -1993, 1113, 2327],
+  [-528, -8548, -1084, 2104],
+  [138, 1311, 705, 512],
+  [-251, -18821, -2513, -2405],
+  null,
+];
+const NAMES = ['Eco Machine', 'New Green Watershed', 'Bolster & Fortify', 'Calling on Reserves', 'A Tunnel', 'Increased Delta outflow'];
+const MAX = 18821;
+const money = (v) => (v > 0 ? '+$' : v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('en-US');
+
+class Component extends DCLogic {
+  renderVals() {
+    // Each glyph: a 150 × 250 plate centred on the region, its name on top and a
+    // baseline through the middle; bars rise for more value and drop for less.
+    const regions = SHAPES.map((r) => ({
+      d: r.d, name: r.name, x: r.x,
+      px: r.x - 75, py: r.y - 125,
+      ty: r.y - 98,
+      base: r.y + 5, lx1: r.x - 64, lx2: r.x + 64,
+    }));
+    const bars = [];
+    SHAPES.forEach((r) => {
+      COLS.forEach((col, k) => {
+        const x = r.x - 63 + k * 21;
+        const base = r.y + 5;
+        if (col === null) {
+          bars.push({ x, y: base - 8, h: 16, fill: 'transparent', stroke: '#9ba2a4', dash: '3 3', cx: x + 8, ny: r.y + 116, n: k + 1 });
+          return;
+        }
+        const v = col[r.i];
+        const h = Math.max(2, Math.sqrt(Math.abs(v) / MAX) * 88);
+        bars.push({
+          x, y: v >= 0 ? base - h : base, h,
+          fill: v > 0 ? '#51a2bd' : '#d6453d', stroke: 'none', dash: 'none',
+          cx: x + 8, ny: r.y + 116, n: k + 1,
+        });
+      });
+    });
+    const aria = SHAPES.map((r) => r.name + ': ' + COLS.map((c, k) => NAMES[k] + ' ' + (c ? money(c[r.i]) : 'forthcoming')).join(', ')).join('; ');
+    return { regions, bars, aria };
+  }
+}
+</script>
+</body>
+</html>

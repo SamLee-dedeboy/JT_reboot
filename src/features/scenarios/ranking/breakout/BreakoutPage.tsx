@@ -198,7 +198,7 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
             sx={{ minHeight: { xs: 480, md: 0 }, overflow: embedded ? 'visible' : 'hidden' }}
           >
             {view === 'map' ? (
-              <Maps state={state} team={team} onScale={setMapScale} />
+              <Maps state={state} team={team} onScale={setMapScale} onInspect={setInspect} />
             ) : (
               <Matrix state={state} onInspect={setInspect} fit={!embedded} />
             )}

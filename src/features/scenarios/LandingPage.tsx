@@ -381,23 +381,38 @@ function StickyScenarioPanels() {
                       <Typography variant="bodyLarge">{panel.body}</Typography>
                       {index === 0 && (
                         <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                          <Button
-                            component={Link}
-                            to="/scenarios/key-parameters"
-                            variant="contained"
-                            color="primary"
-                            sx={{ color: 'common.black' }}
+                          <Stack
+                            direction="row"
+                            useFlexGap
+                            spacing={theme.jtSpacing.gap.sm}
+                            sx={{ alignItems: 'center', flexWrap: 'wrap' }}
                           >
-                            Understand Key Parameters
-                          </Button>
-                          <Button
-                            component={Link}
-                            to="/scenarios/background-context"
-                            variant="outlined"
-                            sx={{ color: 'common.white', borderColor: 'common.white' }}
+                            <Button disabled variant="contained" color="primary">
+                              Understand Key Parameters
+                            </Button>
+                            <Typography
+                              variant="captionSmall"
+                              sx={{ color: 'primary.main', fontStyle: 'italic' }}
+                            >
+                              Forthcoming
+                            </Typography>
+                          </Stack>
+                          <Stack
+                            direction="row"
+                            useFlexGap
+                            spacing={theme.jtSpacing.gap.sm}
+                            sx={{ alignItems: 'center', flexWrap: 'wrap' }}
                           >
-                            Understand Salinity Basics
-                          </Button>
+                            <Button disabled variant="outlined">
+                              Understand Salinity Basics
+                            </Button>
+                            <Typography
+                              variant="captionSmall"
+                              sx={{ color: 'primary.main', fontStyle: 'italic' }}
+                            >
+                              Forthcoming
+                            </Typography>
+                          </Stack>
                         </Stack>
                       )}
                     </Stack>

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Box, Button, Typography, useTheme } from '@mui/material'
 import { emphasize } from '../../../utils/highlightText'
 import ScrollReveal from '../../../ui/animation/ScrollReveal'
+import { homeTextLinkSx } from './homeActionStyles'
 
 const stakeSections = [
   {
@@ -11,6 +12,7 @@ const stakeSections = [
     introduction: [
       'The Bay-Delta region holds immense economic, ecological, and cultural significance, yet research and long-term planning have historically lagged behind its challenges.',
       'Fragmented governance and competing demands have often resulted in short-term responses with significant and potentially inequitable tradeoffs.',
+      "The Delta specifically..."
     ],
     details: [
       'Estuary-scale approaches for envisioning alternative futures and evaluating tradeoffs through inclusive public engagement have seen limited progress.',
@@ -49,30 +51,31 @@ function StakeSection({
       <Typography variant="h3" component="h3" sx={{ color: 'primary.main' }}>
         {section.title}
       </Typography>
-      {section.introduction.map((paragraph) => (
-        <Typography
-          key={paragraph}
-          variant="bodyLarge"
-          sx={{ color: 'common.white', mt: theme.jtSpacing.component.md }}
-        >
-          {emphasize(paragraph, section.emphasize)}
-        </Typography>
-      ))}
+      <Typography
+        component="p"
+        variant="bodyLarge"
+        sx={{ color: 'common.white', mt: theme.jtSpacing.component.md }}
+      >
+        {emphasize(section.introduction.join(' '), section.emphasize)}
+      </Typography>
       <Box
         sx={{
           display: 'grid',
-          paddingTop: theme.jtSpacing.component.lg,
-          paddingBottom: theme.jtSpacing.component.md,
+          paddingTop: expanded ? theme.jtSpacing.component.lg : 0,
           gridTemplateRows: expanded ? '1fr' : '0fr',
-          transition: 'grid-template-rows 320ms ease',
+          transition: 'grid-template-rows 320ms ease, padding-top 320ms ease',
         }}
       >
         <Box sx={{ overflow: 'hidden' }}>
-          {section.details.map((paragraph) => (
+          {section.details.map((paragraph, detailIndex) => (
             <Typography
               key={paragraph}
+              component="p"
               variant="bodyLarge"
-              sx={{ color: 'base.100', mt: theme.jtSpacing.component.sm }}
+              sx={{
+                color: 'base.100',
+                mt: detailIndex === 0 ? 0 : theme.jtSpacing.component.sm,
+              }}
             >
               {emphasize(paragraph, section.emphasize)}
             </Typography>
@@ -81,13 +84,10 @@ function StakeSection({
       </Box>
       <Button
         variant="text"
+        disableRipple
         onClick={() => setExpanded((current) => !current)}
         aria-expanded={expanded}
-        sx={{
-          alignSelf: 'flex-start',
-          mt: theme.jtSpacing.component.sm,
-          px: theme.jtSpacing.component.md,
-        }}
+        sx={{ ...homeTextLinkSx, mt: theme.jtSpacing.component.md }}
       >
         {expanded ? 'Show less' : 'Read more'}
       </Button>
@@ -121,7 +121,10 @@ export default function StakesPanel() {
           pl: 'var(--home-rail-inset)',
           pr: { xs: theme.jtSpacing.gap.lg, md: theme.jtSpacing.section.md },
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '11rem minmax(0, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            lg: 'var(--home-panel-rail-column) minmax(0, 1fr)',
+          },
           gap: { xs: theme.jtSpacing.gap.lg, lg: theme.jtSpacing.section.md },
         }}
       >
@@ -131,14 +134,14 @@ export default function StakesPanel() {
               The Context
             </Typography>
             <Typography variant="h2" component="h2" sx={{ mt: 1, color: 'common.white' }}>
-              What&rsquo;s at stake
+              What&rsquo;s at stake?
             </Typography>
           </ScrollReveal>
           <Box
             sx={{
               display: 'grid',
               gridTemplateColumns: 'minmax(0, 1fr)',
-              gap: theme.jtSpacing.section.lg,
+              gap: theme.jtSpacing.section.md,
               mt: theme.jtSpacing.section.md,
             }}
           >

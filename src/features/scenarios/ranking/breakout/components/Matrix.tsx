@@ -64,6 +64,27 @@ const labelLines = (lines: 1 | 2 | 3) =>
 /** The gap between two column groups. */
 const GROUP_GAP = '16px'
 
+const ECOCULTURAL_RESTORATION_GROUPS: Partial<Record<string, string>> = {
+  'bk-ec-restoration-managed': 'Within Delta',
+  'bk-ec-restoration-uplandWetland': 'Upstream Delta',
+}
+
+const ECOCULTURAL_RESTORATION_GROUP_ROWS = new Set([
+  'bk-ec-restoration-managed',
+  'bk-ec-restoration-rice',
+  'bk-ec-restoration-tidal',
+  'bk-ec-restoration-uplandWetland',
+  'bk-ec-restoration-meadow',
+  'bk-ec-restoration-floodplain',
+])
+
+const ECOCULTURAL_RESTORATION_GROUP_ENDS: Partial<Record<string, 'first' | 'last'>> = {
+  'bk-ec-restoration-managed': 'first',
+  'bk-ec-restoration-tidal': 'last',
+  'bk-ec-restoration-uplandWetland': 'first',
+  'bk-ec-restoration-floodplain': 'last',
+}
+
 export function Matrix({
   state,
   onInspect,
@@ -262,7 +283,7 @@ export function Matrix({
             UI.ngwLevels.map((label, index) => (
               <Typography
                 key={`level-${label}`}
-                variant="button"
+                variant="chartTitle"
                 sx={{
                   // Two-line and one-line labels sit on the same middle line.
                   alignSelf: 'stretch',
@@ -289,6 +310,9 @@ export function Matrix({
       {rule('heads')}
       {rows.map(({ node, depth, open, cells }, rowIndex) => {
         const ranked = node.unit === 'score'
+        const restorationGroup = ECOCULTURAL_RESTORATION_GROUPS[node.id]
+        const inRestorationGroup = ECOCULTURAL_RESTORATION_GROUP_ROWS.has(node.id)
+        const restorationGroupEnd = ECOCULTURAL_RESTORATION_GROUP_ENDS[node.id]
         const canOpen = depth === 0 && node.level !== 'team' && !!node.children?.length
         const extent =
           depth === 1 ? extents.get(`${scoreOf(rowIndex)?.id}|${node.unit}`) : undefined
@@ -350,6 +374,22 @@ export function Matrix({
                 py: depth === 1 ? 0.25 : 0.375,
                 // Entities sit well in from their score, under its label.
                 pl: depth === 1 ? { md: 3.5, xl: 5 } : 0,
+                ...(depth === 1 && inRestorationGroup
+                  ? {
+                      position: 'relative',
+                      pl: 1.5,
+                      ml: { md: 2, xl: 3.5 },
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        left: 0,
+                        top: restorationGroupEnd === 'first' ? (theme) => theme.spacing(3) : 0,
+                        bottom: restorationGroupEnd === 'last' ? (theme) => theme.spacing(0.75) : 0,
+                        borderLeft: 2,
+                        borderColor: teamColor,
+                      },
+                    }
+                  : {}),
               }}
             >
               {depth === 0 && node.level !== 'team' && (
@@ -380,6 +420,11 @@ export function Matrix({
                 </IconButton>
               )}
               <Box sx={{ minWidth: 0 }}>
+                {depth === 1 && restorationGroup && (
+                  <Typography variant="captionSmall" component="p" sx={{ mb: 0.25 }}>
+                    {restorationGroup}
+                  </Typography>
+                )}
                 {depth === 0 && ranked ? (
                   <>
                     <Box
@@ -859,7 +904,7 @@ function Cell({
         color: 'common.white',
       }}
     >
-      <Typography variant="chartValue" component="span" sx={{ color: 'inherit' }}>
+      <Typography variant="chartValueLarge" component="span" sx={{ color: 'inherit' }}>
         {scoreText(rank)}
       </Typography>
     </Box>

@@ -75,8 +75,22 @@ interface LabeledSelectProps {
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual')
 const isModelComparisonMode = (mode: DashboardMode) =>
   mode === 'rma-schism' || mode === 'rma-calsim'
-const isTunnelScenario = (label: string) => label.trim().toLowerCase() === 'a tunnel'
-const SLR_SCENARIO_ORDER = ['baseline-slr', 'bolster-slr', 'ecomachine-slr', 'newgreen-slr']
+const SLR_SCENARIO_ORDER = [
+  'baseline-slr',
+  'baseline-calsim-slr',
+  'bolster-slr',
+  'ecomachine-slr',
+  'newgreen-slr',
+  'reserve-slr',
+  'tunnel-slr',
+]
+const calsimFamilyScenarios = new Set(['reserve', 'tunnel', 'reserve-slr', 'tunnel-slr'])
+const requiredComparisonBaseline = (mode: DashboardMode, scenarioKey: string) => {
+  if (!calsimFamilyScenarios.has(scenarioKey)) return null
+  if (mode === 'rma-scenarios') return 'baseline-calsim'
+  if (mode === 'slr-scenarios') return 'baseline-calsim-slr'
+  return null
+}
 const scenarioAbbreviation = (label: string) =>
   ({
     'Business as Usual': 'BAU',
@@ -86,6 +100,8 @@ const scenarioAbbreviation = (label: string) =>
     'Eco Machine': 'ECO',
     'New Green Watershed': 'NGW',
     'Baseline (SLR)': 'BAU SLR',
+    'Business as Usual (CalSim)': 'BAU CalSim',
+    'Business as Usual (CalSim, SLR)': 'BAU CalSim SLR',
     'Bolster & Fortify (SLR)': 'B&F SLR',
     'Eco Machine (SLR)': 'ECO SLR',
     'New Green Watershed (SLR)': 'NGW SLR',
@@ -99,19 +115,6 @@ const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') =>
     typography: 'button',
     '&&:hover': { color: 'text.primary' },
   }) as const
-
-function UnavailableSlrOptions({ color }: { color: 'brand.primaryBlue' | 'brand.primaryGreen' }) {
-  return (
-    <>
-      <MenuItem disabled value="calling-on-reserves-coming-soon" sx={menuItemSx(color)}>
-        Calling on Reserves (SLR)
-      </MenuItem>
-      <MenuItem disabled value="a-tunnel-coming-soon" sx={menuItemSx(color)}>
-        A Tunnel (SLR)
-      </MenuItem>
-    </>
-  )
-}
 
 function ResponsiveScenarioLabel({
   fullName = false,
@@ -215,9 +218,11 @@ function LabeledSelect({
 }
 
 function SwapButton({
+  disabled = false,
   onClick,
   label = 'Swap base and selected scenarios',
 }: {
+  disabled?: boolean
   onClick: () => void
   label?: string
 }) {
@@ -232,6 +237,7 @@ function SwapButton({
     >
       <IconButton
         aria-label={label}
+        disabled={disabled}
         onClick={onClick}
         sx={{ border: 1, borderColor: 'divider', borderRadius: 1, color: 'text.secondary' }}
       >
@@ -283,6 +289,14 @@ function filterDatasetToStations(dataset: ScenarioDataset, stationIds: Set<strin
     regions,
     referenceStationValues: dataset.referenceStationValues
       ? filterSeries(dataset.referenceStationValues)
+      : undefined,
+    referenceStationValuesByKey: dataset.referenceStationValuesByKey
+      ? Object.fromEntries(
+          Object.entries(dataset.referenceStationValuesByKey).map(([key, series]) => [
+            key,
+            filterSeries(series),
+          ]),
+        )
       : undefined,
     scenarios: dataset.scenarios.map((scenario) => {
       const stationValues = filterSeries(scenario.stationValues)
@@ -631,7 +645,12 @@ export default function ScenarioExplorerPage({
         ? null
         : (100 * difference) / reference
     const scenarios = rawComparisonData.scenarios.map((item) => {
-      const itemReference = item.referenceStationValues ?? canonicalReference
+      const itemReference =
+        item.referenceStationValues ??
+        (item.referenceKey
+          ? rawComparisonData.referenceStationValuesByKey?.[item.referenceKey]
+          : undefined) ??
+        canonicalReference
       const stationValues = item.stationValues.map((values, stationIndex) => {
         const pairedCurrent =
           dashboardMode === 'slr-current'
@@ -696,7 +715,14 @@ export default function ScenarioExplorerPage({
   }
   const selectMapScenario = (nextMapScenario: string) => {
     if (nextMapScenario === baseScenario) return
+    const requiredBase = requiredComparisonBaseline(dashboardMode, nextMapScenario)
+    const leavingCalsimFamily =
+      !requiredBase &&
+      (baseScenario === 'baseline-calsim' || baseScenario === 'baseline-calsim-slr')
     startTransition(() => {
+      if (requiredBase) setBaseScenario(requiredBase)
+      else if (leavingCalsimFamily)
+        setBaseScenario(dashboardMode === 'slr-scenarios' ? 'baseline-slr' : 'baseline')
       setScenario(nextMapScenario)
       setActiveKeys([nextMapScenario])
       setHistogramBrush(null)
@@ -913,13 +939,9 @@ export default function ScenarioExplorerPage({
       </Box>
     )
   }
-  const publicAvailabilityMessage =
-    dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
-      ? 'The modeling results of scenarios “Calling on Reserves” and “A Tunnel” are coming soon.'
-      : 'The modeling results of scenario “A Tunnel” are coming soon.'
   const headerDescription = d1641StationsOnly
     ? `D-1641 station view · showing only the ${data.stations.length} mapped Decision 1641 monitoring locations. The map, regional timeline, and station distribution are all recalculated from this subset.`
-    : `Explore salinity changes across scenarios, regions, stations, and time with the linked map, timeline, and station distribution. See Tutorial for help.${publicModesOnly ? ` ${publicAvailabilityMessage}` : ' If the layout feels crowded, use a larger screen or zoom out in your browser (Ctrl/Cmd + −).'}`
+    : `Explore salinity changes across scenarios, regions, stations, and time with the linked map, timeline, and station distribution. See Tutorial for help.${publicModesOnly ? '' : ' If the layout feels crowded, use a larger screen or zoom out in your browser (Ctrl/Cmd + −).'}`
 
   return (
     <>
@@ -1078,12 +1100,7 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
                     {data.scenarios.map((item) => (
-                      <MenuItem
-                        disabled={publicModesOnly && isTunnelScenario(item.label)}
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryGreen')}
-                      >
+                      <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>
                         <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
@@ -1102,19 +1119,13 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => selectSlrFamily(event.target.value)}
                   >
                     {scenarioOptions.map((item) => (
-                      <MenuItem
-                        disabled={publicModesOnly && isTunnelScenario(item.label)}
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryGreen')}
-                      >
+                      <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>
                         <ResponsiveScenarioLabel
                           fullName={publicModesOnly}
                           label={item.label.replace(/\s*\(SLR\)$/, '')}
                         />
                       </MenuItem>
                     ))}
-                    {publicModesOnly && <UnavailableSlrOptions color="brand.primaryGreen" />}
                   </LabeledSelect>
                 </>
               ) : dashboardMode === 'tiered-outflows' || dashboardMode === 'schism-runs' ? (
@@ -1132,9 +1143,7 @@ export default function ScenarioExplorerPage({
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
-                        disabled={
-                          item.key === scenario || (publicModesOnly && isTunnelScenario(item.label))
-                        }
+                        disabled={item.key === scenario}
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryBlue')}
@@ -1157,8 +1166,7 @@ export default function ScenarioExplorerPage({
                     {scenarioOptions.map((item) => (
                       <MenuItem
                         disabled={
-                          item.key === baseScenario ||
-                          (publicModesOnly && isTunnelScenario(item.label))
+                          item.key === baseScenario
                         }
                         key={item.key}
                         value={item.key}
@@ -1184,7 +1192,11 @@ export default function ScenarioExplorerPage({
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
-                        disabled={publicModesOnly && isTunnelScenario(item.label)}
+                        disabled={
+                          item.key === scenario ||
+                          (requiredComparisonBaseline(dashboardMode, scenario) !== null &&
+                            item.key !== requiredComparisonBaseline(dashboardMode, scenario))
+                        }
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryBlue')}
@@ -1192,11 +1204,11 @@ export default function ScenarioExplorerPage({
                         <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
-                    {publicModesOnly && dashboardMode === 'slr-scenarios' && (
-                      <UnavailableSlrOptions color="brand.primaryBlue" />
-                    )}
                   </LabeledSelect>
-                  <SwapButton onClick={swapScenarios} />
+                  <SwapButton
+                    disabled={requiredComparisonBaseline(dashboardMode, scenario) !== null}
+                    onClick={swapScenarios}
+                  />
                   <LabeledSelect
                     tourId="scenario-controls"
                     label="Selected Scenario"
@@ -1210,8 +1222,7 @@ export default function ScenarioExplorerPage({
                     {scenarioOptions.map((item) => (
                       <MenuItem
                         disabled={
-                          item.key === baseScenario ||
-                          (publicModesOnly && isTunnelScenario(item.label))
+                          item.key === baseScenario
                         }
                         key={item.key}
                         value={item.key}
@@ -1220,9 +1231,6 @@ export default function ScenarioExplorerPage({
                         <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
-                    {publicModesOnly && dashboardMode === 'slr-scenarios' && (
-                      <UnavailableSlrOptions color="brand.primaryGreen" />
-                    )}
                   </LabeledSelect>
                 </>
               )}
@@ -1415,7 +1423,6 @@ export default function ScenarioExplorerPage({
                 onExpandedChange={setIsChartExpanded}
                 enableDateHighlights={enableDateHighlights}
                 useFullScenarioNames={publicModesOnly}
-                disableTunnelScenario={publicModesOnly}
                 showTimeframeSelector={!publicModesOnly}
               />
               {!isChartExpanded && (

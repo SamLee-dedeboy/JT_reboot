@@ -25,8 +25,9 @@ import CloseIcon from '@mui/icons-material/Close'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { assetUrl } from '../utils/baseUrl'
-import { navItems } from './navigation'
+import { menuGroups, navItems, type DropdownGroup, type DropdownItem } from './navigation'
 
 function DesktopNavbar() {
   const [desktopAnchorEl, setDesktopAnchorEl] = useState<HTMLElement | null>(null)
@@ -82,6 +83,138 @@ function DesktopNavbar() {
     transition: 'opacity 180ms ease, transform 180ms ease',
     flex: 'none',
   } as const
+
+  const menuItemHoverSx = menuItemSx['&:hover, &:focus-visible']
+
+  // The highlighted starting point at the top of a grouped menu.
+  const featuredItemSx = {
+    ...menuItemSx,
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: 0.5,
+    padding: theme.jtSpacing.component.sm,
+    border: theme.navigation.panelBorder,
+    bgcolor: 'translucent.primaryGreenSubtle',
+    '&:hover, &:focus-visible': { ...menuItemHoverSx, borderColor: 'primary.main' },
+  } as const
+
+  // Shortcuts sit under their page's label, one quieter step down, with a shorter marker.
+  const nestedItemSx = {
+    ...menuItemSx,
+    marginBlock: 0,
+    marginLeft: theme.navigation.spacing.nestedIndent,
+    paddingBlock: 0.75,
+  } as const
+
+  const nestedMarkerSx = { ...desktopMenuMarkerSx, height: 16 } as const
+
+  const linkProps = (entry: DropdownItem) =>
+    entry.external
+      ? { component: 'a' as const, href: entry.href, target: '_blank', rel: 'noopener noreferrer' }
+      : { component: Link, to: entry.href }
+
+  // Menu items stay direct children of the menu list so arrow keys reach every link.
+  const groupedMenuEntries = (groups: DropdownGroup[]) =>
+    groups.flatMap((group) =>
+      group.featured
+        ? group.items.map((entry) => (
+            <MenuItem
+              key={entry.label}
+              {...linkProps(entry)}
+              disabled={entry.disabled}
+              onClick={handleDesktopMenuClose}
+              sx={featuredItemSx}
+            >
+              <Typography variant="eyebrow" component="span">
+                {group.label}
+              </Typography>
+              <Box
+                component="span"
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <Typography variant="h4" component="span">
+                  {entry.label}
+                </Typography>
+                <ArrowForwardIcon sx={{ color: 'primary.main' }} />
+              </Box>
+              {entry.caption && (
+                <Typography variant="captionSmall" component="span" sx={{ whiteSpace: 'normal' }}>
+                  {entry.caption}
+                </Typography>
+              )}
+            </MenuItem>
+          ))
+        : [
+            <Box
+              key={`group:${group.label}`}
+              sx={{
+                marginInline: theme.jtSpacing.component.xs,
+                marginTop: theme.jtSpacing.component.xs,
+                paddingInline: 1.25,
+                paddingTop: theme.jtSpacing.component.sm,
+                paddingBottom: theme.jtSpacing.component.xs / 2,
+                borderTop: 1,
+                borderColor: 'border.subtle',
+              }}
+            >
+              <Typography variant="eyebrow" component="p">
+                {group.label}
+              </Typography>
+            </Box>,
+            ...group.items.flatMap((entry) => [
+              <MenuItem
+                key={entry.label}
+                {...linkProps(entry)}
+                disabled={entry.disabled}
+                onClick={handleDesktopMenuClose}
+                sx={menuItemSx}
+              >
+                <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
+                  <Box className="dropdown-link-marker" component="span" sx={desktopMenuMarkerSx} />
+                  <Box component="span" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                    <Typography variant="navigationLabel" component="span">
+                      {entry.label}
+                    </Typography>
+                    {entry.caption && (
+                      <Typography variant="captionSmall" component="span">
+                        {entry.caption}
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </MenuItem>,
+              ...(entry.children ?? []).map((child) => (
+                <MenuItem
+                  key={child.label}
+                  {...linkProps(child)}
+                  disabled={child.disabled}
+                  onClick={handleDesktopMenuClose}
+                  sx={nestedItemSx}
+                >
+                  <Box
+                    component="span"
+                    sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}
+                  >
+                    <Box className="dropdown-link-marker" component="span" sx={nestedMarkerSx} />
+                    <Box
+                      component="span"
+                      sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}
+                    >
+                      <Typography variant="navigationShortcut" component="span">
+                        {child.label}
+                      </Typography>
+                      {child.hint && (
+                        <Typography variant="captionSmall" component="span">
+                          {child.hint}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                </MenuItem>
+              )),
+            ]),
+          ],
+    )
 
   return (
     <>
@@ -165,7 +298,9 @@ function DesktopNavbar() {
       {/* Floating panel for the dropdown selected from the desktop link row. */}
       <Menu
         anchorEl={desktopAnchorEl}
-        open={Boolean(desktopAnchorEl && activeDesktopMenu?.dropdown)}
+        open={Boolean(
+          desktopAnchorEl && (activeDesktopMenu?.dropdown || activeDesktopMenu?.groups),
+        )}
         onClose={handleDesktopMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
@@ -173,8 +308,8 @@ function DesktopNavbar() {
           paper: {
             sx: {
               marginTop: theme.jtSpacing.component.xs,
-              minWidth: 312,
-              maxWidth: 360,
+              minWidth: activeDesktopMenu?.groups ? theme.navigation.groupedPanelWidth.min : 312,
+              maxWidth: activeDesktopMenu?.groups ? theme.navigation.groupedPanelWidth.max : 360,
               overflow: 'visible',
               bgcolor: theme.navigation.menuPanelBackground,
               border: theme.navigation.panelBorder,
@@ -291,6 +426,7 @@ function DesktopNavbar() {
             </MenuItem>
           ),
         )}
+        {activeDesktopMenu?.groups && groupedMenuEntries(activeDesktopMenu.groups)}
       </Menu>
     </>
   )
@@ -330,6 +466,78 @@ function MobileNavbar() {
       transform: 'translateY(-1px)',
     },
   } as const
+
+  // One drawer link; a nested shortcut sits indented under its page.
+  const mobileEntry = (sub: DropdownItem, nested: boolean) => {
+    const sx = nested
+      ? { ...mobileSubItemSx, marginLeft: theme.navigation.spacing.nestedIndent }
+      : mobileSubItemSx
+    const marker = (
+      <Box
+        component="span"
+        sx={{
+          width: 3,
+          height: 22,
+          marginTop: theme.jtSpacing.component.xs / 4,
+          marginRight: theme.jtSpacing.component.xs * 1.1,
+          borderRadius: '50%',
+          bgcolor: sub.disabled ? 'base.300' : 'primary.main',
+          opacity: sub.disabled ? 1 : 0.72,
+          flex: 'none',
+        }}
+      />
+    )
+    const primarySx = { color: 'common.white', typography: 'navigationLabel' }
+
+    if (sub.disabled) {
+      return (
+        <ListItemButton key={sub.label} disabled sx={sx}>
+          {marker}
+          <ListItemText
+            primary={sub.label}
+            slotProps={{ primary: { sx: { typography: 'navigationLabel' } } }}
+          />
+        </ListItemButton>
+      )
+    }
+    if (sub.external) {
+      return (
+        <ListItemButton
+          key={sub.label}
+          component="a"
+          href={sub.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={closeMobileMenu}
+          sx={sx}
+        >
+          {marker}
+          <ListItemText
+            primary={sub.label}
+            secondary="Opens a related project"
+            slotProps={{
+              primary: { sx: primarySx },
+              secondary: {
+                sx: { color: 'base.100', marginTop: theme.jtSpacing.component.xs * 0.35 },
+              },
+            }}
+          />
+        </ListItemButton>
+      )
+    }
+    return (
+      <ListItemButton
+        key={sub.label}
+        component={Link}
+        to={sub.href}
+        onClick={closeMobileMenu}
+        sx={sx}
+      >
+        {marker}
+        <ListItemText primary={sub.label} slotProps={{ primary: { sx: primarySx } }} />
+      </ListItemButton>
+    )
+  }
 
   return (
     <>
@@ -409,19 +617,12 @@ function MobileNavbar() {
                   <ListItemButton disabled sx={mobileNavButtonSx}>
                     <ListItemText
                       primary={item.label}
-                      secondary="Coming soon"
                       slotProps={{
                         primary: {
                           sx: {
                             color: 'base.300',
                             whiteSpace: 'nowrap',
                             typography: 'navigationLabel',
-                          },
-                        },
-                        secondary: {
-                          sx: {
-                            color: 'base.300',
-                            marginTop: theme.jtSpacing.component.xs / 4,
                           },
                         },
                       }}
@@ -488,7 +689,7 @@ function MobileNavbar() {
                           },
                         }}
                       />
-                      {item.dropdown &&
+                      {(item.dropdown || item.groups) &&
                         (openDropdown === idx ? (
                           <ExpandLessIcon sx={{ color: 'common.white' }} />
                         ) : (
@@ -504,112 +705,25 @@ function MobileNavbar() {
                           paddingTop: theme.jtSpacing.component.xs * 0.75,
                         }}
                       >
-                        <Typography
-                          variant="eyebrow"
-                          component="p"
-                          sx={{
-                            paddingInline: theme.navigation.spacing.subItemInline,
-                            paddingTop: theme.jtSpacing.component.xs * 0.7,
-                            paddingBottom: theme.jtSpacing.component.xs / 4,
-                          }}
-                        >
-                          Explore
-                        </Typography>
-                        {item.dropdown?.map((sub) =>
-                          sub.disabled ? (
-                            <ListItemButton key={sub.label} disabled sx={mobileSubItemSx}>
-                              <Box
-                                component="span"
-                                sx={{
-                                  width: 3,
-                                  height: 22,
-                                  marginTop: theme.jtSpacing.component.xs / 4,
-                                  marginRight: theme.jtSpacing.component.xs * 1.1,
-                                  borderRadius: '50%',
-                                  bgcolor: 'base.300',
-                                  flex: 'none',
-                                }}
-                              />
-                              <ListItemText
-                                primary={sub.label}
-                                secondary="Coming soon"
-                                slotProps={{
-                                  primary: { sx: { typography: 'navigationLabel' } },
-                                  secondary: { sx: { typography: 'captionSmall' } },
-                                }}
-                              />
-                            </ListItemButton>
-                          ) : sub.external ? (
-                            <ListItemButton
-                              key={sub.label}
-                              component="a"
-                              href={sub.href}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={closeMobileMenu}
-                              sx={mobileSubItemSx}
+                        {menuGroups(item).map((group) => (
+                          <Box key={group.label}>
+                            <Typography
+                              variant="eyebrow"
+                              component="p"
+                              sx={{
+                                paddingInline: theme.navigation.spacing.subItemInline,
+                                paddingTop: theme.jtSpacing.component.xs * 0.7,
+                                paddingBottom: theme.jtSpacing.component.xs / 4,
+                              }}
                             >
-                              <Box
-                                component="span"
-                                sx={{
-                                  width: 3,
-                                  height: 22,
-                                  marginTop: theme.jtSpacing.component.xs / 4,
-                                  marginRight: theme.jtSpacing.component.xs * 1.1,
-                                  borderRadius: '50%',
-                                  bgcolor: 'primary.main',
-                                  opacity: 0.72,
-                                  flex: 'none',
-                                }}
-                              />
-                              <ListItemText
-                                primary={sub.label}
-                                secondary="Opens a related project"
-                                slotProps={{
-                                  primary: {
-                                    sx: { color: 'common.white', typography: 'navigationLabel' },
-                                  },
-                                  secondary: {
-                                    sx: {
-                                      color: 'base.100',
-                                      marginTop: theme.jtSpacing.component.xs * 0.35,
-                                    },
-                                  },
-                                }}
-                              />
-                            </ListItemButton>
-                          ) : (
-                            <ListItemButton
-                              key={sub.label}
-                              component={Link}
-                              to={sub.href}
-                              onClick={closeMobileMenu}
-                              sx={mobileSubItemSx}
-                            >
-                              <Box
-                                component="span"
-                                sx={{
-                                  width: 3,
-                                  height: 22,
-                                  marginTop: theme.jtSpacing.component.xs / 4,
-                                  marginRight: theme.jtSpacing.component.xs * 1.1,
-                                  borderRadius: '50%',
-                                  bgcolor: 'primary.main',
-                                  opacity: 0.72,
-                                  flex: 'none',
-                                }}
-                              />
-                              <ListItemText
-                                primary={sub.label}
-                                slotProps={{
-                                  primary: {
-                                    sx: { color: 'common.white', typography: 'navigationLabel' },
-                                  },
-                                }}
-                              />
-                            </ListItemButton>
-                          ),
-                        )}
+                              {group.label}
+                            </Typography>
+                            {group.items.flatMap((sub) => [
+                              mobileEntry(sub, false),
+                              ...(sub.children ?? []).map((child) => mobileEntry(child, true)),
+                            ])}
+                          </Box>
+                        ))}
                       </Box>
                     </Collapse>
                   </Box>

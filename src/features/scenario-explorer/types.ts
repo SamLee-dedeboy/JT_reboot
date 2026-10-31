@@ -17,6 +17,7 @@ export interface Scenario {
   scenarioFamily?: string
   climateCondition?: 'current' | 'slr'
   currentCounterpart?: string
+  referenceKey?: string
   stationValues: ValueSeries[]
   regionValues: Record<string, ValueSeries>
   referenceStationValues?: ValueSeries[]
@@ -28,6 +29,7 @@ export interface ScenarioDataset {
   regions: string[]
   scenarios: Scenario[]
   referenceStationValues?: ValueSeries[]
+  referenceStationValuesByKey?: Record<string, ValueSeries[]>
   units?: string
 }
 

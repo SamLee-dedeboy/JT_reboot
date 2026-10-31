@@ -26,7 +26,7 @@ export default function Home() {
         <Typography id="co-design-welcome-title" variant="h4" component="h2">
           Welcome to the
           <br />
-          Co-Learning Dashboard
+          Co-Design Dashboard
         </Typography>
         <Typography variant="body1" sx={{ color: 'base.50' }}>
           This site offers interactive opportunities to explore how the Just Transitions in the
@@ -62,13 +62,13 @@ export default function Home() {
       >
         <Stack sx={{ alignItems: 'center', gap: 4 }}>
           <Typography variant="h2" component="h1">
-            Welcome to the Co-Learning Dashboard
+            Welcome to the Co-Design Dashboard
           </Typography>
           <Typography
             variant="body1"
             sx={(theme) => ({ maxWidth: theme.jtSpacing.paragraphMaxWidth.default })}
           >
-            “What is co-learning”? Co-learning is a collaborative process in which researchers,
+            “What is co-designing”? Co-designing is a collaborative process in which researchers,
             community members, and other partners learn from one another by sharing knowledge,
             experiences, and perspectives to jointly understand issues and develop solutions. It
             recognizes that expertise exists both inside and outside academia and values mutual

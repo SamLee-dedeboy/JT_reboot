@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Regions as rows with a map key</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&amp;family=Hammersmith+One&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 520px; box-sizing: border-box; padding: 28px 32px; background: #141c1e; color: #e9ebeb; font-family: Figtree, system-ui, sans-serif; display: flex; flex-direction: column; gap: 14px">
+  <div style="display: flex; align-items: center; justify-content: space-between">
+    <h2 style="margin: 0; font-weight: 400; font-size: 22px">Difference from Business as Usual for <span style="font-weight: 700; letter-spacing: 0.02em">ALL SIX SCENARIOS</span>, by Delta area</h2>
+    <div role="group" aria-label="View" style="display: flex; padding: 3px; border: 1px solid rgba(155,162,164,0.24); border-radius: 999px; font-size: 15px">
+      <button type="button" style="padding: 5px 14px; border: 0; border-radius: 999px; background: transparent; color: #e9ebeb; font: inherit">Table</button>
+      <button type="button" aria-pressed="true" style="padding: 5px 14px; border: 0; border-radius: 999px; background: #7ed957; color: #101618; font: inherit">Map</button>
+    </div>
+  </div>
+  <div style="display: flex; gap: 8px; font-size: 15px">
+    <button type="button" style="padding: 5px 14px; border-radius: 999px; border: 1px solid rgba(155,162,164,0.4); background: transparent; color: #e9ebeb; font: inherit">Economic value added · score</button>
+    <button type="button" aria-pressed="true" style="padding: 5px 14px; border-radius: 999px; border: 1px solid #7ed957; background: rgba(126,217,87,0.18); color: #e9ebeb; font: inherit">Dry-year salinity effects by Delta area</button>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px">
+    <svg viewBox="380 20 510 800" role="img" aria-label="Economy's four Delta areas: 1 North, 2 Central, 3 South, 4 West" style="width: 100%; height: 340px; display: block">
+      <sc-for list="{{key}}" as="r" hint-placeholder-count="4">
+        <path d="{{r.d}}" fill="rgba(127,134,255,0.16)" stroke="#7f86ff" stroke-width="3"></path>
+      </sc-for>
+      <sc-for list="{{key}}" as="r" hint-placeholder-count="4">
+        <circle cx="{{r.x}}" cy="{{r.y}}" r="30" fill="#7f86ff"></circle>
+      </sc-for>
+      <sc-for list="{{key}}" as="r" hint-placeholder-count="4">
+        <text x="{{r.x}}" y="{{r.yNum}}" text-anchor="middle" font-size="36" font-family="Hammersmith One, sans-serif" fill="#101618">{{r.n}}</text>
+      </sc-for>
+    </svg>
+
+    <div style="display: flex; flex-direction: column">
+      <div style="display: grid; grid-template-columns: 170px minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; padding-bottom: 6px">
+        <span></span>
+        <span style="font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957; padding-bottom: 6px; border-bottom: 1px solid rgba(155,162,164,0.24)">CHANGES TO LANDSCAPE</span>
+        <span></span>
+        <span style="font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.06em; color: #7ed957; padding-bottom: 6px; border-bottom: 1px solid rgba(155,162,164,0.24)">CHANGES TO WATER FLOW</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 170px repeat(3, minmax(0, 1fr)) 24px repeat(3, minmax(0, 1fr)); column-gap: 6px; align-items: end; font-family: 'Hammersmith One', sans-serif; font-size: 12px; letter-spacing: 0.04em; padding-bottom: 8px; border-bottom: 1px solid rgba(155,162,164,0.24)">
+        <span style="color: #9ba2a4">DELTA AREA</span>
+        <span style="text-align: center">ECO MACHINE</span><span style="text-align: center">NEW GREEN WATERSHED</span><span style="text-align: center">BOLSTER &amp; FORTIFY</span>
+        <span></span>
+        <span style="text-align: center">CALLING ON RESERVES</span><span style="text-align: center">A TUNNEL</span><span style="text-align: center">INCREASED DELTA OUTFLOW</span>
+      </div>
+      <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+        <div style="display: grid; grid-template-columns: 170px repeat(3, minmax(0, 1fr)) 24px repeat(3, minmax(0, 1fr)); column-gap: 6px; align-items: stretch; height: 52px; border-bottom: 1px solid rgba(155,162,164,0.16)">
+          <span style="display: flex; align-items: center; gap: 10px; font-size: 15px"><span style="width: 22px; height: 22px; border-radius: 50%; background: #7f86ff; color: #101618; font-family: 'Hammersmith One', sans-serif; font-size: 13px; display: flex; align-items: center; justify-content: center">{{row.n}}</span>{{row.name}}</span>
+          <sc-for list="{{row.cells}}" as="c" hint-placeholder-count="7">
+            <div style="position: relative">
+              <sc-if value="{{c.bar}}" hint-placeholder-val="{{c.bar}}">
+                <span style="position: absolute; left: 50%; top: 10px; bottom: 10px; border-left: 2px solid #6d777a"></span>
+                <span style="{{c.barStyle}}"></span>
+                <span style="{{c.textStyle}}">{{c.text}}</span>
+              </sc-if>
+              <sc-if value="{{c.note}}" hint-placeholder-val="{{c.note}}">
+                <span style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #9ba2a4">{{c.text}}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":520}}'>
+const SHAPES = [{"name":"South Delta","d":"M774 553L794 563L818 577L813 589L820 624L824 655L824 661L828 667L826 670L832 685L844 710L869 740L875 746L868 765L859 781L833 804L818 791L796 782L802 818L784 801L760 782L754 770L717 760L723 745L680 728L642 672L646 646L655 639L653 623L687 597L714 624L741 620L741 606L729 583L748 562L774 553Z","x":766,"y":698,"i":2},{"name":"Central Delta","d":"M765 529L750 562L727 593L691 599L644 622L629 611L636 594L640 578L639 550L636 550L632 540L632 522L632 506L629 495L641 491L639 477L628 468L630 442L641 418L626 404L639 394L668 400L685 404L679 388L679 377L688 363L719 358L741 336L757 421L766 454L771 491L766 497L766 519L765 529Z","x":705,"y":461,"i":1},{"name":"North Delta","d":"M516 171L534 154L534 129L564 94L589 28L669 52L673 106L696 172L699 197L698 212L686 231L746 274L758 306L741 328L680 368L683 396L641 402L637 415L590 429L526 479L493 460L558 368L515 319L479 300L479 276L491 251L467 180L498 190Z","x":590,"y":254,"i":0},{"name":"West Delta","d":"M555 592L526 577L520 547L508 537L522 529L508 520L490 516L448 505L411 498L394 493L416 454L506 434L492 477L495 490L529 483L564 428L610 418L625 450L577 456L563 472L582 493L626 526L609 541L618 586L636 588L628 621L645 646L616 649L596 639L590 618L562 595Z","x":565,"y":535,"i":3}];
+const SCEN = [
+  [605, -712, 1813, 2529],
+  [463, -1993, 1113, 2327],
+  [-528, -8548, -1084, 2104],
+  null,
+  [138, 1311, 705, 512],
+  [-251, -18821, -2513, -2405],
+  'forthcoming',
+];
+const REGION_ORDER = ['North Delta', 'Central Delta', 'South Delta', 'West Delta'];
+const MAX = 18821;
+const money = (v) => (v > 0 ? '+$' : v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('en-US');
+
+class Component extends DCLogic {
+  renderVals() {
+    const key = SHAPES.map((r) => ({ d: r.d, x: r.x, y: r.y, yNum: r.y + 13, n: r.i + 1 }));
+    const rows = REGION_ORDER.map((name, ri) => ({
+      name, n: ri + 1,
+      cells: SCEN.map((col) => {
+        if (col === null) return { bar: false, note: false, text: '' };
+        if (col === 'forthcoming') return { bar: false, note: true, text: 'Forthcoming' };
+        const v = col[ri];
+        const reach = Math.max(1.5, Math.abs(v) / MAX * 46);
+        const color = v > 0 ? '#51a2bd' : '#d6453d';
+        return {
+          bar: true, note: false, text: money(v),
+          barStyle: 'position: absolute; top: 17px; bottom: 17px; ' + (v >= 0 ? 'left: calc(50% + 1px)' : 'right: 50%') + '; width: ' + reach + '%; opacity: 0.7; border-radius: 2px; background: ' + color,
+          textStyle: 'position: absolute; top: 0; bottom: 0; display: flex; align-items: center; font-size: 13px; white-space: nowrap; ' + (v > 0 ? 'right: calc(50% + 6px)' : 'left: calc(50% + 7px)') + '; color: ' + (v > 0 ? '#51a2bd' : '#f0665d'),
+        };
+      }),
+    }));
+    return { key, rows };
+  }
+}
+</script>
+</body>
+</html>

@@ -668,15 +668,10 @@ function ecoCulturalTree(): CriterionNode {
         inferredSlices: undefined,
         values: flat({ bau: 0, em: 2, ngw: 5, bf: 0, cor: 0, tunnel: 0 }),
         sources: [SLIDES, ...sourcesFor('ec-restoration')],
-        note: 'Slide 55 ranks restored acres: Eco Machine +2, New Green Watershed +5, every other scenario 0. Open the row for the acres themselves, by habitat type.',
+        note: 'Slide 55 ranks restored acres: Eco Machine +2, New Green Watershed +5, every other scenario 0. Open the row for the habitat types and the qualitative functional-flow outcome.',
         children: [
-          adapt(restoration, {
-            id: 'bk-ec-restoration-acres',
-            label: 'Restored acres, all habitats',
-            children: undefined,
-            level: 'entity',
-          }),
           ...(restoration.children ?? []).map((child) => adapt(child)),
+          qualitativeRow('bk-ec-restoration-functional-flow', 'ecoCultural'),
         ],
       }),
       ...(node('ecoCultural').children ?? []).slice(1).map(describedMetric),

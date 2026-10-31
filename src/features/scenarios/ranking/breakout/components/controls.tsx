@@ -80,7 +80,7 @@ export function TableTabs({
                 }}
               >
                 <TeamIcon team={team.key} size={18} />
-                <Typography component="span" variant="button" sx={{ whiteSpace: 'nowrap' }}>
+                <Typography component="span" variant="chartTitle" sx={{ whiteSpace: 'nowrap' }}>
                   {team.name}
                 </Typography>
               </Box>
@@ -133,7 +133,7 @@ export function RailGroup({
               '&.Mui-focusVisible': focusRing,
             }}
           >
-            <Typography variant="meta" sx={{ color: 'inherit' }}>
+            <Typography variant="body2" sx={{ color: 'inherit' }}>
               {action.label}
             </Typography>
           </ButtonBase>
@@ -352,13 +352,13 @@ export function MeasureRow({
             bgcolor: on ? 'primary.main' : 'transparent',
             color: 'common.black',
             // The tick takes its size from a text variant, not a literal.
-            typography: 'meta',
+            typography: 'body2',
           }}
         >
           {on && <CheckIcon fontSize="inherit" />}
         </Box>
         <Typography
-          variant={nested ? 'meta' : 'body2'}
+          variant="body2"
           component="span"
           sx={{ color: on ? 'common.white' : 'base.100' }}
         >

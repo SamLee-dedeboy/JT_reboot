@@ -27,7 +27,7 @@ const HOME_SECTIONS: NavRailItem[] = [
   { id: 'whatif', label: 'What If?' },
   { id: 'foundations', label: 'Foundations' },
   { id: 'approach', label: 'Approach' },
-  { id: 'stakes', label: "What's at Stake" },
+  { id: 'stakes', label: "What's at Stake?" },
   { id: 'mission', label: 'Mission' },
   { id: 'works', label: 'How It Works' },
 ]

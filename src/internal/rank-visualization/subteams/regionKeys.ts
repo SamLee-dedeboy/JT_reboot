@@ -6,6 +6,18 @@
 // outline at all (eco-cultural, by design).
 import type { TeamKey } from '../data'
 
+/** Shared reading order for region tabs, map numbers, and the map-view value table. */
+export const REGION_DISPLAY_ORDER = [
+  'North Delta',
+  'Confluence',
+  'Central',
+  'South Delta',
+  'Suisun Bay',
+  'San Pablo Bay',
+  'Central Bay',
+  'South Bay',
+] as const
+
 /** All eight Ecology data regions have an outline; "Suisun Marsh" has an
  *  additional outline and no key, because the report folds it into Suisun Bay. */
 const ECOLOGY_REGION_KEY: Record<string, string> = {
