@@ -65,7 +65,8 @@ export const TEAMS: Team[] = [
 /** The six adaptation scenarios, in declaration order; drilldown/model.ts keys off it. */
 export const SCENARIOS: Scenario[] = [
   {
-    // Ecology: landscape +5 and food web +4 (NGW2). EJ: the only scenario above 0.
+    // Ecology: the team's own score, from the ranking table workbook (Nov 2026).
+    // EJ: the only scenario above 0.
     // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
     // Recreation: −0.375, its own score (26 Oct 2026): salinity and temperature,
     // today and with sea level rise, averaged; the Suisun Marsh salinity losses
@@ -73,24 +74,24 @@ export const SCENARIOS: Scenario[] = [
     // apart from it.
     name: 'New Green Watershed',
     color: voting.scenario.newGreenWatershed,
-    scores: [4.5, -0.375, 1, -4, 4], // PLACEHOLDER: Ecology
-    provisional: [true, false, false, false, false],
+    scores: [3.1, -0.375, 1, -4, 4],
+    provisional: [false, false, false, false, false],
   },
   {
-    // Ecology: landscape +3, food web +1. EJ fell from +1 to 0 when the Oct 2026
+    // Ecology: the team's own score, from the ranking table workbook (Nov 2026). EJ fell from +1 to 0 when the Oct 2026
     // slides dropped the two seasonal drinking-water scores from its average.
     // Recreation: the same activity scores as NGW, so the same −0.375.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
-    scores: [2, -0.375, 0, 0, 2], // PLACEHOLDER: Ecology
-    provisional: [true, false, false, false, false],
+    scores: [1.33, -0.375, 0, 0, 2],
+    provisional: [false, false, false, false, false],
   },
   {
     // Recreation: 0 on every activity, Delta-wide.
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
-    scores: [0, 0, 0, -1, 0], // PLACEHOLDER: Ecology
-    provisional: [true, false, false, false, false],
+    scores: [0, 0, 0, -1, 0],
+    provisional: [false, false, false, false, false],
   },
   {
     // Economy: 0 in both water years and with sea level rise (v16, 25 Oct 2026),
@@ -102,8 +103,8 @@ export const SCENARIOS: Scenario[] = [
     // Sept report published.
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [0, 0.0625, -1, 0, 1], // PLACEHOLDER: Ecology, Env. Justice
-    provisional: [true, false, true, false, false],
+    scores: [-0.33, 0.0625, -1, 0, 1], // PLACEHOLDER: Env. Justice
+    provisional: [false, false, true, false, false],
   },
   {
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
@@ -114,14 +115,14 @@ export const SCENARIOS: Scenario[] = [
     // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0, -0.125, -2, -1, -2], // PLACEHOLDER: Ecology, Env. Justice
-    provisional: [true, false, true, false, false],
+    scores: [0.33, -0.125, -2, -1, -2], // PLACEHOLDER: Env. Justice
+    provisional: [false, false, true, false, false],
   },
   {
     name: 'Business as Usual',
     color: voting.scenario.businessAsUsual,
-    scores: [0, 0, 0, 0, 0], // PLACEHOLDER: Ecology
-    provisional: [true, false, false, false, false],
+    scores: [0, 0, 0, 0, 0],
+    provisional: [false, false, false, false, false],
   },
 ]
 

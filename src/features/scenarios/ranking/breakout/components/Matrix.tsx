@@ -65,25 +65,30 @@ const labelLines = (lines: 1 | 2 | 3) =>
 const GROUP_GAP = '16px'
 
 const ECOCULTURAL_RESTORATION_GROUPS: Partial<Record<string, string>> = {
-  'bk-ec-restoration-managed': 'Within Delta',
-  'bk-ec-restoration-uplandWetland': 'Upstream Delta',
+  'bk-ec-restoration-tidal': 'In the Delta',
+  'bk-ec-restoration-uplandWetland': 'Watershed restoration upstream of the Delta',
 }
 
 const ECOCULTURAL_RESTORATION_GROUP_ROWS = new Set([
+  'bk-ec-restoration-tidal',
   'bk-ec-restoration-managed',
   'bk-ec-restoration-rice',
-  'bk-ec-restoration-tidal',
+  'bk-ec-restoration-transitional',
   'bk-ec-restoration-uplandWetland',
   'bk-ec-restoration-meadow',
   'bk-ec-restoration-floodplain',
 ])
 
-const ECOCULTURAL_RESTORATION_GROUP_ENDS: Partial<Record<string, 'first' | 'last'>> = {
-  'bk-ec-restoration-managed': 'first',
-  'bk-ec-restoration-tidal': 'last',
-  'bk-ec-restoration-uplandWetland': 'first',
-  'bk-ec-restoration-floodplain': 'last',
-}
+const ECOCULTURAL_RESTORATION_SPLIT = new Set([
+  'bk-ec-restoration-managed',
+  'bk-ec-restoration-rice',
+])
+
+/** One habitat type shown as two rows; its name and the sub-scenario sit on a row above them. */
+const ECOCULTURAL_RESTORATION_SPLIT_START = 'bk-ec-restoration-managed'
+
+const hasRestorationHeading = (id: string) =>
+  !!ECOCULTURAL_RESTORATION_GROUPS[id] || id === ECOCULTURAL_RESTORATION_SPLIT_START
 
 export function Matrix({
   state,
@@ -177,7 +182,13 @@ export function Matrix({
   // Rows share the height as if this table had the densest team's row count; a
   // filler track takes the share of the rows this table does not have. A table
   // longer than that fills the card and its rows shrink instead.
-  const weight = rows.reduce((n, row) => n + (row.depth === 1 ? ENTITY_ROW : 1), 0)
+  const weight = rows.reduce(
+    (n, row) =>
+      n +
+      (row.depth === 1 ? ENTITY_ROW : 1) +
+      (hasRestorationHeading(row.node.id) ? ENTITY_ROW : 0),
+    0,
+  )
   const spare = Math.max(0, Math.round((DENSEST_TABLE_ROWS - weight) * 100) / 100)
   // At that density a row is too short for a two-line label.
   const lines = fit && Math.max(rows.length, DENSEST_TABLE_ROWS) > 9 ? 1 : fit ? 2 : 3
@@ -186,7 +197,10 @@ export function Matrix({
         'auto',
         'auto',
         ...(split ? ['auto'] : []),
-        ...rows.map((row) => `minmax(0, ${row.depth === 1 ? ENTITY_ROW : 1}fr)`),
+        ...rows.flatMap((row) => [
+          ...(hasRestorationHeading(row.node.id) ? ['auto'] : []),
+          `minmax(0, ${row.depth === 1 ? ENTITY_ROW : 1}fr)`,
+        ]),
         ...(spare > 0 ? [`minmax(0, ${spare}fr)`] : []),
         'auto',
       ].join(' ')
@@ -204,6 +218,21 @@ export function Matrix({
       />
     )
   const filler = fit && spare > 0
+  // The rule down the left of a group of restoration rows, unbroken from row to row.
+  const restorationGroupSx = {
+    position: 'relative' as const,
+    pl: 1.5,
+    ml: { md: 2, xl: 3.5 },
+    '&::before': {
+      content: '""',
+      position: 'absolute' as const,
+      left: 0,
+      top: 0,
+      bottom: 0,
+      borderLeft: 2,
+      borderColor: teamColor,
+    },
+  }
 
   return (
     <Box
@@ -312,7 +341,7 @@ export function Matrix({
         const ranked = node.unit === 'score'
         const restorationGroup = ECOCULTURAL_RESTORATION_GROUPS[node.id]
         const inRestorationGroup = ECOCULTURAL_RESTORATION_GROUP_ROWS.has(node.id)
-        const restorationGroupEnd = ECOCULTURAL_RESTORATION_GROUP_ENDS[node.id]
+        const inRestorationSplit = ECOCULTURAL_RESTORATION_SPLIT.has(node.id)
         const canOpen = depth === 0 && node.level !== 'team' && !!node.children?.length
         const extent =
           depth === 1 ? extents.get(`${scoreOf(rowIndex)?.id}|${node.unit}`) : undefined
@@ -362,6 +391,37 @@ export function Matrix({
         return (
           <Box key={node.id} sx={{ display: 'contents' }}>
             {depth === 0 && rowIndex > 0 && rule(`rule-${node.id}`)}
+            {/* Headings take a row of their own, so a label stays level with its values. */}
+            {restorationGroup && (
+              <MotionBox
+                {...motionFor(depth, order[rowIndex])}
+                sx={{ gridColumn: '1 / -1', pt: 0.75, pb: 0.25, ml: { md: 2, xl: 3.5 } }}
+              >
+                <Typography variant="captionSmall" component="p">
+                  {restorationGroup}
+                </Typography>
+              </MotionBox>
+            )}
+            {node.id === ECOCULTURAL_RESTORATION_SPLIT_START && (
+              <MotionBox
+                {...motionFor(depth, order[rowIndex])}
+                sx={{
+                  ...restorationGroupSx,
+                  gridColumn: '1 / -1',
+                  minHeight: rowMin(depth),
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  columnGap: 1,
+                  py: 0.25,
+                }}
+              >
+                <Typography variant="body2" sx={{ color: 'base.50' }}>
+                  {UI.restorationSplit}
+                </Typography>
+                <OutlinedTag label={UI.restorationSplitTag} />
+              </MotionBox>
+            )}
             {/* A ranking score with its opener; an entity carries its unit. */}
             <MotionBox
               {...motionFor(depth, order[rowIndex])}
@@ -374,22 +434,7 @@ export function Matrix({
                 py: depth === 1 ? 0.25 : 0.375,
                 // Entities sit well in from their score, under its label.
                 pl: depth === 1 ? { md: 3.5, xl: 5 } : 0,
-                ...(depth === 1 && inRestorationGroup
-                  ? {
-                      position: 'relative',
-                      pl: 1.5,
-                      ml: { md: 2, xl: 3.5 },
-                      '&::before': {
-                        content: '""',
-                        position: 'absolute',
-                        left: 0,
-                        top: restorationGroupEnd === 'first' ? (theme) => theme.spacing(3) : 0,
-                        bottom: restorationGroupEnd === 'last' ? (theme) => theme.spacing(0.75) : 0,
-                        borderLeft: 2,
-                        borderColor: teamColor,
-                      },
-                    }
-                  : {}),
+                ...(depth === 1 && inRestorationGroup ? restorationGroupSx : {}),
               }}
             >
               {depth === 0 && node.level !== 'team' && (
@@ -420,11 +465,6 @@ export function Matrix({
                 </IconButton>
               )}
               <Box sx={{ minWidth: 0 }}>
-                {depth === 1 && restorationGroup && (
-                  <Typography variant="captionSmall" component="p" sx={{ mb: 0.25 }}>
-                    {restorationGroup}
-                  </Typography>
-                )}
                 {depth === 0 && ranked ? (
                   <>
                     <Box
@@ -474,7 +514,11 @@ export function Matrix({
                       <Typography
                         variant="body2"
                         title={node.label}
-                        sx={{ ...labelLines(lines), color: 'base.50' }}
+                        sx={{
+                          ...labelLines(lines),
+                          color: 'base.50',
+                          ...(inRestorationSplit ? { pl: 1.5 } : {}),
+                        }}
                       >
                         {lifeStage(node.label).name}
                       </Typography>
@@ -724,8 +768,8 @@ function LevelCells({
   return <>{shown.map((value, index) => box(`level-${index}`, 1, cell(value)))}</>
 }
 
-/** The small outlined tag after a qualitative row's name. */
-function QualitativeTag() {
+/** A small outlined tag after a row or group name. */
+function OutlinedTag({ label }: { label: string }) {
   return (
     <Typography
       component="span"
@@ -740,9 +784,13 @@ function QualitativeTag() {
         whiteSpace: 'nowrap',
       }}
     >
-      {UI.qualitativeTag}
+      {label}
     </Typography>
   )
+}
+
+function QualitativeTag() {
+  return <OutlinedTag label={UI.qualitativeTag} />
 }
 
 /**

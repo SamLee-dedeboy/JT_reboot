@@ -24,6 +24,7 @@ import type {
   Source,
 } from '../../../../../internal/rank-visualization/drilldown/model'
 import { NODE_INDEX, sourcesFor } from '../../../../../internal/rank-visualization/drilldown/tree'
+import { ECOLOGY_SLR_RERUN_REGION } from './ecologySlrRerun'
 import { MEASURE_LABELS } from './labels'
 
 const node = (id: string): CriterionNode => {
@@ -220,11 +221,41 @@ const ECOLOGY_RERUN_SOURCE: Source = {
   quote: 'Proportion of Suitable Days Across Species of Interest, Year, and Scenario',
 }
 
+/** The Ecology tab of the ranking table workbook the team filled in, Nov 2026. */
+const ECOLOGY_WORKBOOK_SOURCE: Source = {
+  doc: 'data',
+  where: 'Ranking table workbook, Ecology tab, Nov 2026',
+  quote: 'Values the Ecology team entered in the ranking table sheet.',
+}
+
+/** A row the team reports the same under sea level rise, with its children. */
+function sameUnderSlr(row: CriterionNode): CriterionNode {
+  return {
+    ...row,
+    slr: {
+      values: row.values,
+      note: 'The Ecology team reports the same value under sea level rise.',
+      sources: [ECOLOGY_WORKBOOK_SOURCE],
+    },
+    children: row.children?.map(sameUnderSlr),
+  }
+}
+
+/** A Delta-wide, whole-period score on every period tab; the regions have none. */
+function speciesScore(by: Partial<Record<ScenarioKey, number>>, periods: string[]) {
+  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
+  for (const [scenario, value] of Object.entries(by))
+    out[scenario as ScenarioKey] = Object.fromEntries(
+      periods.map((period) => [sliceKey('delta', period), value]),
+    )
+  return out
+}
+
 function ecologyTree(): CriterionNode {
   const niche = node('eco-niche')
   const species = (niche.children ?? []).map((base) => {
     const key = base.id.replace('eco-niche-', '') as EcologySpeciesKey
-    return adapt(
+    const adapted = adapt(
       base,
       {
         values: speciesValues(key, base.values),
@@ -236,6 +267,22 @@ function ecologyTree(): CriterionNode {
       },
       ECOLOGY_PERIOD_LABEL,
     )
+    // Under sea level rise the team also reports these two scenarios by region.
+    const rerun = ECOLOGY_SLR_RERUN_REGION[key]
+    const bothYears = (scenario: 'cor' | 'tunnel') =>
+      Object.fromEntries(
+        Object.entries(rerun[scenario]).map(([region, value]) => [sliceKey(region, 'both'), value]),
+      )
+    return {
+      ...adapted,
+      slr: adapted.slr && {
+        ...adapted.slr,
+        values: merge(adapted.slr.values, {
+          cor: bothYears('cor'),
+          tunnel: bothYears('tunnel'),
+        }),
+      },
+    }
   })
   const suitability: CriterionNode = {
     ...adapt(niche, {}, ECOLOGY_PERIOD_LABEL),
@@ -245,20 +292,45 @@ function ecologyTree(): CriterionNode {
     edge: 'beside',
     provenance: 'reported',
     entityNoun: 'species',
-    note: 'The slides rank each species on its proportion of suitable days (+1 per percentage point against Business as Usual, reversed for largemouth bass, overbite clam and Brazilian waterweed) and never combine them. Open the row to see each species’ value and rank. The ranks are Delta-wide; regions carry values only. Feb 1 – Jun 1 of each water year; there is no whole run. Calling on Reserves and A Tunnel come from Ecology’s 27 Oct 2026 rerun against its own New CalSIM Base; their ranks are ours, the same rule applied to that table. These ranks do not feed the Ecology score.',
-    values: {},
-    sources: [SLIDES, ...sourcesFor('eco-niche-')],
+    note: 'This score is the Ecology team’s own, reported Delta-wide for the whole period, so it reads the same on each period tab. Open the row to see each species’ value and rank: the slides rank each species on its proportion of suitable days (+1 per percentage point against Business as Usual, reversed for largemouth bass, overbite clam and Brazilian waterweed). The species ranks are Delta-wide; regions carry values only. Calling on Reserves and A Tunnel come from Ecology’s 27 Oct 2026 rerun against its own New CalSIM Base; their species ranks are ours, the same rule applied to that table.',
+    values: speciesScore({ bau: 0, em: 0.34, ngw: -0.08, bf: 0.08, cor: -1.57, tunnel: 1.1 }, [
+      '2019',
+      '2020',
+    ]),
+    notApplicableAt: Object.fromEntries(
+      (['bau', 'em', 'ngw', 'bf', 'cor', 'tunnel'] as ScenarioKey[]).map((scenario) => [
+        scenario,
+        niche.places.map((place) => place.key).filter((place) => place !== 'delta'),
+      ]),
+    ),
+    sources: [ECOLOGY_WORKBOOK_SOURCE, SLIDES, ...sourcesFor('eco-niche-')],
     slr: niche.slr && {
       ...niche.slr,
       periods: niche.slr.periods && relabel(niche.slr.periods, ECOLOGY_PERIOD_LABEL),
+      values: speciesScore({ bau: 0, em: 1.1, ngw: 1.5, bf: 0.39, cor: -2.82, tunnel: -1.07 }, [
+        '2019',
+        '2020',
+        'both',
+      ]),
+      sources: [ECOLOGY_WORKBOOK_SOURCE, ...(niche.slr.sources ?? [])],
     },
     children: species,
   }
   const root = node('ecology')
   return adapt(root, {
+    provenance: 'reported',
+    note: 'The Ecology team’s own criterion score, from the ranking table workbook. How Landscape, Food webs and Species suitability combine is still to be published.',
+    sources: [ECOLOGY_WORKBOOK_SOURCE],
+    values: flat({ bau: 0, em: 1.33, ngw: 3.1, bf: 0, cor: -0.33, tunnel: 0.33 }),
+    slr: {
+      values: flat({ bau: 0, em: 1.7, ngw: 3.8, bf: 0, cor: -0.7, tunnel: -0.3 }),
+      note: 'The Ecology team’s own criterion score under sea level rise, from the ranking table workbook.',
+      sources: [ECOLOGY_WORKBOOK_SOURCE],
+    },
     children: [
-      adapt(node('eco-habitat')),
-      adapt(node('eco-foodweb')),
+      sameUnderSlr(adapt(node('eco-habitat'))),
+      // The team's sheet now gives these zeros itself, so none of them is ours.
+      sameUnderSlr(adapt(node('eco-foodweb'), { inferredFor: undefined })),
       suitability,
       adapt(node('eco-conceptual')),
     ],
@@ -659,6 +731,20 @@ function describedMetric(metric: CriterionNode): CriterionNode {
 
 function ecoCulturalTree(): CriterionNode {
   const restoration = node('ec-restoration')
+  const habitat = (id: string) => {
+    const found = restoration.children?.find((child) => child.id === `ec-restoration-${id}`)
+    if (!found) throw new Error(`rankingModel: no eco-cultural restoration habitat ${id}`)
+    return found
+  }
+  // A New Green Watershed habitat with no acreage yet; no other scenario restores it.
+  const transitional = adapt(habitat('managed'), {
+    id: 'bk-ec-restoration-transitional',
+    label: 'Transitional habitats',
+    values: { ...habitat('managed').values, ngw: { [sliceKey('inDelta', ANY)]: null } },
+    forthcomingFor: ['ngw'],
+    sources: undefined,
+    note: 'The habitat type is confirmed, but its acreage and source are still to be provided.',
+  })
   return adapt(node('ecoCultural'), {
     children: [
       adapt(restoration, {
@@ -670,7 +756,13 @@ function ecoCulturalTree(): CriterionNode {
         sources: [SLIDES, ...sourcesFor('ec-restoration')],
         note: 'Slide 55 ranks restored acres: Eco Machine +2, New Green Watershed +5, every other scenario 0. Open the row for the habitat types and the qualitative functional-flow outcome.',
         children: [
-          ...(restoration.children ?? []).map((child) => adapt(child)),
+          adapt(habitat('tidal')),
+          adapt(habitat('managed')),
+          adapt(habitat('rice')),
+          transitional,
+          adapt(habitat('uplandWetland')),
+          adapt(habitat('meadow')),
+          adapt(habitat('floodplain')),
           qualitativeRow('bk-ec-restoration-functional-flow', 'ecoCultural'),
         ],
       }),

@@ -728,7 +728,7 @@ function ComponentsSection({ story, accent }: SectionProps) {
             }}
           >
             <Typography variant="navigationSubLabel" component="h3" sx={{ color: accent }}>
-              Caveats
+              Caveats and Clarifications
             </Typography>
             <Box component="ul" sx={{ m: 0, mt: jtSpacing.gap.xs, pl: jtSpacing.component.md }}>
               {item.caveats.map((caveat) => (

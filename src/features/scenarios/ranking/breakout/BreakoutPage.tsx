@@ -15,9 +15,11 @@
 // The table itself keeps the 4C cell design. Scenarios always sit in one fixed
 // order and fade when switched off; ranking scores (−5…+5) are set apart from the
 // details beneath them.
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
-import { Box, Stack, Typography } from '@mui/material'
-import { useState } from 'react'
+import { Box, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
+import { motion, useReducedMotion } from 'framer-motion'
+import { useId, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { evaluationCardSx } from '../../evaluation/styles'
 import { jtSpacing, navigation, ranking } from '../../../../theme'
@@ -128,7 +130,8 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
         </Typography>
         {embedded && <TableHeading />}
         <HostIntro team={team} />
-        <Caveats team={team} />
+        {/* The kiosk's table has to fit one screen, so the box stays on the site. */}
+        {embedded && <Caveats team={team} />}
         {!embedded && <Sentence state={state} />}
       </Stack>
 
@@ -223,8 +226,8 @@ function TableHeading() {
 
 /** The team's takeaway, or a placeholder until they write it. */
 /**
- * The team's "Read with care" notes, between its takeaway and the table: what to
- * keep in mind across the whole criterion. Nothing shows for a team with none.
+ * The team's caveats and clarifications, between its takeaway and the table: what
+ * to keep in mind across the whole criterion. Nothing shows for a team with none.
  */
 function Caveats({ team }: { team: TeamKey }) {
   const notes = TEAM_CAVEATS[team] ?? []
@@ -247,22 +250,60 @@ function Caveats({ team }: { team: TeamKey }) {
       <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center', mb: 1 }}>
         <WarningAmberRoundedIcon fontSize="small" sx={{ color }} />
         <Typography id={`caveats-${team}`} variant="chartTitle" component="h3" sx={{ color }}>
-          {UI.readWithCare}
+          {UI.caveatsHeading}
         </Typography>
       </Stack>
-      {notes.length === 1 ? (
-        <Typography variant="body2" sx={{ color: 'base.50' }}>
-          {notes[0]}
+      <Stack spacing={1}>
+        {notes.map((note) => (
+          <CaveatNote key={note} note={note} color={color} />
+        ))}
+      </Stack>
+    </Box>
+  )
+}
+
+/**
+ * One note. "Keyword: the rest" opens from its keyword, in the team's colour, so a long
+ * list reads as its topics first; a note with no keyword is short enough to show whole.
+ */
+function CaveatNote({ note, color }: { note: string; color?: string }) {
+  const [open, setOpen] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const bodyId = useId()
+  const match = /^([^:.]{1,60}): (.*)$/s.exec(note)
+  if (!match)
+    return (
+      <Typography variant="body2" sx={{ color: 'base.50' }}>
+        {note}
+      </Typography>
+    )
+  const [, keyword, body] = match
+  return (
+    <Box>
+      <ButtonBase
+        onClick={() => setOpen((value) => !value)}
+        aria-expanded={open}
+        aria-controls={bodyId}
+        sx={{ display: 'flex', justifyContent: 'flex-start', gap: 0.5, textAlign: 'left' }}
+      >
+        <motion.span
+          animate={{ rotate: open ? 90 : 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.2 }}
+          style={{ display: 'inline-flex' }}
+        >
+          <ChevronRightIcon fontSize="small" sx={{ color }} />
+        </motion.span>
+        <Typography variant="body2" component="span">
+          <Box component="strong" sx={{ color }}>
+            {keyword}
+          </Box>
         </Typography>
-      ) : (
-        <Box component="ul" sx={{ m: 0, pl: 3, display: 'grid', gap: 1 }}>
-          {notes.map((note) => (
-            <Typography key={note} component="li" variant="body2" sx={{ color: 'base.50' }}>
-              {note}
-            </Typography>
-          ))}
-        </Box>
-      )}
+      </ButtonBase>
+      <Collapse id={bodyId} in={open} timeout={reduceMotion ? 0 : 'auto'}>
+        <Typography variant="body2" sx={{ color: 'base.50', pl: 3, pt: 0.5 }}>
+          {body}
+        </Typography>
+      </Collapse>
     </Box>
   )
 }
@@ -271,7 +312,10 @@ function HostIntro({ team }: { team: TeamKey }) {
   const intro = TEAM_TAKEAWAYS[team]
   if (intro)
     return (
-      <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '80ch' }}>
+      <Typography
+        variant="body1"
+        sx={{ color: 'base.50', maxWidth: '80ch', whiteSpace: 'pre-line' }}
+      >
         {intro}
       </Typography>
     )

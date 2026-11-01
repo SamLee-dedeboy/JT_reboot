@@ -2,7 +2,7 @@
 // in one place to edit. Sections, in order:
 //
 //   TEAM_TAKEAWAYS    the paragraph under "How the score is built", one per criterion
-//   TEAM_CAVEATS      the "Read with care" notes before a criterion's table
+//   TEAM_CAVEATS      the "Caveats and Clarifications" notes above a criterion's table
 //   SCENARIO_LABELS   a scenario's name in the table heads, chips and sentence
 //   SCENARIO_GROUPS   the headings over the two groups of scenario columns
 //   PLACE_LABELS      a place's name on its tab and in the sentence
@@ -32,20 +32,34 @@ import type { ScenarioKey } from '../../../../../internal/rank-visualization/dri
  * built". Leave a team out and the page shows UI.openingPlaceholder instead.
  */
 export const TEAM_TAKEAWAYS: Partial<Record<TeamKey, string>> = {
-  // ecology: '',
+  ecology:
+    '• Estuarine subregions, particularly those in the middle of the estuary (the Confluence, Suisun Bay, and San Pablo Bay regions) — saw the most variation in species fundamental niche. The Delta remained consistently fresh across adaptation and tiered outflow scenarios, and the Bay consistently salty. \n• In general, the adaptation scenarios have a far more minimal impact on the functional niche of specific species of interest than water year type and region. \n• In terms of suitability for less desirable species, some tradeoffs were apparent across scenarios. Decreases in nuisance freshwater species consistently coincided with increases in overbite clam suitability, and vice versa.\n• The most impactful way an adaptation scenario, like the ones presented in this exercise, can influence a system likely lies in landscape-level conversion and habitat creation.',
   // recreation: '',
   // environmentalJustice: '',
   // economy: '',
-  // ecoCultural: '',
+  ecoCultural:
+    'At the beginning, the team set out to spotlight historically underrepresented or intentionally excluded communities. The research team intentionally set out to invite people and groups who have typically not been as involved in Delta decision-making processes. This included reviewing public comments and meeting attendees from previous Delta decision-making processes, such as the 2019 WaterFix Hearing and the 2023 Temporary Urgency Change Petitions. Additionally, the team held specific meetings with Indigenous communities to build trust and create a more welcoming listening environment. In a round of semi-structured interviews, the Just Transitions in the Delta team specifically invited members of Indigenous communities to participate to ensure Indigenous perspectives and Traditional Ecological Knowledge (TEK) were incorporated into the research from the beginning. The team used interview findings to inform preliminary scenario narratives.',
 }
 
 /**
- * What to keep in mind across a whole criterion, shown under "Read with care" just
- * above its table. One string per note; a criterion with none shows no box.
+ * What to keep in mind across a whole criterion, shown under UI.caveatsHeading just
+ * above its table. One string per note; a criterion with none shows no box. A note
+ * written "Keyword: the rest" opens from its keyword.
  */
 export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
+  ecology: [
+    'Regional Maps: In our regional maps, we included three regions within the greater Bay (the North Bay, Central Bay, and South Bay), despite the adaptation scenarios not being particularly impactful in these regions (they maintain stable temperatures and salinities). The incorporation of bay regions was to demonstrate that for many euryhaline species, alterations in salinities do not necessarily mean that those species decrease from the system as whole, and rather they move throughout the system, including into the San Pablo Bay and West.',
+    'Species of Interest Selection: We received many responses, and specific species, from stakeholders, during our June 2025 workshop. We could not incorporate many of the species of interest for our analysis because many would have required data that was out of the scope of this project.',
+    'Data Limitations for Adaptation Scenarios: We chose to approach this from the perspective of functional abiotic niches, specifically where conditions meet the minimum requirements for a species not to experience physiological stress. When a species does experience physiological stress it will likely move until it either perishes, or finds an area that does meet its physiological needs. The data we are working with are daily maximum temperatures and salinities during the spring pulse flows and key spawning periods for our focal species of interest. Despite having acreage data regarding additional tidal wetland habitat per different adaptation scenarios, the details regarding this new wetland habitat were beyond the scope of this project.',
+    'Residence Time in Food Web Models: Our food web modeling takes the most conservative but informative approach that we could design. The RMA modeling outputs do include residence time (measured by change from baseline run water ages), but those results were difficult to interpret in a quantitative way to incorporate into our general food webs model. Specifically, matching up residence time variations spatially with a generalized food web model involved too many assumptions to be incorporated in the final version of our model.',
+    'Upstream restoration: Our evaluation metrics are primarily based on conditions within the Delta proper, and its downstream waterways. However, the New Green Watershed scenario incorporates restoration throughout the entire watershed, including montane meadows, floodplains, and forests in the Sierra. These upstream alterations would likely increase the flows entering the estuary, and might also extend new habitat to anadromous and migratory species of concern, like salmon. Our models were not able to incorporate these hydrological or land-related effects. Collaborators have assessed the general benefits of expanding upstream habitat, but their evaluations are not reliant on hydrological model outputs.',
+  ],
   economy: [
-    'For Eco Machine and New Green Watershed, these scores count only the cost of turning farmland into wetland, net of carbon credits. Restoration’s benefits, such as halting subsidence, lower flood risk, cleaner water and habitat, are left out.',
+    'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue at $15/tCO2e. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
+  ],
+  // Ashley DePew's draft from the 31 Oct 2026 thread, awaiting Brett Milligan's sign-off.
+  ecoCultural: [
+    'While this criterion is extremely important, it is the hardest to measure. Most of the components of this criterion cannot be quantified, nor can they be prescribed in this project (e.g., assigning areas for land-back initiatives, or determining where access may be granted on private land). This criterion intends to shine light on some of the ways a just transition may be facilitated for Indigenous communities.',
   ],
 }
 
@@ -176,13 +190,14 @@ export const MEASURE_LABELS: Record<string, string> = {
   // Eco-cultural
   'bk-ecoCultural': 'Eco-cultural',
   'bk-ec-restoration': 'Habitat restoration',
-  'bk-ec-restoration-managed': 'Transitional wetlands',
+  'bk-ec-restoration-managed': 'Managed wetlands',
   'bk-ec-restoration-rice': 'Wet-soil agriculture',
   'bk-ec-restoration-tidal': 'Tidal wetlands',
+  'bk-ec-restoration-transitional': 'Transitional habitats',
   'bk-ec-restoration-uplandWetland': 'Wetlands',
   'bk-ec-restoration-meadow': 'Meadows',
   'bk-ec-restoration-floodplain': 'Floodplains',
-  'bk-ec-restoration-functional-flow': 'Improved functional flow',
+  'bk-ec-restoration-functional-flow': 'Potential for functional flows',
   'bk-ec-access': 'Tribal land access',
   'bk-ec-tek': 'Indigenous science & Traditional Ecological Knowledge (TEK)',
   'bk-ec-sovereignty': 'Tribal sovereignty',
@@ -219,7 +234,7 @@ export const UI = {
   someScenarios: (n: number, set: 'adaptation' | 'outflow') =>
     `${numberWord(n)} ${set === 'outflow' ? 'run' : 'scenario'}${n === 1 ? '' : 's'}`,
   withSeaLevelRise: 'with sea level rise',
-  readWithCare: 'Read with care',
+  caveatsHeading: 'Caveats and Clarifications',
   openingPlaceholder: 'The team’s takeaway: forthcoming.',
   /** The heading over the table, under the criterion tabs. */
   howBuilt: 'How the score is built',
@@ -285,6 +300,8 @@ export const UI = {
   baselineForthcoming: 'baseline forthcoming',
   /** A number the subteam has not published yet for this set of runs. */
   forthcoming: 'Forthcoming',
+  restorationSplit: 'Managed wetlands and wet-soil agriculture',
+  restorationSplitTag: '50/50 split',
   notRun: 'not run',
   /** A row that is one version of New Green Watershed, under the other scenarios. */
   versionOnly: 'NGW only',
@@ -355,10 +372,8 @@ export const CRITERION_DEFINITIONS: Record<
   { metrics: string[]; combine: string; outside?: string }
 > = {
   ecology: {
-    metrics: ['Landscape', 'Food webs'],
-    combine:
-      'Ecology publishes no single score yet, so the table shows none until the team sets one. [How Landscape and Food webs combine: forthcoming.]',
-    outside: 'Species suitability.',
+    metrics: ['Landscape', 'Food webs', 'Species suitability'],
+    combine: '[How Landscape, Food webs and Species suitability combine: forthcoming.]',
   },
   recreation: {
     metrics: [
@@ -417,7 +432,7 @@ export const METRIC_DEFINITIONS: Record<
 > = {
   // Ecology
   'bk-eco-habitat': {
-    measures: 'Accessible aquatic habitat: how much tidal wetland a scenario adds.',
+    measures: 'The increase in accessible aquatic habitat relative to baseline.',
     computed: 'Acres of added tidal wetland against Business as Usual.',
     considered: [
       ['Eco Machine', '53,000 acres'],
@@ -426,19 +441,21 @@ export const METRIC_DEFINITIONS: Record<
     scored: '+1 for about every 16,000 acres added against Business as Usual, up to +5.',
   },
   'bk-eco-foodweb': {
-    measures: 'Food available to fish, as an index in acres.',
+    measures:
+      'The increase in productive habitats (tidal wetlands, managed wetlands, rice fields) that have the capacity to contribute to food webs, relative to baseline.',
     computed:
       '(managed wetland − 5,100) × 0.2 + added tidal wetland × 0.4 + (wet-soil agriculture − 17,178) × 0.1.',
     considered: 'Managed wetland, added tidal wetland and wet-soil agriculture.',
     scored: '+1 for about every 16,148 index points against Business as Usual, up to +5.',
   },
   'bk-eco-species': {
-    measures: 'How much of the time each species finds water it can live in.',
+    measures:
+      'The proportion of time and/or length of consecutive days that conditions remain within a species’ fundamental tolerance limits for water temperature and salinity. This does not necessarily mean species are more abundant at the given location, only that water quality conditions are favorable for their survival.',
     computed: 'Each species’ proportion of days inside its salinity and temperature range.',
     considered:
       'Feb 1 – Jun 1 of WY 2019 (wet) and WY 2020 (dry). Largemouth bass, overbite clam and Brazilian waterweed are scored in reverse: less habitat is better.',
     scored:
-      'Each percentage point of days in range above or below Business as Usual moves the score by 1. Each species is ranked on its own; the ranks are never combined.',
+      'Each percentage point of days in range above or below Business as Usual moves a species’ score by 1. The team’s Species suitability score is reported for the whole period, Delta-wide. [How the species combine: forthcoming.]',
     scale: { step: '%', axis: 'Days in range vs Business as Usual' },
   },
 
@@ -594,6 +611,8 @@ export const METRIC_DEFINITIONS: Record<
  * months win). A team with no reason written shows UI.periodsWhy.
  */
 export const PERIOD_WHY: Partial<Record<TeamKey, string>> = {
+  ecology:
+    'For species fundamental niches, we chose to use values in spring, since we are looking at both juvenile and adult stages for some species. Most native fish species spawn in spring, and that is when they are in their juvenile stages.',
   // recreation: '',
 }
 export const PERIOD_MONTHS: Record<string, string> = {
@@ -614,6 +633,8 @@ export const TEAM_PERIOD_MONTHS: Partial<Record<TeamKey, Record<string, string>>
 
 /** Why each criterion divides the Delta as it does, above its map. */
 export const PLACE_WHY: Partial<Record<TeamKey, string>> = {
+  ecology:
+    'We compared sub-regions within and outside the Delta, stretching all the way through Suisun Marsh, San Pablo, and out into San Francisco Bay. We wanted to include downstream regions of the estuary because aquatic species are mobile (especially anadromous fishes like salmon), and can relocate if conditions in the upper estuary are not favorable. It is more informative for the entire population of those species to show where their fundamental niches are available throughout the estuary.',
   // recreation: '',
 }
 
@@ -622,5 +643,18 @@ export const PLACE_WHY: Partial<Record<TeamKey, string>> = {
  * A scenario with none shows UI.takeawayForthcoming.
  */
 export const SCENARIO_TAKEAWAYS: Partial<Record<TeamKey, Partial<Record<ScenarioKey, string>>>> = {
+  ecology: {
+    em: 'Eco Machine increased salinity in Franks Tract, reducing suitability for freshwater invasives like Brazilian waterweed and largemouth bass but increasing suitability for overbite clams. Juvenile longfin smelt also saw an increase in proportion of suitable days. It does expand habitat and improve food web contributions relative to baseline, but not as much as New Green Watershed.',
+    ngw: 'The effects on species fundamental niches were the same as Eco Machine, but contributions to food webs were much higher, due to the expansion of managed wetlands and wet soil agriculture within the Delta. It also contributed a larger area of accessible habitat.',
+    bf: 'We detected no differences between Bolster and Fortify and the baseline, Business as Usual.',
+    cor: 'Calling on Reserves only had small differences from the baseline. It decreased the proportion of suitable points for longfin smelt and salmon, two desirable species, in 2019. In 2020, it slightly decreased the suitability for freshwater invasives, and slightly increased suitability for overbite clam.',
+    tunnel:
+      'A Tunnel affected the most number of species of all the adaptation scenarios. It decreased the proportion of suitable points for longfin smelt juveniles and overbite clams, while increasing proportions of suitable points for Brazilian waterweed and largemouth bass in 2020. It had variable effects for Chinook salmon across the two years. We do not have a way to estimate how A Tunnel would affect food webs.',
+  },
+  ecoCultural: {
+    em: 'This scenario is ranked as the second best because it has less restoration than New Green Watershed. It would provide all the same benefits for Tribes as listed below',
+    ngw: 'Overall, New Green Watershed performs the best among the adaptation scenarios, due to the magnitude of restoration included. The restoration creates opportunities for Tribes to gather culturally important material and gather as a community',
+    more: 'Our analysis of flow tiers shows that a 30% increase in flows would decrease salinity. In addition to the salinity implications that an increase in flows would result in, people shared with us that flows were the “soul” of the rivers. This indicates a deep cultural meaning beyond a decrease in salinity.',
+  },
   // recreation: { em: '' },
 }
