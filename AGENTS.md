@@ -30,7 +30,7 @@ npm run preview      # Preview the production build
 
 - `src/main.tsx` creates the React root and renders `AppProviders` and `PublicSiteShell`.
 - `src/app/providers.tsx` installs the MUI `ThemeProvider`, `CssBaseline`, and `BrowserRouter`. The router basename comes from `import.meta.env.BASE_URL`.
-- `src/app/PublicSiteShell.tsx` provides global route-change scroll restoration and renders `AppRouter`.
+- `src/app/PublicSiteShell.tsx` provides global route-change scroll restoration, renders `AppRouter`, and mounts the site-wide `Screensaver` (`src/app/Screensaver.tsx`): after `DEFAULT_SCREENSAVER_IDLE_SECONDS` without interaction it covers the viewport with the hero's salinity animation (`HeroSalinityMap`, no navbar or title) until a click, tap, key press, or wheel. `?screensaver=<seconds>` overrides the delay for that visit and `?screensaver=0` disables it.
 - `src/app/AppRouter.tsx` is the single source of truth for routes. Do not add routes in `main.tsx`.
 - Large interactive routes are lazy-loaded with `React.lazy` and `Suspense`.
 
@@ -64,7 +64,7 @@ Keep route-specific code in its feature. Move code into `src/ui`, `src/map`, or 
 
 ## Key Composition
 
-- `src/features/home/HomePage.tsx` composes Navbar, the lazy-loaded sticky `HeroMap`, scrolling editorial panels, and Footer.
+- `src/features/home/HomePage.tsx` composes Navbar, the lazy-loaded sticky `HeroMap`, scrolling editorial panels, and Footer. `HeroMap` places the title over `src/map/instances/HeroSalinityMap.tsx`, the hero camera plus salinity animation that the screensaver also fills the viewport with.
 - The rebuilt home currently mounts `WhatIfSectionEditorial` and `FuturesPanels`. Older home-section components remain in the repository but are intentionally unmounted until they are rebuilt or deletion is explicitly requested.
 - `HomeNavRail` adapts the shared `NavRail` for the home narrative. Its active items must correspond to mounted section IDs.
 - The hero and home panels share `--home-rail-inset`, defined by `HomePage`, so hero copy, panel rules, rails, and editorial content remain aligned across breakpoints.
