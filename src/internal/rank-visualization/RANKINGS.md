@@ -4,13 +4,13 @@ What each team scores, what each score rests on, and what is still open. Rewritt
 2 Nov 2026 from the ranking table workbooks the teams filled in, and read back from
 the data the site uses, so these numbers are the site's numbers.
 
-| Team                  | Source of the current values                                                                           |
-| --------------------- | ------------------------------------------------------------------------------------------------------ |
-| Ecology               | `Ranking Table (5).xlsx`, Ecology tab; same as (2) and (4)                                             |
-| Recreation            | `Ranking Table (6).xlsx`, Recreation tab, and `Restoration Scenarios NGW and ECO (2).xlsx`             |
-| Environmental Justice | `Ranking Table (5).xlsx`, Env Justice tab                                                              |
-| Economy               | `Ranking Table (5).xlsx`, Economy tab, the v16 report (25 Oct 2026), and the v19 workbook (1 Nov 2026) |
-| Eco-cultural          | `Ranking Table (5).xlsx`, Eco-cultural tab                                                             |
+| Team                  | Source of the current values                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| Ecology               | `Ranking Table (5).xlsx`, Ecology tab; same as (2) and (4)                                 |
+| Recreation            | `Ranking Table (6).xlsx`, Recreation tab, and `Restoration Scenarios NGW and ECO (2).xlsx` |
+| Environmental Justice | `Ranking Table (5).xlsx`, Env Justice tab                                                  |
+| Economy               | `Ranking Table (5).xlsx`, Economy tab, and the v19 workbook (1 Nov 2026)                   |
+| Eco-cultural          | `Ranking Table (5).xlsx`, Eco-cultural tab                                                 |
 
 Tabs in other copies of the workbook are out of date: the Recreation tab in (5) is
 old, and every tab except Recreation in (3) and (6) is old. Each workbook has values
@@ -314,7 +314,11 @@ footprint: −$281.3M a year in gross revenue, −3,995 total jobs and −$230.9
 added. Eco Machine: −$0.92M, −9.7 jobs and −$0.83M (N/A elsewhere). The workbook's salinity figures
 are first-order, not a new OpenAg run; a full run gives 1.3–1.8 times these, which
 changes no score. Calling on Reserves and A Tunnel are compared with their base run
-(BaseCalSim). Economy has no results for outflow yet.
+(BaseCalSim). Carbon-offset revenue (LandUse sheet): Eco Machine +$4.72M; New Green Watershed
++$25.46M, +$28.59M and +$38.18M at 25%, 50% and 100% wetland (N/A elsewhere). The public table
+follows Place and Time period on the salinity rows, using the ByZone sheet rebased to the same
+climate; land conversion and carbon are Delta-wide only, so they read N/A under a single zone.
+Economy has no results for outflow yet.
 
 ## Eco-cultural
 
@@ -415,4 +419,4 @@ From reading the reports; none changes a score above.
 5. Eco-cultural report: score table (Eco Machine +2, Calling on Reserves +1) and rank grid (+1, 0) disagree; slide 62 confirms the score table.
 6. Environmental Justice water age: report −2 / −1 / 0 (New Green Watershed / Eco Machine / Bolster & Fortify); slides −3 / −2 / −1. The site follows the slides.
 7. Environmental Justice outflow, wet season, high vulnerability: 16 points less maps to +4, but the report assigns +5. The site uses +5.
-8. Economy: the salinity tables use a baseline of 7,720 direct / 11,860 total jobs; v19's land-use results use 7,526 / 11,679 after removing a double-counted Webb Tract pasture.
+8. Economy: v19's baselines are 7,526 direct / 11,679 total jobs, $1,105.1M direct revenue and $670M / $997M value added, after removing a double-counted Webb Tract pasture.

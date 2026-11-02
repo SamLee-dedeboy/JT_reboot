@@ -297,6 +297,8 @@ export function effectiveSlice(node: CriterionNode, place: string, period: strin
   const resolve1 = (list: Facet[], axis: 'place' | 'period', selected: string, at?: string) => {
     const real = list.filter((facet) => facet.key !== ANY)
     if (real.length === 0) return ANY
+    // A node can list ANY beside its real facets: it holds its own all-places figure.
+    if (selected === ANY && list.some((facet) => facet.key === ANY)) return ANY
     if (real.some((facet) => facet.key === selected)) return selected
     // A period the chosen place actually has, before one held anywhere: Ecology's
     // sea-level-rise regions exist only for both years pooled, not for 2019.

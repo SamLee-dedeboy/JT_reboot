@@ -285,7 +285,7 @@ Both are preliminary: the numbers move, the stories are settled.
 - **Two reports count the same acreage differently.** Ecology gives New Green Watershed
   120,814 managed-wetland acres at the 50/50 sub-scenario and eco-cultural gives 102,982,
   but these are not rival readings: Ecology's is a total including the 5,100-acre baseline,
-  eco-cultural's counts restored acres, and Economy's 85,523 splits a 207,004-acre farmland
+  eco-cultural's counts restored acres, and Economy's 80,739 splits a 202,220-acre farmland
   footprint rather than the 248,815 mapped Delta islands. Net of baseline a real gap of
   115,714 vs 102,982 survives. See research/criteria-stories/MEETING-QUESTIONS-2026-10-09.md.
 

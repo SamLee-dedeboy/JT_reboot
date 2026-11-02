@@ -212,13 +212,13 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-econ-revenue': 'Annual gross agricultural revenues',
   'bk-econ-revenue-salinity': 'Salinity effects across the Delta',
   'bk-econ-revenue-land': 'Change from converting farmland to wetland',
+  'bk-econ-revenue-carbon': 'Carbon-offset revenue',
   'bk-econ-jobs': 'Agriculture-supported Jobs',
   'bk-econ-jobs-salinity': 'Salinity effects across the Delta',
   'bk-econ-jobs-land': 'Change from converting farmland to wetland',
   'bk-econ-value': 'Economic value added',
   'bk-econ-value-salinity': 'Salinity effects across the Delta',
   'bk-econ-value-land': 'Change from converting farmland to wetland',
-  'bk-econ-value-zones': 'Dry-year salinity effects by Delta area',
 
   // Eco-cultural
   'bk-ecoCultural': 'Eco-cultural',
@@ -394,7 +394,25 @@ export const UI = {
   baselineRun: { csbau: 'CalSim', hist: 'SCHISM' } as Record<string, string>,
 } as const
 
-/** Economy's shared score rule (v16 report), the same for all three metrics. */
+const ECONOMY_ZONE_NAMES: Record<string, string> = {
+  north: 'the North Delta',
+  central: 'the Central Delta',
+  south: 'the South Delta',
+  west: 'the West Delta',
+}
+const ECONOMY_SALINITY_ROWS = new Set([
+  'bk-econ-revenue-salinity',
+  'bk-econ-jobs-salinity',
+  'bk-econ-value-salinity',
+])
+
+/** A row whose name follows the picked place: Economy's salinity rows. */
+export const placedMeasureLabel = (id: string, place: string) =>
+  ECONOMY_SALINITY_ROWS.has(id) && ECONOMY_ZONE_NAMES[place]
+    ? `Salinity effects in ${ECONOMY_ZONE_NAMES[place]}`
+    : undefined
+
+/** Economy's shared score rule (v19 Scores sheet), the same for all three metrics. */
 const ECONOMY_RULE =
   'Each scenario is scored on whichever pathway dominates for it: Business as Usual 0; Calling on Reserves 0 (salinity, very small); Bolster & Fortify −1 and A Tunnel −1 (salinity, small); Eco Machine 0 (land use, little farmland); New Green Watershed −4 (land use; the 50/50 version, −3 at 25/75, −5 all wetland).'
 const ECONOMY_RULE_NOTE =
@@ -595,21 +613,21 @@ export const METRIC_DEFINITIONS: Record<
     measures: 'Farm gross revenue in the Delta.',
     computed: 'Direct gross revenue against Business as Usual ($1.105B a year).',
     considered:
-      'Salinity effects across the Delta, and the change from converting farmland to wetland.',
+      'Salinity effects, by Delta zone and Delta-wide; the change from converting farmland to wetland; and carbon-offset revenue.',
     scored: `One score shared with jobs and value added. ${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
   'bk-econ-jobs': {
     measures: 'Farm jobs in the Delta.',
     computed: 'Total jobs against Business as Usual (7,526 direct, 11,679 total).',
     considered:
-      'Salinity effects across the Delta, and the change from converting farmland to wetland.',
+      'Salinity effects, by Delta zone and Delta-wide, and the change from converting farmland to wetland.',
     scored: `One score shared with gross revenue and value added. ${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
   'bk-econ-value': {
     measures: 'Value added: wages, business income and taxes from Delta farming.',
     computed: 'Total value added against Business as Usual ($670M direct, $997M total a year).',
     considered:
-      'Salinity effects across the Delta, and the change from converting farmland to wetland.',
+      'Salinity effects, by Delta zone and Delta-wide, and the change from converting farmland to wetland.',
     scored: `One score shared with gross revenue and jobs. ${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
 

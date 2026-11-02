@@ -608,7 +608,7 @@ function ejTree(): CriterionNode {
 
 /**
  * One score shared by the three metrics, the same in both water years and both
- * climates (v16). The scores carry the water years anyway so the When control
+ * climates (v19). The scores carry the water years anyway so the When control
  * reaches the salinity rows beneath them.
  */
 const WATER_YEARS: Facet[] = relabel(
@@ -619,8 +619,12 @@ const WATER_YEARS: Facet[] = relabel(
   {},
 )
 
-/** Economy's score for New Green Watershed at 25%, 50% and 100% wetland (v16). */
+/** Economy's score for New Green Watershed at 25%, 50% and 100% wetland (v19). */
 const ECONOMY_NGW_LEVELS: [number, number, number] = [-3, -4, -5]
+
+/** Land conversion and carbon are reported Delta-wide only, so a zone has no value for them. */
+const ECONOMY_ZONE_KEYS = ['north', 'central', 'south', 'west']
+const DELTA_WIDE_ONLY = { em: ECONOMY_ZONE_KEYS, ngw: ECONOMY_ZONE_KEYS }
 
 /**
  * The report gives land conversion once per restoration level, as three rows that
@@ -647,6 +651,7 @@ function landConversion(metricId: string): CriterionNode {
     ngwLevels: [at('quarter'), at('half'), at('full')],
     // Only Eco Machine and New Green Watershed convert farmland.
     notApplicable: ['bf', 'cor', 'tunnel'],
+    notApplicableAt: DELTA_WIDE_ONLY,
     note: 'The change from converting farmland to wetland: Eco Machine’s tidal wetland in Suisun Marsh and Franks Tract, and New Green Watershed at 25%, 50% and 100% wetland restoration, each including Eco Machine’s footprint. The 50% level is the one the score uses. Land conversion is the same with sea level rise.',
     slr: half.slr && { ...half.slr, values },
   })
@@ -685,9 +690,17 @@ function economyTree(): CriterionNode {
       ngwLevels: ECONOMY_NGW_LEVELS,
       children: [
         ...(base.children ?? [])
-          .filter((child) => child.edge !== 'refines')
+          .filter((child) => child.id === `${id}-salinity`)
           .map((child) => adapt(wholeJobs(child))),
-        landConversion(id),
+        wholeJobs(landConversion(id)),
+        ...(base.children ?? [])
+          .filter((child) => child.id === `${id}-carbon`)
+          .map((child) =>
+            adapt(child, {
+              notApplicable: ['bf', 'cor', 'tunnel'],
+              notApplicableAt: DELTA_WIDE_ONLY,
+            }),
+          ),
       ],
     })
   }

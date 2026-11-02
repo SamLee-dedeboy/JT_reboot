@@ -92,7 +92,7 @@ export const SCENARIOS: Scenario[] = [
     provisional: [false, false, false, false, false],
   },
   {
-    // Economy: 0 in both water years and with sea level rise (v16, 25 Oct 2026),
+    // Economy: 0 in both water years and with sea level rise (v19, 1 Nov 2026),
     // against RMA's own base run for this scenario.
     // Recreation: 0 (ranking table workbook, Nov 2026).
     // EJ*: "pending" for want of a water-age result; 0 is the mean of the two metrics
@@ -106,7 +106,7 @@ export const SCENARIOS: Scenario[] = [
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
     // withdrew the drinking-water numbers the Sept report published for it.
     // Recreation: 0 (ranking table workbook, Nov 2026). EJ*: mean of the two metrics it has (drinking water 0,
-    // flood risk +1; ranking table workbook, Nov 2026). Economy: −1 (v16, 25 Oct 2026), from a dry-year salinity
+    // flood risk +1; ranking table workbook, Nov 2026). Economy: −1 (v19, 1 Nov 2026), from a dry-year salinity
     // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,

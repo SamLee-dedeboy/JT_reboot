@@ -1018,7 +1018,7 @@ const ECONOMY_NOTE =
  * and both climates.
  */
 const ECONOMY_GAP =
-  'The rows below come from two different pathways. The land-conversion rows are New Green Watershed’s three restoration levels and Eco Machine’s farmed share of Suisun Marsh and Franks Tract. The salinity row carries all six scenarios. The v16 report’s “Comparative Scenario Performance Ranking” states the method: −5 to +5 anchored at 0 for Business as Usual, and each scenario scored “on whichever effect actually dominates for it, rather than forcing every scenario onto one percent-based scale”. Land use dominates for New Green Watershed and Eco Machine; salinity decides Bolster & Fortify, Calling on Reserves and A Tunnel. That is why a −4 from −25.5% of revenue sits beside a −1 from −0.002%. The report gives no step size: nothing says why −$10,000 (Bolster & Fortify) or −$27,000 (A Tunnel) is −1 while +$2,900 (Calling on Reserves) is 0, or why the three restoration levels land on −3, −4 and −5.'
+  'The rows below come from two different pathways. The land-conversion rows are New Green Watershed’s three restoration levels and Eco Machine’s farmed share of Suisun Marsh and Franks Tract. The salinity row carries all six scenarios. The v19 workbook scores −5 to +5 with Business as Usual at 0, and its Scores sheet names the “Dominant effect” for each scenario: “the pathway that decides the score”. Land use decides New Green Watershed and Eco Machine; salinity decides Bolster & Fortify, Calling on Reserves and A Tunnel. That is why a −4 from −25.5% of revenue sits beside a −1 from −0.002%. The workbook gives no step size: nothing says why −$10,000 (Bolster & Fortify) or −$27,000 (A Tunnel) is −1 while +$2,900 (Calling on Reserves) is 0, or why the three restoration levels land on −3, −4 and −5.'
 
 /** v19 compares Calling on Reserves and A Tunnel with RMA's own base run delivered with them. */
 const ECONOMY_REFERENCE =
@@ -1027,16 +1027,16 @@ const ECONOMY_REFERENCE =
 const ECONOMY_DATA: Source = {
   doc: 'data',
   where:
-    'JT_Economy_results_for_dataviz_v19.xlsx (1 Nov 2026) · DeltaWide_vs_BAU, COR_Tunnel_DeltaWide',
+    'JT_Economy_results_for_dataviz_v19.xlsx (1 Nov 2026) · DeltaWide_vs_BAU, COR_Tunnel_DeltaWide, ByZone',
   quote:
     'DeltaWide_vs_BAU — each scenario minus Business As Usual in the same climate (current or 2 ft SLR). COR_Tunnel_DeltaWide — Calling on Reserves and A Tunnel compared with their own RMA base run.',
 }
 
 const ECONOMY_SCORE_SOURCE: Source = {
-  doc: 'report',
-  where:
-    'The Story Behind the Criterion: Economy, v16 (25 Oct 2026) · Comparative Scenario Performance Ranking',
-  quote: 'Scores apply to both current climate and 2 ft sea-level rise for all scenarios.',
+  doc: 'data',
+  where: 'JT_Economy_results_for_dataviz_v19.xlsx (1 Nov 2026) · Scores',
+  quote:
+    'Calling on Reserves and A Tunnel are compared with their own RMA base run (BaseCalSim) in the same climate. Their scores are the same under current climate and 2 ft SLR.',
 }
 
 const ECONOMY_LAND_USE_SOURCE: Source = {
@@ -1061,41 +1061,206 @@ const ECONOMY_ZONES: Facet[] = [
   { key: 'west', label: 'West Delta' },
 ]
 
-type ZoneTable = Partial<Record<ScenarioKey, [number, number, number, number]>>
+/** Gross revenue, total value added and total jobs, in that order. */
+type ZoneRow = [number, number, number]
+type ZoneYears = Record<'2019' | '2020', [ZoneRow, ZoneRow, ZoneRow, ZoneRow]>
 
 /**
- * Change in total value added by zone (North, Central, South, West), dry year
- * 2020, salinity pathway (US$), from the v19 ByZone sheet against the same
- * reference in the same climate. The sheet gives sea-level-rise rows against
- * today's reference; those are rebased here on the reference's own SLR row, as
- * its README says to do, so each zone sums to the Delta-wide figure.
+ * The salinity pathway by zone (North, Central, South, West) from the v19 ByZone
+ * sheet, against the same reference in the same climate. The sheet gives
+ * sea-level-rise rows against today's reference; those are rebased here on the
+ * reference's own SLR row, as its README says to do, so each zone sums to the
+ * Delta-wide figure.
  */
-const ZONE_VALUE_ADDED: ZoneTable = {
-  ngw: [463, -1993, 1113, 2327],
-  em: [605, -712, 1813, 2529],
-  cor: [138, 1311, 705, 512],
-  bf: [-528, -8548, -1084, 2104],
-  tunnel: [-251, -18821, -2513, -2405],
-  bau: [0, 0, 0, 0],
+const SALINITY_BY_ZONE: Partial<Record<ScenarioKey, Record<'current' | 'slr', ZoneYears>>> = {
+  em: {
+    current: {
+      '2019': [
+        [-196, -175, 0],
+        [-123, -108, 0],
+        [-312, -271, 0],
+        [-18, -24, 0],
+      ],
+      '2020': [
+        [598, 605, 0.01],
+        [-897, -712, 0],
+        [1519, 1813, 0.03],
+        [2314, 2529, 0.05],
+      ],
+    },
+    slr: {
+      '2019': [
+        [-290, -258, 0],
+        [-86, -75, -0.01],
+        [-748, -648, 0],
+        [16, 14, 0],
+      ],
+      '2020': [
+        [3349, 3357, 0.08],
+        [-184, 160, 0.01],
+        [11153, 11648, 0.15],
+        [10108, 11030, 0.22],
+      ],
+    },
+  },
+  ngw: {
+    current: {
+      '2019': [
+        [-339, -306, 0],
+        [-145, -127, 0],
+        [-320, -278, 0],
+        [-20, -26, 0],
+      ],
+      '2020': [
+        [439, 463, 0.01],
+        [-2361, -1993, -0.02],
+        [754, 1113, 0.02],
+        [2135, 2327, 0.05],
+      ],
+    },
+    slr: {
+      '2019': [
+        [-535, -478, 0],
+        [-131, -113, -0.01],
+        [-707, -613, 0],
+        [13, 10, 0],
+      ],
+      '2020': [
+        [3224, 3256, 0.08],
+        [-5082, -4123, -0.03],
+        [9070, 9730, 0.13],
+        [9361, 10189, 0.2],
+      ],
+    },
+  },
+  bf: {
+    current: {
+      '2019': [
+        [3, 3, 0],
+        [15, 13, 0],
+        [12, 11, 0],
+        [-3, -4, 0],
+      ],
+      '2020': [
+        [-525, -528, -0.01],
+        [-9883, -8548, -0.08],
+        [-1698, -1084, -0.01],
+        [1939, 2104, 0.04],
+      ],
+    },
+    slr: {
+      '2019': [
+        [-2, -1, 0],
+        [-18, -15, -0.01],
+        [16, 15, 0],
+        [-2, -3, 0],
+      ],
+      '2020': [
+        [-4232, -4244, -0.09],
+        [-29170, -25145, -0.22],
+        [-1122, 481, 0],
+        [7393, 7975, 0.15],
+      ],
+    },
+  },
+  cor: {
+    current: {
+      '2019': [
+        [5, 4, 0],
+        [-59, -52, 0],
+        [-183, -162, 0],
+        [-24, -27, 0],
+      ],
+      '2020': [
+        [143, 138, 0],
+        [1497, 1311, 0.01],
+        [770, 705, 0.01],
+        [471, 512, 0.01],
+      ],
+    },
+    slr: {
+      '2019': [
+        [-2, -3, 0],
+        [-79, -69, 0],
+        [-205, -182, 0],
+        [-63, -69, 0],
+      ],
+      '2020': [
+        [485, 480, 0.01],
+        [3329, 2919, 0.03],
+        [278, 245, 0],
+        [1582, 1717, 0.03],
+      ],
+    },
+  },
+  tunnel: {
+    current: {
+      '2019': [
+        [139, 122, 0],
+        [-13, -13, 0],
+        [302, 265, 0],
+        [-89, -98, 0],
+      ],
+      '2020': [
+        [-276, -251, 0],
+        [-21529, -18821, -0.18],
+        [-2890, -2513, -0.04],
+        [-2257, -2405, -0.03],
+      ],
+    },
+    slr: {
+      '2019': [
+        [34, 22, 0],
+        [-308, -272, 0],
+        [437, 384, 0.01],
+        [-346, -377, -0.01],
+      ],
+      '2020': [
+        [-1050, -984, -0.02],
+        [-22720, -19825, -0.19],
+        [3627, 3296, 0.04],
+        [1518, 1644, 0.05],
+      ],
+    },
+  },
 }
 
-const ZONE_VALUE_ADDED_SLR: ZoneTable = {
-  ngw: [3256, -4123, 9730, 10189],
-  em: [3357, 160, 11648, 11030],
-  cor: [480, 2919, 245, 1717],
-  bf: [-4244, -25145, 481, 7975],
-  tunnel: [-984, -19825, 3296, 1644],
-  bau: [0, 0, 0, 0],
-}
+/** Each zone, then the Delta-wide figure that "All together" reads. */
+const ECONOMY_SALINITY_PLACES: Facet[] = [...ECONOMY_ZONES, { key: ANY, label: 'Delta-wide' }]
 
-function zoneValues(table: ZoneTable) {
-  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
-  for (const [scenario, byZone] of Object.entries(table)) {
+/** Dry-year total value added by zone, for the row that holds only that. */
+function zoneValues(climate: 'current' | 'slr') {
+  const out: Partial<Record<ScenarioKey, SliceValues>> = { bau: {} }
+  ECONOMY_ZONES.forEach((zone) => {
+    out.bau![sliceKey(zone.key, ANY)] = 0
+  })
+  for (const [scenario, runs] of Object.entries(SALINITY_BY_ZONE)) {
     const series: SliceValues = {}
     ECONOMY_ZONES.forEach((zone, i) => {
-      series[sliceKey(zone.key, ANY)] = byZone[i]
+      series[sliceKey(zone.key, ANY)] = runs[climate]['2020'][i][1]
     })
     out[scenario as ScenarioKey] = series
+  }
+  return out
+}
+
+/** A Delta-wide wet and dry series, with the same measure by zone beside it. */
+function withZones(
+  values: Partial<Record<ScenarioKey, SliceValues>>,
+  climate: 'current' | 'slr',
+  measure: 0 | 1 | 2,
+) {
+  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
+  for (const [key, series] of Object.entries(values)) {
+    const scenario = key as ScenarioKey
+    const merged: SliceValues = { ...series }
+    for (const period of ['2019', '2020'] as const) {
+      ECONOMY_ZONES.forEach((zone, i) => {
+        const runs = SALINITY_BY_ZONE[scenario]
+        merged[sliceKey(zone.key, period)] = runs ? runs[climate][period][i][measure] : 0
+      })
+    }
+    out[scenario] = merged
   }
   return out
 }
@@ -1111,6 +1276,7 @@ type WetDry = Partial<Record<ScenarioKey, [number, number]>>
 function salinityPathway(
   metric: string,
   unit: 'usd' | 'jobs',
+  zoneMeasure: 0 | 1 | 2,
   current: WetDry,
   slr: WetDry,
   note: string,
@@ -1125,13 +1291,13 @@ function salinityPathway(
     unit,
     betterHigher: true,
     note,
-    places: NO_FACET,
+    places: ECONOMY_SALINITY_PLACES,
     // Same keys Ecology uses, so one When control moves both teams together.
     periods: YEARS,
-    values: byPeriod(['2019', '2020'], current),
+    values: withZones(byPeriod(['2019', '2020'], current), 'current', zoneMeasure),
     sources: [ECONOMY_DATA],
     slr: {
-      values: byPeriod(['2019', '2020'], slr),
+      values: withZones(byPeriod(['2019', '2020'], slr), 'slr', zoneMeasure),
       note: `With 2 ft of sea level rise, against the same reference with sea level rise. ${ECONOMY_REFERENCE} Sea level rise itself lowers dry-year farm revenue by $55,000–$93,000 a year depending on the scenario, and wet-year revenue by under $1,700.`,
       sources: [ECONOMY_DATA],
     },
@@ -1204,13 +1370,47 @@ function ecoMachineLand(metric: string, unit: 'dollars' | 'jobs', value: number)
   }
 }
 
+/**
+ * Carbon-offset revenue at $15/tCO2e from the LandUse sheet. The team's scores count
+ * it as a partial offset to the farm losses of land conversion. New Green Watershed's
+ * figures include the Eco Machine footprint, like its land-conversion rows.
+ */
+function carbonOffset(): CriterionNode {
+  const values = {
+    em: { [sliceKey(ANY, ANY)]: 4.72 },
+    ngw: { [sliceKey(ANY, ANY)]: 28.59 },
+    bau: { [sliceKey(ANY, ANY)]: 0 },
+  }
+  return {
+    id: 'econ-revenue-carbon',
+    label: 'Carbon-offset revenue',
+    level: 'entity',
+    team: 'economy',
+    edge: 'measures',
+    provenance: 'reported',
+    unit: 'dollars',
+    betterHigher: true,
+    note: 'Yearly revenue from selling carbon offsets at $15/tCO2e on converted land: 512% of the direct farm revenue Eco Machine loses, and 7.6–12.1% for New Green Watershed depending on the wetland level.',
+    places: NO_FACET,
+    periods: NO_FACET,
+    values,
+    ngwLevels: [25.46, 28.59, 38.18],
+    sources: [ECONOMY_LAND_USE_SOURCE],
+    slr: {
+      values,
+      note: 'The LandUse sheet gives one set of carbon figures, with no separate sea-level-rise run.',
+      sources: [ECONOMY_LAND_USE_SOURCE],
+    },
+  }
+}
+
 /** One score for all three metrics, the same under current climate and 2 ft of sea level rise. */
 const ECONOMY_SCORES = { ngw: -4, em: 0, bf: -1, cor: 0, tunnel: -1, bau: 0 }
 
 /** The score row's sea-level-rise run: the v19 Scores sheet repeats every score. */
 const economyScoreSlr = (): ClimateRun => ({
   values: flat(ECONOMY_SCORES),
-  note: 'With 2 ft of sea level rise. The v16 report scores every scenario the same as under current climate: sea level rise lowers each by a similar small amount and does not change their order.',
+  note: 'With 2 ft of sea level rise. The v19 Scores sheet gives every scenario the same score as under current climate.',
   sources: [ECONOMY_SCORE_SOURCE],
 })
 
@@ -1245,7 +1445,7 @@ const ECONOMY: CriterionNode = {
   provenance: 'reported',
   unit: 'score',
   betterHigher: true,
-  note: 'Each scenario receives one value based on its larger effect; the three metrics below are not combined into a mean. The v16 report (25 Oct 2026) gives one score and states that gross revenue, jobs, and value added all use it, which is why the three rows are identical. Through salinity every scenario changes gross revenue by under 0.01% of a $1.107B Delta farm economy, so land conversion decides New Green Watershed (−4 at 50/50) and Eco Machine (0), and small salinity losses decide Bolster & Fortify and A Tunnel (−1). Calling on Reserves is 0 in both water years. Every score is the same with 2 ft of sea level rise.',
+  note: 'Each scenario receives one value based on its larger effect; the three metrics below are not combined into a mean. The v19 Scores sheet gives gross revenue, jobs, and value added the same score for each scenario, which is why the three rows are identical. Through salinity every scenario changes gross revenue by under 0.01% of a $1.105B Delta farm economy, so land conversion decides New Green Watershed (−4 at 50/50) and Eco Machine (0), and small salinity losses decide Bolster & Fortify and A Tunnel (−1). Calling on Reserves is 0 in both water years. Every score is the same with 2 ft of sea level rise.',
   places: NO_FACET,
   periods: NO_FACET,
   values: flat(ECONOMY_SCORES),
@@ -1260,7 +1460,7 @@ const ECONOMY: CriterionNode = {
       provenance: 'reported',
       unit: 'score',
       betterHigher: true,
-      note: `Dollar sales from Delta farms relative to a $1.105B/yr base after the Webb Tract correction ($1.107B in the salinity tables). The largest salinity-only loss is A Tunnel at −$27,000 in the dry year, about 80% of it in the Central Delta. ${ECONOMY_GAP} ${ECONOMY_NOTE}`,
+      note: `Dollar sales from Delta farms relative to a $1.105B/yr base. The largest salinity-only loss is A Tunnel at −$27,000 in the dry year, about 80% of it in the Central Delta. ${ECONOMY_GAP} ${ECONOMY_NOTE}`,
       places: NO_FACET,
       periods: NO_FACET,
       values: flat(ECONOMY_SCORES),
@@ -1269,6 +1469,7 @@ const ECONOMY: CriterionNode = {
         salinityPathway(
           'econ-revenue',
           'usd',
+          0,
           {
             bau: [0, 0],
             em: [-650, 3534],
@@ -1285,10 +1486,11 @@ const ECONOMY: CriterionNode = {
             cor: [-348, 5674],
             tunnel: [-183, -18626],
           },
-          `Change in farm gross revenue from salinity alone, against a $1,107.3M base. In the dry year A Tunnel loses about $27,000 (mostly Central Delta: Rindge Tract, Lower Roberts Island, McDonald Island, Jones Tract) and Bolster & Fortify about $10,000; Eco Machine, New Green Watershed and Calling on Reserves gain a few thousand. Wet-year effects are under $1,000. Every one is under 0.003% of the base. ${ECONOMY_REFERENCE} A full OpenAg run, which also shifts land among crops, gives effects 1.3–1.8 times these, which changes no score.`,
+          `Change in farm gross revenue from salinity alone, against a $1,105.1M base. In the dry year A Tunnel loses about $27,000 (mostly Central Delta: Rindge Tract, Lower Roberts Island, McDonald Island, Jones Tract) and Bolster & Fortify about $10,000; Eco Machine, New Green Watershed and Calling on Reserves gain a few thousand. Wet-year effects are under $1,000. Every one is under 0.003% of the base. ${ECONOMY_REFERENCE} A full OpenAg run, which also shifts land among crops, gives effects 1.3–1.8 times these, which changes no score.`,
         ),
         ...restorationLevels('econ-revenue', 'dollars', -503.2, -281.3, -211.2),
         ecoMachineLand('econ-revenue', 'dollars', -0.92),
+        carbonOffset(),
       ],
     },
     {
@@ -1300,7 +1502,7 @@ const ECONOMY: CriterionNode = {
       provenance: 'reported',
       unit: 'score',
       betterHigher: true,
-      note: `This includes direct farm jobs and the total after IMPLAN multipliers. The salinity tables use a baseline of 7,720 direct and 11,860 total jobs; the land-use results use 7,526 and 11,679, after removing a double-counted Webb Tract pasture. The rows below show total jobs. The largest salinity-only change is A Tunnel at −0.25 jobs in the dry year. ${ECONOMY_GAP} ${ECONOMY_NOTE}`,
+      note: `This includes direct farm jobs and the total after IMPLAN multipliers. The baseline is 7,526 direct and 11,679 total jobs. The rows below show total jobs. The largest salinity-only change is A Tunnel at −0.25 jobs in the dry year. ${ECONOMY_GAP} ${ECONOMY_NOTE}`,
       places: NO_FACET,
       periods: NO_FACET,
       values: flat(ECONOMY_SCORES),
@@ -1309,6 +1511,7 @@ const ECONOMY: CriterionNode = {
         salinityPathway(
           'econ-jobs',
           'jobs',
+          2,
           {
             bau: [0, 0],
             em: [-0.01, 0.09],
@@ -1325,7 +1528,7 @@ const ECONOMY: CriterionNode = {
             cor: [0, 0.07],
             tunnel: [-0.01, -0.12],
           },
-          `Change in total jobs (with IMPLAN multipliers) from salinity alone, against 11,860 total jobs. No scenario moves employment by more than about half a job. ${ECONOMY_REFERENCE}`,
+          `Change in total jobs (with IMPLAN multipliers) from salinity alone, against 11,679 total jobs. No scenario moves employment by more than about half a job. ${ECONOMY_REFERENCE}`,
         ),
         ...restorationLevels('econ-jobs', 'jobs', -4999, -3995, -3657),
         ecoMachineLand('econ-jobs', 'jobs', -9.7),
@@ -1340,7 +1543,7 @@ const ECONOMY: CriterionNode = {
       provenance: 'reported',
       unit: 'score',
       betterHigher: true,
-      note: `Wages, business income, and taxes after revenue circulates, approximately regional GDP: $670M direct and $997M with multipliers after the Webb Tract correction ($671M and $999M in the salinity tables). The rows below show total value added. The largest salinity-only loss is A Tunnel at −$24,000 total value added in the dry year. ${ECONOMY_GAP} ${ECONOMY_NOTE}`,
+      note: `Wages, business income, and taxes after revenue circulates, approximately regional GDP: $670M direct and $997M with multipliers. The rows below show total value added. The largest salinity-only loss is A Tunnel at −$24,000 total value added in the dry year. ${ECONOMY_GAP} ${ECONOMY_NOTE}`,
       places: NO_FACET,
       periods: NO_FACET,
       values: flat(ECONOMY_SCORES),
@@ -1349,6 +1552,7 @@ const ECONOMY: CriterionNode = {
         salinityPathway(
           'econ-value',
           'usd',
+          1,
           {
             bau: [0, 0],
             em: [-577, 4236],
@@ -1365,7 +1569,7 @@ const ECONOMY: CriterionNode = {
             cor: [-324, 5361],
             tunnel: [-244, -15870],
           },
-          `Change in total value added (with IMPLAN multipliers) from salinity alone, against $999M of regional value added. ${ECONOMY_REFERENCE}`,
+          `Change in total value added (with IMPLAN multipliers) from salinity alone, against $997M of regional value added. ${ECONOMY_REFERENCE}`,
         ),
         ...restorationLevels('econ-value', 'dollars', -456.2, -230.9, -160.3),
         ecoMachineLand('econ-value', 'dollars', -0.83),
@@ -1378,13 +1582,13 @@ const ECONOMY: CriterionNode = {
           provenance: 'reported',
           unit: 'usd',
           betterHigher: true,
-          note: `Salinity-pathway change in total value added by Delta zone, dry year 2020. Every scenario's largest loss is in the Central Delta: A Tunnel −$18,800 and Bolster & Fortify −$8,500. Eco Machine and New Green Watershed gain slightly in the West and South Delta. The full range is a few tens of thousands of dollars in a $999M economy. ${ECONOMY_REFERENCE}`,
+          note: `Salinity-pathway change in total value added by Delta zone, dry year 2020. Every scenario's largest loss is in the Central Delta: A Tunnel −$18,800 and Bolster & Fortify −$8,500. Eco Machine and New Green Watershed gain slightly in the West and South Delta. The full range is a few tens of thousands of dollars in a $997M economy. ${ECONOMY_REFERENCE}`,
           places: ECONOMY_ZONES,
           periods: NO_FACET,
-          values: zoneValues(ZONE_VALUE_ADDED),
+          values: zoneValues('current'),
           sources: [ECONOMY_ZONE_SOURCE],
           slr: {
-            values: zoneValues(ZONE_VALUE_ADDED_SLR),
+            values: zoneValues('slr'),
             note: `With 2 ft of sea level rise, against the same reference with sea level rise. The Central Delta still carries the largest losses: Bolster & Fortify −$25,100 and A Tunnel −$19,800. Sea level rise itself costs every scenario most in the Central and West Delta. ${ECONOMY_REFERENCE}`,
             sources: [ECONOMY_ZONE_SOURCE],
           },
@@ -1497,7 +1701,7 @@ const ECO_CULTURAL: CriterionNode = {
           'Managed wetlands',
           'inDelta',
           102982,
-          'Restored acres, from the table eco-cultural titles RESTORED ACRES. Ecology’s 120,814 is not a rival reading of this: it is the total including the 5,100-acre baseline. Economy’s 85,523 splits a 207,004-acre farmland footprint rather than these 248,815 mapped Delta islands, and lands on the same 41% share this does.',
+          'Restored acres, from the table eco-cultural titles RESTORED ACRES. Ecology’s 120,814 is not a rival reading of this: it is the total including the 5,100-acre baseline. Economy’s 80,739 splits a 202,220-acre farmland footprint rather than these 248,815 mapped Delta islands, and lands on about the same share: 40% against 41%.',
         ),
         habitatNode(
           'rice',
@@ -1519,7 +1723,7 @@ const ECO_CULTURAL: CriterionNode = {
           'Forests',
           'upper',
           48213,
-          'At the 0.25MW level; 85,523 at 0.5MW and 207,004 at Full MW. These match Economy’s land-conversion table exactly, which the earlier figures did not.',
+          'At the 0.25MW level; 85,523 at 0.5MW and 207,004 at Full MW, from the Restoration Ranges slide. Economy’s v19 LandUse sheet counts farmed acres and differs: 43,429, 80,739 and 202,220.',
         ),
         habitatNode('meadow', 'Meadows', 'upper', 11586, 'Range: 11,586 to 347,591 acres.'),
         habitatNode('floodplain', 'Floodplains', 'upper', 6360, 'Range: 6,360 to 303,372 acres.'),
@@ -1752,11 +1956,10 @@ const SOURCES: Record<string, Source[]> = {
   // The salinity rows and the zone row carry their own v19 workbook citations.
   economy: [
     {
-      doc: 'report',
-      where:
-        'The Story Behind the Criterion: Economy, v16 (25 Oct 2026) · Comparative Scenario Performance Ranking',
+      doc: 'data',
+      where: 'JT_Economy_results_for_dataviz_v19.xlsx (1 Nov 2026) · Scores',
       quote:
-        'The scores are the same under current climate and with 2 feet of sea-level rise … [Calling on Reserves and A Tunnel:] their scores (0 and −1) do not change.',
+        'Calling on Reserves and A Tunnel are compared with their own RMA base run (BaseCalSim) in the same climate. Their scores are the same under current climate and 2 ft SLR.',
     },
   ],
 

@@ -885,7 +885,7 @@ const recreation: CriterionStory = {
 
 const economy: CriterionStory = {
   source:
-    'The Story Behind the Criterion: Economy, v16. Y. Cai and J. Medellín-Azuara, UC Merced, 25 October 2026.',
+    'Economy criterion results for data visualization, v19. WSM Lab, UC Merced, 1 November 2026.',
   brief: {
     rationale:
       'Agriculture is the Delta’s primary land use and economic sector. Increased salinity can reduce agricultural production, while land-use changes such as wetland restoration can also affect the economy. This criterion assesses those potential changes across all scenarios.',
@@ -910,7 +910,7 @@ const economy: CriterionStory = {
       'The six scenarios change the Delta economy in two different ways. Because of this, the criterion uses two modeling chains and reports both through the same regional economic model.',
     facts: [
       { value: '$1.1B', label: 'baseline direct farm revenue a year' },
-      { value: '~7,650', label: 'baseline direct farm jobs' },
+      { value: '~7,500', label: 'baseline direct farm jobs' },
       { value: '4', label: 'Delta zones' },
       { value: '3', label: 'New Green Watershed restoration levels' },
     ],
@@ -938,9 +938,9 @@ const economy: CriterionStory = {
         title: 'Eco Machine’s conversions',
         body: 'Revenue lost on converted land in Suisun Marsh and Franks Tract is estimated from DWR’s 2024 land use and OpenAg revenue per acre, with New Green Watershed’s job and value-added ratios.',
         points: [
-          'Restores 25%, 50%, or 100% of the 52,244 leveed acres in Suisun Marsh, plus about 1,370 acres at Franks Tract; only about 2,000 Suisun acres are farmed.',
+          'Restores 41,720 acres in Suisun Marsh and 1,400 acres at Franks Tract; only about 2,000 Suisun acres are farmed.',
           'Carbon-offset revenue from Delta Island Adaptations greenhouse-gas rates at $15 per tonne CO₂e, less 14% for market and verification risk.',
-          'One-time construction cost of about $0.85–1.5 billion: about $17,000 per acre to breach Suisun levees and $633 million for the Franks Tract Futures design. It sits outside the three scored metrics.',
+          'One-time construction cost of about $1.34 billion: about $17,000 per acre to breach Suisun levees and $633 million for the Franks Tract Futures design. It sits outside the three scored metrics.',
         ],
       },
       {
@@ -968,20 +968,19 @@ const economy: CriterionStory = {
             label: 'Measures',
             value: 'Change in gross farm revenue relative to Business as Usual',
           },
-          { label: 'Unit', value: 'Annualized 2024 US dollars' },
-          {
-            label: 'Where',
-            value: 'Whole Delta, with specific report-out for each region',
-          },
+          { label: 'Unit', value: 'US dollars per year' },
+          { label: 'Where', value: 'Whole Delta; salinity effects also by Delta zone' },
         ],
         method: [
           'Apply each scenario’s April–September **salinity** to determine **crop-yield loss** and apply it to OpenAg baseline revenue.',
           'Remove revenue associated with land converted from farmland to wetland in a scenario.',
           'Add revenue associated with land converted to rice in a scenario.',
           'Report direct on-farm revenue.',
+          'Report carbon-offset revenue from converted land separately, at $15 per tonne CO₂e.',
         ],
         caveats: [
           'Carbon-offset revenue is an upper-end possibility: its rates come from four deeply subsided central-Delta islands and assume peat soils across the whole footprint.',
+          'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue at $15/tCO2e. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
           'Seasonal salinity averages hide short peaks, which could matter more for salt-sensitive crops such as stone fruit, almonds, and strawberries.',
         ],
       },
@@ -992,12 +991,12 @@ const economy: CriterionStory = {
         spec: [
           { label: 'Measures', value: 'Full- and part-time jobs in a sector annually' },
           { label: 'Unit', value: 'Number of jobs' },
-          { label: 'Where', value: 'Whole Delta, with specific report-out for each region' },
+          { label: 'Where', value: 'Whole Delta; salinity effects also by Delta zone' },
         ],
         method: [
           'Apply the annual gross agricultural revenue change from the first metric to an indicator of jobs through the IMPLAN model, by region.',
           'Assess land-use changes through the IMPLAN model.',
-          'Report direct jobs and total jobs, which add IMPLAN’s regional multipliers (table below).',
+          'Report direct and total jobs; total jobs add IMPLAN’s regional multipliers (table below). The ranking table shows total jobs.',
         ],
         tables: [
           {
@@ -1018,12 +1017,12 @@ const economy: CriterionStory = {
           'Change in **wages, business income, and taxes** once revenue works through the regional economy, close to regional GDP.',
         spec: [
           { label: 'Measures', value: 'Gross revenue minus non-labor business expenses' },
-          { label: 'Unit', value: 'Annualized 2024 US dollars' },
-          { label: 'Where', value: 'Whole Delta, with specific report-out for each region' },
+          { label: 'Unit', value: 'US dollars per year' },
+          { label: 'Where', value: 'Whole Delta; salinity effects also by Delta zone' },
         ],
         method: [
           'Take value added from the same IMPLAN runs as employment.',
-          'Report direct and total value added for each scenario and restoration level.',
+          'Report direct and total value added for each scenario and restoration level. The ranking table shows total value added.',
         ],
       },
     ],

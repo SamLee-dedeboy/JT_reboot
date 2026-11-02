@@ -55,7 +55,7 @@ export const adaptationScenarios: ScenarioContent[] = [
         title: 'More habitat, at the cost of a saltier Suisun Marsh',
         paragraphs: [
           'Eco Machine adds tens of thousands of acres of tidal wetland in Suisun Marsh and Franks Tract that aquatic species can reach, with a small gain for the food web that feeds them. That restoration also opens eco-cultural opportunities, and conditions for recreation improve slightly in the Central Delta. Because almost none of the restored land is farmed, the effect on the agricultural economy is close to neutral.',
-          'The trade-offs are concentrated in Suisun Marsh, which becomes saltier and a little less suited to birding, waterfowl hunting, and angling. Conditions for harmful algal blooms are slightly worse than Business as Usual, and the restoration carries a one-time construction cost estimated at $0.85–1.5 billion.',
+          'The trade-offs are concentrated in Suisun Marsh, which becomes saltier and a little less suited to birding, waterfowl hunting, and angling. Conditions for harmful algal blooms are slightly worse than Business as Usual, and the restoration carries a one-time construction cost estimated at $1.34 billion.',
           'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },

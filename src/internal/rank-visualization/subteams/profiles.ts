@@ -275,7 +275,7 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       'What happens to the Delta’s economy when its water gets saltier or farmland changes to another use? The team tracked differences in **gross revenue, employment and value added** from the Business as Usual baseline.',
     measured: 'Differences from today’s farm economy',
     measuredNote:
-      'The team measured ==3 metrics==, gross revenue, jobs and value added, across **5 geographies**, the Delta as a whole and four zones, in **2 water years** and **2 climates** (today and 2 ft of sea level rise); for New Green Watershed it also studied three restoration intensities. Every result is a **difference from today**: the Delta’s farm economy earns about **$1.107 billion a year** under Business as Usual, and each number says how far a scenario moves it, in dollars or jobs.',
+      'The team measured ==3 metrics==, gross revenue, jobs and value added, across **5 geographies**, the Delta as a whole and four zones, in **2 water years** and **2 climates** (today and 2 ft of sea level rise); for New Green Watershed it also studied three restoration intensities. Every result is a **difference from today**: the Delta’s farm economy earns about **$1.105 billion a year** under Business as Usual, and each number says how far a scenario moves it, in dollars or jobs.',
     reaches: 'one number',
     reachesNote:
       '==One number per scenario==: its revenue change on **whichever of the two pathways dominates** that scenario. The other pathway and the other metrics do not enter it.',
@@ -291,27 +291,27 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       ],
       order: 'West to south',
     },
-    rule: 'The team scored each scenario on **“whichever effect actually dominates for it, rather than forcing every scenario onto one percent-based scale”**. The report identifies the main effect in each scenario: **salinity** for Bolster & Fortify, Calling on Reserves and A Tunnel, and **land conversion** for Eco Machine and New Green Watershed. The scores are the same with 2 ft of sea level rise.',
-    ruleWhere: 'v16 report (25 Oct 2026), Comparative Scenario Performance Ranking',
+    rule: 'The team scored each scenario on **the pathway that decides it**, not on one percent-based scale. The Scores sheet names that pathway for each scenario: **salinity** for Bolster & Fortify, Calling on Reserves and A Tunnel, and **land conversion** for Eco Machine and New Green Watershed. The scores are the same with 2 ft of sea level rise.',
+    ruleWhere: 'v19 workbook (1 Nov 2026), Scores',
     verdict: { ngw: -4, em: 0, bf: -1, cor: 0, tunnel: -1, bau: 0 },
     finding:
-      'Salinity changes gross revenue by ==less than 0.01%== of a $1.107B farm economy in every scenario modelled, so **land conversion determines the criterion**.',
+      'Salinity changes gross revenue by ==less than 0.01%== of a $1.105B farm economy in every scenario modelled, so **land conversion determines the criterion**.',
     findings: [
       {
         label: 'Four futures the farm economy barely notices',
-        text: 'Doing nothing, fortifying levees, calling on reserves and building a tunnel: for these four “the Delta’s farm economy barely notices the difference, in dollars, jobs, or regional value added, in either a wet or dry year”, and that holds with 2 ft of sea level rise. A Tunnel moves dry-year salinity from the western to the central Delta and costs about $27,000 a year, the largest salinity loss. The team calls this ==“a genuinely reassuring finding”==.',
+        text: 'Doing nothing, fortifying levees, calling on reserves and building a tunnel: for these four, salinity moves farm revenue, jobs and value added by a tiny amount, in wet and dry years and with 2 ft of sea level rise. A Tunnel’s dry-year loss of about $27,000 a year is the largest, ==under 0.01% of the farm economy==.',
       },
       {
         label: 'New Green Watershed',
-        text: '“A different story entirely, and not because of water quality.” It converts productive farmland to wetland and rice at scale. Delta-wide, at full managed wetland, ==employment falls about 43%, value added 46% and revenue 46%==; the 50/50 and 25/75 levels are smaller but still substantial. Carbon-offset revenue recovers roughly **7 to 10%** of the on-farm loss, “a real but partial benefit, not a rescue”. The team adds that this “is not a reason to avoid restoration”: it is the trade-off, stated.',
+        text: 'It converts productive farmland to wetland and rice at scale, so land conversion, not water quality, decides its score. Delta-wide, at full managed wetland, ==employment falls about 43%, value added 46% and revenue 46%==; the 50/50 and 25/75 levels are smaller but still substantial. Carbon-offset revenue recovers roughly **8 to 12%** of the on-farm loss. The score shows the cost side only: it leaves out restoration’s other benefits, such as subsidence reversal, lower flood risk and habitat.',
       },
       {
         label: 'Eco Machine',
-        text: 'Converts about 14,000 to 54,000 acres to tidal marsh, ==almost none of it farmed==, so farm revenue moves by at most about $1.2M a year. Its real economics sit elsewhere: a one-time construction cost of **$0.85 to 1.5 billion**, carbon revenue of $1.6 to 5.9M a year, and an unmeasured loss of duck-club activity in Suisun Marsh. Its largest benefits, from the Franks Tract redesign, fall under water supply, water quality and recreation.',
+        text: 'Converts 43,120 acres to tidal marsh, ==almost none of it farmed==, so farm revenue moves by at most about $1.2M a year. Its real economics sit elsewhere: a one-time construction cost of about **$1.34 billion**, carbon revenue of about $4.7M a year, and an unmeasured loss of duck-club activity in Suisun Marsh. Its largest benefits, from the Franks Tract redesign, fall under water supply, water quality and recreation.',
       },
       {
         label: 'Still open',
-        text: 'Confirm how much of Suisun Marsh Eco Machine restores and what that does to duck clubs; rerun the IMPLAN model directly on the rice-converted acreage; decide how to project ecotourism revenue.',
+        text: 'Measure what Eco Machine’s restoration does to duck clubs; decide how to project ecotourism revenue.',
       },
     ],
     scoreboard: {

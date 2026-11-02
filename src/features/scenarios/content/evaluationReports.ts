@@ -339,20 +339,20 @@ const recreation: TeamReport = {
 
 const economyMetric = 'Gross revenue, jobs, and value added'
 const economyBaseline =
-  'Against Business as Usual: $1.107B direct revenue, about 7,700 jobs, and $671M value added.'
+  'Against Business as Usual: $1.105B direct revenue, about 7,500 jobs, and $670M value added.'
 const economySeaLevelRise = 'The score is the same with 2 feet of sea-level rise.'
 
 const economy: TeamReport = {
   status: 'final',
   source:
-    'Published ranking scores from the criterion’s “Story Behind the Criterion” report, v16 (25 Oct 2026). One score covers revenue, jobs, and value added, and is the same under current climate and with 2 feet of sea-level rise.',
+    'Published ranking scores from the Economy team’s results workbook. One score covers revenue, jobs, and value added, and is the same under current climate and with 2 feet of sea-level rise.',
   findings: {
     'eco-machine': {
       headline: 'A small loss from converting farmland',
       metrics: [
         {
           name: economyMetric,
-          finding: `Almost none of the restored Suisun Marsh land is farmed, so land conversion lowers direct revenue by only $0.29M–$1.15M a year; one-time construction of about $0.85–1.5B falls outside the score. ${economyBaseline}`,
+          finding: `Almost none of the restored Suisun Marsh land is farmed, so land conversion lowers direct revenue by only about $0.92M a year; one-time construction of about $1.34B falls outside the score. ${economyBaseline}`,
           score: 0,
         },
       ],
@@ -363,7 +363,7 @@ const economy: TeamReport = {
       metrics: [
         {
           name: economyMetric,
-          finding: `Converting farmland lowers direct revenue by $282.5M a year in the 50% wetland version ($212.4M at 25%, scored −3; $504.5M at 100%, scored −5). ${economyBaseline}`,
+          finding: `Converting farmland lowers direct revenue by $281.3M a year in the 50% wetland version ($211.2M at 25%, scored −3; $503.2M at 100%, scored −5). ${economyBaseline}`,
           score: -4,
         },
       ],

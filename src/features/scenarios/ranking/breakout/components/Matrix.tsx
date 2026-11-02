@@ -30,7 +30,7 @@ import {
   signed,
 } from '../model/cells'
 import { FADED } from '../model/chartKit'
-import { UI, scenarioName } from '../model/labels'
+import { UI, scenarioName, placedMeasureLabel } from '../model/labels'
 import { isRanked } from '../model/rankingModel'
 import { focusRing } from '../styles'
 import { DENSEST_TABLE_ROWS, ENTITY_ROW } from '../useBreakout'
@@ -543,14 +543,14 @@ export function Matrix({
                     >
                       <Typography
                         variant="body2"
-                        title={node.label}
+                        title={placedMeasureLabel(node.id, state.place) ?? node.label}
                         sx={{
                           ...labelLines(lines),
                           color: 'base.50',
                           ...(inRestorationSplit ? { pl: 1.5 } : {}),
                         }}
                       >
-                        {lifeStage(node.label).name}
+                        {placedMeasureLabel(node.id, state.place) ?? lifeStage(node.label).name}
                       </Typography>
                       {lifeStage(node.label).stage && (
                         <StageChip label={capitalise(lifeStage(node.label).stage!)} plain />

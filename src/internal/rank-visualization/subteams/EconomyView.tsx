@@ -2,7 +2,7 @@
 //
 // Salinity moves the farm economy by tens of thousands of dollars; land conversion
 // moves it by hundreds of millions. Four orders of magnitude apart, which is why
-// the report scores "whichever effect actually dominates" rather than putting both
+// the workbook scores the pathway that decides each scenario rather than putting both
 // on one percent scale. Drawing them to the same scale is the point: the salinity
 // bars are invisible, and that invisibility is the finding.
 import { Box, Typography, useTheme } from '@mui/material'
@@ -18,9 +18,9 @@ import { cellFill } from '../data'
 import { DifferenceFromToday, MetricCards } from './aids'
 import { RegionMap } from './RegionMap'
 
-const BASE = 1_107_300_000
+const BASE = 1_105_100_000
 
-/** The salinity pathway's dry-year (2020) farm revenue change, current climate (v16 workbook). */
+/** The salinity pathway's dry-year (2020) farm revenue change, current climate (v19 workbook). */
 const SALINITY = [
   { label: 'A Tunnel, dry year', value: -26_953 },
   { label: 'Bolster & Fortify, dry year', value: -10_167 },
@@ -31,12 +31,12 @@ const SALINITY = [
 
 /** The land-use pathway, direct revenue change at each restoration intensity. */
 const LAND_USE = [
-  { label: 'New Green Watershed, 25/75', value: -212_400_000, score: -3 },
-  { label: 'New Green Watershed, 50/50', value: -282_500_000, score: -4 },
-  { label: 'New Green Watershed, full managed wetland', value: -504_500_000, score: -5 },
+  { label: 'New Green Watershed, 25/75', value: -211_200_000, score: -3 },
+  { label: 'New Green Watershed, 50/50', value: -281_300_000, score: -4 },
+  { label: 'New Green Watershed, full managed wetland', value: -503_200_000, score: -5 },
 ]
 
-const WIDEST = 504_500_000
+const WIDEST = 503_200_000
 
 const ZONE_KEY = REGION_DATA_KEY.economy ?? {}
 const ZONE_SCENARIOS: ScenarioKey[] = ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau']
@@ -95,7 +95,7 @@ export default function EconomyView() {
     >
       <Panel
         title="Two ways a scenario changes farm revenue, drawn to one scale"
-        intro="Saltier irrigation water lowers crop yields: the **salinity pathway**. Restoring farmland to wetland takes it out of production: the **land-use pathway**. Each bar is the **change in annual gross farm revenue** from today’s $1.107 billion, and every bar uses the same axis. The salinity bars are ==too small to see==, which is the point: the largest salinity effect anywhere is A Tunnel’s **−$27,000** in a dry year, 0.002% of the base and about **one ten-thousandth** of the 50/50 restoration effect."
+        intro="Saltier irrigation water lowers crop yields: the **salinity pathway**. Restoring farmland to wetland takes it out of production: the **land-use pathway**. Each bar is the **change in annual gross farm revenue** from today’s $1.105 billion, and every bar uses the same axis. The salinity bars are ==too small to see==, which is the point: the largest salinity effect anywhere is A Tunnel’s **−$27,000** in a dry year, 0.002% of the base and about **one ten-thousandth** of the 50/50 restoration effect."
       >
         <Box sx={{ display: 'grid', gap: 2 }}>
           <Group title="Salinity pathway">
