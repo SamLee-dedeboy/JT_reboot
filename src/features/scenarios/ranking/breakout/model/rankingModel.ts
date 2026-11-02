@@ -637,6 +637,7 @@ function landConversion(metricId: string): CriterionNode {
   // A change against Business as Usual, which converts nothing: its zero is the baseline.
   const values = {
     ngw: { [sliceKey(ANY, ANY)]: at('half') },
+    em: level('em')?.values.em ?? {},
     bau: { [sliceKey(ANY, ANY)]: 0 },
   }
   return adapt(half, {
@@ -644,11 +645,9 @@ function landConversion(metricId: string): CriterionNode {
     edge: 'measures',
     values,
     ngwLevels: [at('quarter'), at('half'), at('full')],
-    // Only New Green Watershed converts farmland at these scales; Eco Machine's small
-    // farmed share of Suisun Marsh is not broken out here.
+    // Only Eco Machine and New Green Watershed convert farmland.
     notApplicable: ['bf', 'cor', 'tunnel'],
-    forthcomingFor: ['em'],
-    note: 'New Green Watershed’s change from converting farmland to wetland, at 25%, 50% and 100% wetland restoration. The 50% level is the one the score uses. Land conversion is the same with sea level rise.',
+    note: 'The change from converting farmland to wetland: Eco Machine’s tidal wetland in Suisun Marsh and Franks Tract, and New Green Watershed at 25%, 50% and 100% wetland restoration, each including Eco Machine’s footprint. The 50% level is the one the score uses. Land conversion is the same with sea level rise.',
     slr: half.slr && { ...half.slr, values },
   })
 }

@@ -318,7 +318,7 @@ function CaveatNote({ note, color }: { note: string; color?: string }) {
           pb: 0.5,
         }}
       >
-        {note}
+        <CaveatText text={note} color={color} />
       </Typography>
     )
   const [, keyword, body] = match

@@ -4,13 +4,13 @@ What each team scores, what each score rests on, and what is still open. Rewritt
 2 Nov 2026 from the ranking table workbooks the teams filled in, and read back from
 the data the site uses, so these numbers are the site's numbers.
 
-| Team                  | Source of the current values                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------ |
-| Ecology               | `Ranking Table (5).xlsx`, Ecology tab; same as (2) and (4)                                 |
-| Recreation            | `Ranking Table (6).xlsx`, Recreation tab, and `Restoration Scenarios NGW and ECO (2).xlsx` |
-| Environmental Justice | `Ranking Table (5).xlsx`, Env Justice tab                                                  |
-| Economy               | `Ranking Table (5).xlsx`, Economy tab, and the v16 report and workbook (25 Oct 2026)       |
-| Eco-cultural          | `Ranking Table (5).xlsx`, Eco-cultural tab                                                 |
+| Team                  | Source of the current values                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| Ecology               | `Ranking Table (5).xlsx`, Ecology tab; same as (2) and (4)                                             |
+| Recreation            | `Ranking Table (6).xlsx`, Recreation tab, and `Restoration Scenarios NGW and ECO (2).xlsx`             |
+| Environmental Justice | `Ranking Table (5).xlsx`, Env Justice tab                                                              |
+| Economy               | `Ranking Table (5).xlsx`, Economy tab, the v16 report (25 Oct 2026), and the v19 workbook (1 Nov 2026) |
+| Eco-cultural          | `Ranking Table (5).xlsx`, Eco-cultural tab                                                             |
 
 Tabs in other copies of the workbook are out of date: the Recreation tab in (5) is
 old, and every tab except Recreation in (3) and (6) is old. Each workbook has values
@@ -309,11 +309,12 @@ Salinity effect across the Delta, $/yr, against the same reference in the same c
 | Value added, dry                   | +4,236      | +1,911              | −8,056            | +2,665              | −23,990  |
 | Value added, dry, sea level rise   | +26,196     | +19,052             | −20,933           | +5,361              | −15,870  |
 
-Land conversion, New Green Watershed 50/50: −$282.5M a year in gross revenue, −4,121
-jobs and −$141M in value added (Eco Machine is forthcoming; N/A elsewhere). The workbook's figures
+Land conversion (v19 LandUse sheet), New Green Watershed 50/50 including Eco Machine's
+footprint: −$281.3M a year in gross revenue, −3,995 total jobs and −$230.9M in total value
+added. Eco Machine: −$0.92M, −9.7 jobs and −$0.83M (N/A elsewhere). The workbook's salinity figures
 are first-order, not a new OpenAg run; a full run gives 1.3–1.8 times these, which
 changes no score. Calling on Reserves and A Tunnel are compared with their base run
-(BaseCalSim). Economy has no results by land use or for outflow yet.
+(BaseCalSim). Economy has no results for outflow yet.
 
 ## Eco-cultural
 
@@ -414,4 +415,4 @@ From reading the reports; none changes a score above.
 5. Eco-cultural report: score table (Eco Machine +2, Calling on Reserves +1) and rank grid (+1, 0) disagree; slide 62 confirms the score table.
 6. Environmental Justice water age: report −2 / −1 / 0 (New Green Watershed / Eco Machine / Bolster & Fortify); slides −3 / −2 / −1. The site follows the slides.
 7. Environmental Justice outflow, wet season, high vulnerability: 16 points less maps to +4, but the report assigns +5. The site uses +5.
-8. Economy: the salinity baseline is 7,720 direct / 11,860 total jobs, the land-use run 7,650 / 11,814; v16 does not reconcile them.
+8. Economy: the salinity tables use a baseline of 7,720 direct / 11,860 total jobs; v19's land-use results use 7,526 / 11,679 after removing a double-counted Webb Tract pasture.

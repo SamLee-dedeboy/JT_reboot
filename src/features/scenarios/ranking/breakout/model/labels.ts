@@ -44,9 +44,9 @@ export const TEAM_TAKEAWAYS: Partial<Record<TeamKey, string[]>> = {
     'In reality, scores and metrics interact with each other and with regional thresholds, showing that **potential recreation displacement from one region to another** could happen based on days above our selected thresholds, which in turn would affect the mosaic of recreational access at different times for Delta regions.',
   ],
   environmentalJustice: [
-    '**Change in flow** (Tiered Outflow model runs) changed the amount of exceedance of acceptable drinking water salinity thresholds more than changes to landscape, infrastructure, or operations (Adaptation Scenarios). An increase in volume of water within the Delta has the most positive effect on this criterion.',
-    'In terms of water age and water temperature, **Franks Tract and Suisun Marsh experience the highest increase in water age,** which is heavily attributed to the wetland restoration in these areas in Eco Machine and New Green Watershed.',
-    'Lastly, **flood risk benefits are highest in scenarios that affect the entire Delta,** rather than interventions in segmented regions; upland restoration in New Green Watershed provides the largest flood risk benefit across scenarios.',
+    '++Increased Delta Outflow++ changed the amount of exceedance of acceptable drinking water salinity thresholds more than adaptation scenarios. **An increase in volume of water within the Delta has the most positive effect on this criterion.**',
+    'In terms of water age and water temperature, **Franks Tract and Suisun Marsh experience the highest increase in water age,** which is heavily attributed to the wetland restoration in these areas in ++Eco Machine++ and ++New Green Watershed++.',
+    'Lastly, **flood risk benefits are highest in scenarios that affect the entire Delta,** rather than interventions in segmented regions; upland restoration in ++New Green Watershed++ provides the largest flood risk benefit across scenarios.',
   ],
   // economy: [],
   ecoCultural: [
@@ -57,11 +57,11 @@ export const TEAM_TAKEAWAYS: Partial<Record<TeamKey, string[]>> = {
 
 // Environmental Justice's metric takeaways: its caveats, and each metric's info card.
 const EJ_DRINKING_TAKEAWAY =
-  'An increase in Delta outflow, by far, reduces drinking water salinity threshold exceedances the most. Across adaptation scenarios, Eco Machine and New Green Watershed perform the best, and decrease threshold exceedances overall.'
+  'An increase in Delta outflow, by far, reduces drinking water salinity threshold exceedances the most. Across adaptation scenarios, ++Eco Machine++ and ++New Green Watershed++ perform the best, and decrease threshold exceedances overall.'
 const EJ_FLOOD_TAKEAWAY =
-  'Scenarios that produce Delta-wide effects, rather than localized benefits, performed the best for this metric. New Green Watershed was the leading scenario, attributed to the flood risk benefits associated with upland restoration. Bolster & Fortify performed second-best; while fortification of levees definitely reduces flood risk, these benefits are only observed along the freshwater corridor pathway, not the entire Delta. Lastly, A Tunnel was expected to slightly decrease flood risk, on the assumption that the two northern intakes would intercept water in high storm events prior to inundation into the Delta. Eco Machine and Calling on Reserves did not deviate from baseline.'
+  'Scenarios that produce Delta-wide effects, rather than localized benefits, performed the best for this metric. ++New Green Watershed++ was the leading scenario, attributed to the flood risk benefits associated with upland restoration. ++Bolster & Fortify++ performed second-best; while fortification of levees definitely reduces flood risk, these benefits are only observed along the freshwater corridor pathway, not the entire Delta. Lastly, ++A Tunnel++ was expected to slightly decrease flood risk, on the assumption that the two northern intakes would intercept water in high storm events prior to inundation into the Delta. ++Eco Machine++ and ++Calling on Reserves++ did not deviate from baseline.'
 const EJ_WATER_AGE_TAKEAWAY =
-  'The only scenario that decreased water age in months where water temperature was consistently above 19°C was Bolster & Fortify. New Green Watershed increased water age the most, followed by Eco Machine, in the regions in which restoration was incorporated. It is important to remember that an increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.'
+  'The only scenario that decreased water age in months where water temperature was consistently above 19°C was ++Bolster & Fortify++. ++New Green Watershed++ increased water age the most, followed by ++Eco Machine++, in the regions in which restoration was incorporated. It is important to remember that an increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.'
 
 /**
  * What to keep in mind across a whole criterion, shown under UI.caveatsHeading beside
@@ -92,7 +92,7 @@ export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
     'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue at $15/tCO2e. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
   ],
   ecoCultural: [
-    'Although all four metrics are equally important and interdependent on one another to meet this criterion, only the habitat restoration metric can be spatially and quantitatively evaluated across the scenarios. The other three metrics are envisioned and assumed in Eco Machine and New Green Watershed scenarios (the two scenarios that restore land and habitats) but cannot be prescribed within the scope of this project (e.g., assigning specific areas for land-back initiatives, or determining where access may be most desired and granted on private land). Thus, the evaluation for Tribal land access, Tribal Sovereignty and Application of Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively, where the scenarios offer the increased potential to achieve these metrics.',
+    'Although all four metrics are equally important and interdependent on one another to meet this criterion, only the habitat restoration metric can be spatially and quantitatively evaluated across the scenarios. The other three metrics are envisioned and assumed in ++Eco Machine++ and ++New Green Watershed++ scenarios (the two scenarios that restore land and habitats) but cannot be prescribed within the scope of this project (e.g., assigning specific areas for land-back initiatives, or determining where access may be most desired and granted on private land). Thus, the evaluation for Tribal land access, Tribal Sovereignty and Application of Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively, **where the scenarios offer the increased potential to achieve these metrics.**',
   ],
 }
 
@@ -231,23 +231,25 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-ec-restoration-meadow': 'Meadows',
   'bk-ec-restoration-floodplain': 'Floodplains',
   'bk-ec-restoration-functional-flow': 'Potential for functional flows',
-  'bk-ec-access': 'Tribal land access',
-  'bk-ec-tek': 'Indigenous science & Traditional Ecological Knowledge (TEK)',
-  'bk-ec-sovereignty': 'Tribal sovereignty',
+  'bk-ec-access':
+    'Increased Access to Landscapes for Stewardship, Subsistence, Ceremony, and Cultural Practices',
+  'bk-ec-tek': 'Implementation of Indigenous Science & Traditional Ecological Knowledge (TEK)',
+  'bk-ec-sovereignty':
+    'Recognition and Application of Indigenous Sovereignty, Tribal Governance, and Rights',
   // Eco-cultural's conditions, under each described metric (strongest access first)
   'bk-ec-access-ownership': 'Tribal ownership',
   'bk-ec-access-landTrust': 'Land trust partnership',
   'bk-ec-access-conservationEasement': 'Conservation easement',
-  'bk-ec-access-culturalEasement': 'Cultural easement',
-  'bk-ec-access-mou': 'MOU / MOA',
+  'bk-ec-access-culturalEasement': 'Cultural conservation easement',
+  'bk-ec-access-mou': 'Memorandum of Understanding (MOU) and Memorandum of Agreement (MOA)',
   'bk-ec-tek-privacy': 'Privacy',
   'bk-ec-tek-unrestrictedAccess': 'Unrestricted access',
-  'bk-ec-tek-siteAccess': 'Site access',
-  'bk-ec-tek-stewardshipGroups': 'Tribal stewardship groups',
-  'bk-ec-sovereignty-dataSovereignty': 'Data sovereignty',
+  'bk-ec-tek-siteAccess': 'Site selection',
+  'bk-ec-tek-stewardshipGroups': 'Tribal stewardship group collaboration',
+  'bk-ec-sovereignty-dataSovereignty': 'Data Sovereignty',
   'bk-ec-sovereignty-education': 'Education',
-  'bk-ec-sovereignty-foodSovereignty': 'Food sovereignty',
-  'bk-ec-sovereignty-waterRights': 'Water rights / Tribal beneficial uses',
+  'bk-ec-sovereignty-foodSovereignty': 'Food Sovereignty',
+  'bk-ec-sovereignty-waterRights': 'Water Rights',
 
   // Qualitative rows under a scored metric
   'bk-ej-flood-judgement': 'Change in flood risk',
@@ -440,9 +442,9 @@ export const CRITERION_DEFINITIONS: Record<
   ecoCultural: {
     metrics: [
       'Habitat restoration',
-      'Tribal land access',
-      'Indigenous science & traditional ecological knowledge (TEK)',
-      'Tribal sovereignty',
+      'Increased Access to Landscapes for Stewardship, Subsistence, Ceremony, and Cultural Practices',
+      'Implementation of Indigenous Science & Traditional Ecological Knowledge (TEK)',
+      'Recognition and Application of Indigenous Sovereignty, Tribal Governance, and Rights',
     ],
     combine:
       'One overall score, **set by the team** from restoration acres, flow and qualitative judgement.',
@@ -591,21 +593,21 @@ export const METRIC_DEFINITIONS: Record<
   // Economy
   'bk-econ-revenue': {
     measures: 'Farm gross revenue in the Delta.',
-    computed: 'Direct gross revenue against Business as Usual ($1.107B a year).',
+    computed: 'Direct gross revenue against Business as Usual ($1.105B a year).',
     considered:
       'Salinity effects across the Delta, and the change from converting farmland to wetland.',
     scored: `One score shared with jobs and value added. ${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
   'bk-econ-jobs': {
     measures: 'Farm jobs in the Delta.',
-    computed: 'Jobs against Business as Usual (7,720 direct, 11,860 total).',
+    computed: 'Total jobs against Business as Usual (7,526 direct, 11,679 total).',
     considered:
       'Salinity effects across the Delta, and the change from converting farmland to wetland.',
     scored: `One score shared with gross revenue and value added. ${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
   'bk-econ-value': {
     measures: 'Value added: wages, business income and taxes from Delta farming.',
-    computed: 'Value added against Business as Usual ($671M direct, $999M total a year).',
+    computed: 'Total value added against Business as Usual ($670M direct, $997M total a year).',
     considered:
       'Salinity effects across the Delta, and the change from converting farmland to wetland.',
     scored: `One score shared with gross revenue and jobs. ${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
@@ -626,8 +628,8 @@ export const METRIC_DEFINITIONS: Record<
       ['Tribal ownership', 'strongest'],
       ['Land trust partnership', ''],
       ['Conservation easement', ''],
-      ['Cultural easement', ''],
-      ['MOU / MOA', 'weakest'],
+      ['Cultural conservation easement', ''],
+      ['Memorandum of Understanding (MOU) and Memorandum of Agreement (MOA)', 'weakest'],
     ],
     scored:
       'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
@@ -636,15 +638,15 @@ export const METRIC_DEFINITIONS: Record<
     measures:
       'How far a scenario supports Indigenous science and traditional ecological knowledge (TEK).',
     computed: '[How the team judges this: forthcoming.]',
-    considered: 'Privacy, unrestricted access, site access, and Tribal stewardship groups.',
+    considered:
+      'Privacy, unrestricted access, site selection, and Tribal stewardship group collaboration.',
     scored:
       'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
   },
   'bk-ec-sovereignty': {
     measures: 'How far a scenario supports Tribal sovereignty.',
     computed: '[How the team judges this: forthcoming.]',
-    considered:
-      'Data sovereignty, education, food sovereignty, and water rights / Tribal beneficial uses.',
+    considered: 'Data Sovereignty, Education, Food Sovereignty, and Water Rights.',
     scored:
       'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
   },

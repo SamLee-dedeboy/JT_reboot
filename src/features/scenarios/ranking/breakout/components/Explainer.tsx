@@ -77,7 +77,7 @@ export function Section({ label, children }: { label: string; children: ReactNod
   )
 }
 
-/** Plain text, with the parts between ** ** in the team's colour. */
+/** Plain text: **team-colour emphasis** and ++primary-green scenario names++. */
 export function Prose({
   text,
   team,
@@ -90,10 +90,14 @@ export function Prose({
   const color = TEAMS.find((t) => t.key === team)?.color
   return (
     <Typography variant={variant} sx={{ color: 'base.50' }}>
-      {text.split('**').map((part, index) =>
-        index % 2 ? (
+      {text.split(/(\*\*.*?\*\*|\+\+.*?\+\+)/g).map((part, index) =>
+        part.startsWith('**') && part.endsWith('**') ? (
           <Box key={index} component="strong" sx={{ color }}>
-            {part}
+            {part.slice(2, -2)}
+          </Box>
+        ) : part.startsWith('++') && part.endsWith('++') ? (
+          <Box key={index} component="span" sx={{ color: 'primary.main' }}>
+            {part.slice(2, -2)}
           </Box>
         ) : (
           part
