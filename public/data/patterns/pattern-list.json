@@ -4496,16 +4496,19 @@
       "label": "Calling on Reserves",
       "releasePeriods": [
         {
-          "id": "release-1",
+          "id": "higher-2019-01",
           "start": "2019-01-01",
-          "end": "2019-02-28",
-          "provisional": true
+          "end": "2019-02-28"
         },
         {
-          "id": "release-2",
+          "id": "higher-2019-09",
+          "start": "2019-09-01",
+          "end": "2019-10-31"
+        },
+        {
+          "id": "higher-2019-12",
           "start": "2019-12-01",
-          "end": "2020-01-31",
-          "provisional": true
+          "end": "2019-12-31"
         }
       ],
       "places": [
@@ -4945,7 +4948,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-LCS-10; During and after potential release 2; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-LCS-10; During and after the December 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Lindsey–Cache Slough",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -9264,7 +9267,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-01; Before and into potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SM-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -9290,7 +9293,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-02; During and after potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SM-02; During and after the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -9316,7 +9319,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-05; Between potential releases 1 and 2; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SM-05; Between the January–February 2019 and September–October 2019 releases; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -9342,7 +9345,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-06; Before and into potential release 2; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SM-06; Before and into the September–October 2019 and December 2019 releases; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -9368,7 +9371,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-07; During potential release 2; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SM-07; During and after the December 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -10576,7 +10579,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-01; Before and into potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-MS-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -10602,7 +10605,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-02; During potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-MS-02; During the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -10628,7 +10631,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-07; Before and into potential release 2; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-MS-07; Before and into the September–October 2019 and December 2019 releases; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -10654,7 +10657,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-08; During potential release 2; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-MS-08; During and after the December 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -12953,7 +12956,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-01; Before and into potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SB-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -12979,7 +12982,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-02; During potential release 1; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SB-02; During the January–February 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -13005,7 +13008,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-03; During and after potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SB-03; During and after the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -13031,7 +13034,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-06; Between potential releases 1 and 2; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SB-06; Between the January–February 2019 and September–October 2019 releases; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -13057,7 +13060,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-08; Before and into potential release 2; provenance: older exploratory pattern and Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SB-08; Before and into the September–October 2019 and December 2019 releases; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -13083,7 +13086,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-09; During potential release 2; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-SB-09; During and after the December 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -14510,7 +14513,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-01; Before and into potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-CZ-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Confluence Zone",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -14536,7 +14539,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-02; During potential release 1; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-CZ-02; During the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Confluence Zone",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -14562,7 +14565,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-07; Before and into potential release 2; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-CZ-07; Before and into the September–October 2019 and December 2019 releases; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Confluence Zone",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"
@@ -14588,7 +14591,7 @@
               "sustainedReversals": null,
               "reversalsPerYear": null,
               "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-08; During potential release 2; provenance: Claude latest complete-set analysis; potential release 1 2019-01-01..2019-02-28; potential release 2 2019-12-01..2020-01-31; release dates provisional.",
+              "reviewNote": "Pattern ID COR-CZ-08; During and after the December 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
               "proposedDisplayRegion": "Confluence Zone",
               "broaderStoryGroup": "Calling on Reserves",
               "analysisProvenance": "approved_patterns.csv"

@@ -9,20 +9,21 @@ controls in a column.
 
 Everything the table says is in **`model/labels.ts`**, in this order:
 
-| Section                       | What it names                                                            |
-| ----------------------------- | ------------------------------------------------------------------------ |
-| `TEAM_TAKEAWAYS`              | The paragraph under "How the score is built", one per criterion          |
-| `SCENARIO_LABELS`             | A scenario's name in the heads, chips and sentence                       |
-| `SCENARIO_GROUPS`             | "Changes to landscape" / "Changes to water flow"                         |
-| `PLACE_LABELS`                | A place's name on its tab and in the sentence                            |
-| `PLACE_TRAYS`                 | Which place tabs sit together, and each group's heading                  |
-| `MEASURE_LABELS`              | Score and measure row names (Landscape, Added wetland, …)                |
-| `UI`                          | Headings, buttons, legend, empty-cell words ("Forthcoming", N/A)         |
-| `CRITERION_DEFINITIONS`       | A criterion score's info card: its metrics and how they combine          |
-| `METRIC_DEFINITIONS`          | A metric's info card: what, how computed, what is considered, how scored |
-| `PERIOD_WHY`, `PERIOD_MONTHS` | The TIME PERIOD info card: why, and each period's months                 |
-| `PLACE_WHY`                   | The PLACE info card, above the map                                       |
-| `SCENARIO_TAKEAWAYS`          | A team's takeaway in a score cell's card                                 |
+| Section                       | What it names                                                               |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `TEAM_TAKEAWAYS`              | The points under "Team takeaway", one list per criterion                    |
+| `TEAM_CAVEATS`                | The "Caveats and Clarifications" notes beside the takeaway                  |
+| `SCENARIO_LABELS`             | A scenario's name in the heads, chips and sentence                          |
+| `SCENARIO_GROUPS`             | "Changes to landscape" / "Changes to water flow"                            |
+| `PLACE_LABELS`                | A place's name on its tab and in the sentence                               |
+| `PLACE_TRAYS`                 | Which place tabs sit together, and each group's heading                     |
+| `MEASURE_LABELS`              | Score and measure row names (Landscape, Added wetland, …)                   |
+| `UI`                          | Headings, buttons, legend, empty-cell words ("Forthcoming", N/A)            |
+| `CRITERION_DEFINITIONS`       | A criterion score's info card: its metrics and how they combine             |
+| `METRIC_DEFINITIONS`          | A metric's info card: team takeaway, what, how computed, considered, scored |
+| `PERIOD_WHY`, `PERIOD_MONTHS` | The TIME PERIOD info card: why, and each period's months                    |
+| `PLACE_WHY`                   | The PLACE info card, above the map                                          |
+| `SCENARIO_TAKEAWAYS`          | A team's takeaway in a score cell's card                                    |
 
 Criterion names on the tabs (Ecology, Recreation, …) are shared with the whole site: `TEAMS` in
 `src/internal/rank-visualization/data.ts`.
@@ -31,7 +32,7 @@ Criterion names on the tabs (Ecology, Recreation, …) are shared with the whole
 
 | File                         | What is in it                                                                        |
 | ---------------------------- | ------------------------------------------------------------------------------------ |
-| `BreakoutPage.tsx`           | The page shell: criterion tabs, "How the score is built", takeaway, controls + table |
+| `BreakoutPage.tsx`           | The page shell: criterion tabs, takeaway + caveats, heading, controls + table        |
 | `components/Rail.tsx`        | The controls: conditions, time period, place tabs and info card, scenario chips      |
 | `components/TableHeader.tsx` | The sentence over the table, the Table/Map switch, the legend                        |
 | `components/Matrix.tsx`      | The table: heads, score rows, measure rows, cells, bars, best-in-row dot             |

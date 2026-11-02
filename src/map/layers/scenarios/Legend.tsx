@@ -2,6 +2,7 @@ import { Box, Stack, Typography } from '@mui/material'
 import { map } from '../../../theme'
 import { isOfflineMapEnabled } from '../../offlineBasemapStyle'
 import { layersBySlug, type MapScope } from './config'
+import { symbolSwatchSx } from './symbolSwatch'
 
 interface LegendProps {
   scenarioSlug: string
@@ -50,7 +51,11 @@ export default function Legend({
     >
       {legends.map((legend) => (
         <Box key={legend.title}>
-          <Typography variant="eyebrow" component="p" sx={{ mb: 1 }}>
+          <Typography
+            variant="eyebrow"
+            component="p"
+            sx={{ display: { xs: 'none', lg: 'block' }, mb: 1, color: 'base.100' }}
+          >
             {legend.title}
           </Typography>
           <Stack spacing={1}>
@@ -59,12 +64,10 @@ export default function Legend({
                 <Box
                   aria-hidden="true"
                   sx={{
-                    width: 14,
-                    height: item.kind === 'line' ? 3 : 14,
+                    width: 18,
+                    height: 14,
                     flex: '0 0 auto',
-                    bgcolor: item.color,
-                    border: item.kind === 'line' ? 0 : 1,
-                    borderColor: item.kind === 'line' ? 'transparent' : 'common.black',
+                    ...symbolSwatchSx(item, selectedHabitatType === item.selectionKey),
                     opacity:
                       selectedHabitatType && item.selectionKey !== selectedHabitatType ? 0.25 : 1,
                   }}
@@ -81,6 +84,21 @@ export default function Legend({
               </Stack>
             ))}
           </Stack>
+          {legend.gradient && (
+            <Box sx={{ width: 180, maxWidth: '100%' }}>
+              <Box
+                aria-hidden="true"
+                sx={{
+                  height: 10,
+                  background: `linear-gradient(90deg, ${legend.gradient.colors.join(', ')})`,
+                }}
+              />
+              <Stack direction="row" sx={{ justifyContent: 'space-between', mt: 0.5 }}>
+                <Typography variant="captionSmall">{legend.gradient.startLabel}</Typography>
+                <Typography variant="captionSmall">{legend.gradient.endLabel}</Typography>
+              </Stack>
+            </Box>
+          )}
         </Box>
       ))}
     </Stack>

@@ -5,10 +5,14 @@ const repoRoot = path.resolve(import.meta.dirname, '..')
 const runtimePath = path.join(repoRoot, 'public/data/patterns/pattern-list.json')
 const approvedLedger = process.argv[2]
 
-const releases = [
-  { id: 'release-1', start: '2019-01-01', end: '2019-02-28' },
-  { id: 'release-2', start: '2019-12-01', end: '2020-01-31' },
-]
+const schedulePath = 'public/data/operations/calling-on-reserves-release-schedule.json'
+const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', timeZone: 'UTC' })
+const releaseName = ({ startDate, endDate }) => {
+  const first = monthName.format(new Date(`${startDate}T00:00:00Z`))
+  const last = monthName.format(new Date(`${endDate}T00:00:00Z`))
+  return `${first === last ? first : `${first}–${last}`} ${startDate.slice(0, 4)}`
+}
+const releases = JSON.parse(fs.readFileSync(path.join(repoRoot, schedulePath), 'utf8')).moreThanBau
 
 const regions = {
   lindsey_cache_slough: {
@@ -129,20 +133,19 @@ const olderAndClaude = new Set([
 ])
 
 function releaseTiming(start, end) {
-  const r1 = releases[0],
-    r2 = releases[1]
-  if (start < r1.start && end >= r1.start)
-    return ['Before and into potential release 1', ['release-1']]
-  if (start >= r1.start && end <= r1.end) return ['During potential release 1', ['release-1']]
-  if (start <= r1.end && end > r1.end)
-    return ['During and after potential release 1', ['release-1']]
-  if (start > r1.end && end < r2.start) return ['Between potential releases 1 and 2', []]
-  if (start < r2.start && end >= r2.start)
-    return ['Before and into potential release 2', ['release-2']]
-  if (start >= r2.start && end <= r2.end) return ['During potential release 2', ['release-2']]
-  if (start <= r2.end && end > r2.end)
-    return ['During and after potential release 2', ['release-2']]
-  return ['After potential release 2', []]
+  const hit = releases.filter((release) => start <= release.endDate && end >= release.startDate)
+  if (!hit.length) {
+    const previous = releases.findLast((release) => release.endDate < start)
+    const next = releases.find((release) => release.startDate > end)
+    if (!previous) return [`Before the ${releaseName(next)} release`, []]
+    if (!next) return [`After the ${releaseName(previous)} release`, []]
+    return [`Between the ${releaseName(previous)} and ${releaseName(next)} releases`, []]
+  }
+  const named = `${hit.map(releaseName).join(' and ')} ${hit.length > 1 ? 'releases' : 'release'}`
+  const ids = hit.map((release) => release.id)
+  if (start < hit[0].startDate) return [`Before and into the ${named}`, ids]
+  if (end > hit.at(-1).endDate) return [`During and after the ${named}`, ids]
+  return [`During the ${named}`, ids]
 }
 
 const places = Object.entries(regions).map(([regionId, region]) => {
@@ -175,7 +178,7 @@ const places = Object.entries(regions).map(([regionId, region]) => {
         sustainedReversals: null,
         reversalsPerYear: null,
         reviewStatus: 'selected',
-        reviewNote: `${releaseTimingLabel}. Release windows are provisional month-scale inferences, not confirmed operation dates.`,
+        reviewNote: `${releaseTimingLabel}. Release windows from ${schedulePath}.`,
         proposedDisplayRegion: region.name,
         broaderStoryGroup: 'Calling on Reserves release chronology',
         releaseTimingLabel,
@@ -204,7 +207,11 @@ const places = Object.entries(regions).map(([regionId, region]) => {
 const dataset = JSON.parse(fs.readFileSync(runtimePath, 'utf8'))
 dataset.scenarios.reserve = {
   label: 'Calling on Reserves',
-  releasePeriods: releases.map((release) => ({ ...release, provisional: true })),
+  releasePeriods: releases.map(({ id, startDate, endDate }) => ({
+    id,
+    start: startDate,
+    end: endDate,
+  })),
   places,
 }
 dataset.generatedAt = new Date().toISOString()

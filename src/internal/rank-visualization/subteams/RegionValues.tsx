@@ -80,7 +80,11 @@ export interface RegionValuesProps {
    * a row per region under the maps' own columns. Picking a row outlines that
    * region on every map and dims the rest; `hint` says so above the table.
    */
-  regionTable?: { hint: string; pickedHint: (region: string) => string; noValue: string }
+  regionTable?: {
+    hint: string
+    pickedHint: (region: string) => string
+    noValue: (scenario: ScenarioKey) => string
+  }
   /** Control the region outlined across every map from the owning page. */
   pickedRegion?: string | null
   /** Keep map-table picks and external place controls in sync. */
@@ -563,7 +567,7 @@ export function RegionValues({
                         fontVariantNumeric: 'tabular-nums',
                       }}
                     >
-                      {value === null ? regionTable.noValue : mapText(value)}
+                      {value === null ? regionTable.noValue(scenario) : mapText(value)}
                     </Typography>
                   )
                 })}

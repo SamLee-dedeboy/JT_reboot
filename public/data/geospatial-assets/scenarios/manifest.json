@@ -105,6 +105,27 @@
       "delivery": "vector-tiles-candidate"
     },
     {
+      "path": "tiered-outflows/rivers.geojson",
+      "source": "public/data/geospatial-assets/basemap/offline-basemap.geojson named waterways, clipped to the Bay-Delta",
+      "features": 2,
+      "bytes": 63057,
+      "delivery": "geojson"
+    },
+    {
+      "path": "tiered-outflows/sacramento-river-mainstem.geojson",
+      "source": "coeqwal-website packages/data/src/gis/sacramento_river_mainstem.geojson",
+      "features": 1,
+      "bytes": 238690,
+      "delivery": "geojson"
+    },
+    {
+      "path": "tiered-outflows/san-joaquin-river-mainstem.geojson",
+      "source": "coeqwal-website packages/data/src/gis/san_joaquin_river_mainstem.geojson",
+      "features": 1,
+      "bytes": 547871,
+      "delivery": "simplify-or-geojson"
+    },
+    {
       "path": "tunnel/alignment.geojson",
       "source": "JT_exploration BDSC regional-summary tunnel input",
       "features": 2,

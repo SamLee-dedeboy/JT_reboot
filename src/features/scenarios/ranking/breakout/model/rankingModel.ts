@@ -24,7 +24,12 @@ import type {
   Source,
 } from '../../../../../internal/rank-visualization/drilldown/model'
 import { NODE_INDEX, sourcesFor } from '../../../../../internal/rank-visualization/drilldown/tree'
-import { ECOLOGY_SLR_RERUN_REGION } from './ecologySlrRerun'
+import {
+  EJ_DRINKING_SCORES,
+  EJ_DRINKING_SCORES_SLR,
+  EJ_DRINKING_SHARES,
+  EJ_DRINKING_SHARES_SLR,
+} from './ejDrinkingTable'
 import { MEASURE_LABELS } from './labels'
 
 const node = (id: string): CriterionNode => {
@@ -111,31 +116,6 @@ function byPlacePeriod(
       for (const [period, value] of Object.entries(periods)) series[sliceKey(place, period)] = value
     out[scenario as ScenarioKey] = series
   }
-  return out
-}
-
-/** Move a series' place key: the pivot's `*|run` becomes this page's `moderate|run`. */
-function atPlace(
-  values: Partial<Record<ScenarioKey, SliceValues>>,
-  place: string,
-): Partial<Record<ScenarioKey, SliceValues>> {
-  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
-  for (const [scenario, series] of Object.entries(values)) {
-    const moved: SliceValues = {}
-    for (const [key, value] of Object.entries(series ?? {})) {
-      const [, period] = key.split('|')
-      moved[sliceKey(place, period)] = value
-    }
-    out[scenario as ScenarioKey] = moved
-  }
-  return out
-}
-
-function merge(...parts: Partial<Record<ScenarioKey, SliceValues>>[]) {
-  const out: Partial<Record<ScenarioKey, SliceValues>> = {}
-  for (const part of parts)
-    for (const [scenario, series] of Object.entries(part))
-      out[scenario as ScenarioKey] = { ...out[scenario as ScenarioKey], ...series }
   return out
 }
 
@@ -232,6 +212,7 @@ const ECOLOGY_WORKBOOK_SOURCE: Source = {
 function sameUnderSlr(row: CriterionNode): CriterionNode {
   return {
     ...row,
+    sources: [ECOLOGY_WORKBOOK_SOURCE, ...(row.sources ?? [])],
     slr: {
       values: row.values,
       note: 'The Ecology team reports the same value under sea level rise.',
@@ -251,11 +232,22 @@ function speciesScore(by: Partial<Record<ScenarioKey, number>>, periods: string[
   return out
 }
 
+/** Food webs with the team's acres as its sheet gives them: the baseline reads zero. */
+function foodWebs(): CriterionNode {
+  const row = adapt(node('eco-foodweb'), { inferredFor: undefined })
+  return {
+    ...row,
+    children: row.children?.map((acres) => ({ ...acres, values: addedToBaseline(acres.values) })),
+  }
+}
+
 function ecologyTree(): CriterionNode {
   const niche = node('eco-niche')
+  // The team reports Calling on Reserves and A Tunnel Delta-wide only.
+  const regions = niche.places.map((place) => place.key).filter((place) => place !== 'delta')
   const species = (niche.children ?? []).map((base) => {
     const key = base.id.replace('eco-niche-', '') as EcologySpeciesKey
-    const adapted = adapt(
+    return adapt(
       base,
       {
         values: speciesValues(key, base.values),
@@ -264,25 +256,12 @@ function ecologyTree(): CriterionNode {
         sources: [...sourcesFor(base.id), SLIDES, ECOLOGY_RERUN_SOURCE],
         // For an invasive species, less suitable habitat is the better outcome.
         betterHigher: !INVASIVE.has(key),
+        notApplicableAt: { cor: regions, tunnel: regions },
+        // Their Delta-wide numbers under sea level rise are still to come.
+        forthcomingFor: ['cor', 'tunnel'],
       },
       ECOLOGY_PERIOD_LABEL,
     )
-    // Under sea level rise the team also reports these two scenarios by region.
-    const rerun = ECOLOGY_SLR_RERUN_REGION[key]
-    const bothYears = (scenario: 'cor' | 'tunnel') =>
-      Object.fromEntries(
-        Object.entries(rerun[scenario]).map(([region, value]) => [sliceKey(region, 'both'), value]),
-      )
-    return {
-      ...adapted,
-      slr: adapted.slr && {
-        ...adapted.slr,
-        values: merge(adapted.slr.values, {
-          cor: bothYears('cor'),
-          tunnel: bothYears('tunnel'),
-        }),
-      },
-    }
   })
   const suitability: CriterionNode = {
     ...adapt(niche, {}, ECOLOGY_PERIOD_LABEL),
@@ -330,7 +309,7 @@ function ecologyTree(): CriterionNode {
     children: [
       sameUnderSlr(adapt(node('eco-habitat'))),
       // The team's sheet now gives these zeros itself, so none of them is ours.
-      sameUnderSlr(adapt(node('eco-foodweb'), { inferredFor: undefined })),
+      sameUnderSlr(foodWebs()),
       suitability,
       adapt(node('eco-conceptual')),
     ],
@@ -383,6 +362,39 @@ const RESTORATION_SCORE: Source = {
     'C — Habitat (restored acres): BAU 0, ECO 5, NGW Lower/Middle/Upper 5. D — Economy ($): BAU 0, ECO 5, NGW 5. C and D treat restoration as added on top of BAU protected areas.',
 }
 
+/** The Recreation tab of the ranking table workbook the team filled in, Nov 2026. */
+const RECREATION_WORKBOOK_SOURCE: Source = {
+  doc: 'data',
+  where: 'Ranking table workbook, Recreation tab, Nov 2026',
+  quote: 'Values the Recreation team entered in the ranking table sheet.',
+}
+
+/** Habitat restoration and recreation economy score alike in the team's sheet. */
+const REC_RESTORATION_SCORES = { bau: 0, em: 3, ngw: 5, bf: 0, cor: -1, tunnel: -3 }
+
+/** A row the team reports the same under sea level rise, with its children. */
+function recSameUnderSlr(row: CriterionNode): CriterionNode {
+  return {
+    ...row,
+    slr: {
+      values: row.values,
+      ranks: row.ranks,
+      note: 'The Recreation team reports the same value under sea level rise.',
+      sources: [RECREATION_WORKBOOK_SOURCE],
+    },
+    children: row.children?.map(recSameUnderSlr),
+  }
+}
+
+/**
+ * The team's restored acres and dollars are what restoration adds on top of Business
+ * as Usual's protected land, so they read as they stand: its baseline here is zero.
+ */
+function addedToBaseline(values: CriterionNode['values']): CriterionNode['values'] {
+  const bau = Object.keys(values.bau ?? {}).map((slice) => [slice, 0])
+  return { ...values, bau: Object.fromEntries(bau) }
+}
+
 /**
  * Habitat restoration as a ranking score, with Recreation's acres beneath it: +5 for
  * Eco Machine and New Green Watershed (every bound), 0 for the scenarios that
@@ -395,9 +407,14 @@ function habitatRestoration(): CriterionNode {
     edge: 'beside',
     unit: 'score',
     places: NOT_BROKEN_OUT,
-    values: flat({ bau: 0, bf: 0, cor: 0, tunnel: 0, em: 5, ngw: 5 }),
+    values: flat(REC_RESTORATION_SCORES),
     ngwLevels: [5, 5, 5],
-    sources: [RESTORATION_SCORE, SCORING_EMAIL, ...sourcesFor('rec-restoration')],
+    sources: [
+      RECREATION_WORKBOOK_SOURCE,
+      RESTORATION_SCORE,
+      SCORING_EMAIL,
+      ...sourcesFor('rec-restoration'),
+    ],
     note: 'Recreation scores restored acres added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound (25, 50 and 100%). Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for the acres Recreation reports.',
     children: [
       adapt(acres, {
@@ -405,6 +422,7 @@ function habitatRestoration(): CriterionNode {
         label: 'Restored acres',
         level: 'entity',
         edge: 'measures',
+        values: addedToBaseline(acres.values),
         notApplicable: ['bf', 'cor', 'tunnel'],
       }),
     ],
@@ -422,14 +440,30 @@ function recreationEconomy(): CriterionNode {
     edge: 'beside',
     unit: 'score',
     places: NOT_BROKEN_OUT,
-    values: flat({ bau: 0, bf: 0, cor: 0, tunnel: 0, em: 5, ngw: 5 }),
+    values: flat(REC_RESTORATION_SCORES),
     ngwLevels: [5, 5, 5],
     entityNoun: 'service',
-    sources: [RESTORATION_SCORE, SCORING_EMAIL, ...sourcesFor('rec-economy')],
+    sources: [
+      RECREATION_WORKBOOK_SOURCE,
+      RESTORATION_SCORE,
+      SCORING_EMAIL,
+      ...sourcesFor('rec-economy'),
+    ],
     note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound; every service scores +5 for both. Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
     children: [
-      ...(economy.children ?? []).map((service) => adapt(service, { edge: 'refines' })),
-      qualitativeRow('bk-rec-economy-infrastructure', 'recreation'),
+      ...(economy.children ?? []).map((service) =>
+        adapt(service, {
+          edge: 'refines',
+          values: addedToBaseline(service.values),
+          notApplicable: ['bf', 'cor', 'tunnel'],
+          notApplicableAt: { em: ['northDelta', 'southDelta'] },
+        }),
+      ),
+      {
+        ...qualitativeRow('bk-rec-economy-infrastructure', 'recreation'),
+        steps: { bau: 0, bf: -1, cor: 0, tunnel: -3 },
+        notApplicable: ['em', 'ngw'],
+      },
     ],
   })
 }
@@ -464,8 +498,8 @@ function recreationRoot(): CriterionNode {
         'Temperature thresholds',
         'The same construction against water temperature: 19 °C for day use & boating, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, < 18 °C cold-water day use. The mean of the five activities, today and with sea level rise, is the other half of the Recreation score.',
       ),
-      habitatRestoration(),
-      recreationEconomy(),
+      recSameUnderSlr(habitatRestoration()),
+      recSameUnderSlr(recreationEconomy()),
     ],
   })
 }
@@ -480,41 +514,45 @@ const EJ_CLASSES: Facet[] = [
   { key: 'highest', label: 'Highest vulnerability · 3' },
 ]
 
-const S = (run: number, wet: number, dry: number) => ({ run, wet, dry })
-
-/** The report's drinking-water scores by class and season (Tables 12 and 15). */
-const DRINKING_SCORES = byPlacePeriod({
-  bau: { all: S(0, 0, 0), moderate: S(0, 0, 0), high: S(0, 0, 0) },
-  em: { all: S(2, 2, 1), moderate: S(2, 4, 2), high: S(2, 2, 1) },
-  ngw: { all: S(2, 2, 0), moderate: S(2, 4, 1), high: S(2, 2, 1) },
-  bf: { all: S(0, -1, 0), moderate: S(1, 2, 1), high: S(0, -1, 0) },
-  cor: { all: S(-2, -4, 0), moderate: S(-5, -5, 2), high: S(-1, -3, 0) },
-  tunnel: { all: S(-3, -5, 0), moderate: S(-5, -5, 2), high: S(-3, -5, 0) },
-})
+/** The Env Justice tab of the ranking table workbook the team filled in, Nov 2026. */
+const EJ_WORKBOOK_SOURCE: Source = {
+  doc: 'data',
+  where: 'Ranking table workbook, Env Justice tab, Nov 2026',
+  quote: 'Values the Environmental Justice team entered in the ranking table sheet.',
+}
 
 function ejTree(): CriterionNode {
   const classNode = (key: string) => node(`ej-drinking-${key}`)
-  const keys = ['all', 'moderate', 'high', 'highest']
   const exceedance: CriterionNode = {
     ...adapt(classNode('all')),
     id: 'bk-ej-drinking-pct',
     label: 'Readings over 1,050 µS/cm',
     edge: 'derives',
     places: EJ_CLASSES,
-    values: merge(...keys.map((key) => atPlace(classNode(key).values, key))),
+    values: byPlacePeriod(EJ_DRINKING_SHARES),
+    sources: [EJ_WORKBOOK_SOURCE, ...(classNode('all').sources ?? [])],
     note: 'The share of daily readings at or above 1,050 µS/cm, the drinking-water threshold, at the 49 SAFER drinking-water points: all together or by Delta Vulnerability Index class. The highest-vulnerability class never exceeds it in any scenario.',
-    slr: classNode('all').slr && {
-      ...classNode('all').slr!,
+    slr: {
       places: EJ_CLASSES,
-      periods: relabel(classNode('all').slr!.periods ?? [], {}),
-      values: merge(...keys.map((key) => atPlace(classNode(key).slr?.values ?? {}, key))),
+      periods: relabel(adapt(classNode('all')).periods, {}),
+      values: byPlacePeriod(EJ_DRINKING_SHARES_SLR),
+      note: 'With sea level rise, against its own Business as Usual.',
+      sources: [EJ_WORKBOOK_SOURCE],
     },
   }
   const drinking: CriterionNode = {
     ...adapt(node('ej-drinking')),
     places: EJ_CLASSES,
-    values: DRINKING_SCORES,
-    note: 'One point per percentage point of readings over 1,050 µS/cm against Business as Usual, ±5 at five or more. Scored for all 49 points and for the moderate and high classes; the highest class is always 0% and has no score. Only the whole-run, all-points score enters the EJ criterion (Oct 2026); the seasonal and class scores are the report’s.',
+    values: byPlacePeriod(EJ_DRINKING_SCORES),
+    sources: [EJ_WORKBOOK_SOURCE, ...(adapt(node('ej-drinking')).sources ?? [])],
+    note: 'One point per percentage point of readings over 1,050 µS/cm against Business as Usual (CalSim’s, for Calling on Reserves and A Tunnel), ±5 at five or more. Scored for all 49 points and for each class; the highest class is always 0%, so it scores 0.',
+    slr: {
+      places: EJ_CLASSES,
+      periods: relabel(adapt(node('ej-drinking')).periods, {}),
+      values: byPlacePeriod(EJ_DRINKING_SCORES_SLR),
+      note: 'With sea level rise, against its own Business as Usual.',
+      sources: [EJ_WORKBOOK_SOURCE],
+    },
     children: [exceedance],
   }
   const waterAge = node('ej-waterage')
@@ -535,11 +573,26 @@ function ejTree(): CriterionNode {
       note: 'Change in average water age (days) against Business as Usual during the months with water at or above 19 °C: Oct 2018, May – Oct 2019 and May – Oct 2020. Older water favours algal blooms.',
     }
   })
+  const flood = node('ej-flood')
   return adapt(node('environmentalJustice'), {
+    // The team cleared its criterion scores while water age is re-run (Nov 2026).
+    values: {},
+    forthcoming: true,
     children: [
       drinking,
-      adapt(node('ej-flood'), {
-        children: [qualitativeRow('bk-ej-flood-judgement', 'environmentalJustice')],
+      adapt(flood, {
+        slr: {
+          values: flood.values,
+          note: 'The Environmental Justice team reports the same value under sea level rise.',
+          sources: [EJ_WORKBOOK_SOURCE],
+        },
+        children: [
+          {
+            ...qualitativeRow('bk-ej-flood-judgement', 'environmentalJustice'),
+            note: 'The team’s judgement of the change in flood risk: one arrow for a slight decrease, two for a moderate decrease, three for a significant decrease.',
+            steps: { bau: 0, em: 0, ngw: 3, bf: 2, cor: 0, tunnel: 1 },
+          },
+        ],
       }),
       {
         ...adapt(waterAge),

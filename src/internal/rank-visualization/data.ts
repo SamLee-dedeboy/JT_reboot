@@ -68,22 +68,20 @@ export const SCENARIOS: Scenario[] = [
     // Ecology: the team's own score, from the ranking table workbook (Nov 2026).
     // EJ: the only scenario above 0.
     // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
-    // Recreation: −0.375, its own score (26 Oct 2026): salinity and temperature,
-    // today and with sea level rise, averaged; the Suisun Marsh salinity losses
-    // outweigh Central Delta gains. Restoration and its economy (+5 each) are scored
-    // apart from it.
+    // Recreation: 0, the team's own score (ranking table workbook, Nov 2026): Suisun
+    // Marsh −2 and Central Delta +1 average out.
     name: 'New Green Watershed',
     color: voting.scenario.newGreenWatershed,
-    scores: [3.1, -0.375, 1, -4, 4],
+    scores: [3.1, 0, 1, -4, 4],
     provisional: [false, false, false, false, false],
   },
   {
     // Ecology: the team's own score, from the ranking table workbook (Nov 2026). EJ fell from +1 to 0 when the Oct 2026
     // slides dropped the two seasonal drinking-water scores from its average.
-    // Recreation: the same activity scores as NGW, so the same −0.375.
+    // Recreation: 0, the same as New Green Watershed in every place.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
-    scores: [1.33, -0.375, 0, 0, 2],
+    scores: [1.33, 0, 0, 0, 2],
     provisional: [false, false, false, false, false],
   },
   {
@@ -96,26 +94,23 @@ export const SCENARIOS: Scenario[] = [
   {
     // Economy: 0 in both water years and with sea level rise (v16, 25 Oct 2026),
     // against RMA's own base run for this scenario.
-    // Recreation: +0.0625 against CalSim's Business as Usual (26 Oct 2026), the only
-    // scenario above 0; it had been −2.5 against RMA's.
-    // EJ*: now "pending" for want of a water-age result; −1 is the mean of the two
-    // metrics it has (drinking water −2, flood risk 0), which is also what the
-    // Sept report published.
+    // Recreation: 0 (ranking table workbook, Nov 2026).
+    // EJ*: "pending" for want of a water-age result; 0 is the mean of the two metrics
+    // it has (drinking water 0, flood risk 0; ranking table workbook, Nov 2026).
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [-0.33, 0.0625, -1, 0, 1], // PLACEHOLDER: Env. Justice
+    scores: [-0.33, 0, 0, 0, 1], // PLACEHOLDER: Env. Justice
     provisional: [false, false, true, false, false],
   },
   {
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
     // withdrew the drinking-water numbers the Sept report published for it.
-    // Recreation: −0.125 against CalSim's Business as Usual (26 Oct 2026); it had
-    // been −4 against RMA's. EJ*: mean of the four metric scores the Sept report gave
-    // (−3, −5, 0, +1). Economy: −1 (v16, 25 Oct 2026), from a dry-year salinity
+    // Recreation: 0 (ranking table workbook, Nov 2026). EJ*: mean of the two metrics it has (drinking water 0,
+    // flood risk +1; ranking table workbook, Nov 2026). Economy: −1 (v16, 25 Oct 2026), from a dry-year salinity
     // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0.33, -0.125, -2, -1, -2], // PLACEHOLDER: Env. Justice
+    scores: [0.33, 0, 0.5, -1, -2], // PLACEHOLDER: Env. Justice
     provisional: [false, false, true, false, false],
   },
   {
@@ -141,8 +136,10 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     // EJ: drinking water only (+4 in every cut); Eco-cultural: one overall score.
     name: 'More outflow (+30%)',
     color: voting.scenario.moreOutflow,
-    scores: [null, null, 4, null, 3],
-    provisional: NOT_INFERRED,
+    // Recreation: +1, the average of its regions (ranking table workbook, Nov 2026).
+    // EJ*: the team cleared its +4 from that workbook; its drinking-water score is still +4.
+    scores: [null, 1, 4, null, 3],
+    provisional: [false, false, true, false, false],
   },
   {
     // EJ publishes −1 for the whole run and both seasons, then an "average" of −1.5

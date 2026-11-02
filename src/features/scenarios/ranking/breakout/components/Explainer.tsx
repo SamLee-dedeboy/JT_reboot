@@ -78,10 +78,18 @@ export function Section({ label, children }: { label: string; children: ReactNod
 }
 
 /** Plain text, with the parts between ** ** in the team's colour. */
-export function Prose({ text, team }: { text: string; team: TeamKey }) {
+export function Prose({
+  text,
+  team,
+  variant = 'body2',
+}: {
+  text: string
+  team: TeamKey
+  variant?: 'body1' | 'body2'
+}) {
   const color = TEAMS.find((t) => t.key === team)?.color
   return (
-    <Typography variant="body2" sx={{ color: 'base.50' }}>
+    <Typography variant={variant} sx={{ color: 'base.50' }}>
       {text.split('**').map((part, index) =>
         index % 2 ? (
           <Box key={index} component="strong" sx={{ color }}>

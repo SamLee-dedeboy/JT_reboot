@@ -13,7 +13,6 @@ export {
   evaluationTeams,
   outflowResultVariations,
   resultFamilies,
-  resultsOverviewSections,
   slrScenarioSlugs,
 } from './results'
 export { tieredOutflowsScenario } from './tieredOutflows'

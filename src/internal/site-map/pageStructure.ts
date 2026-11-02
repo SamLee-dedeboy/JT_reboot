@@ -7,7 +7,6 @@ import {
   evaluationTeams,
   outflowResultVariations,
   resultFamilies,
-  resultsOverviewSections,
   tieredOutflowsScenario,
 } from '../../features/scenarios/content'
 import { ejMethodologyExample, ejScenarioExample } from './ejExample'
@@ -88,9 +87,12 @@ export const currentSections: Record<string, UISection[]> = {
     },
     {
       label: 'How are scenarios modeled?',
-      children: resultsOverviewSections.map((section) => ({
-        label: `${section.number} ${section.title}`,
-      })),
+      children: [
+        { label: 'Two baselines for comparison' },
+        { label: 'Where and when' },
+        { label: 'What is modeled' },
+        { label: 'How each future is built' },
+      ],
     },
     {
       label: 'Where does salinity change?',
@@ -98,10 +100,10 @@ export const currentSections: Record<string, UISection[]> = {
       to: '/pages/scenario-explorer',
     },
     {
-      label: 'Next: how are scenarios evaluated?',
+      label: 'How are scenarios evaluated?',
       children: [
         { label: 'How scenarios are evaluated', to: '/scenarios/evaluation' },
-        { label: 'Read more in detail', to: '/pages/regional-summary' },
+        { label: 'Explore the regional summary', to: '/pages/regional-summary' },
       ],
     },
   ],
@@ -219,7 +221,11 @@ export const currentSections: Record<string, UISection[]> = {
     { label: 'Hero', detail: 'Shared with By scenario: view choices' },
     { label: 'View choices', detail: 'By scenario · By criterion', to: '/scenarios/ranking' },
     { label: 'Criterion tabs', detail: teamList },
-    { label: 'How the score is built', detail: 'Team name · the team’s takeaway' },
+    {
+      label: 'Team takeaway',
+      detail: 'The team’s points · caveats and clarifications beside them',
+    },
+    { label: 'How the score is built', detail: 'The heading over the controls and table' },
     {
       label: 'Breakout controls',
       detail: 'Conditions · scenarios in two groups · place menu with study area · time period',

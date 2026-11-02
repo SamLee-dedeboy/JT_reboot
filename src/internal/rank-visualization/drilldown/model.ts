@@ -102,6 +102,8 @@ export type Unit =
   | 'dollars'
   /** Plain US dollars, for the zone-level economic differences. */
   | 'usd'
+  /** Plain US dollars per year, unsigned: the value itself rather than a change in it. */
+  | 'usdValue'
   | 'jobs'
   /** Days, for the water-age change against today. */
   | 'days'
@@ -333,7 +335,12 @@ export function isSigned(node: CriterionNode): boolean {
     const marks = Object.values(baseline)
     return marks.length > 0 && marks.every((value) => value === 0 || value === null)
   }
-  return node.unit === 'dollars' || node.unit === 'jobs' || node.unit === 'usd'
+  return (
+    node.unit === 'dollars' ||
+    node.unit === 'jobs' ||
+    node.unit === 'usd' ||
+    node.unit === 'usdValue'
+  )
 }
 
 /**
@@ -381,6 +388,8 @@ export function fmtValue(value: number, unit: Unit): string {
       return `${value < 0 ? '−' : ''}$${Math.abs(Math.round(value)).toLocaleString('en-US')}M`
     case 'usd':
       return `${value < 0 ? '−' : '+'}$${Math.abs(Math.round(value)).toLocaleString('en-US')}`
+    case 'usdValue':
+      return `${value < 0 ? '−' : ''}$${Math.abs(Math.round(value)).toLocaleString('en-US')}`
     case 'days': {
       const days = Math.round(value * 10) / 10
       if (days === 0) return 'no change'

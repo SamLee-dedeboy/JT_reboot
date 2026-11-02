@@ -7,6 +7,8 @@ export type ChapterRole = 'keyBenefits' | 'motivation' | 'design' | 'supporting'
 export interface ScenarioChapter {
   title: string
   navigationLabel?: string
+  /** A short figure shown in a chip beside the title, e.g. the size of an outflow change. */
+  chip?: string
   /** Set on adaptation chapters; orders them and names their rail entry and anchor. */
   role?: ChapterRole
   paragraphs: string[]
@@ -18,6 +20,8 @@ export interface ScenarioChapter {
     exploreHabitat?: 'forest' | 'meadow' | 'floodplain'
     mapSelectionKey?: string
   }>
+  /** Selection keys of map features to name in a plain key, for a chapter without highlights. */
+  mapKey?: string[]
   endingParagraphs?: string[]
   subsections?: Array<{
     id?: string

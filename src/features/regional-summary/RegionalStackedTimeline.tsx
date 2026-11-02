@@ -227,19 +227,21 @@ export default function RegionalStackedTimeline({
                       overflow: 'visible',
                     }}
                   >
-                    <Typography
-                      variant="captionSmall"
-                      sx={{
-                        px: jtSpacing.component.xs,
-                        bgcolor: 'base.800',
-                        color: 'brand.primaryBlue',
-                        transform: 'translateY(-50%)',
-                        whiteSpace: 'nowrap',
-                        ...(left > 75 ? { position: 'absolute', right: 0 } : {}),
-                      }}
-                    >
-                      {period.label.toUpperCase()}
-                    </Typography>
+                    {period.label && (
+                      <Typography
+                        variant="captionSmall"
+                        sx={{
+                          px: jtSpacing.component.xs,
+                          bgcolor: 'base.800',
+                          color: 'brand.primaryBlue',
+                          transform: 'translateY(-50%)',
+                          whiteSpace: 'nowrap',
+                          ...(left > 75 ? { position: 'absolute', right: 0 } : {}),
+                        }}
+                      >
+                        {period.label.toUpperCase()}
+                      </Typography>
+                    )}
                   </Box>
                 )
               })}

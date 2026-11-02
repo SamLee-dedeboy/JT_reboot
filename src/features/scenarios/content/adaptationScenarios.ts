@@ -236,6 +236,7 @@ export const adaptationScenarios: ScenarioContent[] = [
         paragraphs: [
           'Calling on Reserves focuses on modeling a specific reservoir as an example, which is Shasta Dam and Reservoir, the largest reservoir in the Sacramento River watershed with a capacity of 4,552,000 acre-feet.',
         ],
+        mapKey: ['cor-rivers', 'cor-facilities'],
         subsections: [
           {
             title: 'When and how much water is released',

@@ -68,8 +68,8 @@ export default function EvaluationPage() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <ResultsHero
-          title="How scenarios are evaluated"
-          summary="Five criteria examine the ecological, cultural, community, recreational, and economic effects of every future. Explore what each criterion measures, then compare results across scenarios."
+          title="Comparative Scenario Evaluation"
+          summary="Five criteria examine the ecological, eco-cultural, community, recreational, and economic effects of every future. Explore what each criterion measures, then compare results across scenarios."
         />
 
         <Container maxWidth={false} sx={{ width: '90dvw', px: 0, py: 0 }}>
@@ -106,16 +106,14 @@ export default function EvaluationPage() {
               <Typography id="how-evaluated-title" variant="h2" sx={{ mb: jtSpacing.gap.md }}>
                 How are scenarios evaluated?
               </Typography>
-              {/* GPT draft: public introduction; Claude's page composition remains unchanged. */}
               <Typography variant="body1" sx={{ mb: jtSpacing.section.md, color: 'base.100' }}>
-                No single model can describe everything a future might mean for the Delta. A change
-                that improves water quality in one place may affect habitat, community safety,
-                recreation, Tribal relationships, or agricultural livelihoods somewhere else.
-              </Typography>
-              <Typography variant="body1" sx={{ mb: jtSpacing.section.md, color: 'base.100' }}>
-                Each criterion uses its own metrics, evidence, and methods. Together, the criteria
-                show where scenarios create benefits, introduce costs, or involve trade-offs that
-                cannot be represented by a single measure.
+                No single model or criterion can adequately assess all that a potential future
+                adaptation scenario might mean for the Delta. A change that improves water quality
+                in one place may affect habitat, recreation, Tribal relationships, or agricultural
+                livelihoods somewhere else. To capture these different values and concerns, all
+                scenarios are evaluated by five criteria. Each criterion uses a distinct set of
+                metrics, evidence, and methods, and in combination show how scenarios compare in
+                terms of benefits, drawbacks, and trade-offs.
               </Typography>
               <EvaluationFramework showIntroduction={false} />
             </Box>

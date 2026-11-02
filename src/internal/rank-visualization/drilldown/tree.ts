@@ -112,7 +112,7 @@ function ecologySlr(species: EcologySpeciesKey): ClimateRun {
   return {
     periods: ECO_SLR_PERIODS,
     values,
-    note: 'With sea level rise, against its own Business as Usual. Delta-wide is split by water year; each region is one number for 2019 and 2020 together. Calling on Reserves and A Tunnel were not run with sea level rise.',
+    note: 'With sea level rise, against its own Business as Usual. Delta-wide is split by water year; each region is one number for 2019 and 2020 together. Calling on Reserves and A Tunnel are forthcoming Delta-wide and are not reported by region.',
     sources: ECO_SLR_SOURCES,
   }
 }
@@ -531,14 +531,14 @@ function byRecRegion(by: Partial<Record<ScenarioKey, (number | null)[]>>) {
 }
 
 /**
- * Recreation's "Overall $" sheet (26 Oct 2026) as published, $M a year (2025): New
- * Green Watershed's 50% restoration and Business as Usual (existing protected land,
- * CPAD) by Delta region, with New Green Watershed's −5…+5 score against Business
- * as Usual (Delta-wide first, as the sheet scores it). `emAdded` is what Eco
- * Machine's restoration adds on top of Business as Usual, Delta-wide only
- * ("Recreation The Score.xlsx", table 2), where every service scores +5.
- * `quarter` and `full` are New Green Watershed at 25% and 100% restoration, by
- * region, from the same sheet's "Ecosystem service value by scenario" table.
+ * Recreation's "Overall $" sheet ("Restoration Scenarios NGW and ECO", Nov 2026), in
+ * dollars a year (2025): New Green Watershed's MEDIUM restoration and Business as
+ * Usual (existing protected land, CPAD) by Delta region, with New Green Watershed's
+ * −5…+5 score against Business as Usual (Delta-wide first, as the sheet scores it).
+ * `em` is what Eco Machine's restoration adds in Suisun Marsh and at Franks Tract
+ * ("Restoration ($) Combined", rows 4 and 10). `quarter` and `full` are New Green
+ * Watershed at LOW and HIGH restoration, by region, from the same sheet's "Ecosystem
+ * service value by scenario" table.
  */
 const REC_ECONOMY_SERVICES: {
   key: string
@@ -548,47 +548,47 @@ const REC_ECONOMY_SERVICES: {
   full: number[]
   bau: number[]
   score: number[]
-  emAdded: number
+  em: (number | null)[]
 }[] = [
   {
     key: 'amenity',
     label: 'Amenity and recreation · day use and boating',
-    ngw: [15.613, 15.747, 20.865, 23.127],
-    quarter: [15.613, 10.939, 20.865, 10.541],
-    full: [15.613, 15.747, 22.767, 54.682],
-    bau: [6.757, 8.875, 20.865, 3.845],
+    ngw: [15612588, 15746642, 20864682, 23127159],
+    quarter: [15612588, 10938914, 20864682, 10541095],
+    full: [15612588, 15746642, 22766589, 54681904],
+    bau: [6756577, 8874896, 20864682, 3844774],
     score: [5, 5, 5, 0, 5],
-    emAdded: 16.127,
+    em: [15612588, 514036, null, null],
   },
   {
     key: 'biodiversity',
     label: 'Biodiversity · birding',
-    ngw: [6.791, 6.849, 9.075, 10.059],
-    quarter: [6.791, 4.758, 9.075, 4.585],
-    full: [6.791, 6.849, 9.903, 23.785],
-    bau: [2.939, 3.86, 9.075, 1.672],
+    ngw: [6790924, 6849233, 9075400, 10059498],
+    quarter: [6790924, 4758041, 9075400, 4585004],
+    full: [6790924, 6849233, 9902662, 23784698],
+    bau: [2938872, 3860266, 9075400, 1672341],
     score: [5, 5, 5, 0, 5],
-    emAdded: 7.015,
+    em: [6790924, 223588, null, null],
   },
   {
     key: 'hunting',
     label: 'Recreational hunting · waterfowl',
-    ngw: [3.903, 3.937, 5.216, 5.782],
-    quarter: [3.903, 2.735, 5.216, 2.635],
-    full: [3.903, 3.937, 5.691, 13.67],
-    bau: [1.689, 2.219, 5.216, 0.961],
+    ngw: [3903042, 3936555, 5216031, 5781635],
+    quarter: [3903042, 2734655, 5216031, 2635203],
+    full: [3903042, 3936555, 5691494, 13670109],
+    bau: [1689099, 2218664, 5216031, 961168],
     score: [5, 5, 5, 0, 5],
-    emAdded: 4.032,
+    em: [3903042, 128506, null, null],
   },
   {
     key: 'fishing',
     label: 'Recreational fishing · angling',
-    ngw: [11.868, 11.97, 15.86, 17.58],
-    quarter: [11.868, 8.315, 15.86, 8.013],
-    full: [11.868, 11.97, 17.306, 41.567],
-    bau: [5.136, 6.746, 15.86, 2.923],
+    ngw: [11867981, 11969883, 15860385, 17580217],
+    quarter: [11867981, 8315266, 15860385, 8012862],
+    full: [11867981, 11969883, 17306128, 41566703],
+    bau: [5136043, 6746293, 15860385, 2922622],
     score: [5, 5, 5, 0, 5],
-    emAdded: 12.259,
+    em: [11867981, 390747, null, null],
   },
 ]
 
@@ -711,7 +711,7 @@ const RECREATION: CriterionNode = {
       places: REC_PLACES,
       periods: NO_FACET,
       values: byRecRegion({
-        ngw: [41720, 66946.765, 283904.184, 277681.437],
+        ngw: [41720, 32691.5082, 186769.0523, 197766.9751],
         em: [41720, 1380, null, null],
         bau: [18138.948, 23825.864, 56014.074, 10321.817],
       }),
@@ -724,7 +724,7 @@ const RECREATION: CriterionNode = {
       team: 'recreation',
       edge: 'unscored',
       provenance: 'reported',
-      unit: 'dollars',
+      unit: 'usdValue',
       betterHigher: true,
       note: 'Recreation’s “Overall $” sheet (26 Oct 2026) as published: the yearly value of four recreation services, in 2025 dollars, for New Green Watershed at 50% restoration and for Business as Usual (existing protected land), each with a score against Business as Usual. Per-acre values are from Brander and Schuyt (2004), adjusted by the CPI. Delta-wide is the sum of the four regions (the sheet’s own Delta-wide adds an upland band outside the Delta, which is left out); the Delta-wide score is the sheet’s. The team scores each service and publishes no single economy score; the sheet has no Eco Machine, Bolster & Fortify, Calling on Reserves or A Tunnel column. Separately, visitor-sector earnings 2001–2023 run +19.6% in critical years and +20.3% in wet years but −21.8% in dry and −27.5% in above-normal years.',
       places: REC_PLACES,
@@ -1191,21 +1191,16 @@ function recService(spec: (typeof REC_ECONOMY_SERVICES)[number]): CriterionNode 
     team: 'recreation',
     edge: 'measures',
     provenance: 'reported',
-    unit: 'dollars',
+    unit: 'usdValue',
     betterHigher: true,
     note: 'Yearly value in 2025 dollars as Recreation’s “Overall $” sheet gives it: New Green Watershed at 50% restoration, Business as Usual as existing protected land. Eco Machine is Business as Usual plus what its restoration adds, Delta-wide only (“Recreation The Score.xlsx”, 26 Oct 2026). The score beside each value is the team’s, against Business as Usual: 1 point per 1% more value, capped at ±5. North Delta has no restoration at 50%, so the sheet carries its existing protected land and scores it 0.',
     places: REC_PLACES,
     periods: NO_FACET,
-    values: {
-      ...byRecRegion({ ngw: spec.ngw, bau: spec.bau }),
-      ...byRecPlace({
-        em: [Math.round((spec.bau.reduce((sum, v) => sum + v, 0) + spec.emAdded) * 1000) / 1000],
-      }),
-    },
+    values: byRecRegion({ ngw: spec.ngw, em: spec.em, bau: spec.bau }),
     ranks: byRecPlace({ ngw: spec.score, bau: spec.score.map(() => 0), em: [5] }),
     // Delta-wide (the four regions' sum) at 25%, 50% and 100% restoration.
-    ngwLevels: [spec.quarter, spec.ngw, spec.full].map(
-      (regions) => Math.round(regions.reduce((sum, v) => sum + v, 0) * 1000) / 1000,
+    ngwLevels: [spec.quarter, spec.ngw, spec.full].map((regions) =>
+      regions.reduce((sum, v) => sum + v, 0),
     ) as [number, number, number],
   }
 }

@@ -21,7 +21,7 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
   ecology: {
     mapTeam: 'ecology',
     intro:
-      'Ecology groups its 145 points into subregions drawn from a published clustering of average daily water temperature, so each region shares similar conditions for fish and the food they eat.',
+      'For this criterion, the Delta is grouped into subregions based on average daily water temperature, such that each region shares similar conditions for fish and the food they eat.',
     regions: [
       { name: 'South Bay', note: '9 points.' },
       { name: 'Central Bay', note: '16 points.' },
@@ -37,7 +37,7 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
   'environmental-justice': {
     mapTeam: 'environmentalJustice',
     intro:
-      'Environmental justice reads results by how vulnerable a community is, not by where it sits on a river. The Delta Stewardship Council rates every Delta community Moderate, High, or Highest across 14 indicators, and each drinking-water point takes the rating of the community it serves.',
+      'This criterion explores results by how vulnerable a community is, not by where it sits geographically. Therefore, instead of a regional breakdown of results, results are communicated per vulnerability zone:',
     regions: [
       { name: 'Moderate', note: '10 drinking-water points.' },
       { name: 'High', note: '36 drinking-water points (33 in the outflow runs).' },
@@ -47,7 +47,7 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
   recreation: {
     mapTeam: 'recreation',
     intro:
-      'Recreation splits the Delta into four regions that follow tidal flow and conductivity zones from earlier studies, and the highways people take to reach recreation sites (Andrews et al., 2017; Delta Stewardship Council, 2013).',
+      'This criterion splits the Delta into four regions that follow tidal flow and conductivity zones, and the highways people take to reach recreation sites (Andrews et al., 2017; Delta Stewardship Council, 2013).',
     regions: [
       { name: 'North Delta', note: 'Sacramento River corridors and nearby recreation sites' },
       { name: 'Confluence', note: 'The meeting area of the Sacramento and San Joaquin rivers' },
@@ -61,7 +61,7 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
   economy: {
     mapTeam: 'economy',
     intro:
-      'A Delta-wide total can hide winners and losers, so Economy also reports by zone. North, Central, and South Delta are drawn by water agency; the fourth zone is the West Delta.',
+      'This criterion divides the Delta into subregions of North, Central, and South Delta by water agency; the remaining fourth zone is the West Delta by default (no official agency).',
     regions: [
       { name: 'North Delta' },
       { name: 'Central Delta' },

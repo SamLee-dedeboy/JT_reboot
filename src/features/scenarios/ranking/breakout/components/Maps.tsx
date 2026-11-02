@@ -7,10 +7,17 @@ import type { ScenarioKey } from '../../../../../internal/rank-visualization/dri
 import { RegionValues } from '../../../../../internal/rank-visualization/subteams/RegionValues'
 import type { MapScale } from '../../../../../internal/rank-visualization/subteams/RegionValues'
 import type { Inspect } from './CellCards'
+import { PeriodsInfo } from './Rail'
 import { Segmented } from './controls'
-import { capitalise, lifeStage, pointAt, unitWord } from '../model/cells'
+import { capitalise, lifeStage, outflowUnderSlr, pointAt, unitWord } from '../model/cells'
 import { UI } from '../model/labels'
-import { MAP_REGION_KEY, NESTED_MAP_TABS, entityTabs, mapItems } from '../model/mapModel'
+import {
+  MAP_REGION_KEY,
+  MAP_YEAR_PICKER,
+  NESTED_MAP_TABS,
+  entityTabs,
+  mapItems,
+} from '../model/mapModel'
 import type { MapItem } from '../model/mapModel'
 import type { Breakout } from '../useBreakout'
 
@@ -34,6 +41,7 @@ export function Maps({
   const items = mapItems(state, team)
   const scores = [...new Set(items.map((item) => item.score))]
   const [picked, setPicked] = useState<string | null>(null)
+  const [pickedYear, setPickedYear] = useState<string | null>(null)
   const active = items.find((item) => item.node.id === picked) ?? items[0]
   const dimmed = state.columns.filter((scenario) => !state.scenarios.includes(scenario))
   const pickedRegion = Object.entries(keys).find(([, place]) => place === state.place)?.[0] ?? null
@@ -62,6 +70,12 @@ export function Maps({
   // life-stage tray shows for a species with stages.
   const measureTray = !nested || tabs.length > 1 || active.node !== active.score
   const stages = lifeStage(tabs[tabIndex].items[0].node.label).stage ? tabs[tabIndex].items : []
+  // Under sea level rise a region has one number for both years, so there is no year to pick.
+  const years =
+    MAP_YEAR_PICKER.includes(team) && state.climate === 'current'
+      ? node.periods.filter((facet) => facet.key !== ANY)
+      : []
+  const year = years.find((facet) => facet.key === pickedYear)?.key ?? years[0]?.key
   return (
     <Box
       sx={{
@@ -119,6 +133,18 @@ export function Maps({
             />
           </Box>
         )}
+        {year && (
+          <Box sx={{ flex: 'none', display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Segmented
+              label={UI.mapYearPicker}
+              value={year}
+              onChange={setPickedYear}
+              options={years.map((facet) => ({ value: facet.key, label: facet.label }))}
+              dense
+            />
+            <PeriodsInfo state={state} periods={years} />
+          </Box>
+        )}
       </Box>
       <Box id="map-panel" sx={{ minHeight: 0, display: 'grid' }}>
         <RegionValues
@@ -140,7 +166,7 @@ export function Maps({
                   criterion: node.id,
                   scenario,
                   place: keys[region],
-                  period: state.period,
+                  period: year ?? state.period,
                   climate: state.climate,
                 }
               : null
@@ -168,7 +194,8 @@ export function Maps({
           regionTable={{
             hint: UI.mapPickRegion,
             pickedHint: UI.mapPickedRegion,
-            noValue: UI.forthcoming,
+            noValue: (scenario) =>
+              outflowUnderSlr(scenario, state.climate) ? UI.notApplicable : UI.forthcoming,
           }}
         />
       </Box>

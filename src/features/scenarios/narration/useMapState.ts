@@ -71,7 +71,8 @@ export default function useMapState(config: Config): MapState {
   }, [config])
 
   return {
-    showAdaptationLayers,
+    // Delta layers fade out before the zoom to the state; statewide layers then fade in.
+    showAdaptationLayers: showAdaptationLayers || showStatewideMap,
     scope: showStatewideMap
       ? showEcoculturalLayers
         ? 'statewide-ecocultural'

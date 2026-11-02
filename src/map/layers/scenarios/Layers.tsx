@@ -1,9 +1,12 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
+import { useEffect, useState } from 'react'
 import { Layer, Source } from 'react-map-gl/mapbox'
+import { useMap } from 'react-map-gl/mapbox'
 import type { LayerProps } from 'react-map-gl/mapbox'
 import { map } from '../../../theme'
 import { isOfflineMapEnabled } from '../../offlineBasemapStyle'
 import { layersBySlug, type MapScope } from './config'
+import { registerScenarioMarkers, registerScenarioPatterns, scenarioMarkerIds } from './patterns'
 
 interface LayersProps {
   scenarioSlug: string
@@ -24,6 +27,8 @@ export default function Layers({
   selectedHabitatType,
   visibilityScope = 'delta',
 }: LayersProps) {
+  const { current: mapRef } = useMap()
+  const [patternsReady, setPatternsReady] = useState(false)
   const offline = isOfflineMapEnabled()
   const sources = (layersBySlug[scenarioSlug] ?? []).filter((source) => {
     if (offline && source.url?.startsWith('mapbox://') && !source.offlineData) return false
@@ -33,6 +38,26 @@ export default function Layers({
     }
     return sourceScope === visibilityScope
   })
+
+  useEffect(() => {
+    if (!mapRef) return
+    const mapboxMap = mapRef.getMap()
+    const register = () => {
+      registerScenarioPatterns(mapboxMap, map.scenarios.cartography.pattern)
+      registerScenarioMarkers(mapboxMap, {
+        fill: map.scenarios.cartography.feature,
+        selected: map.scenarios.cartography.highlight,
+        stroke: map.markers.stroke,
+      })
+      setPatternsReady(true)
+    }
+
+    if (mapboxMap.isStyleLoaded()) register()
+    else mapboxMap.once('load', register)
+    return () => {
+      mapboxMap.off('load', register)
+    }
+  }, [mapRef])
 
   return (
     <>
@@ -51,6 +76,13 @@ export default function Layers({
         >
           {source.layers.map((layer) => {
             const activeLayer = offline && source.offlineData ? withoutSourceLayer(layer) : layer
+            const isPatternLayer =
+              activeLayer.type === 'fill' && activeLayer.paint?.['fill-pattern'] != null
+
+            const isMarkerLayer =
+              source.activation === 'adaptation' && activeLayer.type === 'symbol'
+
+            if ((isPatternLayer || isMarkerLayer) && !patternsReady) return null
 
             if (source.activation === 'adaptation' && activeLayer.type === 'fill') {
               const isSelected = selectedHabitatType === source.selectionKey
@@ -59,13 +91,17 @@ export default function Layers({
                   ? ([
                       'case',
                       ['==', ['get', source.selectableProperty], selectedHabitatType],
-                      0.95,
-                      0.12,
+                      isPatternLayer ? 0.95 : 0.68,
+                      isPatternLayer ? 0.16 : 0.1,
                     ] as ExpressionSpecification)
                   : selectedHabitatType && source.selectionKey
                     ? isSelected
-                      ? 0.85
-                      : 0.1
+                      ? isPatternLayer
+                        ? 0.95
+                        : 0.68
+                      : isPatternLayer
+                        ? 0.16
+                        : 0.1
                     : (activeLayer.paint?.['fill-opacity'] ?? 1)
 
               return (
@@ -74,6 +110,20 @@ export default function Layers({
                   key={layer.id}
                   paint={{
                     ...activeLayer.paint,
+                    ...(!isPatternLayer && {
+                      'fill-color':
+                        selectedHabitatType && source.selectableProperty
+                          ? ([
+                              'case',
+                              ['==', ['get', source.selectableProperty], selectedHabitatType],
+                              map.scenarios.cartography.highlight,
+                              map.scenarios.cartography.mutedFeature,
+                            ] as ExpressionSpecification)
+                          : isSelected
+                            ? map.scenarios.cartography.highlight
+                            : (activeLayer.paint?.['fill-color'] ??
+                              map.scenarios.cartography.mutedFeature),
+                    }),
                     'fill-opacity': showAdaptationLayers ? visibleOpacity : 0,
                     'fill-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
                   }}
@@ -94,9 +144,64 @@ export default function Layers({
                   key={layer.id}
                   paint={{
                     ...activeLayer.paint,
+                    'line-color': isSelected
+                      ? map.scenarios.cartography.highlight
+                      : map.scenarios.cartography.feature,
                     'line-opacity': showAdaptationLayers ? visibleOpacity : 0,
                     'line-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
                     'line-width': isSelected ? 4 : 2,
+                  }}
+                />
+              )
+            }
+
+            if (source.activation === 'adaptation' && activeLayer.type === 'circle') {
+              const isSelected = selectedHabitatType === source.selectionKey
+              const opacity = !showAdaptationLayers
+                ? 0
+                : selectedHabitatType && !isSelected
+                  ? 0.3
+                  : 1
+              return (
+                <Layer
+                  {...activeLayer}
+                  key={layer.id}
+                  paint={{
+                    ...activeLayer.paint,
+                    'circle-color': isSelected
+                      ? map.scenarios.cartography.highlight
+                      : map.scenarios.cartography.feature,
+                    'circle-opacity': opacity,
+                    'circle-stroke-opacity': opacity,
+                    'circle-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
+                    'circle-stroke-opacity-transition': {
+                      duration: map.scenarios.layerFadeDurationMs,
+                    },
+                  }}
+                />
+              )
+            }
+
+            if (isMarkerLayer) {
+              const isSelected = selectedHabitatType === source.selectionKey
+              return (
+                <Layer
+                  {...activeLayer}
+                  key={layer.id}
+                  layout={{
+                    ...activeLayer.layout,
+                    'icon-image': isSelected
+                      ? scenarioMarkerIds.squareSelected
+                      : scenarioMarkerIds.square,
+                  }}
+                  paint={{
+                    ...activeLayer.paint,
+                    'icon-opacity': !showAdaptationLayers
+                      ? 0
+                      : selectedHabitatType && !isSelected
+                        ? 0.3
+                        : 1,
+                    'icon-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
                   }}
                 />
               )
@@ -112,8 +217,8 @@ export default function Layers({
                     'fill-opacity': [
                       'case',
                       ['==', ['get', source.selectableProperty], selectedHabitatType],
-                      0.95,
-                      0.12,
+                      isPatternLayer ? 0.95 : 0.68,
+                      isPatternLayer ? 0.16 : 0.1,
                     ] as ExpressionSpecification,
                   }}
                 />

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "scenario": "calling-on-reserves",
+  "title": "Calling on Reserves - Keswick Release Schedule",
+  "source": "Release schedule supplied by the project team, received 2026-11-01. Replaces the windows previously inferred from a flow plot and salinity responses.",
+  "comparison": "Calling on Reserves minus Business as Usual (CalSim) release at Keswick.",
+  "units": "cfs",
+  "noChangeThresholdCfs": 100,
+  "analysisPeriod": { "startDate": "2018-10-01", "endDate": "2020-11-29" },
+  "moreThanBau": [
+    {
+      "id": "higher-2019-01",
+      "startDate": "2019-01-01",
+      "endDate": "2019-02-28",
+      "monthlyDifferenceCfs": [2000, 4700],
+      "note": "Early flood-control release."
+    },
+    {
+      "id": "higher-2019-09",
+      "startDate": "2019-09-01",
+      "endDate": "2019-10-31",
+      "monthlyDifferenceCfs": [180, 90]
+    },
+    {
+      "id": "higher-2019-12",
+      "startDate": "2019-12-01",
+      "endDate": "2019-12-31",
+      "monthlyDifferenceCfs": [1570]
+    }
+  ],
+  "lessThanBau": [
+    {
+      "id": "lower-2018-10",
+      "startDate": "2018-10-01",
+      "endDate": "2018-11-30",
+      "monthlyDifferenceCfs": [-385, -215]
+    },
+    {
+      "id": "lower-2019-11",
+      "startDate": "2019-11-01",
+      "endDate": "2019-11-30",
+      "monthlyDifferenceCfs": [-2000]
+    },
+    {
+      "id": "lower-2020-02",
+      "startDate": "2020-02-01",
+      "endDate": "2020-02-29",
+      "monthlyDifferenceCfs": [-1750]
+    },
+    {
+      "id": "lower-2020-04",
+      "startDate": "2020-04-01",
+      "endDate": "2020-04-30",
+      "monthlyDifferenceCfs": [-190]
+    },
+    {
+      "id": "lower-2020-08",
+      "startDate": "2020-08-01",
+      "endDate": "2020-12-31",
+      "monthlyDifferenceCfs": [-340, -240, -630, -270, -110]
+    }
+  ],
+  "noChange": [
+    { "startDate": "2018-12-01", "endDate": "2018-12-31" },
+    { "startDate": "2019-03-01", "endDate": "2019-08-31" },
+    { "startDate": "2020-01-01", "endDate": "2020-01-31" },
+    { "startDate": "2020-03-01", "endDate": "2020-03-31" },
+    { "startDate": "2020-05-01", "endDate": "2020-07-31" }
+  ],
+  "notes": [
+    "monthlyDifferenceCfs lists one value per calendar month of the period, in order.",
+    "Salinity data ends 2020-11-29, so charts clip the last period to that date."
+  ]
+}

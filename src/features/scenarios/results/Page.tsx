@@ -13,7 +13,7 @@ import {
 } from '../content'
 import { OutflowTabs } from './Navigation'
 import { explorerHref as explorerLink } from './explorerLinks'
-import ModelingOverview from './ModelingOverview'
+import ModelingOverview, { OverviewParts } from './ModelingOverview'
 import ResultsHero from './ResultsHero'
 import ScenarioResults from './ScenarioResults'
 
@@ -55,16 +55,16 @@ export default function Page() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <ResultsHero
-          title={
-            isOverview ? 'How scenarios are modeled' : 'Modeling results and evaluation criteria'
-          }
+          title={isOverview ? 'Scenario Modeling' : 'Modeling results and evaluation criteria'}
           summary={
             isOverview
               ? 'See how the hydrodynamic model represents each future, then open the modeled results for the outflow variations and adaptation scenarios.'
               : 'Review modeled outcomes and the shared criteria used to compare each Delta future against baseline operations.'
           }
           image={heroImage}
-        />
+        >
+          {isOverview && <OverviewParts />}
+        </ResultsHero>
 
         {isOutflow && <OutflowTabs activeVariation={variation.id} />}
         {isAdaptation && scenarioSlug && (

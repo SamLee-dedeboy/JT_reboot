@@ -32,10 +32,15 @@ export const getScenarioAnnotation = (
     }
   if (scenarioKey === 'reserve')
     return {
-      label: 'Higher outflow',
-      legend: 'Potential higher outflow (inferred)',
-      note: 'Inferred from modeled outflow and salinity responses, not confirmed reservoir operations.',
-      periods: callingOnReservesReleasePeriods,
+      label: 'Higher release',
+      legend: 'Higher Keswick release',
+      note: 'Keswick release above Business as Usual.',
+      periods: callingOnReservesReleasePeriods.map((period) => ({
+        ...period,
+        note: `${period.monthlyDifferenceCfs
+          .map((cfs) => `+${cfs.toLocaleString('en-US')}`)
+          .join(' / ')} cfs at Keswick compared with Business as Usual.`,
+      })),
     }
   return null
 }

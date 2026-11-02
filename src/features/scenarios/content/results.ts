@@ -4,7 +4,7 @@ export const evaluationTeams = [
     number: '01',
     label: 'Ecology',
     summary:
-      'Evaluates species suitability, newly accessible aquatic habitat, food-web contributions, and ecosystem-wide interactions.',
+      'Assesses how adaptation scenarios affect the Delta aquatic ecosystem through projected environmental conditions, food webs, and habitat availability.',
     entityGroups: [
       {
         label: 'Species',
@@ -26,23 +26,20 @@ export const evaluationTeams = [
       {
         name: 'Species suitability',
         definition:
-          'Uses salinity and temperature thresholds to estimate the functional abiotic niche of stakeholder-selected species and species groups.',
+          'Evaluates where and how often conditions stay survivable for species of interest.',
         measurement:
           'Proportion of suitable days by region and average length of consecutive suitable-day streaks at each modeled point.',
       },
       {
-        name: 'Habitat and food webs',
-        definition:
-          'Evaluates newly accessible acres for aquatic biota and acreage expected to make positive food-web contributions.',
-        measurement:
-          'Newly accessible acres and a food-web proxy calculated from relative contributions of each landscape type multiplied by new acreage.',
+        name: 'Food webs',
+        definition: 'Evaluates how much food each scenario adds to Delta waterways.',
+        measurement: 'Food production from added wetland and wet-soil farming acreage.',
       },
       {
-        name: 'Ecosystem relationships',
+        name: 'Habitat availability',
         definition:
-          'Describes food-web changes, habitat accessibility, and ecosystem-wide interactions for each scenario.',
-        measurement:
-          'Comparative conceptual models that synthesize information and make differences between scenarios visible.',
+          'Evaluates how many acres of new tidal wetland are incorporated in each scenario that aquatic species can reach.',
+        measurement: 'New tidal wetland area compared with baseline.',
       },
     ],
   },
@@ -51,7 +48,7 @@ export const evaluationTeams = [
     number: '02',
     label: 'Environmental Justice & Vulnerable Communities',
     summary:
-      'Examines where water-quality, flood, and harmful-algal-bloom burdens may fall on in-Delta communities with different levels of vulnerability.',
+      'Assesses whether scenario burdens fall unfairly on Delta communities through drinking-water quality, flood risk reduction, and harmful-algal-bloom conditions.',
     entityGroups: [
       {
         label: 'People and communities',
@@ -78,20 +75,20 @@ export const evaluationTeams = [
     ],
     metrics: [
       {
-        name: 'Drinking water',
+        name: 'Salinity impacts to in-Delta drinking water',
         definition:
           'Assesses whether salinity changes affect drinking-water systems’ ability to meet standards, with attention to community vulnerability.',
         measurement:
           'Percentage of the model run exceeding the drinking-water salinity threshold of 1,050 microsiemens per centimeter.',
       },
       {
-        name: 'Flood risk',
-        definition: 'Identifies changes in inundation likelihood across the Delta.',
+        name: 'Flood risk attenuation',
+        definition: 'Identifies the risk of inundation across the Delta.',
         measurement:
           'Qualitative assessment of in-Delta inundation risk given the green and gray infrastructure included in each scenario.',
       },
       {
-        name: 'Harmful algal bloom conditions',
+        name: 'Water age + water temperature',
         definition: 'Uses water age as a proxy for conditions favorable to harmful algal blooms.',
         measurement: 'Change in water age when water temperature is above 19°C.',
       },
@@ -102,7 +99,7 @@ export const evaluationTeams = [
     number: '03',
     label: 'Ecocultural Restoration & Indigenous Sovereignty',
     summary:
-      'Assesses whether scenarios support reciprocal ecosystem repair, cultural practices, Tribal governance, and Indigenous stewardship.',
+      'Assesses whether scenarios advance ecocultural restoration and Indigenous sovereignty through ecosystem restoration, land access, Indigenous science and Traditional Ecological Knowledge, and Tribal sovereignty.',
     entityGroups: [
       {
         label: 'People and communities',
@@ -124,26 +121,26 @@ export const evaluationTeams = [
     ],
     metrics: [
       {
-        name: 'Native ecosystem restoration',
+        name: 'Ecosystem restoration',
         definition:
           'Evaluates recovery, protection, and enhancement of species and ecosystems that are Native to the Delta and culturally significant.',
         measurement: 'Change in the number of restored acres in each scenario.',
       },
       {
-        name: 'Cultural landscape access',
+        name: 'Increased land access',
         definition:
           'Considers returning land to Tribes or co-managing land with Tribes and Tribal governments for stewardship, subsistence, ceremony, and cultural practices.',
         measurement:
           'Types of agreements that can facilitate increased access to land for Tribal communities.',
       },
       {
-        name: 'Indigenous Science and TEK',
+        name: 'Implementation and application of Indigenous Science & TEK',
         definition:
           'Considers how TEK can inform management, stewardship, and land-use decisions in partnership with Tribal representatives and practitioners.',
         measurement: 'Avenues through which TEK applications can be facilitated.',
       },
       {
-        name: 'Tribal sovereignty and rights',
+        name: 'Recognition and application of Tribal sovereignty',
         definition:
           'Evaluates recognition of Indigenous peoples’ authority to govern themselves, their lands, and resources and maintain Traditional ways of life.',
         measurement:
@@ -156,7 +153,7 @@ export const evaluationTeams = [
     number: '04',
     label: 'Recreation',
     summary:
-      'Evaluates how salinity, temperature, access, restoration, and seasonal conditions affect water-dependent recreation and visitation.',
+      'Examines how each future scenario changes conditions for angling, boating, birding, waterfowl hunting, and day use at state parks.',
     entityGroups: [
       {
         label: 'People',
@@ -169,30 +166,28 @@ export const evaluationTeams = [
     ],
     metrics: [
       {
-        name: 'Recreation access and use',
+        name: 'Salinity stress',
         definition:
-          'Establishes baseline water-dependent recreation opportunities at publicly accessible parks and refuges.',
-        measurement:
-          'Direct use includes angling, boat launches, and birding; indirect use includes waterfowl hunting and day use.',
+          'Evaluates how often salinity crosses a threshold at which an activity is no longer accessible or safe.',
+        measurement: 'Share of days whose average salinity is over an activity’s threshold.',
       },
       {
-        name: 'Seasonal recreation',
+        name: 'Water temperature stress',
         definition:
-          'Evaluates the timing and volume of recreation relative to yearly salinity and temperature.',
+          'Evaluates how often water temperature crosses a threshold that limits participation in an activity.',
         measurement:
-          'Quantitative and narrative comparison of activity peaks with temperature, salinity, and flow peaks.',
+          'Share of days whose average water temperature is over an activity’s threshold.',
       },
       {
-        name: 'Restored recreation acreage',
-        definition: 'Evaluates accessible acreage gained through wetland restoration.',
-        measurement:
-          'Quantitative and narrative estimate of added acreage beyond current inventories.',
+        name: 'Habitat restoration',
+        definition: 'Evaluates restored habitat that improves recreation opportunities.',
+        measurement: 'Amount of additional restored areas and landscapes.',
       },
       {
-        name: 'Visitor economy',
-        definition: 'Evaluates visitor spending and decadal shifts by activity.',
-        measurement:
-          'Narrative assessment grounded in macroeconomic theory and input-output visitor-spending models.',
+        name: 'Recreation economy',
+        definition:
+          'Evaluates the monetary value of restored wetlands for fishing, hunting, and amenity and recreation.',
+        measurement: 'Annual value of wetland recreation services.',
       },
     ],
   },
@@ -201,7 +196,7 @@ export const evaluationTeams = [
     number: '05',
     label: 'Economy',
     summary:
-      'Evaluates how salinity changes and land conversion affect Delta agricultural production and connected regional economic activity.',
+      'Examines what happens to the Delta agricultural economy when salinity and landscape conditions change by tracking gross revenue, employment, and value added.',
     entityGroups: [
       {
         label: 'People and livelihoods',
@@ -223,18 +218,18 @@ export const evaluationTeams = [
     ],
     metrics: [
       {
-        name: 'Farm revenue',
+        name: 'Annual gross agricultural revenues',
         definition:
           'Estimates changes in gross sales by sector, including the farm-gate value of crops.',
         measurement: 'Annualized 2024 US dollars.',
       },
       {
-        name: 'Employment',
+        name: 'Agriculture-supported jobs',
         definition: 'Estimates annual changes in employment by sector.',
         measurement: 'Full- and part-time jobs for a sector in one year.',
       },
       {
-        name: 'Regional value added',
+        name: 'Economic value added',
         definition:
           'Measures an amount close to gross domestic product: gross revenues minus non-labor business expenses.',
         measurement: 'Annualized 2024 US dollars.',
@@ -284,24 +279,6 @@ export const outflowResultVariations = [
     summary:
       'Review how stronger freshwater outflow changes modeled salinity relative to baseline operations.',
     explorerKey: 'run16',
-  },
-] as const
-
-export const resultsOverviewSections = [
-  {
-    number: '01',
-    title: 'A shared baseline for comparison',
-    body: 'Every result reports how a scenario differs from baseline operations. Baseline is the reference condition, not a separate future that visitors need to select.',
-  },
-  {
-    number: '02',
-    title: 'Modeled conditions and sea-level rise',
-    body: 'The primary results use present-day sea-level conditions. Where data are available, adaptation scenarios can also be viewed under two feet of sea-level rise and compared with the corresponding baseline under that same condition.',
-  },
-  {
-    number: '03',
-    title: 'Outputs across time and place',
-    body: 'Modeled salinity is examined through time and across monitoring locations so visitors can see where, when, and by how much each future differs from baseline operations.',
   },
 ] as const
 

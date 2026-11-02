@@ -55,9 +55,10 @@ function Chip({ label, color }: { label: string; color?: string }) {
 
 /**
  * A cell's card, opened beside it. It names the measure and scenario and repeats the
- * place, time period and conditions it is read under. A score then shows the score
- * and the team's takeaway for that scenario; a measure shows its value, Business as
- * Usual's (with the model run when it is CalSim's or SCHISM's) and the difference.
+ * place, time period and conditions it is read under. A score then shows the score;
+ * the team's criterion score also shows its scenario takeaway. A measure shows its
+ * value, Business as Usual's (with the model run when it is CalSim's or SCHISM's),
+ * and the difference.
  */
 export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClose: () => void }) {
   const theme = useTheme()
@@ -184,7 +185,7 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
             </>
           )}
         </Stack>
-        {score && (
+        {score && node.level === 'team' && (
           <Section label={UI.takeaway}>
             <Typography variant="body2" sx={{ color: 'base.50' }}>
               {SCENARIO_TAKEAWAYS[node.team]?.[point.scenario] ?? UI.takeawayForthcoming}
@@ -198,8 +199,9 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
 
 /**
  * The info button beside a score's name, and the explainer it opens. A criterion
- * score lists its metrics and how they combine; a metric says what it measures, how
- * it is computed, what it considers and how it is scored. Content: labels.ts.
+ * score lists its metrics and how they combine; a metric opens with the team's takeaway,
+ * then says what it measures, how it is computed, what it considers and how it is
+ * scored. Content: labels.ts.
  */
 export function ScoreInfo({ node }: { node: CriterionNode }) {
   const title = node.level === 'team' ? UI.teamScore(node.label) : node.label
@@ -248,9 +250,16 @@ export function ScoreInfo({ node }: { node: CriterionNode }) {
   if (!metric) return null
   return (
     <Explainer team={node.team} title={title}>
-      <Section label={UI.measures}>
-        <Prose text={metric.measures} team={node.team} />
-      </Section>
+      {metric.takeaway && (
+        <Section label={UI.takeaway}>
+          <Prose text={metric.takeaway} team={node.team} />
+        </Section>
+      )}
+      {metric.measures && (
+        <Section label={UI.measures}>
+          <Prose text={metric.measures} team={node.team} />
+        </Section>
+      )}
       <Section label={UI.computed}>
         <Prose text={metric.computed} team={node.team} />
       </Section>

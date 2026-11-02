@@ -36,10 +36,10 @@ export function getRegionalTimelineContextPeriods(
   if (scenarioSlug === 'bolster-and-fortify') return bolsterGateClosures
 
   if (scenarioSlug === 'calling-on-reserves') {
-    return callingOnReservesReleasePeriods.map((period) => ({
-      ...period,
-      label: 'Sacramento River outflow increase',
-    }))
+    // September–October's small increase sits too close to December's for both labels to fit.
+    return callingOnReservesReleasePeriods.map((period) =>
+      period.id === 'higher-2019-09' ? { ...period, label: '' } : period,
+    )
   }
 
   if (scenarioSlug === 'new-green-watershed' || scenarioSlug === 'eco-machine') {

@@ -29,6 +29,7 @@ import type { MapScale } from '../../../../internal/rank-visualization/subteams/
 import { CellCard } from './components/CellCards'
 import type { Inspect } from './components/CellCards'
 import { TableTabs } from './components/controls'
+import { Prose } from './components/Explainer'
 import { Maps } from './components/Maps'
 import { Matrix } from './components/Matrix'
 import { Pins } from './components/Pins'
@@ -109,7 +110,7 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
 
       {/* What is on screen, in one glance from the back row, and the host's opening words. */}
       <Stack
-        spacing={jtSpacing.gap.sm}
+        spacing={embedded ? jtSpacing.component.xl : jtSpacing.gap.sm}
         sx={(theme) => ({ px: pageX, pt: theme.jtSpacing.component.sm })}
       >
         {/* The tab bar names the table on screen; this names it for screen readers. */}
@@ -128,11 +129,34 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
         >
           {name} breakout table
         </Typography>
-        {embedded && <TableHeading />}
-        <HostIntro team={team} />
-        {/* The kiosk's table has to fit one screen, so the box stays on the site. */}
-        {embedded && <Caveats team={team} />}
-        {!embedded && <Sentence state={state} />}
+        {/* The kiosk's table has to fit one screen, so the caveats stay on the site. */}
+        {embedded ? (
+          <>
+            <Box
+              sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'flex-start',
+                columnGap: jtSpacing.section.md,
+                rowGap: jtSpacing.component.xl,
+              }}
+            >
+              <Stack spacing={jtSpacing.gap.lg} sx={{ flex: '2 1 560px', minWidth: 0 }}>
+                <Typography variant="h3" component="h2">
+                  {UI.takeaway}
+                </Typography>
+                <HostIntro team={team} />
+              </Stack>
+              <Caveats team={team} />
+            </Box>
+            <TableHeading />
+          </>
+        ) : (
+          <>
+            <HostIntro team={team} compact />
+            <Sentence state={state} />
+          </>
+        )}
       </Stack>
 
       {/* Controls on the left, the answer on the right. */}
@@ -215,56 +239,67 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
   )
 }
 
-/** On the site: what the table is, under the criterion tabs. */
+/** On the site: what the table is, set apart from the takeaway above it. */
 function TableHeading() {
   return (
-    <Typography variant="h2" sx={{ pt: jtSpacing.component.lg }}>
+    <Typography
+      variant="h3"
+      component="h2"
+      sx={{ borderTop: 1, borderColor: 'border.default', pt: jtSpacing.component.xl }}
+    >
       {UI.howBuilt}
     </Typography>
   )
 }
 
-/** The team's takeaway, or a placeholder until they write it. */
 /**
- * The team's caveats and clarifications, between its takeaway and the table: what
- * to keep in mind across the whole criterion. Nothing shows for a team with none.
+ * The team's caveats and clarifications, beside its takeaway: what to keep in mind
+ * across the whole criterion. Nothing shows for a team with none.
  */
 function Caveats({ team }: { team: TeamKey }) {
   const notes = TEAM_CAVEATS[team] ?? []
   if (notes.length === 0) return null
-  // In the team's own colour, so the note reads as theirs.
+  // The team's colour marks the icon and arrows, so the note reads as theirs.
   const color = TEAMS.find((t) => t.key === team)?.color
   return (
     <Box
       component="section"
       aria-labelledby={`caveats-${team}`}
       sx={{
-        maxWidth: jtSpacing.paragraphMaxWidth.default,
+        flex: '1 1 420px',
+        minWidth: 0,
         px: jtSpacing.component.md,
-        py: jtSpacing.component.sm,
+        pt: jtSpacing.component.md,
+        pb: jtSpacing.component.sm,
         bgcolor: 'base.900',
         border: 1,
-        borderColor: color,
+        borderColor: 'border.default',
+        borderRadius: 1,
       }}
     >
-      <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center', mb: 1 }}>
+      <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center', mb: 1.5 }}>
         <WarningAmberRoundedIcon fontSize="small" sx={{ color }} />
-        <Typography id={`caveats-${team}`} variant="chartTitle" component="h3" sx={{ color }}>
+        <Typography
+          id={`caveats-${team}`}
+          variant="chartTitle"
+          component="h3"
+          sx={{ color: 'base.50' }}
+        >
           {UI.caveatsHeading}
         </Typography>
       </Stack>
-      <Stack spacing={1}>
+      <Box>
         {notes.map((note) => (
           <CaveatNote key={note} note={note} color={color} />
         ))}
-      </Stack>
+      </Box>
     </Box>
   )
 }
 
 /**
- * One note. "Keyword: the rest" opens from its keyword, in the team's colour, so a long
- * list reads as its topics first; a note with no keyword is short enough to show whole.
+ * One note. "Keyword: the rest" opens from its keyword, so a long list reads as its
+ * topics first; a note with no keyword shows whole.
  */
 function CaveatNote({ note, color }: { note: string; color?: string }) {
   const [open, setOpen] = useState(false)
@@ -273,55 +308,115 @@ function CaveatNote({ note, color }: { note: string; color?: string }) {
   const match = /^([^:.]{1,60}): (.*)$/s.exec(note)
   if (!match)
     return (
-      <Typography variant="body2" sx={{ color: 'base.50' }}>
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'base.50',
+          borderTop: 1,
+          borderColor: 'border.subtle',
+          pt: jtSpacing.component.sm,
+          pb: 0.5,
+        }}
+      >
         {note}
       </Typography>
     )
   const [, keyword, body] = match
   return (
-    <Box>
+    <Box sx={{ borderTop: 1, borderColor: 'border.subtle' }}>
       <ButtonBase
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-controls={bodyId}
-        sx={{ display: 'flex', justifyContent: 'flex-start', gap: 0.5, textAlign: 'left' }}
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: jtSpacing.gap.sm,
+          width: '100%',
+          minHeight: 44,
+          py: 1,
+          textAlign: 'left',
+          '&:hover, &:focus-visible': { bgcolor: 'translucent.100' },
+        }}
       >
+        <Typography variant="body2" component="span" sx={{ color: 'common.white' }}>
+          <strong>{keyword}</strong>
+        </Typography>
         <motion.span
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: reduceMotion ? 0 : 0.2 }}
-          style={{ display: 'inline-flex' }}
+          style={{ display: 'inline-flex', flex: 'none' }}
         >
           <ChevronRightIcon fontSize="small" sx={{ color }} />
         </motion.span>
-        <Typography variant="body2" component="span">
-          <Box component="strong" sx={{ color }}>
-            {keyword}
-          </Box>
-        </Typography>
       </ButtonBase>
       <Collapse id={bodyId} in={open} timeout={reduceMotion ? 0 : 'auto'}>
-        <Typography variant="body2" sx={{ color: 'base.50', pl: 3, pt: 0.5 }}>
-          {body}
-        </Typography>
+        <Stack spacing={1} sx={{ pt: 0.5, pb: jtSpacing.component.sm }}>
+          {body.split('\n\n').map((paragraph) => (
+            <Typography key={paragraph} variant="body2" sx={{ color: 'base.50' }}>
+              <CaveatText text={paragraph} color={color} />
+            </Typography>
+          ))}
+        </Stack>
       </Collapse>
     </Box>
   )
 }
 
-function HostIntro({ team }: { team: TeamKey }) {
-  const intro = TEAM_TAKEAWAYS[team]
-  if (intro)
+/** Caveat emphasis: **team colour** and ++primary green++, without added weight. */
+function CaveatText({ text, color }: { text: string; color?: string }) {
+  return text.split(/(\*\*.*?\*\*|\+\+.*?\+\+)/g).map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**'))
+      return (
+        <Box key={index} component="span" sx={{ color }}>
+          {part.slice(2, -2)}
+        </Box>
+      )
+    if (part.startsWith('++') && part.endsWith('++'))
+      return (
+        <Box key={index} component="span" sx={{ color: 'primary.main' }}>
+          {part.slice(2, -2)}
+        </Box>
+      )
+    return part
+  })
+}
+
+/**
+ * The team's takeaway as points set apart, or a placeholder until they write it.
+ * Compact on the kiosk, where every line it takes comes out of the table.
+ */
+function HostIntro({ team, compact = false }: { team: TeamKey; compact?: boolean }) {
+  const points = TEAM_TAKEAWAYS[team] ?? []
+  if (points.length === 0)
     return (
       <Typography
         variant="body1"
-        sx={{ color: 'base.50', maxWidth: '80ch', whiteSpace: 'pre-line' }}
+        sx={{
+          color: 'base.100',
+          borderTop: 1,
+          borderColor: 'border.default',
+          pt: jtSpacing.gap.sm,
+        }}
       >
-        {intro}
+        {UI.openingPlaceholder}
       </Typography>
     )
   return (
-    <Typography variant="body1" sx={{ color: 'base.100', maxWidth: '80ch' }}>
-      {UI.openingPlaceholder}
-    </Typography>
+    <Stack
+      component="ul"
+      spacing={compact ? jtSpacing.gap.xs : jtSpacing.gap.md}
+      sx={{ listStyle: 'none', m: 0, p: 0 }}
+    >
+      {points.map((point) => (
+        <Box
+          key={point}
+          component="li"
+          sx={compact ? {} : { borderTop: 1, borderColor: 'border.default', pt: jtSpacing.gap.sm }}
+        >
+          <Prose text={point} team={team} variant={compact ? 'body2' : 'body1'} />
+        </Box>
+      ))}
+    </Stack>
   )
 }

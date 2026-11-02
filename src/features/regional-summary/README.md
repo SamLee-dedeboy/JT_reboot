@@ -231,17 +231,19 @@ does not have. The site does not display those notes.
 
 ### Calling on Reserves release schedule
 
-`callingOnReservesReleasePeriods.ts` records the two provisional, month-scale
-release windows used to organize the curated Calling on Reserves chronology:
+`public/data/operations/calling-on-reserves-release-schedule.json` is the source of
+truth for the COR release schedule across the website: months when COR releases
+more than, less than, or about the same as Business as Usual (CalSim) at Keswick.
+`callingOnReservesReleasePeriods.ts` reads its higher-release periods:
 
-- Potential release 1: January 1 through February 28, 2019.
-- Potential release 2: December 1, 2019 through January 31, 2020.
+- January 1 through February 28, 2019.
+- September 1 through October 31, 2019.
+- December 1 through December 31, 2019.
 
-These are working ranges inferred from the supplied COR-versus-baseline flow
-hydrograph and the timing of coherent regional EC responses. They are not
-confirmed reservoir-operation dates. Curated COR patterns carry a
-`releaseTimingLabel` and `relatedReleaseIds` so the interface can distinguish
-responses occurring before, during, across, or after each inferred release.
+The map's "Before release" and "During and after release" views sort patterns by
+start date against those periods: a response counts as before a release unless it
+starts during one or after the last. `reviewNote` in `pattern-list.json` describes
+each response's timing against the same periods.
 
 The broad discovery builder is `scripts/build-regional-summary-interface-data.mjs`.
 The reproducible selection step is `scripts/select-regional-summary-patterns.mjs`.

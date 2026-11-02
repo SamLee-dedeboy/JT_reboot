@@ -170,9 +170,6 @@ export default function EvaluationFramework({
                 <Typography variant="navigationLabel" component="h4">
                   Metrics
                 </Typography>
-                <Typography variant="body2" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                  This criterion brings together the following measures and forms of evidence.
-                </Typography>
                 <Stack spacing={0} sx={{ mt: jtSpacing.gap.sm }}>
                   {criterionStories[team.id].components.items.map((component, componentIndex) => (
                     <Box

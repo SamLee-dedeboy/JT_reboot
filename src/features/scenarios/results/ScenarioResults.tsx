@@ -16,11 +16,15 @@ export function ModelingResults({
   scenarioTitle,
   outflowVariation,
   explorerHref,
+  showHeading,
+  headingId = 'modeling-results-title',
 }: {
   scenarioSlug: string
   scenarioTitle: string
   outflowVariation?: 'increase' | 'decrease'
   explorerHref: string
+  showHeading?: boolean
+  headingId?: string
 }) {
   const regionalScenarioSlug =
     scenarioSlug === 'tiered-outflows' ? 'alternative-delta-outflows' : scenarioSlug
@@ -38,7 +42,8 @@ export function ModelingResults({
       scenarioTitle={scenarioTitle}
       scenarioKeyOverride={scenarioKeyOverride}
       explorerHref={explorerHref}
-      headingId="modeling-results-title"
+      headingId={headingId}
+      showHeading={showHeading}
     />
   )
 }

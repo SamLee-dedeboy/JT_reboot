@@ -139,6 +139,14 @@ function pooled(nodes: CriterionNode[], axis: 'places' | 'periods'): Facet[] {
  */
 const SHOW_UNSCORED: TeamKey[] = ['ecoCultural']
 
+/** Teams whose table reads one period, with no choice of time period. */
+const NO_TABLE_PERIODS: TeamKey[] = ['ecology']
+
+/** Scenarios a team's map leaves out. */
+const NOT_MAPPED: Partial<Record<TeamKey, ScenarioKey[]>> = {
+  ecology: ['cor', 'tunnel', OUTFLOW_COLUMN],
+}
+
 /** Where a table starts: the team's score and every ranking score, all closed. */
 function startNodes(root: CriterionNode): string[] {
   const shown = (row: CriterionNode) => isRanked(row) || SHOW_UNSCORED.includes(root.team)
@@ -251,8 +259,11 @@ export function useBreakout(team: TeamKey, setId: ScenarioSetId = 'adaptation') 
   const placeFacets = useMemo(() => pooled(facetNodes, 'places'), [facetNodes])
   // A team's own "whole run" facet is the same pick as "all periods"; one button covers both.
   const periodFacets = useMemo(
-    () => pooled(facetNodes, 'periods').filter((f) => f.key !== 'run'),
-    [facetNodes],
+    () =>
+      NO_TABLE_PERIODS.includes(root.team)
+        ? []
+        : pooled(facetNodes, 'periods').filter((f) => f.key !== 'run'),
+    [facetNodes, root.team],
   )
   /** Whether any row on screen has a whole run, so the "Whole run" choice means something. */
   const hasWholeRun = useMemo(
@@ -314,11 +325,14 @@ export function useBreakout(team: TeamKey, setId: ScenarioSetId = 'adaptation') 
   const unpin = useCallback((id: string) => setPins((prev) => prev.filter((p) => p.id !== id)), [])
   const clearPins = useCallback(() => setPins([]), [])
 
+  const onScreen = (scenario: ScenarioKey) =>
+    view !== 'map' || !NOT_MAPPED[root.team]?.includes(scenario)
+
   return {
     setId,
-    columns,
-    groups: set.groups,
-    groupLabels: set.groupLabels,
+    columns: columns.filter(onScreen),
+    groups: set.groups.map((group) => group.filter(onScreen)).filter((group) => group.length > 0),
+    groupLabels: set.groupLabels?.filter((_, index) => set.groups[index].some(onScreen)),
     baseline,
     baselineOf: set.baselineOf,
     wholeRun: set.wholeRun,
@@ -330,7 +344,7 @@ export function useBreakout(team: TeamKey, setId: ScenarioSetId = 'adaptation') 
     expanded,
     selectedNodes,
     hasWholeRun,
-    scenarios,
+    scenarios: scenarios.filter(onScreen),
     baselineLocked,
     place,
     period,

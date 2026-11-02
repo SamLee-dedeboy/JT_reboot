@@ -14,6 +14,7 @@ import {
   regionalSummarySizing,
   type RegionalMapScale,
 } from './regionalSummaryStyles'
+import { callingOnReservesReleasePeriods } from './callingOnReservesReleasePeriods'
 
 /*
  * Map pieces shared by the kiosk explorer (RegionalSalinityExplorer) and the
@@ -102,6 +103,13 @@ export function useCuratedRegionalPlaces(scenarioSlug: string, scenarioKeyOverri
   return { places, loading, error }
 }
 
+/** A response counts as before a release unless it starts during one or after the last. */
+const startsDuringOrAfterRelease = (startDate: string) =>
+  startDate > callingOnReservesReleasePeriods[callingOnReservesReleasePeriods.length - 1].endDate ||
+  callingOnReservesReleasePeriods.some(
+    (period) => startDate >= period.startDate && startDate <= period.endDate,
+  )
+
 /** Calling on Reserves map filter: keep only patterns in the chosen release window. */
 export function filterPlacesByReleaseView(
   places: RegionalPlace[],
@@ -112,12 +120,10 @@ export function filterPlacesByReleaseView(
     .map((place) =>
       placeWithPatterns(
         place,
-        place.patterns.filter((pattern) => {
-          const timing = pattern.reviewNote.toLowerCase()
-          return releaseView === 'before'
-            ? timing.includes('before') || timing.includes('between potential releases')
-            : timing.includes('during') || timing.includes('after')
-        }),
+        place.patterns.filter(
+          ({ startDate }) =>
+            startDate && startsDuringOrAfterRelease(startDate) === (releaseView === 'during-after'),
+        ),
       ),
     )
     .filter((place) => place.patterns.length > 0)

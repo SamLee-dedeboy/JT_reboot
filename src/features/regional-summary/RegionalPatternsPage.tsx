@@ -905,14 +905,16 @@ function Timeline({
               transformOrigin: left > 75 ? 'right center' : 'left center',
             }}
           >
-            <Typography
-              sx={{
-                ...regionalSummaryTimelineStyles.contextLabel,
-                ...(left > 75 ? { right: 4 } : { left: 4 }),
-              }}
-            >
-              {action.label}
-            </Typography>
+            {action.label && (
+              <Typography
+                sx={{
+                  ...regionalSummaryTimelineStyles.contextLabel,
+                  ...(left > 75 ? { right: 4 } : { left: 4 }),
+                }}
+              >
+                {action.label}
+              </Typography>
+            )}
           </Box>
         )
       })}

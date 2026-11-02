@@ -23,7 +23,10 @@ export interface MapItem {
 }
 
 /** Teams whose map shows only the measures under a score, not the score's own map. */
-const MAP_ENTITIES_ONLY: TeamKey[] = ['recreation', 'environmentalJustice']
+const MAP_ENTITIES_ONLY: TeamKey[] = ['ecology', 'recreation', 'environmentalJustice']
+
+/** Teams whose table has no time period, so their map picks the year itself. */
+export const MAP_YEAR_PICKER: TeamKey[] = ['ecology']
 
 /** Recreation scores that remain in the table but do not belong in its map picker. */
 const RECREATION_MAP_EXCLUDED_SCORES = new Set(['bk-rec-restoration', 'bk-rec-economy'])

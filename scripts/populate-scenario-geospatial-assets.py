@@ -73,6 +73,16 @@ EXISTING_PROVENANCE = {
         "JT_exploration website_map_assets/NGW/watershed_region.zip"
     ),
     "new-green-watershed/watershed-region-labels.geojson": "curated runtime label points",
+    "tiered-outflows/rivers.geojson": (
+        "public/data/geospatial-assets/basemap/offline-basemap.geojson named waterways, "
+        "clipped to the Bay-Delta"
+    ),
+    "tiered-outflows/sacramento-river-mainstem.geojson": (
+        "coeqwal-website packages/data/src/gis/sacramento_river_mainstem.geojson"
+    ),
+    "tiered-outflows/san-joaquin-river-mainstem.geojson": (
+        "coeqwal-website packages/data/src/gis/san_joaquin_river_mainstem.geojson"
+    ),
     "tunnel/alignment.geojson": "JT_exploration BDSC regional-summary tunnel input",
     "tunnel/sites.geojson": "JT_exploration BDSC regional-summary tunnel-sites input",
 }

@@ -31,6 +31,10 @@ export function lowerIsBetter(id: string) {
 
 // ---------- the result ----------
 
+/** The +30% outflow run was never run with sea level rise, so nothing about it applies there. */
+export const outflowUnderSlr = (scenario: ScenarioKey, climate: Climate) =>
+  scenario === 'more' && climate === 'slr'
+
 /** What a cell shows: a published number, or the reason there is none. */
 export function read(
   node: CriterionNode,
@@ -39,6 +43,8 @@ export function read(
   period: string,
   climate: Climate,
 ) {
+  if (outflowUnderSlr(scenario, climate))
+    return { value: null as number | null, why: UI.notApplicable }
   const cell = valueAt({ criterion: node.id, scenario, place, period, climate })
   // A row scored per species or per activity has no number of its own: its
   // entities carry the ranks, and the row says so.
@@ -95,6 +101,7 @@ export function unitWord(node: CriterionNode): string {
       // EJ counts water-quality readings; everyone else counts days.
       return /^readings/i.test(node.label) ? 'share of readings' : 'proportion of days'
     case 'usd':
+    case 'usdValue':
     case 'dollars':
       return 'dollars'
     case 'ladder':

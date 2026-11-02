@@ -378,10 +378,30 @@ function recreationTree(): CriterionNode {
     'of-recreation',
     'recreation',
     'Recreation',
-    'Recreation scores every activity on the outflow runs but has not combined them into a criterion score; the report’s “Tiered outflow analysis ranking” section is still empty. Its summary: more outflow helps, cutting salinity risk for birds and waterfowl by as much as 90% in a month, while less outflow barely moves the baseline.',
+    'Recreation’s score for +30% outflow, from the ranking table workbook: each region’s value, rounded by the team, and all together the average of the regions. The team has not scored −10% outflow. Its report’s summary: more outflow helps, cutting salinity risk for birds and waterfowl by as much as 90% in a month, while less outflow barely moves the baseline.',
     {
       level: 'team',
       edge: undefined,
+      provenance: 'reported',
+      forthcoming: false,
+      forthcomingFor: ['less'],
+      places: REC_PLACES,
+      values: byPlacePeriod({
+        hist: {
+          delta: { [ANY]: 0 },
+          suisun: { [ANY]: 0 },
+          centralDelta: { [ANY]: 0 },
+          northDelta: { [ANY]: 0 },
+          southDelta: { [ANY]: 0 },
+        },
+        more: {
+          delta: { [ANY]: 1 },
+          suisun: { [ANY]: 2 },
+          centralDelta: { [ANY]: 3 },
+          northDelta: { [ANY]: 0 },
+          southDelta: { [ANY]: 0 },
+        },
+      }),
       children: [
         recThresholds(
           'salinity',
@@ -471,7 +491,9 @@ function ejTree(): CriterionNode {
     note: 'Only drinking water is assessed on the outflow runs, so it is the whole EJ score: +30% outflow +4, −10% outflow −2. The report’s table gives −1 for the whole run and both seasons, then an average of −1.5 rounded to −2; −2 is the score it states.',
     places: NO_FACET,
     periods: NO_FACET,
-    values: flat({ hist: 0, more: 4, less: -2 }),
+    values: flat({ hist: 0, less: -2 }),
+    // The team cleared its +30% criterion score in the ranking table workbook (Nov 2026).
+    forthcomingFor: ['more'],
     sources: [EJ_SOURCE],
     children: [
       {

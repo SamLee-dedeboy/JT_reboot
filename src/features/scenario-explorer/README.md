@@ -18,7 +18,7 @@ Between the `lg` and `xl` breakpoints, `useCompactExplorer` in `explorerType.ts`
 
 ## Scenario annotations
 
-In mode 01, the timeline shades the operating windows of the selected scenario (`scenarioAnnotations.ts`): Bolster & Fortify's gate closures, from `public/data/operations/bolster-and-fortify-gate-schedule.json`, and Calling on Reserves' potential higher outflow, which is inferred and comes from `src/features/regional-summary`. They are not drawn for sea level rise modes, where B&F's salinity-triggered gates would close on other dates.
+In mode 01, the timeline shades the operating windows of the selected scenario (`scenarioAnnotations.ts`): Bolster & Fortify's gate closures, from `public/data/operations/bolster-and-fortify-gate-schedule.json`, and the periods when Calling on Reserves releases more than Business as Usual at Keswick, from `public/data/operations/calling-on-reserves-release-schedule.json`. They are not drawn for sea level rise modes, where B&F's salinity-triggered gates would close on other dates.
 
 ## Map lasso
 

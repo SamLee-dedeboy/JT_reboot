@@ -90,6 +90,10 @@ const ECOCULTURAL_RESTORATION_SPLIT_START = 'bk-ec-restoration-managed'
 const hasRestorationHeading = (id: string) =>
   !!ECOCULTURAL_RESTORATION_GROUPS[id] || id === ECOCULTURAL_RESTORATION_SPLIT_START
 
+/** The most a fitted table's heads and footnote take, and the levels' extra head (px). */
+const FIT_HEADS = 170
+const FIT_LEVEL_HEADS = 60
+
 export function Matrix({
   state,
   onInspect,
@@ -190,6 +194,18 @@ export function Matrix({
     0,
   )
   const spare = Math.max(0, Math.round((DENSEST_TABLE_ROWS - weight) * 100) / 100)
+  // A short table's rows would otherwise be cut off beside an empty filler, so a row
+  // keeps the site's height while this table has the room for it, sharing what the
+  // heads and footnote leave.
+  const rowFloor = (row: (typeof rows)[number]) => {
+    const heads = FIT_HEADS + (split ? FIT_LEVEL_HEADS : 0)
+    const size = row.depth === 1 ? ENTITY_ROW : 1
+    const share = Math.round((size / weight) * 10000) / 10000
+    const height = row.depth === 1 ? ranking.breakoutRow.entity : ranking.breakoutRow.score
+    const floor = `min(${height}px, max(0px, calc((100% - ${heads}px) * ${share})))`
+    // The team's own row has a second line to keep, however short the table is.
+    return row.node.level === 'team' ? `max(${ranking.breakoutRow.entity}px, ${floor})` : floor
+  }
   // At that density a row is too short for a two-line label.
   const lines = fit && Math.max(rows.length, DENSEST_TABLE_ROWS) > 9 ? 1 : fit ? 2 : 3
   const template = fit
@@ -199,7 +215,7 @@ export function Matrix({
         ...(split ? ['auto'] : []),
         ...rows.flatMap((row) => [
           ...(hasRestorationHeading(row.node.id) ? ['auto'] : []),
-          `minmax(0, ${row.depth === 1 ? ENTITY_ROW : 1}fr)`,
+          `minmax(${rowFloor(row)}, ${row.depth === 1 ? ENTITY_ROW : 1}fr)`,
         ]),
         ...(spare > 0 ? [`minmax(0, ${spare}fr)`] : []),
         'auto',
@@ -470,7 +486,8 @@ export function Matrix({
                     <Box
                       sx={{
                         display: 'flex',
-                        flexWrap: 'wrap',
+                        // A fitted row has one line: the name gives way, the info button stays.
+                        flexWrap: fit ? 'nowrap' : 'wrap',
                         alignItems: 'center',
                         columnGap: 1,
                         rowGap: 0.5,
@@ -494,9 +511,21 @@ export function Matrix({
                       {depth === 0 && <ScoreInfo node={node} />}
                     </Box>
                     {node.level === 'team' && (
-                      <Typography variant="captionSmall" component="p">
-                        {UI.criterionScore}
-                      </Typography>
+                      <Box
+                        component="p"
+                        sx={{
+                          m: 0,
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          columnGap: 0.75,
+                          typography: 'captionSmall',
+                        }}
+                      >
+                        <Box component="span">{UI.criterionScore}</Box>
+                        <Box component="span" sx={{ color: 'primary.main' }}>
+                          {UI.criterionScoreHint}
+                        </Box>
+                      </Box>
                     )}
                   </>
                 ) : (
@@ -504,7 +533,8 @@ export function Matrix({
                     <Box
                       sx={{
                         display: 'flex',
-                        flexWrap: 'wrap',
+                        // A fitted row has one line: the name gives way, the info button stays.
+                        flexWrap: fit ? 'nowrap' : 'wrap',
                         alignItems: 'center',
                         columnGap: 1,
                         rowGap: 0.5,
@@ -910,7 +940,7 @@ function Cell({
   /** Business as Usual in deviation view: plain white, never blue or orange. */
   baseline?: boolean
   signedText: boolean
-  /** A short note at the cell's right end, as "Same at all three levels". */
+  /** A short note beside the value, as "Same at all three levels"; cut short if narrow. */
   note?: string
   onClick?: (event: MouseEvent<HTMLElement>) => void
 }) {
@@ -985,9 +1015,9 @@ function Cell({
       onClick={onClick}
       sx={{
         position: 'relative',
-        // The value sits in the middle of its cell; a badge or note keeps the right edge.
+        // The value sits in the middle of its cell, a note beside it; a badge keeps the right edge.
         justifyContent: 'center',
-        gap: 0.5,
+        gap: note ? 1 : 0.5,
         height: 1,
         minHeight: 0,
         px: { md: 0.75, xl: 1.25 },
@@ -1014,7 +1044,15 @@ function Cell({
         '&.Mui-focusVisible': focusRing,
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, minWidth: 0 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0.75,
+          minWidth: 0,
+          flex: note ? 'none' : undefined,
+        }}
+      >
         <Typography
           variant={score && !empty ? 'chartValueLarge' : 'body2'}
           noWrap
@@ -1027,7 +1065,8 @@ function Cell({
         <Typography
           variant="captionSmall"
           noWrap
-          sx={{ position: 'absolute', right: { md: 6, xl: 10 }, color: 'inherit', opacity: 0.85 }}
+          title={note}
+          sx={{ minWidth: 0, color: 'inherit', opacity: 0.85 }}
         >
           {note}
         </Typography>

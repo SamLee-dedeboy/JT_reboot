@@ -22,24 +22,18 @@ export const map = {
   },
   scenarios: {
     layerFadeDurationMs: 500,
-    ecoMachineLocations: {
-      suisunMarsh: palette.accent.blue,
-      franksTract: palette.accent.yellow,
-      outline: palette.common.white,
+    cartography: {
+      feature: palette.base[100],
+      mutedFeature: palette.base[500],
+      highlight: palette.brand.primaryGreen,
+      pattern: palette.common.white,
+      outline: palette.base[50],
     },
-    bolsterAndFortify: {
-      gates: palette.accent.blue,
-      levees: palette.accent.yellow,
-      corridor: palette.accent.purple,
-    },
-    tunnel: {
-      facilities: palette.accent.blue,
-      alignment: palette.accent.yellow,
-      pumping: palette.accent.purple,
-    },
-    callingOnReserves: {
-      rivers: palette.brand.primaryBlue,
-      facilities: palette.accent.yellow,
+    tieredOutflows: {
+      rivers: palette.common.white,
+      flowMarks: palette.common.white,
+      // The marine salinity color as it renders at 85% over the hero basemap's water.
+      oceanExtension: '#194165',
     },
     newGreenWatershedSubsidence: {
       elevation0: 'rgba(0,0,0,0)',

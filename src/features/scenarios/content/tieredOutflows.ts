@@ -17,6 +17,7 @@ export const tieredOutflowsScenario: ScenarioContent = {
     {
       title: 'More outflow, a fresher Delta',
       navigationLabel: '30% increase in outflow',
+      chip: '+30%',
       paragraphs: [
         'Increasing the amount of freshwater flowing through the Delta generally pushes saltwater farther toward the ocean, potentially reducing salinity in the Delta.',
         'We explored a 30% increase in Delta outflow relative to current operations, through reductions in exports. While increasing outflow could help reduce salinity in parts of the Delta, sustaining higher flows can be challenging and can have tradeoffs, especially during droughts when water is also needed elsewhere in California.',
@@ -25,9 +26,10 @@ export const tieredOutflowsScenario: ScenarioContent = {
     {
       title: 'Less outflow, a saltier Delta',
       navigationLabel: '10% decrease in outflow',
+      chip: '−10%',
       paragraphs: [
         'Reducing freshwater outflow allows saltwater to move farther inland, potentially intensifying existing challenges for Delta communities, ecosystems, and water users.',
-        'We explored a 10% decrease in Delta outflow relative to current operations to understand how it would create saltier conditions in the Delta’s waterways. If Delta outflows are reduced in the future (via changes in policy, increased upstream uses, or reduced supplies), it will lead to increased salinity in the Delta.',
+        'We explored a 10% decrease in Delta outflow relative to current operations to understand how it would create saltier conditions in the Delta’s waterways. If Delta outflows are reduced in the future via changes in policy, increased upstream uses, or reduced supplies, it will lead to increased salinity in the Delta.',
       ],
     },
     {
@@ -43,9 +45,5 @@ export const tieredOutflowsScenario: ScenarioContent = {
       ],
     },
   ],
-  mapFeatures: [
-    'Sacramento and San Joaquin freshwater pathways',
-    'Salinity compliance and monitoring stations',
-    'Places where modeled salinity differs from current operations',
-  ],
+  mapFeatures: ['Sacramento and San Joaquin freshwater pathways', 'Ocean inflow through the Bay'],
 }

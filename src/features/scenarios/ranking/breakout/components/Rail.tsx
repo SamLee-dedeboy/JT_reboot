@@ -5,7 +5,7 @@ import { jtSpacing, ranking } from '../../../../../theme'
 import { TEAMS } from '../../../../../internal/rank-visualization/data'
 import type { TeamKey } from '../../../../../internal/rank-visualization/data'
 import { ANY } from '../../../../../internal/rank-visualization/drilldown/model'
-import type { Climate } from '../../../../../internal/rank-visualization/drilldown/model'
+import type { Climate, Facet } from '../../../../../internal/rank-visualization/drilldown/model'
 import {
   REGION_SHAPES,
   REGION_TEAM_VIEWBOX,
@@ -283,14 +283,20 @@ function placeGroups(options: { value: string; label: string; name: string }[], 
  * The info button beside TIME PERIOD: why the team reads these periods (the team's
  * to write), then the months behind each tab on screen.
  */
-function PeriodsInfo({ state }: { state: Breakout }) {
+export function PeriodsInfo({
+  state,
+  periods = state.periodFacets,
+}: {
+  state: Breakout
+  periods?: Facet[]
+}) {
   const team = state.root.team
   const name = TEAMS.find((t) => t.key === team)?.name ?? ''
   const months = (key: string) =>
     TEAM_PERIOD_MONTHS[team]?.[key] ?? PERIOD_MONTHS[key] ?? UI.forthcoming
   const rows: [string, string][] = [
     ...(state.hasWholeRun ? [[state.wholeRun, state.wholeRunMonths] as [string, string]] : []),
-    ...state.periodFacets
+    ...periods
       .filter((facet) => facet.label)
       .map((facet): [string, string] => [facet.label, months(facet.key)]),
   ]

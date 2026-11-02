@@ -5,9 +5,11 @@ import { useState, type ReactNode } from 'react'
 import { NavigationControl } from 'react-map-gl/mapbox'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import BaseMap from '../../../map/BaseMap'
+import Annotations from '../../../map/layers/scenarios/Annotations'
 import Camera from '../../../map/layers/scenarios/Camera'
 import Layers from '../../../map/layers/scenarios/Layers'
 import Legend from '../../../map/layers/scenarios/Legend'
+import SalinitySnapshot from '../../../map/layers/scenarios/SalinitySnapshot'
 import { getConfig, getLegendItem } from '../../../map/layers/scenarios/config'
 import { jtSpacing } from '../../../theme'
 import Footer from '../../../ui/Footer'
@@ -18,6 +20,7 @@ import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import StoryTabs from '../StoryTabs'
 import { scenarioBySlug, storyInReadingOrder } from '../content'
 import Highlight from './Highlight'
+import ScenarioChip, { chipWidth } from './ScenarioChip'
 import useMapState from './useMapState'
 
 const scenarioDetailGridColumns = {
@@ -35,13 +38,43 @@ const paragraphHighlights = [
   'its much larger watershed',
 ] as const
 
-function HighlightedParagraph({ text }: { text: string }) {
+const tieredOutflowsEmphasis = [
+  'Sacramento',
+  'San Joaquin Rivers',
+  'pushes saltwater',
+  'farther toward the ocean',
+  'through reductions in exports',
+  'Changing how much water flows through the Delta involves difficult trade-offs between competing water needs.',
+  'seasonal timing',
+  'critical factor for outcomes. Two of our other project scenarios',
+] as const
+
+const tieredOutflowsAccents = ['A Tunnel', 'Calling on Reserves'] as const
+
+function HighlightedParagraph({
+  text,
+  tieredOutflows = false,
+}: {
+  text: string
+  tieredOutflows?: boolean
+}) {
   const parts: ReactNode[] = []
   let cursor = 0
 
   while (cursor < text.length) {
-    const nextHighlight = paragraphHighlights
-      .map((phrase) => ({ phrase, index: text.indexOf(phrase, cursor) }))
+    const nextHighlight = [
+      ...paragraphHighlights.map((phrase) => ({ phrase, treatment: 'secondary' as const })),
+      ...(tieredOutflows
+        ? tieredOutflowsEmphasis.map((phrase) => ({ phrase, treatment: 'emphasis' as const }))
+        : []),
+      ...(tieredOutflows
+        ? tieredOutflowsAccents.map((phrase) => ({ phrase, treatment: 'accent' as const }))
+        : []),
+    ]
+      .map((highlight) => ({
+        ...highlight,
+        index: text.indexOf(highlight.phrase, cursor),
+      }))
       .filter(({ index }) => index >= 0)
       .sort((a, b) => a.index - b.index)[0]
 
@@ -54,15 +87,29 @@ function HighlightedParagraph({ text }: { text: string }) {
       parts.push(text.slice(cursor, nextHighlight.index))
     }
 
-    parts.push(
-      <Box
-        component="span"
-        key={`${nextHighlight.phrase}-${nextHighlight.index}`}
-        sx={{ color: 'secondary.main' }}
-      >
-        {nextHighlight.phrase}
-      </Box>,
-    )
+    if (nextHighlight.treatment === 'emphasis') {
+      parts.push(
+        <Box
+          component="strong"
+          key={`${nextHighlight.phrase}-${nextHighlight.index}`}
+          sx={{ color: 'secondary.main' }}
+        >
+          {nextHighlight.phrase}
+        </Box>,
+      )
+    } else {
+      parts.push(
+        <Box
+          component="span"
+          key={`${nextHighlight.phrase}-${nextHighlight.index}`}
+          sx={{
+            color: nextHighlight.treatment === 'accent' ? 'primary.main' : 'secondary.main',
+          }}
+        >
+          {nextHighlight.phrase}
+        </Box>,
+      )
+    }
     cursor = nextHighlight.index + nextHighlight.phrase.length
   }
 
@@ -174,10 +221,12 @@ export default function IntroductionPage() {
         >
           <Box
             sx={{
-              display: 'grid',
+              // Flex on small screens: a sticky grid item could not leave its own grid row.
+              display: { xs: 'flex', lg: 'grid' },
+              flexDirection: 'column',
               gridTemplateColumns: scenarioDetailGridColumns,
               gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
-              alignItems: 'start',
+              alignItems: { xs: 'stretch', lg: 'start' },
             }}
           >
             <PageRail
@@ -197,43 +246,70 @@ export default function IntroductionPage() {
                     pt: jtSpacing.section.md,
                     borderTop: 1,
                     borderColor: 'border.subtle',
+                    ...(chapter.chip && {
+                      display: 'grid',
+                      gridTemplateColumns: { xs: '1fr', sm: `${chipWidth}px minmax(0, 1fr)` },
+                      columnGap: jtSpacing.component.md,
+                      rowGap: jtSpacing.component.xs,
+                    }),
                   }}
                 >
-                  <Typography variant="h3" component="h3">
+                  {chapter.chip && (
+                    <Box sx={{ gridRow: { sm: '1 / 3' }, justifySelf: 'start' }}>
+                      <ScenarioChip>{chapter.chip}</ScenarioChip>
+                    </Box>
+                  )}
+                  <Typography variant={chapter.chip ? 'h4' : 'h3'} component="h3">
                     {chapter.title}
                   </Typography>
-                  <Stack spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.lg }}>
+                  <Stack
+                    spacing={jtSpacing.gap.md}
+                    sx={{
+                      mt: jtSpacing.component.lg,
+                      minWidth: 0,
+                      ...(chapter.chip && { gridColumn: { sm: 2 } }),
+                    }}
+                  >
                     {chapter.paragraphs.map((paragraph) => (
                       <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
-                        <HighlightedParagraph text={paragraph} />
+                        <HighlightedParagraph text={paragraph} tieredOutflows={isTieredOutflows} />
                       </Typography>
                     ))}
+                    {chapter.mapKey && (
+                      <Box
+                        aria-label={`${chapter.title} map key`}
+                        role="group"
+                        sx={{
+                          mt: jtSpacing.component.md,
+                          borderBottom: 1,
+                          borderColor: 'border.subtle',
+                        }}
+                      >
+                        {chapter.mapKey.map((selectionKey) => {
+                          const symbol = getLegendItem(scenario.slug, selectionKey)
+                          return (
+                            symbol && (
+                              <Highlight key={selectionKey} title={symbol.label} symbol={symbol} />
+                            )
+                          )
+                        })}
+                      </Box>
+                    )}
                     {chapter.highlights && (
                       <Box
                         component="aside"
                         aria-label={`${chapter.title} interactive map layers`}
                         sx={{
                           mt: jtSpacing.component.md,
-                          p: { xs: jtSpacing.component.xs, md: jtSpacing.component.sm },
-                          border: 1,
-                          borderColor: 'base.300',
-                          borderRadius: 1,
-                          bgcolor: 'translucent.100',
-                          '& > * + *': {
-                            borderTop: 1,
-                            borderColor: 'border.default',
-                          },
+                          borderBottom: 1,
+                          borderColor: 'border.subtle',
                         }}
                       >
                         {chapter.highlights.map((highlight) => {
-                          const habitatType =
-                            highlight.mapSelectionKey ??
-                            highlight.mapHabitatType ??
-                            highlight.exploreHabitat
-                          const accentColor =
-                            (habitatType
-                              ? getLegendItem(scenario.slug, habitatType)?.color
-                              : undefined) ?? mapConfig.highlightFallbackColor
+                          const habitatType = highlight.mapSelectionKey ?? highlight.mapHabitatType
+                          const symbol = habitatType
+                            ? getLegendItem(scenario.slug, habitatType)
+                            : undefined
 
                           return (
                             <Highlight
@@ -241,8 +317,13 @@ export default function IntroductionPage() {
                               title={highlight.title}
                               summary={highlight.summary}
                               paragraphs={highlight.paragraphs}
-                              accentColor={accentColor}
-                              selected={selectedHabitatType === habitatType}
+                              symbol={symbol}
+                              selected={symbol != null && selectedHabitatType === habitatType}
+                              dimmed={
+                                symbol != null &&
+                                selectedHabitatType != null &&
+                                selectedHabitatType !== habitatType
+                              }
                               onSelect={
                                 habitatType
                                   ? () =>
@@ -279,7 +360,10 @@ export default function IntroductionPage() {
                         <Stack spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.md }}>
                           {subsection.paragraphs.map((paragraph) => (
                             <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
-                              <HighlightedParagraph text={paragraph} />
+                              <HighlightedParagraph
+                                text={paragraph}
+                                tieredOutflows={isTieredOutflows}
+                              />
                             </Typography>
                           ))}
                           {subsection.orderedItems && (
@@ -308,7 +392,7 @@ export default function IntroductionPage() {
                     ))}
                     {chapter.endingParagraphs?.map((paragraph) => (
                       <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
-                        <HighlightedParagraph text={paragraph} />
+                        <HighlightedParagraph text={paragraph} tieredOutflows={isTieredOutflows} />
                       </Typography>
                     ))}
                     {chapter.primaryAction && (
@@ -351,15 +435,18 @@ export default function IntroductionPage() {
             <Box
               id="map-features"
               sx={{
-                position: { lg: 'sticky' },
-                top: { lg: 110 },
+                position: { xs: mapConfig.interactive ? 'sticky' : 'static', lg: 'sticky' },
+                top: 110,
+                // On small screens the map stays above the rows that control it.
+                order: { xs: mapConfig.interactive ? -1 : 0, lg: 0 },
+                zIndex: { xs: 1, lg: 'auto' },
                 scrollMarginTop: 110,
               }}
             >
               <Box
                 aria-label={`Interactive map for ${scenario.title}`}
                 sx={{
-                  height: { xs: 360, lg: 'calc(100dvh - 110px)' },
+                  height: { xs: mapConfig.interactive ? 300 : 360, lg: 'calc(100dvh - 110px)' },
                   position: 'relative',
                   overflow: 'hidden',
                   borderRadius: 1,
@@ -371,7 +458,7 @@ export default function IntroductionPage() {
               >
                 <BaseMap
                   initialViewState={mapConfig.initialViewState}
-                  mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
+                  mapStyleUrl={mapConfig.mapStyleUrl ?? SCENARIO_EXPLORER_MAP_STYLE}
                   interactive={mapConfig.interactive}
                   dragPan={mapConfig.interactive}
                   dragRotate={false}
@@ -379,7 +466,12 @@ export default function IntroductionPage() {
                   touchZoomRotate={mapConfig.interactive}
                   maxBounds={mapConfig.maxBounds}
                 >
-                  {cameraBounds && <Camera bounds={cameraBounds} />}
+                  {cameraBounds && (
+                    <Camera bounds={cameraBounds} topClearance={mapConfig.legendClearance} />
+                  )}
+                  {mapConfig.salinitySnapshotFrame != null && (
+                    <SalinitySnapshot frame={mapConfig.salinitySnapshotFrame} />
+                  )}
                   <Layers
                     scenarioSlug={scenario.slug}
                     showAdaptationLayers={
@@ -388,6 +480,7 @@ export default function IntroductionPage() {
                     selectedHabitatType={selectedHabitatType}
                     visibilityScope={mapState.scope}
                   />
+                  {mapConfig.annotations && <Annotations {...mapConfig.annotations} />}
                   {mapConfig.showNavigationControl && (
                     <NavigationControl position="bottom-right" showCompass={false} />
                   )}

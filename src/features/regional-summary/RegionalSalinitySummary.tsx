@@ -37,6 +37,23 @@ interface RegionalSalinitySummaryProps {
   scenarioKeyOverride?: string
   explorerHref: string
   headingId: string
+  showHeading?: boolean
+}
+
+export function SalinityResultsHeading({ id }: { id: string }) {
+  return (
+    <Typography id={id} variant="h2">
+      Where does salinity get{' '}
+      <Box component="span" sx={{ color: 'salinity.pink' }}>
+        saltier
+      </Box>{' '}
+      and{' '}
+      <Box component="span" sx={{ color: 'salinity.teal' }}>
+        fresher
+      </Box>
+      ?
+    </Typography>
+  )
 }
 
 const strategyCameras: Record<
@@ -363,6 +380,7 @@ export default function RegionalSalinitySummary({
   scenarioKeyOverride,
   explorerHref,
   headingId,
+  showHeading = true,
 }: RegionalSalinitySummaryProps) {
   const theme = useTheme()
   const reduceMotion = useReducedMotion()
@@ -449,17 +467,7 @@ export default function RegionalSalinitySummary({
 
   return (
     <Box component="section" aria-labelledby={headingId}>
-      <Typography id={headingId} variant="h2">
-        Where does salinity get{' '}
-        <Box component="span" sx={{ color: 'salinity.pink' }}>
-          saltier
-        </Box>{' '}
-        and{' '}
-        <Box component="span" sx={{ color: 'salinity.teal' }}>
-          fresher
-        </Box>
-        ?
-      </Typography>
+      {showHeading ? <SalinityResultsHeading id={headingId} /> : null}
 
       {/* Written summary */}
       <Box

@@ -2,9 +2,22 @@ import type { LayerProps } from 'react-map-gl/mapbox'
 import type { FeatureCollection } from 'geojson'
 import { map } from '../../../theme'
 import { assetUrl } from '../../../utils/baseUrl'
+import { HERO_MAP_STYLE } from '../../mapCameraView'
+import { flowArrows } from './flowArrows'
+import { scenarioMarkerIds, scenarioPatternIds, type ScenarioPattern } from './patterns'
 
 export type MapScope = 'delta' | 'statewide' | 'statewide-ecocultural'
 export type MapBounds = [[number, number], [number, number]]
+
+export interface MapAnnotations {
+  labels: Array<{
+    text: string
+    coordinates: [number, number]
+    anchor: 'left' | 'right' | 'top-left'
+    /** Solid white, for the labels that should draw the eye first. */
+    solid?: boolean
+  }>
+}
 
 export interface Config {
   interactive: boolean
@@ -16,14 +29,29 @@ export interface Config {
   maxBounds: MapBounds
   showNavigationControl?: boolean
   legendActivation: 'always' | 'adaptation'
-  highlightFallbackColor: string
   bounds: Partial<Record<MapScope, MapBounds>>
+  /** Only for maps that zoom in on a selected feature; the others highlight it in place. */
   selectionBounds?: Record<string, MapBounds>
+  /** Space kept free at the top of the view, for features that would sit under the legend. */
+  legendClearance?: number
+  annotations?: MapAnnotations
+  /** Replaces the scenario narration basemap. */
+  mapStyleUrl?: string
+  /** Shows this frame of the home hero's salinity data under the scenario layers. */
+  salinitySnapshotFrame?: number
   triggers?: {
     adaptationLayers?: string
     statewide?: string
     ecocultural?: string
   }
+}
+
+export interface LegendItem {
+  label: string
+  selectionKey: string
+  kind?: 'fill' | 'line' | 'band' | 'point' | 'square'
+  dashed?: boolean
+  pattern?: ScenarioPattern
 }
 
 export interface SourceConfig {
@@ -40,12 +68,12 @@ export interface SourceConfig {
   selectionKey?: string
   legend?: {
     title: string
-    items: Array<{
-      label: string
-      color: string
-      selectionKey: string
-      kind?: 'fill' | 'line'
-    }>
+    items: LegendItem[]
+    gradient?: {
+      colors: string[]
+      startLabel: string
+      endLabel: string
+    }
   }
 }
 
@@ -54,13 +82,13 @@ const ecoMachineLocationsLegend = {
   items: [
     {
       label: 'Suisun Marsh',
-      color: map.scenarios.ecoMachineLocations.suisunMarsh,
       selectionKey: 'suisun-marsh',
+      pattern: 'dots' as const,
     },
     {
       label: 'Franks Tract',
-      color: map.scenarios.ecoMachineLocations.franksTract,
       selectionKey: 'franks-tract',
+      pattern: 'diagonal' as const,
     },
   ],
 }
@@ -69,7 +97,7 @@ function createEcoMachineLocation(
   id: string,
   regionId: 'suisun_marsh' | 'franks_tract',
   selectionKey: 'suisun-marsh' | 'franks-tract',
-  color: string,
+  pattern: ScenarioPattern,
   legend?: SourceConfig['legend'],
 ): SourceConfig {
   return {
@@ -86,9 +114,19 @@ function createEcoMachineLocation(
         source: id,
         filter: ['==', ['get', 'region_id'], regionId],
         paint: {
-          'fill-color': color,
-          'fill-opacity': 0.55,
-          'fill-outline-color': map.scenarios.ecoMachineLocations.outline,
+          'fill-color': map.scenarios.cartography.mutedFeature,
+          'fill-opacity': 0.42,
+          'fill-outline-color': map.scenarios.cartography.outline,
+        },
+      },
+      {
+        id: `${id}-pattern`,
+        type: 'fill',
+        source: id,
+        filter: ['==', ['get', 'region_id'], regionId],
+        paint: {
+          'fill-pattern': scenarioPatternIds[pattern],
+          'fill-opacity': 0.72,
         },
       },
       {
@@ -97,7 +135,7 @@ function createEcoMachineLocation(
         source: id,
         filter: ['==', ['get', 'region_id'], regionId],
         paint: {
-          'line-color': color,
+          'line-color': map.scenarios.cartography.feature,
           'line-opacity': 0.95,
           'line-width': 2,
         },
@@ -110,7 +148,7 @@ const ecoMachineSuisunMarsh = createEcoMachineLocation(
   'scenario-eco-machine-suisun-marsh',
   'suisun_marsh',
   'suisun-marsh',
-  map.scenarios.ecoMachineLocations.suisunMarsh,
+  'dots',
   ecoMachineLocationsLegend,
 )
 
@@ -118,15 +156,18 @@ const ecoMachineFranksTract = createEcoMachineLocation(
   'scenario-eco-machine-franks-tract',
   'franks_tract',
   'franks-tract',
-  map.scenarios.ecoMachineLocations.franksTract,
+  'diagonal',
 )
 
 interface ScenarioAssetOptions {
   id: string
   path: string
   selectionKey: string
-  color: string
   geometry: 'area' | 'line'
+  pattern?: ScenarioPattern
+  /** Fills the area with the feature color instead of a muted fill and pattern. */
+  solid?: boolean
+  lineDash?: number[]
   legend?: SourceConfig['legend']
   filter?: LayerProps['filter']
 }
@@ -135,8 +176,10 @@ function createScenarioAsset({
   id,
   path,
   selectionKey,
-  color,
   geometry,
+  pattern,
+  solid = false,
+  lineDash,
   legend,
   filter,
 }: ScenarioAssetOptions): SourceConfig {
@@ -158,11 +201,27 @@ function createScenarioAsset({
               source: id,
               ...filterSpec,
               paint: {
-                'fill-color': color,
-                'fill-opacity': 0.62,
-                'fill-outline-color': color,
+                'fill-color': solid
+                  ? map.scenarios.cartography.feature
+                  : map.scenarios.cartography.mutedFeature,
+                'fill-opacity': solid ? 0.95 : 0.42,
+                'fill-outline-color': map.scenarios.cartography.outline,
               },
             },
+            ...(pattern
+              ? [
+                  {
+                    id: `${id}-pattern`,
+                    type: 'fill' as const,
+                    source: id,
+                    ...filterSpec,
+                    paint: {
+                      'fill-pattern': scenarioPatternIds[pattern],
+                      'fill-opacity': 0.72,
+                    },
+                  },
+                ]
+              : []),
           ]
         : []),
       {
@@ -171,11 +230,66 @@ function createScenarioAsset({
         source: id,
         ...filterSpec,
         paint: {
-          'line-color': color,
+          'line-color': map.scenarios.cartography.feature,
           'line-opacity': 0.95,
           'line-width': geometry === 'line' ? 6 : 3,
+          ...(lineDash ? { 'line-dasharray': lineDash } : {}),
         },
       },
+    ],
+  }
+}
+
+function createScenarioPoints({
+  id,
+  selectionKey,
+  shape,
+  coordinates,
+  legend,
+}: {
+  id: string
+  selectionKey: string
+  shape: 'circle' | 'square'
+  coordinates: Array<[number, number]>
+  legend?: SourceConfig['legend']
+}): SourceConfig {
+  return {
+    id,
+    type: 'geojson',
+    activation: 'adaptation',
+    selectionKey,
+    legend,
+    data: {
+      type: 'FeatureCollection',
+      features: coordinates.map((point) => ({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'Point', coordinates: point },
+      })),
+    },
+    layers: [
+      shape === 'circle'
+        ? {
+            id: `${id}-point`,
+            type: 'circle',
+            source: id,
+            paint: {
+              'circle-radius': 7,
+              'circle-color': map.scenarios.cartography.feature,
+              'circle-stroke-color': map.markers.stroke,
+              'circle-stroke-width': 2,
+            },
+          }
+        : {
+            id: `${id}-point`,
+            type: 'symbol',
+            source: id,
+            layout: {
+              'icon-image': scenarioMarkerIds.square,
+              'icon-allow-overlap': true,
+              'icon-ignore-placement': true,
+            },
+          },
     ],
   }
 }
@@ -185,17 +299,16 @@ const bolsterLegend = {
   items: [
     {
       label: 'Operable gates',
-      color: map.scenarios.bolsterAndFortify.gates,
       selectionKey: 'operable-gates',
+      kind: 'point' as const,
     },
     {
       label: 'Reconstructed levees',
-      color: map.scenarios.bolsterAndFortify.levees,
       selectionKey: 'reconstructed-levees',
+      kind: 'band' as const,
     },
     {
       label: 'Freshwater corridor',
-      color: map.scenarios.bolsterAndFortify.corridor,
       selectionKey: 'freshwater-corridor',
       kind: 'line' as const,
     },
@@ -204,25 +317,17 @@ const bolsterLegend = {
 
 const bolsterSources = [
   createScenarioAsset({
-    id: 'scenario-bolster-operable-gates',
-    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/operable-gates.geojson',
-    selectionKey: 'operable-gates',
-    color: map.scenarios.bolsterAndFortify.gates,
-    geometry: 'area',
-    legend: bolsterLegend,
-  }),
-  createScenarioAsset({
     id: 'scenario-bolster-reconstructed-levees',
     path: '/data/geospatial-assets/scenarios/bolster-and-fortify/levee-repair.geojson',
     selectionKey: 'reconstructed-levees',
-    color: map.scenarios.bolsterAndFortify.levees,
     geometry: 'area',
+    solid: true,
+    legend: bolsterLegend,
   }),
   createScenarioAsset({
     id: 'scenario-bolster-freshwater-corridor',
     path: '/data/geospatial-assets/scenarios/bolster-and-fortify/freshwater-pathway.geojson',
     selectionKey: 'freshwater-corridor',
-    color: map.scenarios.bolsterAndFortify.corridor,
     geometry: 'line',
   }),
   {
@@ -252,13 +357,23 @@ const bolsterSources = [
         type: 'line' as const,
         source: 'scenario-bolster-corridor-connector',
         paint: {
-          'line-color': map.scenarios.bolsterAndFortify.corridor,
+          'line-color': map.scenarios.cartography.feature,
           'line-opacity': 0.95,
           'line-width': 6,
         },
       },
     ],
   },
+  createScenarioPoints({
+    id: 'scenario-bolster-operable-gates',
+    selectionKey: 'operable-gates',
+    shape: 'circle',
+    // Centers of the gate footprints in bolster-and-fortify/operable-gates.geojson.
+    coordinates: [
+      [-121.58494, 38.03057],
+      [-121.58435, 38.06291],
+    ],
+  }),
 ]
 
 const tunnelLegend = {
@@ -266,39 +381,31 @@ const tunnelLegend = {
   items: [
     {
       label: 'Northern Delta intakes',
-      color: map.scenarios.tunnel.facilities,
       selectionKey: 'tunnel-intakes',
+      kind: 'point' as const,
     },
     {
       label: 'Tunnel alignment',
-      color: map.scenarios.tunnel.alignment,
       selectionKey: 'tunnel-alignment',
       kind: 'line' as const,
+      dashed: true,
     },
     {
       label: 'Bethany pumping facilities',
-      color: map.scenarios.tunnel.pumping,
       selectionKey: 'tunnel-pumping',
+      kind: 'square' as const,
     },
   ],
 }
 
 const tunnelSources = [
   createScenarioAsset({
-    id: 'scenario-tunnel-intakes',
-    path: '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
-    selectionKey: 'tunnel-intakes',
-    color: map.scenarios.tunnel.facilities,
-    geometry: 'area',
-    legend: tunnelLegend,
-    filter: ['==', ['get', 'title'], 'Water Intake Shaft'],
-  }),
-  createScenarioAsset({
     id: 'scenario-tunnel-alignment',
     path: '/data/geospatial-assets/scenarios/tunnel/alignment.geojson',
     selectionKey: 'tunnel-alignment',
-    color: map.scenarios.tunnel.alignment,
     geometry: 'line',
+    lineDash: [2, 2],
+    legend: tunnelLegend,
   }),
   {
     id: 'scenario-tunnel-alignment-connectors',
@@ -341,20 +448,30 @@ const tunnelSources = [
           'line-join': 'round' as const,
         },
         paint: {
-          'line-color': map.scenarios.tunnel.alignment,
+          'line-color': map.scenarios.cartography.feature,
+          'line-dasharray': [2, 2],
           'line-opacity': 0.95,
           'line-width': 6,
         },
       },
     ],
   },
-  createScenarioAsset({
+  // Centers of the Water Intake Shaft footprints in tunnel/sites.geojson.
+  createScenarioPoints({
+    id: 'scenario-tunnel-intakes',
+    selectionKey: 'tunnel-intakes',
+    shape: 'circle',
+    coordinates: [
+      [-121.5303, 38.34823],
+      [-121.51801, 38.37795],
+    ],
+  }),
+  // Center of the coinciding OBJECTID 7 and 28 footprints in tunnel/sites.geojson.
+  createScenarioPoints({
     id: 'scenario-tunnel-pumping',
-    path: '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
     selectionKey: 'tunnel-pumping',
-    color: map.scenarios.tunnel.pumping,
-    geometry: 'area',
-    filter: ['in', ['get', 'OBJECTID'], ['literal', [7, 28]]],
+    shape: 'square',
+    coordinates: [[-121.57695, 37.8045]],
   }),
 ]
 
@@ -412,22 +529,21 @@ const newGreenWatershedHabitats: SourceConfig = {
     items: [
       {
         label: 'Wet soil farming',
-        color: map.scenarios.newGreenWatershedHabitats.soil,
         selectionKey: 'soil',
+        pattern: 'horizontal',
       },
       {
         label: 'Tidal wetlands',
-        color: map.scenarios.newGreenWatershedHabitats.tidal,
         selectionKey: 'tidal',
+        pattern: 'dots',
       },
       {
         label: 'Transitional habitats',
-        color: map.scenarios.newGreenWatershedHabitats.transitional,
         selectionKey: 'transitional',
+        pattern: 'crosshatch',
       },
       {
         label: 'Priority fish passage',
-        color: map.scenarios.newGreenWatershedHabitats.riparian,
         selectionKey: 'riparian',
         kind: 'line',
       },
@@ -442,19 +558,31 @@ const newGreenWatershedHabitats: SourceConfig = {
       minzoom: 0,
       maxzoom: 22,
       paint: {
-        'fill-color': [
+        'fill-color': map.scenarios.cartography.mutedFeature,
+        'fill-opacity': 0.42,
+        'fill-antialias': true,
+      },
+    },
+    {
+      id: 'scenario-ngw-delta-habitats-pattern',
+      type: 'fill',
+      source: 'scenario-ngw-delta-habitats',
+      'source-layer': 'scenario_ngw_delta_habitats.z-cxmuc4',
+      minzoom: 0,
+      maxzoom: 22,
+      paint: {
+        'fill-pattern': [
           'match',
           ['get', 'type'],
           'soil',
-          map.scenarios.newGreenWatershedHabitats.soil,
+          scenarioPatternIds.horizontal,
           'transitional',
-          map.scenarios.newGreenWatershedHabitats.transitional,
+          scenarioPatternIds.crosshatch,
           'tidal',
-          map.scenarios.newGreenWatershedHabitats.tidal,
-          map.scenarios.newGreenWatershedHabitats.fallback,
+          scenarioPatternIds.dots,
+          scenarioPatternIds.diagonal,
         ],
-        'fill-opacity': 0.8,
-        'fill-antialias': true,
+        'fill-opacity': 0.72,
       },
     },
   ],
@@ -477,7 +605,7 @@ const newGreenWatershedRiparian: SourceConfig = {
       minzoom: 0,
       maxzoom: 22,
       paint: {
-        'line-color': map.scenarios.newGreenWatershedHabitats.riparian,
+        'line-color': map.scenarios.cartography.feature,
         'line-opacity': 0.9,
         'line-width': 2,
       },
@@ -661,14 +789,13 @@ const callingOnReservesLegend = {
   items: [
     {
       label: 'Sacramento River',
-      color: map.scenarios.callingOnReserves.rivers,
       selectionKey: 'cor-rivers',
       kind: 'line' as const,
     },
     {
       label: 'Shasta Dam and Reservoir',
-      color: map.scenarios.callingOnReserves.facilities,
       selectionKey: 'cor-facilities',
+      kind: 'point' as const,
     },
   ],
 }
@@ -690,7 +817,7 @@ const callingOnReservesSources: SourceConfig[] = [
         type: 'line',
         source: 'scenario-cor-sacramento-river',
         paint: {
-          'line-color': map.scenarios.callingOnReserves.rivers,
+          'line-color': map.scenarios.cartography.feature,
           'line-opacity': 0.95,
           'line-width': 3,
         },
@@ -713,7 +840,7 @@ const callingOnReservesSources: SourceConfig[] = [
         source: 'scenario-cor-shasta',
         paint: {
           'circle-radius': 7,
-          'circle-color': map.scenarios.callingOnReserves.facilities,
+          'circle-color': map.scenarios.cartography.feature,
           'circle-stroke-color': map.markers.stroke,
           'circle-stroke-width': 2,
         },
@@ -722,7 +849,146 @@ const callingOnReservesSources: SourceConfig[] = [
   },
 ]
 
+// The salinity data's ocean stops south of Half Moon Bay. This carries it on down the coast,
+// traced from the basemap's water, so the frame never shows an empty corner.
+const tieredOutflowsOceanExtension: FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [-123.4, 37.46],
+            [-122.444, 37.46],
+            [-122.444, 37.44],
+            [-122.432, 37.42],
+            [-122.42, 37.4],
+            [-122.412, 37.38],
+            [-122.4, 37.36],
+            [-122.4, 37.32],
+            [-122.408, 37.28],
+            [-122.416, 37.24],
+            [-122.404, 37.2],
+            [-122.376, 37.18],
+            [-122.34, 37.14],
+            [-122.336, 37.12],
+            [-122.28, 37.1],
+            [-122.252, 37.06],
+            [-122.208, 37.02],
+            [-122.152, 36.98],
+            [-122.108, 36.96],
+            [-122.108, 36.84],
+            [-123.4, 36.84],
+            [-123.4, 37.46],
+          ],
+        ],
+      },
+    },
+  ],
+}
+
+const tieredOutflowsRivers: SourceConfig[] = [
+  {
+    id: 'scenario-tiered-outflows-ocean-extension',
+    type: 'geojson',
+    data: tieredOutflowsOceanExtension,
+    legend: {
+      title: 'Salinity (illustrative)',
+      items: [],
+      gradient: {
+        colors: [
+          map.salinityAnimation.euhaline,
+          map.salinityAnimation.polyhaline,
+          map.salinityAnimation.mesohaline,
+          map.salinityAnimation.oligohalineHigh,
+          map.salinityAnimation.oligohalineLow,
+          map.salinityAnimation.fresh,
+        ],
+        startLabel: 'Ocean water',
+        endLabel: 'Freshwater',
+      },
+    },
+    layers: [
+      {
+        id: 'scenario-tiered-outflows-ocean-extension-fill',
+        type: 'fill',
+        source: 'scenario-tiered-outflows-ocean-extension',
+        paint: { 'fill-color': map.scenarios.tieredOutflows.oceanExtension },
+      },
+    ],
+  },
+  {
+    id: 'scenario-tiered-outflows-sacramento-river',
+    type: 'geojson',
+    data: assetUrl(
+      '/data/geospatial-assets/scenarios/tiered-outflows/sacramento-river-mainstem.geojson',
+    ),
+    layers: [
+      {
+        id: 'scenario-tiered-outflows-sacramento-river-line',
+        type: 'line',
+        source: 'scenario-tiered-outflows-sacramento-river',
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': map.scenarios.tieredOutflows.rivers,
+          'line-width': 3,
+        },
+      },
+    ],
+  },
+  {
+    id: 'scenario-tiered-outflows-san-joaquin-river',
+    type: 'geojson',
+    data: assetUrl(
+      '/data/geospatial-assets/scenarios/tiered-outflows/san-joaquin-river-mainstem.geojson',
+    ),
+    layers: [
+      {
+        id: 'scenario-tiered-outflows-san-joaquin-river-line',
+        type: 'line',
+        source: 'scenario-tiered-outflows-san-joaquin-river',
+        layout: {
+          'line-cap': 'round',
+          'line-join': 'round',
+        },
+        paint: {
+          'line-color': map.scenarios.tieredOutflows.rivers,
+          'line-width': 3,
+        },
+      },
+    ],
+  },
+  {
+    id: 'scenario-tiered-outflows-flow-arrows',
+    type: 'geojson',
+    data: flowArrows,
+    layers: [
+      {
+        id: 'scenario-tiered-outflows-flow-arrows-fill',
+        type: 'fill',
+        source: 'scenario-tiered-outflows-flow-arrows',
+        paint: { 'fill-color': map.scenarios.tieredOutflows.flowMarks },
+      },
+    ],
+  },
+]
+
+const tieredOutflowsAnnotations: MapAnnotations = {
+  labels: [
+    { text: 'Sacramento River', coordinates: [-121.62, 38.4], anchor: 'right', solid: true },
+    { text: 'San Joaquin River', coordinates: [-121.38, 37.8], anchor: 'right', solid: true },
+    { text: 'Ocean inflow', coordinates: [-122.6, 37.768], anchor: 'top-left' },
+  ],
+}
+
 export const layersBySlug: Record<string, SourceConfig[]> = {
+  'tiered-outflows': tieredOutflowsRivers,
   'eco-machine': [ecoMachineSuisunMarsh, ecoMachineFranksTract],
   'bolster-and-fortify': bolsterSources,
   'a-tunnel': tunnelSources,
@@ -744,6 +1010,39 @@ const deltaBounds: MapBounds = [
   [-121.25, 38.65],
 ]
 
+// Each adaptation scenario opens on a view with all of its features in it.
+const ecoMachineBounds: MapBounds = [
+  [-122.18, 38.0],
+  [-121.52, 38.28],
+]
+
+const newGreenWatershedBounds: MapBounds = [
+  [-122.16, 37.72],
+  [-121.27, 38.6],
+]
+
+const bolsterBounds: MapBounds = [
+  [-121.64, 37.82],
+  [-121.5, 38.1],
+]
+
+const tunnelBounds: MapBounds = [
+  [-121.72, 37.72],
+  [-121.31, 38.44],
+]
+
+const callingOnReservesBounds: MapBounds = [
+  [-122.85, 37.95],
+  [-121.1, 41.4],
+]
+
+const legendClearance = 170
+
+const bayDeltaBounds: MapBounds = [
+  [-122.62, 37.31],
+  [-121.2, 38.69],
+]
+
 const watershedOverviewBounds: MapBounds = [
   [-123.6, 33.4],
   [-119.1, 42.1],
@@ -757,35 +1056,34 @@ const defaultConfig: Config = {
     [-114, 42.1],
   ],
   legendActivation: 'always',
-  highlightFallbackColor: map.boundaries.legalDelta,
   bounds: { delta: deltaBounds },
 }
 
 export const configBySlug: Record<string, Config> = {
+  'tiered-outflows': {
+    ...defaultConfig,
+    bounds: { delta: bayDeltaBounds },
+    annotations: tieredOutflowsAnnotations,
+    // The hero style has no water of its own, so the salinity colors read as on the home page.
+    mapStyleUrl: HERO_MAP_STYLE,
+    // October 1, 2018: the first frame of the Water Year 2019 data.
+    salinitySnapshotFrame: 0,
+  },
   'eco-machine': {
     ...defaultConfig,
     interactive: true,
     showNavigationControl: true,
     legendActivation: 'adaptation',
-    highlightFallbackColor: map.scenarios.ecoMachineLocations.suisunMarsh,
+    bounds: { delta: ecoMachineBounds },
     triggers: { adaptationLayers: 'design-approach' },
-    selectionBounds: {
-      'suisun-marsh': [
-        [-122.22, 38.02],
-        [-121.82, 38.34],
-      ],
-      'franks-tract': [
-        [-121.68, 37.96],
-        [-121.52, 38.12],
-      ],
-    },
   },
   'bolster-and-fortify': {
     ...defaultConfig,
     interactive: true,
     showNavigationControl: true,
     legendActivation: 'adaptation',
-    highlightFallbackColor: map.scenarios.bolsterAndFortify.gates,
+    bounds: { delta: bolsterBounds },
+    legendClearance,
     triggers: { adaptationLayers: 'design-approach' },
     selectionBounds: {
       'operable-gates': [
@@ -796,10 +1094,6 @@ export const configBySlug: Record<string, Config> = {
         [-121.61, 38.01],
         [-121.56, 38.08],
       ],
-      'freshwater-corridor': [
-        [-121.64, 37.82],
-        [-121.5, 38.1],
-      ],
     },
   },
   'a-tunnel': {
@@ -807,22 +1101,9 @@ export const configBySlug: Record<string, Config> = {
     interactive: true,
     showNavigationControl: true,
     legendActivation: 'adaptation',
-    highlightFallbackColor: map.scenarios.tunnel.facilities,
+    bounds: { delta: tunnelBounds },
+    legendClearance,
     triggers: { adaptationLayers: 'design-approach' },
-    selectionBounds: {
-      'tunnel-intakes': [
-        [-121.58, 38.31],
-        [-121.47, 38.41],
-      ],
-      'tunnel-alignment': [
-        [-121.64, 37.74],
-        [-121.38, 38.43],
-      ],
-      'tunnel-pumping': [
-        [-121.62, 37.77],
-        [-121.53, 37.84],
-      ],
-    },
   },
   'new-green-watershed': {
     interactive: true,
@@ -833,9 +1114,8 @@ export const configBySlug: Record<string, Config> = {
     ],
     showNavigationControl: true,
     legendActivation: 'adaptation',
-    highlightFallbackColor: map.boundaries.watershedRegion,
     bounds: {
-      delta: deltaBounds,
+      delta: newGreenWatershedBounds,
       statewide: watershedOverviewBounds,
       'statewide-ecocultural': watershedOverviewBounds,
     },
@@ -850,8 +1130,8 @@ export const configBySlug: Record<string, Config> = {
     interactive: true,
     showNavigationControl: true,
     legendActivation: 'adaptation',
-    highlightFallbackColor: map.scenarios.callingOnReserves.facilities,
-    bounds: { delta: deltaBounds, statewide: watershedOverviewBounds },
+    bounds: { delta: callingOnReservesBounds, statewide: callingOnReservesBounds },
+    legendClearance,
     triggers: { statewide: 'design-approach' },
   },
 }

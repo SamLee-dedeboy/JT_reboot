@@ -52,18 +52,18 @@ const ecology: CriterionStory = {
     'The Story Behind the Criterion: Delta Ecology. L. Williams Duman and E. Platzer, UC Davis, August 2026 (draft).',
   brief: {
     rationale:
-      'Delta decisions reshape habitat conditions, food webs, and the ability of native and introduced species to persist.',
-    what: 'Ecology looks at how well each future supports the Delta’s species, the food produced in its open water, and the wetland habitat fish can reach.',
-    why: 'The Delta has lost more than 90% of its historic wetlands, and several culturally and ecologically important species are now endangered. A just transition has to leave the Delta’s non-human residents better off too.',
+      'Each future adaptation scenario will change salinity, water temperature, habitat conditions, and food webs, affecting the ability of native and introduced species to persist. The Delta’s current and future ecology is of broad concern.',
+    what: 'The ecology criterion assesses how adaptation scenarios affect the Delta aquatic ecosystem by evaluating projected environmental conditions, food webs, and habitat availability.',
+    why: 'The Delta has lost more than 90% of its historic wetlands. Several species of cultural and ecological importance are critically endangered, and others are declining. People rely on the Delta ecosystem for subsistence, cultural practice, and recreation, and a just transition must ensure a better future for its non-human species.',
   },
   what: [
-    'A just transition means no one is left behind or pushed behind. For ecology, that includes the Delta’s species, waterways, and habitats, and the people who rely on them.',
-    'Scientists call the Delta a novel ecosystem: so changed by land reclamation and water development that returning it to a historic state is no longer realistic. It still works and still supports many species, but getting those benefits takes creative management. This criterion asks how each future changes three things: where species can survive, how much food open water produces, and how much wetland habitat aquatic species can reach.',
+    'A just transition means no one is left behind or pushed behind and, for ecology, that includes the Delta’s species, waterways, and habitats, and the people who rely on them.',
+    'Scientists refer to the Delta as a novel ecosystem: since it has been dramatically transformed by land reclamation, habitat loss, and development, it requires creative management to make sure the ecosystem survives. This criterion examines how each scenario affects three primary ecological factors: where species can survive, how much food is available in the Delta’s waterways, and how much tidal wetland habitat aquatic species can access.',
   ],
   why: {
     paragraphs: [
       'Dams, levees, water projects, and the draining of wetlands for farmland have cost the Delta more than 90% of its historic wetland habitat. Several species of cultural and ecological importance are now critically endangered, and others are declining.',
-      'People depend on the Delta’s ecosystem for food, cultural practice, and recreation. The ecology criterion also holds that a just transition must mean a better future for the species that call the Delta home.',
+      'People depend on the Delta’s ecosystem for food, cultural practice, and recreation. The ecology criterion holds that a just transition must mean a better future for all of the species that call the Delta home.',
     ],
     stats: [
       { value: '90%+', label: 'of the Delta’s historic wetland habitat has been lost' },
@@ -75,7 +75,7 @@ const ecology: CriterionStory = {
   },
   construction: {
     intro:
-      'The criterion starts from a conceptual model of how the Delta ecosystem responds to change. Each question is matched to an output the hydrodynamic models can supply, and workshop participants chose the species to follow.',
+      'The criterion started from a conceptual model of how the Delta ecosystem responds to change and chose six species to follow based on workshop participant feedback.',
     facts: [
       { value: '6', label: 'species, eight life stages' },
       { value: '145', label: 'model points' },
@@ -84,21 +84,21 @@ const ecology: CriterionStory = {
     steps: [
       {
         title: 'Build a conceptual model',
-        body: 'After the preliminary scenarios were shared, the ecology criterion mapped how parts of the Delta ecosystem feed back on one another, to see which ones each future could move.',
+        body: 'After the preliminary scenarios were shared, the ecology criterion mapped how parts of the Delta ecosystem feed back on one another, to see which ones each scenario would affect.',
       },
       {
-        title: 'Match questions to model outputs',
-        body: 'The hydrodynamic models report salinity, temperature, and water age at points across the estuary. This criterion gives each output a role.',
+        title: 'Select simulated data for consideration',
+        body: 'The criterion selected the simulated and scenario-design data that could describe ecological change.',
         points: [
           'Salinity and temperature: where each species can physically survive.',
-          'Scenario land-use maps: acres of new wetland and wet-soil farming, for the food web and habitat metrics.',
-          'Water age was considered for the food web, but open-water food is hard to measure directly, so the final proxy uses the wetland types each future adds.',
+          'Scenario design and land-use maps: acres of new wetland and wet-soil farming, for the food-web and habitat metrics.',
+          'Wetland types: tidal and managed wetlands contribute differently to food-web production.',
         ],
       },
       {
-        title: 'Let the public choose the species',
+        title: 'Species of interest',
         when: 'June 2025 public workshop',
-        body: 'Participants marked the species they most wanted to follow. Chinook salmon led, as a cultural resource and an endangered species; others named longfin smelt, bass, and the invasive “ecosystem engineers” Brazilian waterweed and overbite clam.',
+        body: 'Participants selected the species they were most interested in following. Chinook salmon was highly prioritized as a cultural resource and an endangered species. Other species of interest included longfin smelt, bass, and the invasive “ecosystem engineers” Brazilian waterweed and overbite clam.',
         points: [
           'Selection also required sensitivity to salinity or temperature, so the models could say something useful.',
           'The final six span a wide range of tolerances, from strictly fresh (waterweed, largemouth bass) to brackish and marine (overbite clam, adult longfin smelt).',
@@ -106,8 +106,8 @@ const ecology: CriterionStory = {
         ],
       },
       {
-        title: 'Set survival limits from the literature',
-        body: 'Published physiological studies give the salinity and temperature range beyond which each species cannot survive. These limits define a species’ fundamental niche.',
+        title: 'Define thresholds based on literature',
+        body: 'Published physiological studies give the salinity and temperature range thresholds beyond which each species cannot survive. These limits define a species’ fundamental niche.',
       },
       {
         title: 'Divide the estuary into regions',
@@ -119,15 +119,16 @@ const ecology: CriterionStory = {
         ],
       },
       {
-        title: 'Put every metric on one scale',
-        body: 'Scores run from 0 to 10 with baseline fixed at 5. The scenario with the largest gain is anchored at 10, and the others fall in equal steps between, rounded to the nearest whole score.',
+        title: 'Review and refine',
+        when: 'Public Workshop 2 · June 2025, and ongoing',
+        body: 'The draft criterion was reviewed and revised with workshop participants. Feedback on methods and assumptions shaped the final iteration, and team members checked in periodically with the project’s Advisory Committee.',
       },
     ],
   },
   components: {
     items: [
       {
-        name: 'Species suitability',
+        name: 'Species Suitability',
         summary:
           'Where and how often conditions stay **survivable** for Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed.',
         spec: [
@@ -137,11 +138,11 @@ const ecology: CriterionStory = {
               'Share of modeled days inside each species’ salinity and temperature limits, and the average run of consecutive suitable days',
           },
           { label: 'Unit', value: 'Proportion of days; days' },
-          { label: 'Where', value: '145 points in eight subregions, North Delta to South Bay' },
+          { label: 'Where', value: 'Whole Delta, with specific report-out for regions' },
         ],
         method: [
-          'Score each point on each day 1 (suitable) or 0, requiring both **salinity and temperature** to be inside the species’ limits.',
-          'Divide suitable days by days in the run to get each point’s proportion of suitable days.',
+          'For each day at each location, assign a classification of suitable or unsuitable for a given species, requiring both **salinity and temperature** to be inside the species’ limits.',
+          'Divide suitable days by all days in the modeled run to get each point’s proportion of suitable days.',
           'Fit beta regression models (glmmTMB) of that proportion on scenario × subregion, with site as a random effect; fit 2019 and 2020 separately for each species.',
           'Count consecutive suitable days at each point and average the streak lengths across points.',
         ],
@@ -166,26 +167,26 @@ const ecology: CriterionStory = {
         ],
       },
       {
-        name: 'Food webs',
+        name: 'Food Webs',
         summary:
-          'How much **food** each future adds to open water, where the plankton that feed fish have been declining.',
+          'How much **food** each scenario adds to Delta habitat, becoming available for species of interest.',
         spec: [
           {
             label: 'Measures',
-            value: 'A proxy for open-water food production from added wetland and wet-soil farming',
+            value: 'Food production from added wetland and wet-soil farming acreage',
           },
           { label: 'Unit', value: 'Weighted acres' },
-          { label: 'Where', value: 'Scenario land-use footprints in the Delta and Suisun Marsh' },
+          { label: 'Where', value: 'Whole Delta, with specific report-out for each region' },
         ],
         method: [
           'Subtract what already exists: about 5,100 acres of managed wetland (Delta Stewardship Council) and 17,178 acres of rice (2022).',
           'Weight each habitat by its relative contribution to nearby waterways (table below).',
-          'Proxy = (managed wetland − 5,100) × 0.2 + new tidal wetland × 0.4 + (wet-soil farming − 17,178) × 0.1. A term with no added acres counts as zero, not negative.',
-          'Score on the 0–10 scale: baseline and futures without new wetland at 5, the largest proxy at 10.',
+          'Result = (managed wetland − 5,100) × 0.2 + new tidal wetland × 0.4 + (wet-soil farming − 17,178) × 0.1. A term with no added acres counts as zero, not negative.',
+          'Score on the −5 to +5 scale: baseline and scenarios without new wetland at 0; rank scenarios proportionally based on the magnitude of their result relative to baseline.',
         ],
         tables: [
           {
-            caption: 'Habitat weights in the food-web proxy',
+            caption: 'Habitat weights for food-web contribution',
             columns: ['Habitat', 'Weight', 'Rationale'],
             rows: [
               ['Tidal wetland', '0.4', 'Exports food steadily all year, without seasonal limits'],
@@ -204,7 +205,7 @@ const ecology: CriterionStory = {
         ],
       },
       {
-        name: 'Landscape',
+        name: 'Habitat availability',
         summary:
           'How many acres of new **tidal wetland** fish and other aquatic species can reach.',
         spec: [
@@ -212,24 +213,23 @@ const ecology: CriterionStory = {
           { label: 'Unit', value: 'Acres' },
           {
             label: 'Where',
-            value:
-              'Restoration footprints, including the Cache–Lindsey Slough Complex in New Green Watershed',
+            value: 'Whole Delta, with specific report-outs for each region',
           },
         ],
         method: [
-          'Sum new tidal wetland acres in each future.',
+          'Sum new tidal wetland acres in each scenario.',
           'Leave out managed wetland and wet-soil farming, which are drained for part of the year.',
-          'Score on the 0–10 scale: baseline at 5, the largest gain at 10, equal acre steps between.',
+          'Score on the −5 to +5 scale: baseline and scenarios without new wetland at 0; rank scenarios proportionally based on the magnitude of their result relative to baseline.',
         ],
         caveats: [
-          'Managed wetlands and rice can still serve floodplain spawners, birds, mammals, and invertebrates; this metric deliberately counts only year-round aquatic access.',
+          'Though managed wetlands and rice can still serve floodplain spawners, birds, mammals, and invertebrates, this metric deliberately counts only year-round aquatic access.',
           'New Green Watershed’s Cache–Lindsey Slough restoration does not change salinity; it is there for the aquatic community.',
         ],
       },
       {
         name: 'Conceptual Model',
         summary:
-          'How each future shifts **food webs, habitat access**, and the wider relationships across the Delta ecosystem.',
+          'How each scenario shifts **food webs, habitat access**, and the wider relationships across the Delta ecosystem.',
         spec: [
           {
             label: 'Describes',
@@ -240,7 +240,7 @@ const ecology: CriterionStory = {
         ],
         method: [
           'Map how parts of the Delta ecosystem feed back on one another.',
-          'Mark which of those parts each future could move.',
+          'Mark which of those parts each scenario could move.',
           'Synthesize the results into comparative models that make differences between scenarios visible.',
         ],
       },
@@ -253,18 +253,18 @@ const environmentalJustice: CriterionStory = {
     'The Story Behind the Criterion: Environmental Justice & Vulnerable Communities. A. N. DePew, UC Davis, September 2026 (draft).',
   brief: {
     rationale:
-      'Water-quality and flood effects are not distributed evenly, so community vulnerability must be considered explicitly.',
-    what: 'Environmental justice looks at whether the burdens of each future fall unfairly on Delta communities, paying attention to how vulnerable each community is to climate hazards.',
-    why: '82.6% of the project’s interviewees said Delta decision-making is not equitable or fair. Every in-Delta community is vulnerable to some degree, so knowing where harm lands helps decision-makers avoid it.',
+      'Understanding where and how negative impacts to vulnerable communities occur is important for decision-makers assessing the equitable distribution of scenario benefits and trade-offs. The three metrics reflect priorities identified by Delta communities and local environmental justice organizations.',
+    what: 'Environmental justice assesses whether scenario burdens fall unfairly on Delta communities, paying attention to community vulnerability to climate hazards. It compares scenarios through drinking-water quality, flood risk reduction, and harmful-algal-bloom conditions.',
+    why: '82.6% of the project’s interviewees said Delta decision-making is not equitable or fair. Every in-Delta community is vulnerable to some degree, so knowing where undue burdens may occur helps decision-makers avoid them.',
   },
   what: [
-    'Environmental justice is the fair treatment and meaningful involvement of all people, regardless of race, culture, national origin, or income, in environmental laws, regulations, and policies. This criterion applies it through the lens of vulnerable communities.',
-    'Vulnerability combines exposure to climate hazards, sensitivity to them, and the capacity to recover and adapt. The Delta Stewardship Council rates every Delta community Moderate, High, or Highest across 14 indicators, from poverty and linguistic isolation to asthma and food insecurity. The lowest rating anywhere in the Delta is Moderate: every in-Delta community is vulnerable to some degree.',
+    'As defined by the Delta Stewardship Council, environmental justice is “the fair treatment and meaningful involvement of all people, regardless of race, culture, national origin, or income, in environmental laws, regulations, and policies” (Delta Stewardship Council, n.d.). This criterion applies it through the lens of vulnerable communities.',
+    'Vulnerability combines exposure to climate hazards, sensitivity to them, and the capacity to recover and adapt (Delta Stewardship Council, 2021, p. xi). The Delta Stewardship Council’s Vulnerability to Climate Change in the Delta interactive map classifies every Delta community as Moderate, High, or Highest vulnerability, derived from 14 socioeconomic indicators, from poverty and linguistic isolation to asthma and food insecurity. The lowest rating anywhere in the Delta is Moderate: every in-Delta community is vulnerable to some degree.',
   ],
   why: {
     paragraphs: [
-      'Only 8.7% of interviewees said Delta decision-making is equitable and fair. They pointed to power imbalances, the influence of money, and infringement of water rights.',
-      'Tribes, the Delta’s original stewards, were forcibly removed from its land and water and barred from legal claim to them; Tribal and Indigenous communities are inherently environmental justice communities. The criterion looks for undue burdens, harms that fall disproportionately by place, race and ethnicity, or income, so they can be avoided before they happen.',
+      'The overwhelming majority of interviewees think decision-making in the Delta is not equitable and fair. They pointed to power imbalances, the influence of money, and infringement of water rights.',
+      'The Just Transitions Project explores more inclusive and equitable planning approaches to salinity management. The Environmental Justice and Vulnerable Communities criterion specifically assesses Delta environmental justice community concerns identified through the project’s outreach, workshops, and consultations. This outreach established the priorities and metrics the team assessed.',
     ],
     stats: [
       {
@@ -272,15 +272,16 @@ const environmentalJustice: CriterionStory = {
         label: 'of interviewees think Delta decision-making is not equitable and fair',
       },
       { value: '8.7%', label: 'of interviewees said Delta decision-making is equitable and fair' },
+      { value: '8.7%', label: 'of interviewees were unsure' },
     ],
-    quote:
-      'The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No.',
   },
   construction: {
     intro:
-      'Literature can’t stand in for hearing from the people a criterion is meant to serve, so this one was built with environmental justice community members and advocates, then narrowed to what the models can measure.',
+      'While literature provides general agreement about the burdens environmental justice communities face, it does not substitute for meaningful interaction with community members and advocates. The project intentionally sought environmental justice perspectives and narrowed their priorities to what the project could measure.',
     facts: [
       { value: '49', label: 'interviews, ~20% with EJ and Tribal community members' },
+      { value: '1', label: 'Environmental Justice Workshop, December 2024' },
+      { value: '3', label: 'Tribal Workshops, November 2024 to December 2025' },
       { value: '6', label: 'value areas distilled from feedback' },
       { value: '3', label: 'metrics within project scope' },
       { value: '14', label: 'indicators behind each vulnerability rating' },
@@ -306,7 +307,7 @@ const environmentalJustice: CriterionStory = {
         points: [
           'Measured here: drinking water, flood risk, and harmful algal bloom conditions.',
           'Measured by other criteria: recreation and ecology (Recreation, Ecology), agriculture (Economy), Indigenous sovereignty (its own criterion).',
-          'Outside the project’s scope: pollutants, water rights, and water affordability, for which accessible data is lacking.',
+          'Outside the project’s scope: pollutants, standard compliance, public health, revised water rights, energy generation, and water affordability.',
         ],
       },
       {
@@ -317,7 +318,6 @@ const environmentalJustice: CriterionStory = {
     ],
   },
   components: {
-    intro: 'Scores run from −5 to +5 relative to baseline.',
     items: [
       {
         name: 'Salinity impacts to in-Delta drinking water',
@@ -326,17 +326,17 @@ const environmentalJustice: CriterionStory = {
         spec: [
           {
             label: 'Measures',
-            value: 'Share of daily salinity values above the drinking-water threshold',
+            value:
+              'Share of days whose average salinity is above the safe drinking-water threshold',
           },
-          { label: 'Unit', value: 'Electrical conductivity (µS/cm); percent of measurements' },
+          {
+            label: 'Unit',
+            value:
+              'Percent of modeled days above a salinity threshold; salinity measured in microsiemens per centimeter (µS/cm)',
+          },
           {
             label: 'Where',
-            value:
-              '49 in-Delta drinking-water system locations (46 for the outflow runs), each moved into the nearest channel',
-          },
-          {
-            label: 'Reported for',
-            value: 'Whole run, wet season, dry season, and each vulnerability class',
+            value: 'Whole Delta, with specific report-out for the vulnerability zones',
           },
         ],
         method: [
@@ -344,7 +344,7 @@ const environmentalJustice: CriterionStory = {
           'Move each inland location into the closest channel so the hydrodynamic model reports salinity there.',
           'Give each point the vulnerability class of the community it serves, from the Delta Stewardship Council’s Vulnerability Index.',
           'Count daily means above **1,050 µS/cm** and divide by the number of measurements.',
-          'Score against baseline: adaptation scenarios in 1% steps of exceedance against Business as Usual; outflow runs in 5% steps against the historic baseline, because flow moves salinity far more.',
+          'Score against baseline: change in each vulnerability zone’s percentage of threshold-exceedance days.',
         ],
         tables: [
           {
@@ -360,12 +360,11 @@ const environmentalJustice: CriterionStory = {
         ],
         caveats: [
           'The 1,050 µS/cm threshold matches California’s secondary drinking-water standard for chloride (Title 22) and the State Board’s chloride objectives.',
-          'The two sets of runs use slightly different points and step sizes, so their scores are not directly comparable.',
         ],
       },
       {
         name: 'Flood risk attenuation',
-        summary: 'How likely **inundation** is across the Delta.',
+        summary: 'Risk of **inundation** across the Delta.',
         spec: [
           {
             label: 'Measures',
@@ -378,7 +377,7 @@ const environmentalJustice: CriterionStory = {
           { label: 'Where', value: 'The Delta as a whole' },
         ],
         method: [
-          'Review the flood-reduction measures built into each scenario.',
+          'Review the measures built into each scenario that could affect flood risk, such as levee fortification and upland restoration.',
           'Judge the direction and size of the change in in-Delta flood risk against Business as Usual.',
           'Translate that judgement onto the −5 to +5 scale.',
         ],
@@ -388,12 +387,12 @@ const environmentalJustice: CriterionStory = {
         ],
       },
       {
-        name: 'Water age + temperature',
+        name: 'Water Age + Water Temperature',
         summary: 'Conditions that favor **harmful algal blooms** in five bloom-prone regions.',
         spec: [
           {
             label: 'Measures',
-            value: 'Change in water age from baseline while water is at or above 19°C',
+            value: 'Change in water age from baseline while water is consistently at or above 19°C',
           },
           { label: 'Unit', value: 'Days of change from baseline' },
           {
@@ -404,11 +403,12 @@ const environmentalJustice: CriterionStory = {
           { label: 'When', value: 'May through October, when bloom likelihood rises' },
         ],
         method: [
-          'Keep only days when water is at or above 19°C, the temperature at which blooms begin to grow.',
+          'Determine time periods when water is at or above 19°C, the temperature at which blooms begin to grow.',
           'Compare water age with Business as Usual in each region using heatmap output.',
           'Place each scenario on an 11-step scale from extreme decrease to extreme increase in water age.',
         ],
         caveats: [
+          'This is not a prediction of if or when harmful algal blooms will occur under any scenario, but an indicator of some conditions favorable for bloom formation.',
           'Water age is one of several factors that make blooms more likely; nutrients and other drivers are not modeled here.',
           'Water age was not available for the outflow runs.',
         ],
@@ -422,21 +422,23 @@ const ecoculturalRestoration: CriterionStory = {
     'The Story Behind the Criterion: Eco-Cultural Restoration and Indigenous Sovereignty. Social Science Team, UC Davis, September 2026 (draft).',
   brief: {
     rationale:
-      'A just transition must account for Tribal sovereignty, cultural access, Indigenous knowledge, and reciprocal ecosystem repair.',
-    what: 'Ecocultural restoration and Indigenous sovereignty asks whether each future helps restore ecosystems and Indigenous cultures together, and supports Tribes’ right to govern their lands, waters, and ways of life.',
-    why: 'The Delta was home to many Tribes long before colonization, and their ties to its land, water, and life run deep. A just transition in the Delta cannot happen without Indigenous leadership and inclusion.',
+      'Native Tribes were the original stewards of the Delta. A just transition should address the legacies of settler colonialism, genocide, forced removal, and land reclamation by respecting Tribal sovereignty, restoring ecoculturally valued habitats and species, increasing land access, and restoring Indigenous knowledge, stewardship, guardianship, and lifeways.',
+    what: 'Ecocultural restoration restores ecosystems and Indigenous cultures simultaneously as interconnected and reciprocal processes. This criterion assesses whether scenarios advance ecosystem restoration, land access, Indigenous science and Traditional Ecological Knowledge, and Tribal sovereignty.',
+    why: 'The Delta was home to many Tribes long before colonization, and their ties to its land, water, and life run deep. A just transition in the Delta cannot happen without Indigenous leadership and inclusion in Delta decision-making.',
   },
   what: [
     'Leaving no one behind means accounting for past wrongs, including the exclusion of Tribal and Indigenous communities from Delta decisions. That makes ecocultural restoration and Indigenous sovereignty pillars of a just transition.',
-    'Ecocultural restoration restores ecosystems and Indigenous cultures at the same time, as connected and reciprocal processes, with Indigenous people taking part in planning, design, and stewardship in a collaborative, self-determined way. Indigenous sovereignty is a nation’s inherent power to govern itself and live its own way of life free from interference.',
+    'Ecocultural restoration restores land and Indigenous cultures simultaneously as a connected and reciprocal process, with Indigenous people taking part in planning, design, and stewardship in a collaborative, self-determined way. Indigenous sovereignty is a nation’s inherent right to govern themselves and live their own way of life, free from interference. Two main pillars of this criterion are intergenerational stewardship, and intergenerational prosperity and well-being.',
   ],
   why: {
     paragraphs: [
-      'Before colonization, the Delta was home to many Tribes, including the Bay Miwok, Coast Miwok, Plains Miwok, Maidu, Nisenan, Ohlone, Patwin, Pomo, Wappo, Wintun, and Yokuts. Their connections to the land, the water, and the life it supports remain deep.',
-      'As independent rightsholders, Indigenous communities’ values belong in Delta decisions. The Delta’s species, and the flow of water itself, are bound up with Indigenous worldviews.',
+      'Prior to colonization, the Delta was home to many Tribes, including the Bay Miwok, Coast Miwok, Plains Miwok, Maidu, Nisenan, Ohlone, Patwin, Pomo, Wappo, Wintun, and Yokuts. Though most were relocated outside the Delta, their connections to the land, water, and the life the Delta supports remain deep. Indigenous communities’ values belong in Delta decisions. The Delta’s species, and the flow of water itself, are incredibly important to Indigenous worldviews.',
     ],
     stats: [
-      { value: '11', label: 'Tribes named among the Delta’s peoples before colonization' },
+      {
+        value: 'Original stewards and guardians',
+        label: 'Native Tribes were the Delta’s first residents, long before colonization',
+      },
       {
         value: '7.5M',
         label: 'acres California aims to bring under Tribal stewardship (2026 state policy)',
@@ -445,21 +447,27 @@ const ecoculturalRestoration: CriterionStory = {
   },
   construction: {
     intro:
-      'This criterion set out to hear from people usually left out of Delta decision-making, and was shaped with them over two years of interviews, Tribal workshops, and surveys.',
+      'Because Indigenous community leadership is paramount to a just transition, the project intentionally, consistently, and frequently checked in, applied feedback, and iterated on this criterion through interviews, Tribal workshops, public workshops, and Advisory Committee review.',
     facts: [
       { value: '3', label: 'Tribal workshops, Nov 2024 to Dec 2025' },
-      { value: '4', label: 'interdependent metrics' },
-      { value: '9', label: 'upland restoration scenarios' },
-      { value: '1', label: 'metric counted in acres; three described' },
+      { value: '14', label: 'reciprocal and interconnected components' },
+      {
+        value: '2',
+        label:
+          'pillars: intergenerational stewardship and intergenerational prosperity and well-being',
+      },
+      { value: '1', label: 'quantitative metric' },
+      { value: '3', label: 'descriptive metrics' },
     ],
     steps: [
       {
-        title: 'Reach people usually left out',
-        body: 'Researchers reviewed attendees and public comments from past Delta processes, including the 2019 WaterFix hearing and the 2023 Temporary Urgency Change Petitions, and held meetings with Indigenous communities to build trust.',
+        title: 'Intentional outreach',
+        body: 'Indigenous community members and advocates were specifically invited to semi-structured interviews so Tribal values and voices could inform the research from the beginning. Findings shaped the preliminary scenario narratives.',
       },
       {
-        title: 'Bring TEK in from the start',
-        body: 'Indigenous community members were specifically invited to semi-structured interviews so Traditional Ecological Knowledge (TEK) informed the research from the beginning. Findings shaped the preliminary scenario narratives.',
+        title: 'Spotlight Indigenous community viewpoints',
+        when: 'Public Workshop 1 · June 2024',
+        body: 'Indigenous community member and advocate perspectives were featured to the broader public workshop audience.',
       },
       {
         title: 'Draw the connections',
@@ -467,8 +475,8 @@ const ecoculturalRestoration: CriterionStory = {
         body: 'Interview results, literature, and conversations with Indigenous Advisory Committee members became a diagram of how ecocultural restoration and sovereignty reinforce each other. Workshop participants reviewed it, and it was distilled into four metrics.',
       },
       {
-        title: 'Test it with Tribes and the public',
-        when: 'Public and Tribal workshops · June 2025',
+        title: 'Review and refine',
+        when: 'Public Workshop 2 and Tribal Workshop 2 · June 2025; Tribal Workshop 3 · December 2025; and ongoing',
         body: 'Participants said the four metrics matter equally and depend on one another, and asked for additions that were then incorporated.',
         points: [
           'Food sovereignty, data sovereignty, and youth education on the legacies of colonialism, under sovereignty.',
@@ -477,7 +485,7 @@ const ecoculturalRestoration: CriterionStory = {
       },
       {
         title: 'Ask which landscapes matter',
-        when: 'COEQWAL Tribal workshop survey · December 2025',
+        when: 'Tribal Workshop 3 · December 2025',
         body: 'Respondents described current land access, desired landscapes, and governance. These priorities set the habitat types restored in Eco Machine and New Green Watershed.',
         points: [
           'Tidal wetlands: clean water, biodiversity, and grasses for basket-weaving.',
@@ -485,23 +493,23 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        title: 'Build the restoration scenarios',
-        body: 'Upper-watershed restoration is a 3 × 3 matrix: minimal, medium, or maximal effort, each prioritizing forests, meadows, or floodplains. It is combined with in-Delta tidal wetland restoration.',
+        title: 'Research and iteratively refine the watershed restoration scenarios',
+        body: 'The upper-watershed restoration scenario and associated benefits were researched and iteratively developed from the first Tribal workshop through the rest of the project. The final result is a 3 × 3 matrix of nine potential sub-scenarios: minimal, medium, or maximal effort, each prioritizing forests, meadows, or floodplains, combined with in-Delta tidal wetland restoration.',
       },
     ],
   },
   components: {
     intro:
-      'Only restoration can be counted across scenarios. The other three describe how access, knowledge, and sovereignty can be advanced in any future, so the overall comparison is qualitative and its assumptions are stated.',
+      'The four metrics are equally important and interdependent. Only habitat restoration can be evaluated spatially and quantitatively across scenarios. Land access, Tribal sovereignty, and Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively as potential advanced by restoration scenarios.',
     items: [
       {
-        name: 'Habitat restoration',
+        name: 'Restoration of Native Ecosystems and Ecosystem Functions',
         summary:
-          'Recovering and protecting the Delta’s **native, culturally significant** species and ecosystems through habitat creation, restoration, invasive-species control, and environmental flows.',
+          'Recovering and protecting the Delta’s **native, culturally significant** species and ecosystems through habitat creation, restoration, and environmental flows.',
         spec: [
           { label: 'Measures', value: 'Change in restored acres in each scenario' },
           { label: 'Unit', value: 'Acres, by habitat type' },
-          { label: 'Where', value: 'In-Delta plus the upper Bay–Delta watershed' },
+          { label: 'Where', value: 'Whole Delta, plus the much larger Bay–Delta watershed' },
         ],
         method: [
           'Find the restorable area of each upland habitat (table below).',
@@ -512,21 +520,33 @@ const ecoculturalRestoration: CriterionStory = {
         tables: [
           {
             caption: 'Restorable upland area in the Bay–Delta watershed',
-            columns: ['Habitat', 'Area', 'Basis'],
+            columns: [
+              'Habitat',
+              'Low restoration acreage',
+              'Medium restoration acreage',
+              'High restoration acreage',
+              'Basis',
+            ],
             rows: [
               [
                 'Upland forest',
-                '11.7M acres; 2.4M in the Southern Sierra',
+                '468,000 acres',
+                '2,574,000 acres',
+                '4,680,000 acres',
                 'CAL FIRE vegetation layer; Sierra Nevada Conservancy subregions',
               ],
               [
                 'Montane meadow',
-                '193,100 acres; ~60% (115,860) restorable',
-                'UC Davis meadow compilation; Emmons et al. 2013 and expert input',
+                '11,600 acres',
+                '63,750 acres',
+                '115,900 acres',
+                'UC Davis meadow compilation; Emmons et al. (2013) and expert input',
               ],
               [
-                'Floodplain and riparian',
-                '780,000 acres; 60,600 opportunity, 303,000 need',
+                'Floodplain',
+                '6,400 acres',
+                '35,000 acres',
+                '63,600 acres',
                 'CAL FIRE vegetation layer; CVFPP conservation strategy',
               ],
             ],
@@ -534,7 +554,7 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        name: 'Tribal land access',
+        name: 'Increased Access to Landscapes for Stewardship, Subsistence, Ceremony, and Cultural Practices',
         summary:
           '**Returning land** to Tribes or **co-managing** it with them for stewardship, subsistence, ceremony, and cultural practice.',
         spec: [
@@ -583,7 +603,7 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        name: 'Indigenous science & Traditional Ecological Knowledge (TEK)',
+        name: 'Implementation of Indigenous Science & Traditional Ecological Knowledge (TEK)',
         summary:
           'Bringing **Traditional Ecological Knowledge** into management and land-use decisions in partnership with Tribal representatives and practitioners.',
         spec: [
@@ -621,7 +641,7 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        name: 'Tribal sovereignty',
+        name: 'Recognition and Application of Indigenous Sovereignty, Tribal Governance, and Rights',
         summary:
           'Advancing Indigenous peoples’ **inherent right to govern** themselves, their lands, and resources, and to maintain their cultures and ways of life.',
         spec: [
@@ -671,17 +691,16 @@ const recreation: CriterionStory = {
   brief: {
     rationale:
       'Changes in water, habitat, and access shape when and where people can boat, fish, hunt, watch birds, and spend time in the Delta.',
-    what: 'Recreation examines how each future scenario changes water conditions for five water-dependent recreational activities in the Delta: angling, boating, birding, waterfowl hunting, and day use at state parks.',
-    why: 'Recreation brings millions of visitor days to the Delta and supports thousands of jobs. Still, drought, warmer water, and salinity can alter the safety, timing, and quality of recreation.',
+    what: 'Recreation examines how each future scenario changes conditions for five water-dependent recreational activities in the Delta: angling, boating, birding, waterfowl hunting, and day use at state parks.',
+    why: 'Recreation in the Delta is diverse, popular, and highly valued. It supports individual and community well-being and is the Delta’s second-largest economic sector. Drought, water temperature, and salinity can alter recreation’s safety, timing, and quality, while ecological restoration and new facilities can expand and improve opportunities.',
   },
   what: [
-    'Water-dependent recreation is any activity that relies on the Delta’s water. Some depend on the water directly, such as boating, angling, and birding. Others depend on the species and habitats the water supports, such as waterfowl hunting and day use: picnicking, camping, and historical and cultural visits.',
-    'When water warms or salinity creeps inland, fish, birds, and waterfowl respond first, and the people who fish, hunt, or watch them respond in turn (State Water Resources Control Board, 2025; Jenkins et al., 2026). Recreation becomes a public-facing signal of habitat health.',
+    'This criterion assesses how each future scenario improves or affects opportunities for five key recreational activities in the Delta: angling, boating, birding, waterfowl hunting, and day use at state parks. Many are water-dependent. Some depend on the water directly, such as boating, angling, and birding. Others depend on the species and habitats the water supports, such as waterfowl hunting and day use: picnicking, camping, and historical and cultural visits.',
   ],
   why: {
     paragraphs: [
-      'Delta recreation and tourism have averaged about 12 million visitor days a year (Delta Protection Commission, 2012, 2021). Over the 2010s, the jobs they support fell from about 3,000 to 2,300, a drop that tracks prolonged drought and extreme swings between dry and wet years (Delta Protection Commission, 2021; Ding et al., 2011; Wlostowski et al., 2022).',
-      'Low flows bring warmer, saltier water and more pollutants (Mosley, 2015). Above 19°C, harmful algal blooms can spread and close waterways, as they did near Delta Meadows and the Cosumnes in 2016 (Hanak et al., 2011; Durand et al., 2020; Rudnick et al., 2025). Shifting conditions also push people to visit at different times of year (Jenkins et al., 2023).',
+      'Delta recreation and tourism have averaged about 12 million visitor days a year (Delta Protection Commission, 2012, 2021). Over the 2010s, the jobs they support fell from about 3,000 to 2,300, a drop that coincides with periods of prolonged drought and extreme swings between dry and wet years (Delta Protection Commission, 2021; Ding et al., 2011; Wlostowski et al., 2022).',
+      'Low flows are generally associated with lower water quality, including warmer water temperature and higher salinity. Above 19°C, harmful algal blooms can spread and close waterways, as they did near Delta Meadows and the Cosumnes in 2016 (Hanak et al., 2011; Durand et al., 2020; Rudnick et al., 2025). Shifting conditions affect not only when people visit the Delta (Jenkins et al., 2023), but also how, and whether, people can recreate there.',
     ],
     stats: [
       { value: '12 million', label: 'annual recreation and tourism activity days in the Delta' },
@@ -690,7 +709,7 @@ const recreation: CriterionStory = {
   },
   construction: {
     intro:
-      'The criterion picks the Delta’s main pastimes, gathers visitor records for each, and tests each against the temperature and salinity limits that matter to it, across the year and in its own peak season.',
+      'This criterion was based on existing recreational assessment literature to identify the Delta’s main recreational activities, thresholds associated with those activities, and patterns across them.',
     facts: [],
     steps: [
       {
@@ -702,51 +721,46 @@ const recreation: CriterionStory = {
         ],
       },
       {
-        title: 'Gather visitor records for recreational activities',
-        body: 'Each activity has its own historical visitor record, mostly covering 2018 to 2022.',
-        points: [
-          'Angling: Central Valley Angler Survey; Chinook salmon and striped bass recur most (California Department of Fish and Wildlife, 2023).',
-          'Boating: vehicle counts at 16 public motorized boat launches (StreetLight Data, Inc., 2026).',
-          'Birding: eBird observations at publicly accessible protected areas, from Antioch Dunes to the Yolo Bypass (Fink et al., 2024; GreenInfo Network, 2025).',
-          'Day use: monthly State Parks counts at Brannan Island and Delta Meadows (California State Parks, 2023).',
-          'Waterfowl hunting: CDFW harvest records at eight public wetland units, including Yolo, Grizzly Island, and Twitchell (California Department of Fish and Wildlife, 2023).',
-        ],
-      },
-      {
         title: 'Define thresholds informed by literature',
         body: 'Each activity gets the temperature and salinity limits tied to known shifts in participation or in the species it depends on. Habitat and restoration rank first in the criterion’s hierarchy, then temperature, then salinity.',
       },
       {
-        title: 'Calculate daily conditions',
-        body: 'Daily average salinity and water temperature are computed to compare with the respective thresholds for each activity.',
+        title: 'Review and refine',
+        when: 'Public Workshop 2 · June 2025, and ongoing',
+        body: 'The draft criterion was reviewed and revised with workshop participants. Feedback on methods and assumptions shaped the final iteration, and team members checked in periodically with the project’s Advisory Committee.',
       },
     ],
   },
   components: {
     items: [
       {
-        name: '% of days under Salinity Stress',
+        name: 'Salinity Stress',
         summary:
-          'How often **salinity** crosses the limit that matters to each activity, over the year and in its peak season.',
+          'How often **salinity** crosses a threshold that reflects the level at which participation in an activity is no longer accessible or safe.',
         spec: [
           {
             label: 'Measures',
             value: 'Share of days whose average salinity is over an activity’s threshold',
           },
-          { label: 'Unit', value: 'Percent of modeled days above a salinity threshold' },
+          {
+            label: 'Unit',
+            value:
+              'Percent of modeled days above a salinity threshold; salinity measured in microsiemens per centimeter (µS/cm)',
+          },
           { label: 'Where', value: 'Whole Delta and the four recreation regions' },
         ],
         method: [
           'Flag each day whose average salinity is above **literature-based thresholds** for each activity.',
           'Divide flagged days by all days in the scenario-year, then again by in-season days only.',
-          'Score each activity on its own: −1 per 1% more days over the threshold than Business as Usual; +1 per point fewer; ±5 at most.',
+          'Score against baseline: change in each activity’s percentage of threshold-exceedance days.',
         ],
         tables: [
           {
             caption: 'Salinity thresholds by activity',
             columns: ['Activity', 'Threshold', 'Why it matters'],
             rows: [
-              ['Day use and boating', 'Above 1,000 µS/cm', 'Landscape quality for recreation'],
+              ['Day use', 'Above 1,000 µS/cm', 'Landscape quality for recreation'],
+              ['Boating', 'Above 1,000 µS/cm', ''],
               ['Birding', 'Above 2,640 µS/cm', 'Avian botulism risk in wetlands'],
               [
                 'Waterfowl hunting',
@@ -769,7 +783,8 @@ const recreation: CriterionStory = {
                 'Birding',
                 'Spring migration April–June; fall migration August–October; winter October–April',
               ],
-              ['Day use and boating', 'May to September'],
+              ['Day use', 'May–September'],
+              ['Boating', 'May–September'],
               [
                 'Waterfowl hunting',
                 'Hunting October–February; brooding April–July (model data only)',
@@ -779,22 +794,26 @@ const recreation: CriterionStory = {
         ],
       },
       {
-        name: '% of days under Temperature Stress',
+        name: 'Water Temperature Stress',
         summary:
-          'How often **water temperature** crosses the limit that matters to each activity, over the year and in its peak season.',
+          'How often **water temperature** crosses a threshold that limits participation in an activity.',
         spec: [
           {
             label: 'Measures',
             value: 'Share of days whose average water temperature is over an activity’s threshold',
           },
-          { label: 'Unit', value: 'Percent of modeled days above a temperature threshold' },
+          {
+            label: 'Unit',
+            value:
+              'Percent of modeled days above a temperature threshold; temperature in degrees Celsius (°C)',
+          },
           { label: 'Where', value: 'Whole Delta and the four recreation regions' },
         ],
         method: [
           'Define the peak season for each activity from visitation patterns and ecological timing.',
           'Flag each day whose average water temperature is above literature-based thresholds for each activity.',
           'Divide flagged days by all days in the scenario-year, then again by in-season days only.',
-          'Score each activity on its own: −1 per 1% more days over the threshold than Business as Usual; +1 per point fewer; ±5 at most.',
+          'Score against baseline: change in each activity’s percentage of threshold-exceedance days.',
         ],
         tables: [
           {
@@ -802,8 +821,13 @@ const recreation: CriterionStory = {
             columns: ['Activity', 'Threshold', 'Why it matters'],
             rows: [
               [
-                'Day use and boating',
-                '19°C held for about 14 days',
+                'Day use',
+                '19°C or warmer, held for about 14 days',
+                'Conditions for harmful algal blooms',
+              ],
+              [
+                'Boating',
+                '19°C or warmer, held for about 14 days',
                 'Conditions for harmful algal blooms',
               ],
               ['Cold-water day use', 'Below 18°C', 'Water too cold to swim'],
@@ -820,24 +844,22 @@ const recreation: CriterionStory = {
       },
       {
         name: 'Habitat Restoration',
-        summary: 'Wetland acreage opened to recreation by restoration',
+        summary:
+          'Restored habitat that provides increased opportunities for recreation activities.',
         spec: [
           {
             label: 'Measures',
-            value: 'Restored acres open to recreation, beyond current inventories',
+            value: 'Amount of additional restored areas and landscapes',
           },
           { label: 'Unit', value: 'Acres' },
           {
             label: 'Where',
             value:
-              'Wetlands in New Green Watershed at 100%/50%/25% restoration, upland included; and Wetlands in Eco Machine',
+              'Across the Delta, and upstream where scenarios propose upstream and watershed-scale restoration',
           },
         ],
         method: [
-          'Take each island’s restored wetland acres from the ecology criterion’s restoration footprints for each scenario, and the upper and lower bounds for upland restoration in New Green Watershed (Williams, 2026).',
-          'Count only acres beyond the protected, publicly accessible land already in the California Protected Areas Database (GreenInfo Network, 2026).',
-          'Sum the restored acres in each scenario that would be open to recreation.',
-          'Report New Green Watershed at each restoration level, with 50% restoration as the primary case.',
+          'Sum restoration acreage in each scenario beyond the current baseline, measured as publicly accessible land already in the California Protected Areas Database (GreenInfo Network, 2026).',
         ],
       },
       {
@@ -847,14 +869,14 @@ const recreation: CriterionStory = {
         spec: [
           { label: 'Measures', value: 'Annual value of wetland recreation services' },
           { label: 'Unit', value: 'Dollars per year' },
-          { label: 'Where', value: 'New Green Watershed restoration footprints' },
+          { label: 'Where', value: 'Whole Delta' },
         ],
         method: [
           'Value restored wetland acres with per-acre estimates for wetland services (about $1,325 per acre per year across all ten).',
           'Report the recreation services on their own: recreational fishing, recreational hunting, and amenity and recreation.',
         ],
         caveats: [
-          'Bird abundance and hunting opportunity depend on habitat, management, migration, and regulations as well as water conditions.',
+          'Water conditions are only part of the picture: bird viewing and hunting opportunities depend on habitat, management, migration, and regulations as well as water conditions.',
         ],
       },
     ],
@@ -866,26 +888,26 @@ const economy: CriterionStory = {
     'The Story Behind the Criterion: Economy, v16. Y. Cai and J. Medellín-Azuara, UC Merced, 25 October 2026.',
   brief: {
     rationale:
-      'Scenario choices can alter agricultural production, employment, farm revenue, and connected regional businesses.',
-    what: 'Economy asks what happens to the Delta’s farm economy when its water gets saltier or farmland is converted to something else.',
-    why: 'Nearly 500,000 acres of irrigated farmland, and the packing houses, equipment dealers, and trucking tied to them, make up a working economy. Every future touches it, and the effects show up in paychecks and farm budgets.',
+      'Agriculture is the Delta’s primary land use and economic sector. Increased salinity can reduce agricultural production, while land-use changes such as wetland restoration can also affect the economy. This criterion assesses those potential changes across all scenarios.',
+    what: 'Economy examines what happens to the Delta’s agricultural economy when salinity and landscape conditions change. It tracks gross revenue, employment, and value added.',
+    why: 'Nearly 500,000 acres of irrigated farmland, and the packing houses, equipment dealers, and trucking tied to them, make up a working economy. Every scenario affects the economy, and the effects show up in paychecks and farm budgets.',
   },
   what: [
-    'This criterion follows Delta agriculture three ways: how much money farms bring in from what they grow, how many jobs depend on that activity and the businesses tied to it, and how much it adds to the regional economy once wages and business income are counted.',
+    'This criterion examines the effects of each scenario on Delta agriculture in three ways: how much money farms bring in from what they grow, how many jobs depend on that activity and the businesses tied to it, and how much value is added to the regional economy once wages and business income are counted.',
   ],
   why: {
     paragraphs: [
-      'The Delta supports close to 500,000 acres of irrigated farmland, plus packing houses, equipment dealers, trucking, and tourism on the water. Some futures reach it through salt water on farm fields; others convert farmland to wetland outright.',
-      'Measuring the size of those effects, and where they land, is a basic way to compare the futures, and one of the few counted directly in dollars and jobs.',
+      'The Delta supports close to 500,000 acres of irrigated farmland, plus packing houses, equipment dealers, trucking, and tourism on the water. Some scenarios affect agriculture through salt water on farm fields; others convert farmland to wetland outright.',
+      'Measuring the size of those effects, and where they land, is a basic way to compare the scenarios, and one of the few counted directly in dollars and jobs.',
     ],
     stats: [
       { value: '500K', label: 'acres of irrigated farmland in the Delta, approximately' },
-      { value: '$1.1B', label: 'in direct farm revenue a year at baseline' },
+      { value: '$1.1B', label: 'in direct farm revenue annually at baseline' },
     ],
   },
   construction: {
     intro:
-      'The six futures change the Delta economy in two different ways, through saltier water or through converted land, so the criterion uses two modeling chains and reports both through the same regional economic model.',
+      'The six scenarios change the Delta economy in two different ways. Because of this, the criterion uses two modeling chains and reports both through the same regional economic model.',
     facts: [
       { value: '$1.1B', label: 'baseline direct farm revenue a year' },
       { value: '~7,650', label: 'baseline direct farm jobs' },
@@ -937,8 +959,6 @@ const economy: CriterionStory = {
     ],
   },
   components: {
-    intro:
-      'Changes in applied water and land use are tracked in the narrative rather than scored, since they drive the three scored metrics.',
     items: [
       {
         name: 'Annual gross agricultural revenues',
@@ -951,13 +971,14 @@ const economy: CriterionStory = {
           { label: 'Unit', value: 'Annualized 2024 US dollars' },
           {
             label: 'Where',
-            value: 'Delta-wide and four zones; New Green Watershed island by island',
+            value: 'Whole Delta, with specific report-out for each region',
           },
         ],
         method: [
-          'Salinity pathway: turn each field’s April–September **salinity** into **crop-yield loss** and apply it to OpenAg baseline revenue.',
-          'Land-use pathway: remove revenue on converted acres and add revenue from new rice, at each restoration level.',
-          'Report direct on-farm revenue; total effects follow in the IMPLAN metrics.',
+          'Apply each scenario’s April–September **salinity** to determine **crop-yield loss** and apply it to OpenAg baseline revenue.',
+          'Remove revenue associated with land converted from farmland to wetland in a scenario.',
+          'Add revenue associated with land converted to rice in a scenario.',
+          'Report direct on-farm revenue.',
         ],
         caveats: [
           'Carbon-offset revenue is an upper-end possibility: its rates come from four deeply subsided central-Delta islands and assume peat soils across the whole footprint.',
@@ -969,13 +990,13 @@ const economy: CriterionStory = {
         summary:
           'Change in **full- and part-time jobs** tied to farm activity, directly and through supporting businesses.',
         spec: [
-          { label: 'Measures', value: 'Full- and part-time jobs in a sector in one year' },
-          { label: 'Unit', value: 'Jobs' },
-          { label: 'Where', value: 'Delta-wide and four zones' },
+          { label: 'Measures', value: 'Full- and part-time jobs in a sector annually' },
+          { label: 'Unit', value: 'Number of jobs' },
+          { label: 'Where', value: 'Whole Delta, with specific report-out for each region' },
         ],
         method: [
-          'Salinity pathway: convert each revenue change to jobs with IMPLAN ratios by region.',
-          'Land-use pathway: run New Green Watershed’s adjusted regional base case through IMPLAN directly.',
+          'Apply the annual gross agricultural revenue change from the first metric to an indicator of jobs through the IMPLAN model, by region.',
+          'Assess land-use changes through the IMPLAN model.',
           'Report direct jobs and total jobs, which add IMPLAN’s regional multipliers (table below).',
         ],
         tables: [
@@ -990,7 +1011,6 @@ const economy: CriterionStory = {
             ],
           },
         ],
-        caveats: ['New Green Watershed’s land-use results are first-order and preliminary.'],
       },
       {
         name: 'Economic value added',
@@ -999,7 +1019,7 @@ const economy: CriterionStory = {
         spec: [
           { label: 'Measures', value: 'Gross revenue minus non-labor business expenses' },
           { label: 'Unit', value: 'Annualized 2024 US dollars' },
-          { label: 'Where', value: 'Delta-wide and four zones' },
+          { label: 'Where', value: 'Whole Delta, with specific report-out for each region' },
         ],
         method: [
           'Take value added from the same IMPLAN runs as employment.',
