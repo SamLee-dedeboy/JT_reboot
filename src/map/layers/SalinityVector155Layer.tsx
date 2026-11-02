@@ -1,7 +1,8 @@
 // 155-frame classified salinity polygon animation (vector tilesets), split
 // across 11 pair tilesets (salinity_vector_pair_00..10) instead of one
 // combined tileset — the combined tileset was capped by Mapbox Tiling
-// Service and had missing features at regional zooms.
+// Service and had missing features at regional zooms. In offline mode the same
+// 11 pairs come from bundled vector tiles instead.
 //
 // All 11 pairs are rendered as stable Source/Layer JSX once; playback never
 // swaps a layer's source or creates/removes layers. Per-frame updates are
@@ -12,10 +13,12 @@ import { useEffect, useRef } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { Layer, Source } from 'react-map-gl/mapbox'
 import type { LayerProps } from 'react-map-gl/mapbox'
+import { isOfflineMapEnabled } from '../offlineBasemapStyle'
 import {
   SALINITY_VECTOR_155_SOURCE_LAYER,
   SALINITY_VECTOR_PAIRS,
   getNextSalinityPair,
+  getOfflineSalinitySourceProps,
   type SalinityVectorPair,
 } from './salinityVector155Constants'
 import {
@@ -124,7 +127,14 @@ export default function SalinityVector155Layer({
   return (
     <>
       {SALINITY_VECTOR_PAIRS.map((pair) => (
-        <Source key={pair.sourceId} id={pair.sourceId} type="vector" url={pair.tilesetUrl}>
+        <Source
+          key={pair.sourceId}
+          id={pair.sourceId}
+          type="vector"
+          {...(isOfflineMapEnabled()
+            ? getOfflineSalinitySourceProps(pair)
+            : { url: pair.tilesetUrl })}
+        >
           <Layer {...buildInitialLayer(pair, beforeId)} />
         </Source>
       ))}

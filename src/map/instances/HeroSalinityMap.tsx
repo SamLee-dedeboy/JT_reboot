@@ -8,7 +8,6 @@ import BaseMap from '../BaseMap'
 import MapLayerOrchestrator from '../MapLayerOrchestrator'
 import SalinityVector155Layer from '../layers/SalinityVector155Layer'
 import { HERO_MAP_STYLE, SUISUN_BAY_CENTER } from '../mapCameraView'
-import { isOfflineMapEnabled } from '../offlineBasemapStyle'
 
 interface HeroSalinityMapProps {
   /** Milliseconds between salinity frames. */
@@ -44,7 +43,6 @@ export default function HeroSalinityMap({ intervalMs = 100 }: HeroSalinityMapPro
     ...SUISUN_BAY_CENTER,
     zoom: heroZoomByBreakpoint[heroBreakpoint],
   }))
-  const canLoadRemoteSalinityTiles = !isOfflineMapEnabled()
 
   const handleMapAvailable = useCallback((map: MapboxMap) => {
     setMapObj(map)
@@ -62,13 +60,7 @@ export default function HeroSalinityMap({ intervalMs = 100 }: HeroSalinityMapPro
       onMapStyleData={handleMapAvailable}
     >
       <MapLayerOrchestrator map={mapObj} showDeltaStations={false}>
-        {canLoadRemoteSalinityTiles && (
-          <SalinityVector155Layer
-            map={mapObj}
-            intervalMs={intervalMs}
-            beforeId={firstLabelLayerId}
-          />
-        )}
+        <SalinityVector155Layer map={mapObj} intervalMs={intervalMs} beforeId={firstLabelLayerId} />
       </MapLayerOrchestrator>
     </BaseMap>
   )

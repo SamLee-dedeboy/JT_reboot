@@ -1,6 +1,7 @@
 import type { ExpressionSpecification, StyleSpecification } from 'mapbox-gl'
 import { map as mapTokens } from '../theme/map'
 import { assetUrl } from '../utils/baseUrl'
+import { HERO_MAP_STYLE } from './mapCameraView'
 
 export type MapMode = 'online' | 'offline'
 
@@ -99,9 +100,10 @@ const settlementColor = (ramp: readonly [string, string, string]): ExpressionSpe
  * mirror the online Mapbox Studio basemaps. There are no remote tile, glyph,
  * sprite, or font requests.
  */
-export function createOfflineBasemapStyle(): StyleSpecification {
-  const water = tokens.water
-
+export function createOfflineBasemapStyle(
+  water: string = tokens.water,
+  waterLabelHalo: string = tokens.waterLabelHalo,
+): StyleSpecification {
   return {
     version: 8,
     name: 'Offline Delta exhibit basemap',
@@ -292,7 +294,7 @@ export function createOfflineBasemapStyle(): StyleSpecification {
         },
         paint: {
           'text-color': tokens.waterLabel,
-          'text-halo-color': tokens.waterLabelHalo,
+          'text-halo-color': waterLabelHalo,
         },
       },
       {
@@ -311,7 +313,7 @@ export function createOfflineBasemapStyle(): StyleSpecification {
         },
         paint: {
           'text-color': tokens.waterLabel,
-          'text-halo-color': tokens.waterLabelHalo,
+          'text-halo-color': waterLabelHalo,
         },
       },
       {
@@ -332,7 +334,7 @@ export function createOfflineBasemapStyle(): StyleSpecification {
         },
         paint: {
           'text-color': tokens.waterwayLabel,
-          'text-halo-color': tokens.waterLabelHalo,
+          'text-halo-color': waterLabelHalo,
           'text-halo-width': 1,
         },
       },
@@ -404,5 +406,8 @@ export function createOfflineBasemapStyle(): StyleSpecification {
 
 /** Replace any requested online style when the application is in offline mode. */
 export function resolveMapStyle<T>(requestedStyle: T): T | StyleSpecification {
-  return isOfflineMapEnabled() ? createOfflineBasemapStyle() : requestedStyle
+  if (!isOfflineMapEnabled()) return requestedStyle
+  return requestedStyle === HERO_MAP_STYLE
+    ? createOfflineBasemapStyle(tokens.heroWater, tokens.heroWaterLabelHalo)
+    : createOfflineBasemapStyle()
 }

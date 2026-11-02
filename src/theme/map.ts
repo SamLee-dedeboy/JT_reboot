@@ -71,8 +71,11 @@ export const map = {
     land: '#333333',
     landuse: 'hsl(0, 2%, 15%)',
     road: 'hsl(0, 0%, 24%)',
-    // The scenario explorer's (Artwork) water, used by every offline map.
+    // The scenario explorer's (Artwork) water, used by offline maps without a variant below.
     water: 'hsl(195, 14%, 44%)',
+    // The online hero style's water and label halo, so salinity colors render the same offline.
+    heroWater: 'hsl(195, 0%, 14%)',
+    heroWaterLabelHalo: 'hsla(0, 0%, 3%, 0.5)',
     roadLabel: 'hsl(0, 0%, 66%)',
     // Label colors step from most to least prominent settlement rank.
     settlementMajorLabel: ['#737373', '#616161', '#3d3d3d'],
