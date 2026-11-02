@@ -161,7 +161,7 @@ export const PLACE_TRAYS: { heading: string; places: string[] }[] = [
 export const MEASURE_LABELS: Record<string, string> = {
   // Ecology
   'bk-ecology': 'Ecology',
-  'bk-eco-habitat': 'Landscape',
+  'bk-eco-habitat': 'Habitat availability',
   'bk-eco-habitat-acres': 'Added wetland',
   'bk-eco-foodweb': 'Food webs',
   'bk-eco-foodweb-managed': 'Managed wetland',
@@ -180,12 +180,12 @@ export const MEASURE_LABELS: Record<string, string> = {
 
   // Recreation
   'bk-recreation': 'Recreation',
-  'bk-rec-salinity': '% of days under Salinity Stress',
+  'bk-rec-salinity': 'Salinity stress',
   'bk-rec-salinity-dayUseBoating': 'Day use and boating',
   'bk-rec-salinity-birding': 'Birding',
   'bk-rec-salinity-waterfowl': 'Waterfowl hunting',
   'bk-rec-salinity-angling': 'Angling',
-  'bk-rec-temperature': '% of days under Temperature Stress',
+  'bk-rec-temperature': 'Temperature stress',
   'bk-rec-temperature-dayUseBoating': 'Day use and boating',
   'bk-rec-temperature-birding': 'Birding',
   'bk-rec-temperature-waterfowl': 'Waterfowl hunting',
@@ -407,7 +407,7 @@ export const CRITERION_DEFINITIONS: Record<
   { metrics: string[]; combine: string; outside?: string }
 > = {
   ecology: {
-    metrics: ['Landscape', 'Food webs', 'Species suitability'],
+    metrics: ['Habitat availability', 'Food webs', 'Species suitability'],
     combine: '[How Landscape, Food webs and Species suitability combine: forthcoming.]',
   },
   recreation: {

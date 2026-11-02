@@ -230,7 +230,7 @@ function ecologyTree(): CriterionNode {
         notApplicable(
           'of-eco-habitat',
           'ecology',
-          'Landscape',
+          'Habitat availability',
           'The outflow runs change Delta outflow only, not the landscape, so they add no habitat acres.',
         ),
         notApplicable(

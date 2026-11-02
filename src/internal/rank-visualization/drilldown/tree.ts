@@ -261,7 +261,7 @@ const ECOLOGY: CriterionNode = {
     },
     {
       id: 'eco-habitat',
-      label: 'Landscape',
+      label: 'Habitat availability',
       level: 'metric',
       team: 'ecology',
       edge: 'averages',
