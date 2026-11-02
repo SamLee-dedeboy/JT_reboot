@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { jtSpacing } from '../../../theme'
 import { adaptationScenarios, outflowResultVariations } from '../content'
 import { explorerHref } from './explorerLinks'
-import { ModelingResults } from './ScenarioResults'
+import ModelingResults from './ModelingResults'
 
 interface SalinityOption {
   id: string

@@ -1,7 +1,6 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
-import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
 import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined'
 import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
@@ -24,6 +23,12 @@ import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import { SalinityResultsHeading } from '../../regional-summary/RegionalSalinitySummary'
 import ModeledSalinity from './ModeledSalinity'
+import {
+  GateScheduleTable,
+  GateTimeline,
+  ReleasePeriods,
+  ReleaseTimeline,
+} from './OperationSchedules'
 import { fullBleedBand } from './styles'
 
 const overviewNavigation = [
@@ -60,31 +65,24 @@ const implementationDetails = [
     group: 'landscape',
     slug: 'eco-machine',
     label: 'Eco Machine',
-    detailTitle: 'Restored areas',
-    details: ['Suisun Marsh', 'Franks Tract Futures'],
+    detailTitle: 'Two areas restored',
+    lead: 'The model reshapes the landscape at two places.',
   },
   {
     id: 'ngw',
     group: 'landscape',
     slug: 'new-green-watershed',
     label: 'New Green Watershed',
-    detailTitle: 'Restored areas',
-    details: [
-      'Suisun Marsh',
-      'Franks Tract Futures',
-      'Dutch Slough',
-      'Egbert Tract',
-      'Hastings Tract',
-      'Northern Cache Slough Complex',
-    ],
+    detailTitle: 'Six areas restored',
+    lead: 'The model keeps both Eco Machine areas and adds four more.',
   },
   {
     id: 'bolster',
     group: 'landscape',
     slug: 'bolster-and-fortify',
     label: 'Bolster and Fortify',
-    detailTitle: 'Gate operation schedule',
-    schedule: 'gate',
+    detailTitle: 'When the Franks Tract gates close',
+    lead: 'Two operable gates at Franks Tract close three times in the run, limiting saltwater movement along the freshwater corridor.',
   },
   {
     id: 'tunnel',
@@ -92,16 +90,36 @@ const implementationDetails = [
     slug: 'a-tunnel',
     label: 'A Tunnel',
     detailTitle: 'Run details',
-    status: 'Forthcoming',
+    lead: 'Forthcoming',
   },
   {
     id: 'reserves',
     group: 'flow',
     slug: 'calling-on-reserves',
     label: 'Calling on Reserves',
-    detailTitle: 'Keswick release schedule',
-    schedule: 'release',
+    detailTitle: 'How Keswick releases change',
+    lead: 'Each bar is one month’s release at Keswick, in cubic feet per second (cfs), compared with CalSim Base.',
   },
+] as const
+
+const ecoMachineAreas = [
+  {
+    name: 'Suisun Marsh',
+    body: 'Managed wetlands become tidal wetlands, directing tidal energy toward the marsh.',
+  },
+  {
+    name: 'Franks Tract',
+    body: 'Landforms built inside the tract, following the Franks Tract Futures design, mostly block salty water from moving farther into the Delta.',
+  },
+] as const
+
+const newGreenWatershedAreas = [
+  { name: 'Suisun Marsh', inEcoMachine: true },
+  { name: 'Franks Tract', inEcoMachine: true },
+  { name: 'Dutch Slough', inEcoMachine: false },
+  { name: 'Egbert Tract', inEcoMachine: false },
+  { name: 'Hastings Tract', inEcoMachine: false },
+  { name: 'Northern Cache Slough Complex', inEcoMachine: false },
 ] as const
 
 const baselineRows = [
@@ -184,25 +202,6 @@ const sectionSx = {
 type OverviewSectionId = (typeof overviewNavigation)[number]['id']
 type Implementation = (typeof implementationDetails)[number]
 type ImplementationId = Implementation['id']
-
-type GateSchedule = {
-  closures: Array<{ id: string; startDate: string; endDate: string }>
-}
-
-type ReleaseSchedule = {
-  comparison: string
-  moreThanBau: Array<{ id: string; startDate: string; endDate: string }>
-  lessThanBau: Array<{ id: string; startDate: string; endDate: string }>
-}
-
-const scheduleDate = new Intl.DateTimeFormat('en-US', {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-  timeZone: 'UTC',
-})
-
-const formatScheduleDate = (date: string) => scheduleDate.format(new Date(`${date}T00:00:00Z`))
 
 /** The hero's two parts of this page, in the ranking hero's card style. */
 export function OverviewParts() {
@@ -527,6 +526,8 @@ function SimulationBar() {
 function ScenarioMap({ implementation }: { implementation: Implementation }) {
   const mapConfig = getConfig(implementation.slug)
   const bounds = mapConfig.bounds.delta
+  // Calling on Reserves' river and dam sit upstream of the Delta, in the statewide layers.
+  const visibilityScope = implementation.id === 'reserves' ? 'statewide' : 'delta'
 
   return (
     <Box
@@ -553,14 +554,18 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
         maxBounds={mapConfig.maxBounds}
       >
         {bounds && <Camera bounds={bounds} />}
-        <Layers scenarioSlug={implementation.slug} showAdaptationLayers visibilityScope="delta" />
+        <Layers
+          scenarioSlug={implementation.slug}
+          showAdaptationLayers
+          visibilityScope={visibilityScope}
+        />
         {mapConfig.showNavigationControl && (
           <NavigationControl position="bottom-right" showCompass={false} />
         )}
       </BaseMap>
       <Legend
         scenarioSlug={implementation.slug}
-        visibilityScope="delta"
+        visibilityScope={visibilityScope}
         visible
         selectedHabitatType={null}
       />
@@ -568,73 +573,153 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
   )
 }
 
-function ScheduleRows({
-  label,
-  periods,
-}: {
-  label: string
-  periods: Array<{ id: string; startDate: string; endDate: string }>
-}) {
+/** Restoration already counted in the baselines, so it is not a change in either future. */
+function BaselineRestorationNote() {
   return (
-    <Box>
-      <Typography variant="columnHead" sx={{ color: 'base.200' }}>
-        {label}
+    <Box sx={{ mt: jtSpacing.component.lg }}>
+      <Typography variant="columnHead" component="p">
+        Already in the baseline
       </Typography>
-      <Stack spacing={0} sx={{ mt: jtSpacing.gap.xs }}>
-        {periods.map((period) => (
-          <Typography
-            key={period.id}
-            variant="body2"
-            sx={{ py: jtSpacing.gap.xs, borderBottom: 1, borderColor: 'border.subtle' }}
-          >
-            {formatScheduleDate(period.startDate)} – {formatScheduleDate(period.endDate)}
-          </Typography>
-        ))}
-      </Stack>
+      <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs }}>
+        Planned restoration at Little Egbert Tract and Prospect Island is part of Base, so it is not
+        counted as a change here.
+      </Typography>
     </Box>
   )
 }
 
-function OperationSchedule({ type }: { type: 'gate' | 'release' }) {
-  const [schedule, setSchedule] = useState<GateSchedule | ReleaseSchedule | null>(null)
+function EcoMachineAreas() {
+  return (
+    <>
+      <Box sx={{ mt: jtSpacing.component.md, borderTop: 1, borderColor: 'border.strong' }}>
+        {ecoMachineAreas.map(({ name, body }) => (
+          <Box
+            component="article"
+            key={name}
+            sx={{ py: jtSpacing.gap.md, borderBottom: 1, borderColor: 'border.default' }}
+          >
+            <Typography variant="cardTitle" component="h5">
+              {name}
+            </Typography>
+            <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs }}>
+              {body}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+      <BaselineRestorationNote />
+    </>
+  )
+}
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const filename =
-      type === 'gate'
-        ? 'bolster-and-fortify-gate-schedule.json'
-        : 'calling-on-reserves-release-schedule.json'
-    fetch(assetUrl(`/data/operations/${filename}`), { signal: controller.signal })
-      .then((response) => response.json() as Promise<GateSchedule | ReleaseSchedule>)
-      .then(setSchedule)
-      .catch((reason: unknown) => {
-        if (reason instanceof DOMException && reason.name === 'AbortError') return
-        setSchedule(null)
-      })
-    return () => controller.abort()
-  }, [type])
+function NewGreenWatershedAreas() {
+  const headSx = { typography: 'columnHead', pb: jtSpacing.gap.sm, textAlign: 'center' }
+  const cellSx = { py: jtSpacing.gap.sm, textAlign: 'center', typography: 'body2' }
 
-  if (!schedule) {
-    return <Typography variant="body2">Loading schedule…</Typography>
-  }
+  return (
+    <>
+      <Box
+        component="table"
+        sx={{ width: '100%', mt: jtSpacing.component.md, borderCollapse: 'collapse' }}
+      >
+        <thead>
+          <tr>
+            <Box component="th" scope="col" sx={{ ...headSx, textAlign: 'left' }}>
+              Restored area
+            </Box>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '20%' }}>
+              Eco Machine
+            </Box>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '20%' }}>
+              New Green Watershed
+            </Box>
+          </tr>
+        </thead>
+        <tbody>
+          {newGreenWatershedAreas.map(({ name, inEcoMachine }) => (
+            <Box component="tr" key={name} sx={{ borderTop: 1, borderColor: 'border.default' }}>
+              <Box
+                component="th"
+                scope="row"
+                sx={{ py: jtSpacing.gap.sm, pr: jtSpacing.gap.sm, textAlign: 'left' }}
+              >
+                <Typography variant="cardTitle" component="span">
+                  {name}
+                </Typography>
+              </Box>
+              <Box
+                component="td"
+                sx={{ ...cellSx, color: inEcoMachine ? 'common.white' : 'base.200' }}
+              >
+                {inEcoMachine ? 'Yes' : 'No'}
+              </Box>
+              <Box
+                component="td"
+                sx={{ ...cellSx, color: inEcoMachine ? 'common.white' : 'primary.main' }}
+              >
+                {inEcoMachine ? 'Yes' : 'Added'}
+              </Box>
+            </Box>
+          ))}
+        </tbody>
+      </Box>
+      <BaselineRestorationNote />
+    </>
+  )
+}
 
-  if (type === 'gate' && 'closures' in schedule) {
-    return <ScheduleRows label="Gates closed" periods={schedule.closures} />
-  }
+/** What each future changes: its restored areas or operating schedule, and its map. */
+function ImplementationPanel({ implementation }: { implementation: Implementation }) {
+  const { id, detailTitle, lead } = implementation
+  const hasTimeline = id === 'bolster' || id === 'reserves'
 
-  if (type === 'release' && 'moreThanBau' in schedule) {
-    return (
-      <Stack spacing={jtSpacing.component.lg}>
-        <Typography variant="body2" sx={{ color: 'base.100' }}>
-          {schedule.comparison}
-        </Typography>
-        <ScheduleRows label="More than CalSim Base" periods={schedule.moreThanBau} />
-        <ScheduleRows label="Less than CalSim Base" periods={schedule.lessThanBau} />
-      </Stack>
-    )
-  }
+  const heading = (
+    <>
+      <Typography variant="h4" component="h4">
+        {detailTitle}
+      </Typography>
+      <Typography
+        variant="body1"
+        sx={{
+          mt: jtSpacing.gap.sm,
+          color: 'base.50',
+          maxWidth: jtSpacing.paragraphMaxWidth.default,
+        }}
+      >
+        {lead}
+      </Typography>
+    </>
+  )
 
-  return null
+  return (
+    <Box sx={{ mt: jtSpacing.component.lg }}>
+      {hasTimeline && (
+        <Box sx={{ mb: jtSpacing.component.lg }}>
+          {heading}
+          <Box sx={{ mt: jtSpacing.component.md }}>
+            {id === 'bolster' ? <GateTimeline /> : <ReleaseTimeline />}
+          </Box>
+        </Box>
+      )}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
+          gap: jtSpacing.gap.xl,
+          alignItems: 'start',
+        }}
+      >
+        <Box sx={{ minWidth: 0 }}>
+          {!hasTimeline && heading}
+          {id === 'eco' && <EcoMachineAreas />}
+          {id === 'ngw' && <NewGreenWatershedAreas />}
+          {id === 'bolster' && <GateScheduleTable />}
+          {id === 'reserves' && <ReleasePeriods />}
+        </Box>
+        <ScenarioMap implementation={implementation} />
+      </Box>
+    </Box>
+  )
 }
 
 export default function ModelingOverview() {
@@ -889,48 +974,7 @@ export default function ModelingOverview() {
               )
             })}
           </Box>
-          <Box
-            sx={{
-              mt: jtSpacing.component.lg,
-              display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
-              gap: jtSpacing.gap.xl,
-              alignItems: 'start',
-            }}
-          >
-            <Box>
-              <Typography variant="h4" component="h4" sx={{ mb: jtSpacing.gap.sm }}>
-                {selectedImplementation.detailTitle}
-              </Typography>
-              {'details' in selectedImplementation
-                ? selectedImplementation.details.map((detail) => (
-                    <Stack
-                      key={detail}
-                      direction="row"
-                      spacing={jtSpacing.gap.sm}
-                      sx={{
-                        alignItems: 'center',
-                        py: jtSpacing.gap.xs,
-                        borderBottom: 1,
-                        borderColor: 'border.subtle',
-                      }}
-                    >
-                      <LayersOutlinedIcon sx={{ color: 'base.200' }} fontSize="small" />
-                      <Typography variant="body2">{detail}</Typography>
-                    </Stack>
-                  ))
-                : null}
-              {'schedule' in selectedImplementation ? (
-                <OperationSchedule type={selectedImplementation.schedule} />
-              ) : null}
-              {'status' in selectedImplementation ? (
-                <Typography variant="body1" sx={{ color: 'base.100' }}>
-                  {selectedImplementation.status}
-                </Typography>
-              ) : null}
-            </Box>
-            <ScenarioMap implementation={selectedImplementation} />
-          </Box>
+          <ImplementationPanel implementation={selectedImplementation} />
         </Box>
       </Box>
 

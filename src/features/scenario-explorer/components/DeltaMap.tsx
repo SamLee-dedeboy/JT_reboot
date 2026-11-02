@@ -7,7 +7,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../mapConfig'
-import { resolveMapStyle } from '../../../map/offlineBasemapStyle'
+import { labelFontLayout, resolveMapStyle } from '../../../map/offlineBasemapStyle'
 import { explorerControl, palette } from '../../../theme/index'
 import { useCompactExplorer } from '../explorerType'
 import { smallIconSx } from './controlStyles'
@@ -347,6 +347,7 @@ function MapCanvas({
         filter: ['in', ['get', 'd1641State'], ['literal', ['compliant', 'exceeded']]],
         layout: {
           'text-field': ['match', ['get', 'd1641State'], 'exceeded', '◆', '◇'],
+          ...labelFontLayout(),
           'text-size': [
             'match',
             ['get', 'd1641State'],
@@ -384,6 +385,7 @@ function MapCanvas({
         filter: ['==', ['get', 'd1641State'], 'exceeded'],
         layout: {
           'text-field': ['get', 'exceedanceScenarios'],
+          ...labelFontLayout(),
           'text-size': emphasizeD1641Stations ? 16 : 14,
           'text-offset': [0.85, -0.85],
           'text-allow-overlap': true,
@@ -464,6 +466,7 @@ function MapCanvas({
           filter: ['==', ['get', 'brushed'], 1],
           layout: {
             'text-field': ['to-string', ['get', 'station_id']],
+            ...labelFontLayout(),
             'text-size': 12,
             'text-offset': [0, 1.35],
             'text-anchor': 'top',

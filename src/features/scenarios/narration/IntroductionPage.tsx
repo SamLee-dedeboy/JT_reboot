@@ -502,11 +502,11 @@ export default function IntroductionPage() {
           <Stack sx={{ mt: jtSpacing.section.xl, alignItems: 'center' }}>
             <Button
               component={Link}
-              to={`/scenarios/${scenario.slug}/results`}
+              to="/scenarios/modeling"
               variant="contained"
               endIcon={<ArrowForwardIcon />}
             >
-              Explore modeling results and evaluation criteria
+              View Modeling results
             </Button>
           </Stack>
         </Container>

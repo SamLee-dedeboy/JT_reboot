@@ -5,11 +5,9 @@
 import {
   adaptationScenarios,
   evaluationTeams,
-  outflowResultVariations,
-  resultFamilies,
   tieredOutflowsScenario,
 } from '../../features/scenarios/content'
-import { ejMethodologyExample, ejScenarioExample } from './ejExample'
+import { ejMethodologyExample } from './ejExample'
 
 export interface UISection {
   label: string
@@ -33,7 +31,6 @@ export interface ProposedPage {
 }
 
 const teamList = evaluationTeams.map((team) => team.label).join(' · ')
-const familyList = resultFamilies.map((family) => family.label).join(' · ')
 const adaptationList = adaptationScenarios.map((scenario) => scenario.title).join(' · ')
 
 /** Sections of the pages as they are built today. */
@@ -74,17 +71,13 @@ export const currentSections: Record<string, UISection[]> = {
       detail: 'Adaptation: key benefits, motivation, design approach, then supporting strategy',
     },
     {
-      label: 'Explore modeling results and evaluation criteria',
+      label: 'View Modeling results',
       detail: 'Button',
-      to: '/scenarios/:scenarioSlug/results',
+      to: '/scenarios/modeling',
     },
   ],
   '/scenarios/modeling': [
-    {
-      label: 'Hero + result family tabs',
-      detail: familyList,
-      to: '/scenarios/:scenarioSlug/results',
-    },
+    { label: 'Hero', detail: 'Jump to how scenarios are modeled or the results' },
     {
       label: 'How are scenarios modeled?',
       children: [
@@ -121,36 +114,11 @@ export const currentSections: Record<string, UISection[]> = {
     {
       label: 'Scenario results',
       detail: 'Each scenario across every criterion',
-      children: [
-        { label: 'The three families at a glance', to: '/scenarios/evaluation/families' },
-        { label: 'Outflow variation results', to: '/scenarios/:scenarioSlug/results' },
-        { label: 'Adaptation scenario results', to: '/scenarios/:scenarioSlug/results' },
-      ],
+      children: [{ label: 'The three families at a glance', to: '/scenarios/evaluation/families' }],
     },
     {
       label: 'How are scenarios compared?',
       children: [{ label: 'Scenario ranking', to: '/scenarios/ranking' }],
-    },
-  ],
-  '/scenarios/:scenarioSlug/results': [
-    { label: 'Hero + result family tabs', detail: familyList, to: '/scenarios/modeling' },
-    {
-      label: 'Scenario tabs',
-      detail: `Adaptation scenarios, or ${outflowResultVariations.map((v) => v.label).join(' / ')}`,
-    },
-    { label: 'Result summary', detail: 'Sea-level toggle where a +2 ft run exists' },
-    {
-      label: 'Modeled salinity',
-      detail: 'Regional summary map and wet/dry years',
-      to: '/pages/scenario-explorer',
-    },
-    {
-      label: 'Evaluation criteria',
-      detail: 'One tile per team with its overall score',
-      children: [
-        { label: 'Selected team', detail: 'Headline, interpretation, metric scores' },
-        { label: 'How this team evaluates', to: '/scenarios/evaluation/:teamId' },
-      ],
     },
   ],
   '/scenarios/evaluation/families': [
@@ -158,7 +126,7 @@ export const currentSections: Record<string, UISection[]> = {
     {
       label: '01 Outflow variations',
       detail: 'Environmental justice finding; others not assessed',
-      to: '/scenarios/:scenarioSlug/results',
+      to: '/scenarios/modeling',
     },
     {
       label: '02 Adaptation scenarios',
@@ -168,7 +136,6 @@ export const currentSections: Record<string, UISection[]> = {
     {
       label: '03 With two feet of sea-level rise',
       detail: 'Scenarios with +2 ft runs; criteria still reporting',
-      to: '/scenarios/:scenarioSlug/results',
     },
   ],
   '/scenarios/evaluation/:teamId': [
@@ -184,22 +151,6 @@ export const currentSections: Record<string, UISection[]> = {
     { label: 'What are its components?', detail: 'One tab per component' },
     { label: 'How was it constructed?', detail: 'Key numbers, then the steps in order' },
     { label: 'References' },
-  ],
-  '/scenarios/:scenarioSlug/results/:teamId': [
-    { label: 'Hero', detail: 'Breadcrumb · headline verdict', to: '/scenarios/:scenarioSlug' },
-    { label: 'Scenario tabs', detail: 'Same team, another future' },
-    { label: 'Team tabs', detail: 'Same future, another team' },
-    { label: '01 Metric results', detail: 'One card per metric with its score' },
-    { label: '02 Where it ranks', detail: 'Overall score against the other futures' },
-    { label: '03 What it means for communities', detail: "The team's narrative" },
-    {
-      label: 'Next steps',
-      children: [
-        { label: 'Same team, another future', to: '/scenarios/evaluation/:teamId' },
-        { label: 'How this team evaluated', to: '/scenarios/evaluation/:teamId' },
-        { label: 'Back to the scenario results', to: '/scenarios/:scenarioSlug/results' },
-      ],
-    },
   ],
   '/scenarios/ranking': [
     { label: 'Hero', detail: 'Performance and ranking' },
@@ -243,43 +194,7 @@ export const currentSections: Record<string, UISection[]> = {
 }
 
 /** Worked examples: one team's live pages filled in with its content. */
-export const proposedPages: ProposedPage[] = [ejMethodologyExample, ejScenarioExample]
+export const proposedPages: ProposedPage[] = [ejMethodologyExample]
 
-const planned = (sections: UISection[]) =>
-  sections.map((section) => ({ ...section, planned: true }))
-
-/**
- * Sections the workflow still needs, appended to the live ones. Each closes a
- * gap in the journey: today the team × scenario page is only reachable from
- * itself, and nothing leads from a team's results on to the overall ranking.
- */
-export const proposedSections: Record<string, UISection[]> = {
-  '/scenarios/:scenarioSlug/results': [
-    ...currentSections['/scenarios/:scenarioSlug/results'],
-    ...planned([
-      {
-        label: 'Results for this team',
-        detail: 'Selected team panel: open its full results for this future',
-        to: '/scenarios/:scenarioSlug/results/:teamId',
-      },
-    ]),
-  ],
-  '/scenarios/evaluation/:teamId': [
-    ...currentSections['/scenarios/evaluation/:teamId'].slice(0, -1),
-    ...planned([
-      {
-        label: 'Scenario comparisons',
-        detail:
-          'One card per future; the team × scenario page already links to #scenario-comparisons',
-        to: '/scenarios/:scenarioSlug/results/:teamId',
-      },
-    ]),
-    ...currentSections['/scenarios/evaluation/:teamId'].slice(-1),
-  ],
-  '/scenarios/:scenarioSlug/results/:teamId': [
-    ...currentSections['/scenarios/:scenarioSlug/results/:teamId'],
-    ...planned([
-      { label: 'Compare every future', detail: 'From “Where it ranks”', to: '/scenarios/ranking' },
-    ]),
-  ],
-}
+/** Sections the workflow still needs, appended to the live ones. None at the moment. */
+export const proposedSections: Record<string, UISection[]> = {}

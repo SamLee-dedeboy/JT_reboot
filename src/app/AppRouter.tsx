@@ -21,9 +21,7 @@ const ScenarioExplorerPage = lazy(
   () => import('../features/scenario-explorer/ScenarioExplorerPage'),
 )
 const RegionalSummaryPage = lazy(() => import('../features/regional-summary/RegionalSummaryPage'))
-const UpstreamRestorationPage = lazy(
-  () => import('../features/watershed/UpstreamRestorationPage'),
-)
+const UpstreamRestorationPage = lazy(() => import('../features/watershed/UpstreamRestorationPage'))
 const RankVisualization = lazy(() => import('../internal/rank-visualization/RankVisualization'))
 const BreakoutPage = lazy(() => import('../features/scenarios/ranking/breakout/BreakoutPage'))
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
@@ -34,7 +32,6 @@ const EcoculturalMetricsArrow = lazy(() => import('../internal/EcoculturalMetric
 const TeamMethodologyPage = lazy(
   () => import('../features/scenarios/evaluation/TeamMethodologyPage'),
 )
-const TeamScenarioPage = lazy(() => import('../features/scenarios/evaluation/TeamScenarioPage'))
 const RankingPage = lazy(() => import('../features/scenarios/ranking/Page'))
 const EvaluationPage = lazy(() => import('../features/scenarios/results/EvaluationPage'))
 const FamiliesPage = lazy(() => import('../features/scenarios/results/FamiliesPage'))
@@ -52,11 +49,8 @@ export default function AppRouter() {
       <Route path="/scenarios/modeling" element={<Results />} />
       <Route path="/scenarios/evaluation" element={deferred(<EvaluationPage />)} />
       <Route path="/scenarios/evaluation/families" element={deferred(<FamiliesPage />)} />
-      <Route path="/scenarios/:scenarioSlug/results" element={<Results />} />
-      <Route
-        path="/scenarios/:scenarioSlug/results/:teamId"
-        element={deferred(<TeamScenarioPage />)}
-      />
+      <Route path="/scenarios/:scenarioSlug/results" element={<LegacyResultsRedirect />} />
+      <Route path="/scenarios/:scenarioSlug/results/:teamId" element={<LegacyResultsRedirect />} />
       <Route path="/scenarios/evaluation/:teamId" element={deferred(<TeamMethodologyPage />)} />
       <Route path="/scenarios/ranking" element={deferred(<RankingPage />)} />
       <Route path="/scenarios/ranking/:view" element={deferred(<RankingPage />)} />

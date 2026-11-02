@@ -600,7 +600,7 @@ function ecoCulturalTree(): CriterionNode {
         'of-ec-restoration',
         'ecoCultural',
         'Restoration',
-        'The report: the tiered outflow scenarios include no landscape-level interventions, so they have no score for Metric A, restoration of native ecosystems.',
+        'The report: the tiered outflow scenarios include no landscape-level interventions, so they have no score for Ecosystem Restoration.',
       ),
     ],
   }

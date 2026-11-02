@@ -2,6 +2,9 @@ import { Layer, Source } from 'react-map-gl/mapbox'
 import type { LayerProps } from 'react-map-gl/mapbox'
 import type { FeatureCollection, LineString, Point } from 'geojson'
 import { map } from '../../theme'
+import { labelFontLayout } from '../offlineBasemapStyle'
+
+const dinLabelFont = labelFontLayout(['DIN Offc Pro Medium', 'Arial Unicode MS Regular'])
 
 export type ScenariosBackgroundMapStep = 'overview' | 'rivers' | 'flow' | 'x2'
 
@@ -117,7 +120,7 @@ const riverLabelLayer: LayerProps = {
   layout: {
     'symbol-placement': 'line',
     'text-field': ['get', 'name'],
-    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+    ...dinLabelFont,
     'text-size': 13,
     'text-letter-spacing': 0.04,
   },
@@ -174,7 +177,7 @@ export default function ScenariosBackgroundLayers({
     type: 'symbol',
     layout: {
       'text-field': ['get', 'name'],
-      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+      ...dinLabelFont,
       'text-size': 12,
       'text-offset': [0, 1.25],
       'text-anchor': 'top',
@@ -205,7 +208,7 @@ export default function ScenariosBackgroundLayers({
     type: 'symbol',
     layout: {
       'text-field': ['get', 'name'],
-      'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Regular'],
+      ...dinLabelFont,
       'text-size': 12,
       'text-offset': [1, 0],
       'text-anchor': 'left',

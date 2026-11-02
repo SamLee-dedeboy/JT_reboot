@@ -144,24 +144,26 @@ function FamilySection({
         {summary}
       </Typography>
       {children}
-      <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        useFlexGap
-        spacing={jtSpacing.gap.sm}
-        sx={{ mt: jtSpacing.component.lg, flexWrap: 'wrap' }}
-      >
-        {actions.map((action, index) => (
-          <Button
-            key={action.href}
-            component={Link}
-            to={action.href}
-            variant={index === 0 ? 'contained' : 'outlined'}
-            endIcon={index === 0 ? <ArrowForwardIcon /> : undefined}
-          >
-            {action.label}
-          </Button>
-        ))}
-      </Stack>
+      {actions.length > 0 && (
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          useFlexGap
+          spacing={jtSpacing.gap.sm}
+          sx={{ mt: jtSpacing.component.lg, flexWrap: 'wrap' }}
+        >
+          {actions.map((action, index) => (
+            <Button
+              key={action.href}
+              component={Link}
+              to={action.href}
+              variant={index === 0 ? 'contained' : 'outlined'}
+              endIcon={index === 0 ? <ArrowForwardIcon /> : undefined}
+            >
+              {action.label}
+            </Button>
+          ))}
+        </Stack>
+      )}
     </Box>
   )
 }
@@ -186,9 +188,7 @@ export default function FamiliesPage() {
             title="Outflow variations"
             summary={`${tieredOutflowsScenario.title} change how much fresh water leaves the Delta. So far only the environmental justice criterion has evaluated them.`}
             background={800}
-            actions={[
-              { label: 'Outflow variation results', href: '/scenarios/tiered-outflows/results' },
-            ]}
+            actions={[{ label: 'View Modeling results', href: '/scenarios/modeling' }]}
           >
             {outflowFinding && (
               <Box
@@ -221,7 +221,7 @@ export default function FamiliesPage() {
             background={700}
             actions={[
               { label: 'Compare in the ranking', href: '/scenarios/ranking' },
-              { label: 'Adaptation scenario results', href: '/scenarios/eco-machine/results' },
+              { label: 'View Modeling results', href: '/scenarios/modeling' },
             ]}
           >
             <CriteriaGrid
@@ -241,12 +241,7 @@ export default function FamiliesPage() {
               .filter(Boolean)
               .join(', ')}. Most criteria are still reporting their sea-level-rise results.`}
             background={800}
-            actions={[
-              {
-                label: 'Sea-level rise results',
-                href: '/scenarios/eco-machine/results?seaLevelRise=true',
-              },
-            ]}
+            actions={[]}
           >
             {economySource && (
               <Box

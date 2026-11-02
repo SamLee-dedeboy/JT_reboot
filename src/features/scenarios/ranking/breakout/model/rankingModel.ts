@@ -334,13 +334,32 @@ function activity(activityNode: CriterionNode): CriterionNode {
   })
 }
 
+/** Show the workbook's shared day-use/boating result as two identical public rows. */
+function splitDayUseAndBoating(rows: CriterionNode[]): CriterionNode[] {
+  return rows.flatMap((row) => {
+    if (!row.id.endsWith('-dayUseBoating')) return [row]
+
+    const copyAs = (activityId: string, label: string): CriterionNode => ({
+      ...row,
+      id: row.id.replace(/dayUseBoating$/, activityId),
+      label,
+      children: row.children?.map((child) => ({
+        ...child,
+        id: child.id.replace('dayUseBoating', activityId),
+      })),
+    })
+
+    return [copyAs('dayUse', 'Day use'), copyAs('boating', 'Boating')]
+  })
+}
+
 function thresholdRow(id: string, label: string, note: string): CriterionNode {
   const base = node(id)
   return adapt(base, {
     label,
     note,
     entityNoun: 'activity',
-    children: (base.children ?? []).map(activity),
+    children: splitDayUseAndBoating((base.children ?? []).map(activity)),
   })
 }
 
@@ -491,12 +510,12 @@ function recreationRoot(): CriterionNode {
       thresholdRow(
         'rec-salinity',
         'Salinity thresholds',
-        'Each activity is scored on its proportion of days over its salinity threshold: day use & boating 1,000 µS/cm, birding 2,640, waterfowl hunting 3,600, angling 9,130. One point per percentage point against Business as Usual (CalSim’s, for Calling on Reserves and A Tunnel), ±5 at five or more. The mean of the four, today and with sea level rise, is half of the Recreation score. Open the row for each activity’s days over the threshold with its score beside it.',
+        'Each activity is scored on its proportion of days over its salinity threshold: day use and boating share the same 1,000 µS/cm source values, birding 2,640, waterfowl hunting 3,600, and angling 9,130. Day use and boating are shown as separate rows with their shared values repeated. One point per percentage point against Business as Usual (CalSim’s, for Calling on Reserves and A Tunnel), ±5 at five or more. The reported mean still treats the shared day-use/boating result as one of four inputs; today and with sea level rise, it is half of the Recreation score. Open the row for each activity’s days over the threshold with its score beside it.',
       ),
       thresholdRow(
         'rec-temperature',
         'Temperature thresholds',
-        'The same construction against water temperature: 19 °C for day use & boating, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, < 18 °C cold-water day use. The mean of the five activities, today and with sea level rise, is the other half of the Recreation score.',
+        'The same construction against water temperature: day use and boating share the same 19 °C source values and are shown as separate repeated rows, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, and < 18 °C cold-water day use. The reported mean still treats the shared day-use/boating result as one of five inputs; today and with sea level rise, it is the other half of the Recreation score.',
       ),
       recSameUnderSlr(habitatRestoration()),
       recSameUnderSlr(recreationEconomy()),

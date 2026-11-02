@@ -1,7 +1,7 @@
 // Every word the breakout table shows (By criterion, and the /pages/breakout kiosk),
 // in one place to edit. Sections, in order:
 //
-//   TEAM_TAKEAWAYS    the points under "Team takeaway", one list per criterion
+//   TEAM_TAKEAWAYS    the points under "Criterion takeaway", one list per criterion
 //   TEAM_CAVEATS      the "Caveats and Clarifications" notes beside the takeaway
 //   SCENARIO_LABELS   a scenario's name in the table heads, chips and sentence
 //   SCENARIO_GROUPS   the headings over the two groups of scenario columns
@@ -10,7 +10,7 @@
 //   MEASURE_LABELS    the score and measure row names
 //   UI                headings, buttons, legend, notes, and the words for empty cells
 //   CRITERION_DEFINITIONS  a criterion score's info card: its metrics and how they combine
-//   METRIC_DEFINITIONS     a metric's info card: team takeaway, what, how computed, what is considered, how scored
+//   METRIC_DEFINITIONS     a metric's info card: criterion takeaway, what, how computed, what is considered, how scored
 //   PERIOD_WHY, PERIOD_MONTHS, TEAM_PERIOD_MONTHS  the TIME PERIOD info card
 //   PLACE_WHY              the PLACE info card, above the map
 //   SCENARIO_TAKEAWAYS     a team's takeaway in a score cell's card
@@ -28,7 +28,7 @@ import { SCENARIO_NAME } from '../../../../../internal/rank-visualization/drilld
 import type { ScenarioKey } from '../../../../../internal/rank-visualization/drilldown/model'
 
 /**
- * Each criterion's team takeaway, as points set apart under UI.takeaway. Text between
+ * Each criterion's takeaway, as points set apart under UI.takeaway. Text between
  * ** ** is drawn in the team's colour. Leave a team out and the page shows
  * UI.openingPlaceholder instead.
  */
@@ -92,7 +92,7 @@ export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
     'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue at $15/tCO2e. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
   ],
   ecoCultural: [
-    'Although all four metrics are equally important and interdependent on one another to meet this criterion, only the habitat restoration metric can be spatially and quantitatively evaluated across the scenarios. The other three metrics are envisioned and assumed in ++Eco Machine++ and ++New Green Watershed++ scenarios (the two scenarios that restore land and habitats) but cannot be prescribed within the scope of this project (e.g., assigning specific areas for land-back initiatives, or determining where access may be most desired and granted on private land). Thus, the evaluation for Tribal land access, Tribal Sovereignty and Application of Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively, **where the scenarios offer the increased potential to achieve these metrics.**',
+    'Although all four metrics are equally important and interdependent on one another to meet this criterion, only the ecosystem restoration metric can be spatially and quantitatively evaluated across the scenarios. The other three metrics are envisioned and assumed in ++Eco Machine++ and ++New Green Watershed++ scenarios (the two scenarios that restore land and habitats) but cannot be prescribed within the scope of this project (e.g., assigning specific areas for land-back initiatives, or determining where access may be most desired and granted on private land). Thus, the evaluation for Tribal land access, Tribal Sovereignty and Application of Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively, **where the scenarios offer the increased potential to achieve these metrics.**',
   ],
 }
 
@@ -181,12 +181,14 @@ export const MEASURE_LABELS: Record<string, string> = {
   // Recreation
   'bk-recreation': 'Recreation',
   'bk-rec-salinity': 'Salinity stress',
-  'bk-rec-salinity-dayUseBoating': 'Day use and boating',
+  'bk-rec-salinity-dayUse': 'Day use',
+  'bk-rec-salinity-boating': 'Boating',
   'bk-rec-salinity-birding': 'Birding',
   'bk-rec-salinity-waterfowl': 'Waterfowl hunting',
   'bk-rec-salinity-angling': 'Angling',
   'bk-rec-temperature': 'Temperature stress',
-  'bk-rec-temperature-dayUseBoating': 'Day use and boating',
+  'bk-rec-temperature-dayUse': 'Day use',
+  'bk-rec-temperature-boating': 'Boating',
   'bk-rec-temperature-birding': 'Birding',
   'bk-rec-temperature-waterfowl': 'Waterfowl hunting',
   'bk-rec-temperature-angling': 'Angling',
@@ -222,7 +224,7 @@ export const MEASURE_LABELS: Record<string, string> = {
 
   // Eco-cultural
   'bk-ecoCultural': 'Eco-cultural',
-  'bk-ec-restoration': 'Habitat restoration',
+  'bk-ec-restoration': 'Ecosystem Restoration',
   'bk-ec-restoration-managed': 'Managed wetlands',
   'bk-ec-restoration-rice': 'Wet-soil agriculture',
   'bk-ec-restoration-tidal': 'Tidal wetlands',
@@ -231,11 +233,10 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-ec-restoration-meadow': 'Meadows',
   'bk-ec-restoration-floodplain': 'Floodplains',
   'bk-ec-restoration-functional-flow': 'Potential for functional flows',
-  'bk-ec-access':
-    'Increased Access to Landscapes for Stewardship, Subsistence, Ceremony, and Cultural Practices',
-  'bk-ec-tek': 'Implementation of Indigenous Science & Traditional Ecological Knowledge (TEK)',
-  'bk-ec-sovereignty':
-    'Recognition and Application of Indigenous Sovereignty, Tribal Governance, and Rights',
+  'bk-ec-access': 'Increased Land Access',
+  'bk-ec-tek':
+    'Implementation and Application of Indigenous Science & Traditional Ecological Knowledge (TEK)',
+  'bk-ec-sovereignty': 'Recognition and Application of Tribal Sovereignty',
   // Eco-cultural's conditions, under each described metric (strongest access first)
   'bk-ec-access-ownership': 'Tribal ownership',
   'bk-ec-access-landTrust': 'Land trust partnership',
@@ -270,7 +271,7 @@ export const UI = {
     `${numberWord(n)} ${set === 'outflow' ? 'run' : 'scenario'}${n === 1 ? '' : 's'}`,
   withSeaLevelRise: 'with sea level rise',
   caveatsHeading: 'Caveats and Clarifications',
-  openingPlaceholder: 'The team’s takeaway: forthcoming.',
+  openingPlaceholder: 'The criterion takeaway: forthcoming.',
   /** The heading over the table, under the criterion tabs. */
   howBuilt: 'How the score is built',
 
@@ -306,7 +307,7 @@ export const UI = {
   /** A team's own row, "Ecology score", and the line beneath it. */
   teamScore: (team: string) => `${team} score`,
   criterionScore: 'Criterion score',
-  criterionScoreHint: 'Click the score to see team takeaway',
+  criterionScoreHint: 'Click the score to see criterion takeaway',
 
   // The view switch and legend.
   table: 'Table',
@@ -386,8 +387,8 @@ export const UI = {
   readByPlace: 'Metrics read by place',
   score: 'Score',
   difference: 'Difference',
-  takeaway: 'Team takeaway',
-  takeawayForthcoming: 'The team’s takeaway for this scenario: forthcoming.',
+  takeaway: 'Criterion takeaway',
+  takeawayForthcoming: 'The criterion takeaway for this scenario: forthcoming.',
   currentConditions: 'Current conditions',
   businessAsUsual: 'Business as Usual',
   /** The chip beside Business as Usual when it is another model's run, by baseline key. */
@@ -459,10 +460,10 @@ export const CRITERION_DEFINITIONS: Record<
   },
   ecoCultural: {
     metrics: [
-      'Habitat restoration',
-      'Increased Access to Landscapes for Stewardship, Subsistence, Ceremony, and Cultural Practices',
-      'Implementation of Indigenous Science & Traditional Ecological Knowledge (TEK)',
-      'Recognition and Application of Indigenous Sovereignty, Tribal Governance, and Rights',
+      'Ecosystem Restoration',
+      'Increased Land Access',
+      'Implementation and Application of Indigenous Science & Traditional Ecological Knowledge (TEK)',
+      'Recognition and Application of Tribal Sovereignty',
     ],
     combine:
       'One overall score, **set by the team** from restoration acres, flow and qualitative judgement.',
@@ -525,7 +526,8 @@ export const METRIC_DEFINITIONS: Record<
     computed:
       'Each activity’s share of days over its salinity threshold, at 32 points in 4 regions, Oct 2018 – Dec 2020.',
     considered: [
-      ['Day use and boating', '1,000 µS/cm'],
+      ['Day use', '1,000 µS/cm'],
+      ['Boating', '1,000 µS/cm'],
       ['Birding', '2,640 µS/cm'],
       ['Waterfowl hunting', '3,600 µS/cm'],
       ['Angling', '9,130 µS/cm'],
@@ -542,7 +544,8 @@ export const METRIC_DEFINITIONS: Record<
     computed:
       'Each activity’s share of days past its temperature threshold, at 32 points in 4 regions, Oct 2018 – Dec 2020.',
     considered: [
-      ['Day use and boating', 'over 19 °C'],
+      ['Day use', 'over 19 °C'],
+      ['Boating', 'over 19 °C'],
       ['Birding', 'over 20 °C'],
       ['Waterfowl hunting', 'over 23 °C'],
       ['Angling', 'over 18.4 / 22.3 °C'],

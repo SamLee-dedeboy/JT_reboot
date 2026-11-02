@@ -7,14 +7,15 @@ export const evaluationTeams = [
       'Assesses how adaptation scenarios affect the Delta aquatic ecosystem through projected environmental conditions, food webs, and habitat availability.',
     entityGroups: [
       {
-        label: 'Species',
+        label: 'Selected Species of Interest',
         items: [
           'Egeria densa',
           'Largemouth Bass',
-          'Overbite Clam',
-          'Striped Bass',
-          'Chinook Salmon',
-          'Longfin Smelt',
+          // "Name · qualifier": the chip sets the qualifier in a lighter weight.
+          'Overbite Clam · juvenile',
+          'Striped Bass · juvenile',
+          'Chinook Salmon · fall-run, juvenile',
+          'Longfin Smelt · juvenile, adult',
         ],
       },
       {
@@ -97,13 +98,17 @@ export const evaluationTeams = [
   {
     id: 'ecocultural-restoration',
     number: '03',
-    label: 'Ecocultural Restoration & Indigenous Sovereignty',
+    label: 'Eco-cultural Restoration & Indigenous Sovereignty',
     summary:
-      'Assesses whether scenarios advance ecocultural restoration and Indigenous sovereignty through ecosystem restoration, land access, Indigenous science and Traditional Ecological Knowledge, and Tribal sovereignty.',
+      'Assesses whether scenarios advance eco-cultural restoration and Indigenous sovereignty through ecosystem restoration, land access, Indigenous science and Traditional Ecological Knowledge, and Tribal sovereignty.',
     entityGroups: [
       {
         label: 'People and communities',
-        items: ['Tribal communities and governments', 'Indigenous Science and TEK practitioners'],
+        items: [
+          'Indigenous people, communities and advocates',
+          'Tribal nations',
+          'Indigenous Science and Traditional Ecological Knowledge (TEK) practitioners',
+        ],
       },
       {
         label: 'Species and ecosystems',
@@ -203,13 +208,8 @@ export const evaluationTeams = [
         items: ['Farm workers'],
       },
       {
-        label: 'Economic sectors',
-        items: [
-          'Delta farms and crops',
-          'Packing houses',
-          'Equipment dealers',
-          'Trucking and farm-linked businesses',
-        ],
+        label: 'Economic Status Indicators',
+        items: ['Gross revenue', 'Employment', 'Economic value added'],
       },
       {
         label: 'Places',
@@ -238,46 +238,15 @@ export const evaluationTeams = [
   },
 ] as const
 
-export const resultFamilies = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    href: '/scenarios/modeling',
-  },
-  {
-    id: 'outflow',
-    label: 'Outflow Variations',
-    href: '/scenarios/tiered-outflows/results',
-  },
-  {
-    id: 'adaptation',
-    label: 'Adaptation Scenarios',
-    href: '/scenarios/eco-machine/results',
-  },
-  {
-    id: 'adaptation-slr',
-    label: 'Adaptation Scenarios with Sea-Level Rise',
-    href: '/scenarios/eco-machine/results?seaLevelRise=true',
-  },
-] as const
-
 export const outflowResultVariations = [
   {
     id: 'decrease',
-    number: '01',
     label: '10% decrease in Delta outflow',
-    title: '10% decrease in Delta outflow',
-    summary:
-      'Review how a more constrained freshwater outflow changes modeled salinity relative to baseline operations.',
     explorerKey: 'run17',
   },
   {
     id: 'increase',
-    number: '02',
     label: '30% increase in Delta outflow',
-    title: '30% increase in Delta outflow',
-    summary:
-      'Review how stronger freshwater outflow changes modeled salinity relative to baseline operations.',
     explorerKey: 'run16',
   },
 ] as const

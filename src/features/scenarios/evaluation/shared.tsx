@@ -94,7 +94,7 @@ export function EvaluationHero({
             {icon}
             {title}
           </Typography>
-          <Typography variant={summaryVariant} sx={{ color: 'base.50' }}>
+          <Typography variant={summaryVariant} sx={{ color: 'base.50', whiteSpace: 'pre-line' }}>
             {summary}
           </Typography>
           {children}

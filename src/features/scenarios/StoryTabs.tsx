@@ -15,28 +15,7 @@ const orderedScenarios = scenarioOrder
   .map((slug) => scenarios.find((scenario) => scenario.slug === slug))
   .filter((scenario): scenario is (typeof scenarios)[number] => scenario != null)
 
-export default function StoryTabs({
-  currentSlug,
-  destination = 'story',
-  teamId,
-  search,
-  availableSlugs,
-}: {
-  currentSlug: string
-  destination?: 'story' | 'results'
-  /** With `destination="results"`, keeps the visitor on this team's results. */
-  teamId?: string
-  search?: string
-  availableSlugs?: readonly string[]
-}) {
-  const visibleScenarios = availableSlugs
-    ? orderedScenarios.filter((scenario) => availableSlugs.includes(scenario.slug))
-    : orderedScenarios
-  const hrefFor = (slug: string) =>
-    destination === 'results'
-      ? `/scenarios/${slug}/results${teamId ? `/${teamId}` : ''}${search ?? ''}`
-      : `/scenarios/${slug}`
-
+export default function StoryTabs({ currentSlug }: { currentSlug: string }) {
   return (
     <Box
       component="nav"
@@ -67,19 +46,19 @@ export default function StoryTabs({
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${visibleScenarios.length}, 1fr)`,
+            gridTemplateColumns: `repeat(${orderedScenarios.length}, 1fr)`,
             width: 'max-content',
             flex: '0 0 auto',
             gap: jtSpacing.gap.xs,
           }}
         >
-          {visibleScenarios.map((scenario, index) => {
+          {orderedScenarios.map((scenario, index) => {
             const active = scenario.slug === currentSlug
             return (
               <Box
                 key={scenario.slug}
                 component={Link}
-                to={hrefFor(scenario.slug)}
+                to={`/scenarios/${scenario.slug}`}
                 aria-current={active ? 'page' : undefined}
                 sx={{
                   display: 'grid',

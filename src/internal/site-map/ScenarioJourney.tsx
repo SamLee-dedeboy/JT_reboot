@@ -1,5 +1,5 @@
 // Future Scenarios journey: pick a scenario and an evaluation team, then follow
-// the path a visitor takes from the home page through that team's results to
+// the path a visitor takes from the home page through that team's criterion to
 // the overall ranking.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

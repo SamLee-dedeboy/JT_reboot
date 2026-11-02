@@ -5,6 +5,7 @@ import { Layer, Source, useMap } from 'react-map-gl/mapbox'
 import { isOfflineMapEnabled } from '../../offlineBasemapStyle'
 import {
   SALINITY_VECTOR_155_SOURCE_LAYER,
+  getOfflineSalinitySourceProps,
   getSalinityPairForFrame,
 } from '../salinityVector155Constants'
 import { SALINITY_ACTIVE_OPACITY } from '../salinityVector155Controller'
@@ -41,12 +42,16 @@ export default function SalinitySnapshot({ frame }: { frame: number }) {
     }
   }, [mapboxMap])
 
-  if (!styleReady || isOfflineMapEnabled()) return null
+  if (!styleReady) return null
 
   const pair = getSalinityPairForFrame(frame)
 
   return (
-    <Source id={pair.sourceId} type="vector" url={pair.tilesetUrl}>
+    <Source
+      id={pair.sourceId}
+      type="vector"
+      {...(isOfflineMapEnabled() ? getOfflineSalinitySourceProps(pair) : { url: pair.tilesetUrl })}
+    >
       <Layer
         id={pair.layerId}
         beforeId={firstLabelLayerId}

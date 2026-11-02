@@ -104,7 +104,7 @@ export const adaptationScenarios: ScenarioContent[] = [
             mapHabitatType: 'soil',
             paragraphs: [
               'In deeply to moderately subsided Delta areas that remain protected by levees, the central strategy is to keep peat soils wet, so they stop decomposing and sinking.',
-              'These lands could support a flexible mosaic of wetter uses, including rice farming, paludiculture, floating wetlands, and managed wetlands. Different practices could be designed for different benefits, such as tule production or plankton maximization. These land uses may also store carbon, create habitat, and provide new recreational and ecocultural opportunities.',
+              'These lands could support a flexible mosaic of wetter uses, including rice farming, paludiculture, floating wetlands, and managed wetlands. Different practices could be designed for different benefits, such as tule production or plankton maximization. These land uses may also store carbon, create habitat, and provide new recreational and eco-cultural opportunities.',
             ],
           },
           {
@@ -177,10 +177,10 @@ export const adaptationScenarios: ScenarioContent[] = [
         subsections: [
           {
             id: 'ecocultural-stewardship',
-            title: 'Advancing ecocultural restoration and Indigenous stewardship',
+            title: 'Advancing eco-cultural restoration and Indigenous stewardship',
             paragraphs: [
               'New Green Watershed considers more than hydrologic and ecological outcomes. It also examines how restoration could support Indigenous access, authority, knowledge, and stewardship across the watershed.',
-              'Potential ecocultural benefits include:',
+              'Potential eco-cultural benefits include:',
             ],
             orderedItems: [
               'Restoring native ecosystems and ecosystem functions through land-use changes and improved environmental flows',
@@ -194,8 +194,8 @@ export const adaptationScenarios: ScenarioContent[] = [
           'These goals require more than introducing particular restoration techniques. They concern who has access to land, whose knowledge guides management, and who holds decision-making authority.',
         ],
         primaryAction: {
-          label: 'Explore ecocultural results',
-          href: '/scenarios/new-green-watershed/results#tribes',
+          label: 'Explore the eco-cultural criterion',
+          href: '/scenarios/evaluation/ecocultural-restoration',
         },
       },
       {

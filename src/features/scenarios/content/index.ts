@@ -9,12 +9,7 @@ export {
   baselineScenario,
   keyParametersIntroduction,
 } from './baseline'
-export {
-  evaluationTeams,
-  outflowResultVariations,
-  resultFamilies,
-  slrScenarioSlugs,
-} from './results'
+export { evaluationTeams, outflowResultVariations, slrScenarioSlugs } from './results'
 export { tieredOutflowsScenario } from './tieredOutflows'
 export { criterionStories } from './criterionStories'
 export type { CriterionStory, StoryTable } from './criterionStories'

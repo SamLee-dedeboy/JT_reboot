@@ -1,5 +1,6 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, Stack, Typography } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
 import TagChip from '../../../ui/TagChip'
@@ -10,21 +11,51 @@ import { teamStyle, type EvaluationTeamId } from '../teamStyle'
 
 // The chip group shown under each criterion's summary.
 const visibleEntityGroup: Record<(typeof evaluationTeams)[number]['id'], string> = {
-  ecology: 'Species',
+  ecology: 'Selected Species of Interest',
   'environmental-justice': 'People and communities',
   'ecocultural-restoration': 'People and communities',
   recreation: 'People',
-  economy: 'Economic sectors',
+  economy: 'Economic Status Indicators',
 }
 
 const teamColor = (teamId: EvaluationTeamId) => teamStyle[teamId].color
 
-/** On a scenario's results page, each team section also links to that team's results for it. */
+// A chips note can link text as [label](url); split alternates plain text, label, and url.
+const noteWithLinks = (note: string, color: string) =>
+  note.split(/\[(.+?)\]\((.+?)\)/g).map((part, index, parts) => {
+    if (index % 3 === 2) return null
+    if (index % 3 === 0) return part
+    return (
+      <Box
+        component="a"
+        key={parts[index + 1]}
+        href={parts[index + 1]}
+        target="_blank"
+        rel="noopener noreferrer"
+        sx={{ color, textDecoration: 'underline', textDecorationColor: alpha(color, 0.5) }}
+      >
+        {part}
+      </Box>
+    )
+  })
+
+// "Name · qualifier" renders the name in the chip's weight and the qualifier lighter.
+const entityLabel = (entity: string) => {
+  const [name, qualifier] = entity.split(' · ')
+  if (!qualifier) return name
+  return (
+    <>
+      {name}{' '}
+      <Box component="span" sx={{ fontWeight: 400 }}>
+        {qualifier}
+      </Box>
+    </>
+  )
+}
+
 export default function EvaluationFramework({
-  scenario,
   showIntroduction = true,
 }: {
-  scenario?: { slug: string; title: string }
   showIntroduction?: boolean
 }) {
   return (
@@ -58,13 +89,18 @@ export default function EvaluationFramework({
           {evaluationTeams.map((team) => (
             <Stack key={team.id} spacing={jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
               <TagChip label={team.label} fill={teamColor(team.id)} />
-              <Typography variant="body2">{criterionStories[team.id].brief.rationale}</Typography>
+              <Typography variant="body2" sx={{ maxWidth: '100ch' }}>
+                {criterionStories[team.id].brief.rationale}
+              </Typography>
             </Stack>
           ))}
         </Box>
       </Box>
 
-      <Stack spacing={jtSpacing.section.sm} sx={{ mt: jtSpacing.section.md }}>
+      <Stack
+        spacing={jtSpacing.section.sm}
+        sx={{ mt: jtSpacing.section.md, maxWidth: jtSpacing.layout.data.maxWidth }}
+      >
         {evaluationTeams.map((team) => (
           <Box
             component="article"
@@ -106,7 +142,10 @@ export default function EvaluationFramework({
                   <Typography variant="navigationLabel" component="h4">
                     What is this criterion?
                   </Typography>
-                  <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ mt: jtSpacing.gap.sm, color: 'base.100', whiteSpace: 'pre-line' }}
+                  >
                     {criterionStories[team.id].brief.what}
                   </Typography>
                 </Box>
@@ -118,6 +157,14 @@ export default function EvaluationFramework({
                       <Typography variant="captionSmall" component="h5" sx={{ color: 'base.100' }}>
                         {group.label}
                       </Typography>
+                      {criterionStories[team.id].brief.chipsNote && (
+                        <Typography variant="caption" component="p" sx={{ mt: jtSpacing.gap.xs }}>
+                          {noteWithLinks(
+                            criterionStories[team.id].brief.chipsNote ?? '',
+                            teamColor(team.id),
+                          )}
+                        </Typography>
+                      )}
                       <Stack
                         direction="row"
                         useFlexGap
@@ -125,7 +172,11 @@ export default function EvaluationFramework({
                         sx={{ mt: jtSpacing.gap.xs, flexWrap: 'wrap' }}
                       >
                         {group.items.map((entity) => (
-                          <TagChip key={entity} label={entity} fill={teamColor(team.id)} />
+                          <TagChip
+                            key={entity}
+                            label={entityLabel(entity)}
+                            fill={teamColor(team.id)}
+                          />
                         ))}
                       </Stack>
                     </Box>
@@ -154,16 +205,6 @@ export default function EvaluationFramework({
                   >
                     Learn how this criterion was evaluated
                   </Button>
-                  {scenario && (
-                    <Button
-                      component={Link}
-                      to={`/scenarios/${scenario.slug}/results/${team.id}`}
-                      variant="outlined"
-                      sx={{ color: 'common.white', borderColor: 'base.300' }}
-                    >
-                      Results for {scenario.title}
-                    </Button>
-                  )}
                 </Stack>
               </Stack>
               <Box>

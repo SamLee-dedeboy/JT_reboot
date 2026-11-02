@@ -1,6 +1,6 @@
 // The Future Scenarios user workflow: from the home page, through one future's
-// story and results, into one evaluation team's methodology and its results for
-// that future, and on to the overall ranking. Steps come from scenario content,
+// story and the modeling results, into one evaluation team's methodology, and on
+// to the overall ranking. Steps come from scenario content,
 // the evaluation teams, and their reports; whether each step exists and how a
 // visitor moves on is checked against the scanned routes and links in
 // `virtual:site-map`.
@@ -10,13 +10,10 @@ import {
   criterionRegions,
   criterionStories,
   evaluationTeams,
-  outflowResultVariations,
-  slrScenarioSlugs,
-  teamReports,
   tieredOutflowsScenario,
   storyInReadingOrder,
 } from '../../features/scenarios/content'
-import { methodologyPath, teamResultsPath } from '../../features/scenarios/evaluation/paths'
+import { methodologyPath } from '../../features/scenarios/evaluation/paths'
 import { matchRoute } from './siteMapModel'
 
 export type JourneyScenario = (typeof journeyScenarios)[number]
@@ -62,7 +59,6 @@ export interface JourneyTransition {
   suggestion?: string
 }
 
-const isOutflow = (scenario: JourneyScenario) => scenario.slug === tieredOutflowsScenario.slug
 const pathOf = (target: string) => target.split(/[?#]/)[0]
 
 export function routeExists(target: string, routes: SiteMapRoute[]) {
@@ -70,7 +66,7 @@ export function routeExists(target: string, routes: SiteMapRoute[]) {
 }
 
 // Links from one route to a target: hard-coded links to exactly that target, or
-// links built at runtime (e.g. `/scenarios/${slug}/results`) that fit its route.
+// links built at runtime (e.g. `/scenarios/evaluation/${teamId}`) that fit its route.
 export function linksBetween(
   fromPath: string,
   target: string,
@@ -115,42 +111,7 @@ function methodologyOutline(team: JourneyTeam): OutlineItem[] {
       title: 'How was it constructed?',
       children: story.construction.steps.map((step) => ({ title: step.title })),
     },
-    {
-      title: 'Scenario comparisons',
-      detail: 'One card per future, each opening this team’s results for it',
-      focus: true,
-      planned: true,
-    },
     { title: 'References' },
-  ]
-}
-
-/** The team × scenario page, filled in from the team's report where it has one. */
-function teamResultsOutline(team: JourneyTeam, scenario: JourneyScenario): OutlineItem[] {
-  const finding = teamReports[team.id]?.findings[scenario.slug]
-  return [
-    {
-      title: 'Metric results',
-      detail: finding ? undefined : 'Scores for this future are still being finalized',
-      children: finding?.metrics.map((metric) => ({
-        title: metric.name,
-        detail: metric.score === null ? 'Not scored' : `Score ${metric.score}`,
-      })),
-    },
-    {
-      title: 'Where it ranks',
-      detail: finding?.overall.summary,
-      focus: true,
-    },
-    {
-      title: 'What it means for communities',
-      detail: finding?.narrative ? undefined : 'No team narrative yet',
-    },
-    {
-      title: 'Compare every future',
-      detail: 'A link from “Where it ranks” to the overall ranking',
-      planned: true,
-    },
   ]
 }
 
@@ -160,13 +121,8 @@ export function buildJourney(
   routes: SiteMapRoute[],
   links: SiteMapLink[],
 ) {
-  const outflow = isOutflow(scenario)
   const scenarioPath = `/scenarios/${scenario.slug}`
-  const resultsPath = `${scenarioPath}/results`
   const teamMethodologyPath = methodologyPath(team.id)
-  const teamScenarioPath = teamResultsPath(scenario.slug, team.id)
-  const slrAvailable = (slrScenarioSlugs as readonly string[]).includes(scenario.slug)
-  const finding = teamReports[team.id]?.findings[scenario.slug]
   const status = (path: string): StepStatus => (routeExists(path, routes) ? 'live' : 'planned')
 
   const steps: JourneyStep[] = [
@@ -212,48 +168,24 @@ export function buildJourney(
       id: 'results',
       title: 'Modeling results',
       question: 'How does modeled salinity differ from baseline?',
-      route: resultsPath,
-      status: status(resultsPath),
-      sees: outflow
-        ? [
-            ...outflowResultVariations.map((variation) => `Tab: ${variation.label}`),
-            'Regional salinity summary',
-          ]
-        : [
-            `Result summary for ${scenario.title}`,
-            slrAvailable
-              ? 'Sea-level toggle: present day or +2 ft'
-              : 'Present-day conditions only (no +2 ft run yet)',
-            'Regional salinity summary with wet and dry years',
-          ],
-      branches: [
-        { label: 'Modeling overview', to: '/scenarios/modeling', note: 'Family tabs' },
-        ...(slrAvailable
-          ? [{ label: '+2 ft sea-level rise', to: `${resultsPath}?seaLevelRise=true` }]
-          : []),
-        { label: 'Scenario explorer', to: '/pages/scenario-explorer' },
+      route: '/scenarios/modeling',
+      status: status('/scenarios/modeling'),
+      sees: [
+        'How are scenarios modeled?',
+        `Where does salinity change? Pick ${scenario.title}`,
+        'Saltier and fresher places, then the timeline',
       ],
+      branches: [{ label: 'Scenario explorer', to: '/pages/scenario-explorer' }],
     },
     {
       id: 'criteria',
       title: 'Evaluation criteria',
-      question: 'Who judged this future, and how did it score?',
-      route: `${resultsPath}#criteria-results-title`,
-      status: 'section',
-      sees: [
-        'One tile per team with its overall score',
-        finding
-          ? `${team.label}: ${finding.headline}`
-          : `${team.label}: scores still being finalized`,
-      ],
+      question: 'What does each criterion measure, and why does it matter?',
+      route: '/scenarios/evaluation',
+      status: status('/scenarios/evaluation'),
+      sees: ['One block per criterion: what it is, why it matters, its components'],
       teamChoice: true,
-      branches: [
-        {
-          label: 'How are scenarios evaluated?',
-          to: '/scenarios/evaluation',
-          note: 'Evaluation overview',
-        },
-      ],
+      branches: [{ label: 'The three families at a glance', to: '/scenarios/evaluation/families' }],
     },
     {
       id: 'methodology',
@@ -266,20 +198,6 @@ export function buildJourney(
       branches: [
         { label: 'Other criteria', to: teamMethodologyPath, note: 'Team tabs' },
         { label: 'Evaluation overview', to: '/scenarios/evaluation', note: 'Back to evaluation' },
-      ],
-    },
-    {
-      id: 'team-results',
-      title: `${team.label} results for ${scenario.title}`,
-      question: 'How does this future perform on this criterion?',
-      route: teamScenarioPath,
-      status: status(teamScenarioPath),
-      sees: finding ? [finding.headline] : [],
-      outline: teamResultsOutline(team, scenario),
-      branches: [
-        { label: 'Same team, another future', to: teamScenarioPath, note: 'Scenario tabs' },
-        { label: 'Same future, another team', to: teamScenarioPath, note: 'Team tabs' },
-        { label: `Back to ${scenario.title} results`, to: resultsPath },
       ],
     },
     {
@@ -320,32 +238,27 @@ export function buildJourney(
     ),
     linkTransition(
       scenarioPath,
-      resultsPath,
-      'Explore modeling results and evaluation criteria',
-      `Add a results link at the end of the ${scenario.title} story.`,
+      '/scenarios/modeling',
+      'Modeling results',
+      `Add a modeling results link at the end of the ${scenario.title} story.`,
     ),
-    {
-      action: 'Scroll to “Evaluation criteria” and pick a team tile',
-      kind: 'scroll',
-      evidence: [],
-    },
     linkTransition(
-      resultsPath,
+      '/scenarios/modeling',
+      '/scenarios/evaluation',
+      'How scenarios are evaluated',
+      'Link the end of the modeling page to the evaluation page.',
+    ),
+    linkTransition(
+      '/scenarios/evaluation',
       teamMethodologyPath,
-      'How this team evaluates',
-      'Link the selected team panel in ScenarioResults to its methodology page.',
+      'Learn how this criterion was evaluated',
+      'Link each criterion on the evaluation page to its methodology page.',
     ),
     linkTransition(
-      teamMethodologyPath,
-      teamScenarioPath,
-      `Pick ${scenario.title} under “Scenario comparisons”`,
-      `Add a “Scenario comparisons” section (id scenario-comparisons) to the methodology page with one card per future linking to ${teamResultsPath(':scenarioSlug', ':teamId')}. The team × scenario page already links back to that anchor, and the results page’s team panel could link here directly.`,
-    ),
-    linkTransition(
-      teamScenarioPath,
+      '/scenarios/evaluation',
       '/scenarios/ranking',
-      'Compare every future',
-      'Link “Where it ranks” on the team × scenario page to /scenarios/ranking.',
+      'Scenario ranking',
+      'Link “How are scenarios compared?” on the evaluation page to /scenarios/ranking.',
     ),
   ]
 

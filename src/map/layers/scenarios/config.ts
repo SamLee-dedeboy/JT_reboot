@@ -3,6 +3,7 @@ import type { FeatureCollection } from 'geojson'
 import { map } from '../../../theme'
 import { assetUrl } from '../../../utils/baseUrl'
 import { HERO_MAP_STYLE } from '../../mapCameraView'
+import { labelFontLayout } from '../../offlineBasemapStyle'
 import { flowArrows } from './flowArrows'
 import { scenarioMarkerIds, scenarioPatternIds, type ScenarioPattern } from './patterns'
 
@@ -728,6 +729,7 @@ const statewideWatershedRegionLabels: SourceConfig = {
       maxzoom: 22,
       layout: {
         'text-field': ['get', 'name'],
+        ...labelFontLayout(),
         'text-size': 12,
         'text-max-width': 12,
         'text-allow-overlap': false,
@@ -772,6 +774,7 @@ const statewideIndigenousTerritories: SourceConfig = {
       maxzoom: 22,
       layout: {
         'text-field': ['get', 'TRIBE_NAME'],
+        ...labelFontLayout(),
         'text-size': 12,
         'text-max-width': 10,
       },
@@ -896,7 +899,7 @@ const tieredOutflowsRivers: SourceConfig[] = [
     type: 'geojson',
     data: tieredOutflowsOceanExtension,
     legend: {
-      title: 'Salinity (illustrative)',
+      title: 'Illustrative salinity',
       items: [],
       gradient: {
         colors: [

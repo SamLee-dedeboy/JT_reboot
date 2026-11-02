@@ -34,7 +34,8 @@ export default function Legend({
         zIndex: 2,
         top: (theme) => theme.spacing(theme.jtSpacing.component.sm),
         left: (theme) => theme.spacing(theme.jtSpacing.component.sm),
-        maxWidth: 'min(240px, calc(100% - 24px))',
+        // A gradient's one-line title and key need more room than a stack of swatches.
+        maxWidth: `min(${legends.some((legend) => legend.gradient) ? 280 : 240}px, calc(100% - 24px))`,
         p: (theme) => theme.jtSpacing.component.sm,
         bgcolor: 'translucent.900',
         border: 1,
@@ -54,7 +55,13 @@ export default function Legend({
           <Typography
             variant="eyebrow"
             component="p"
-            sx={{ display: { xs: 'none', lg: 'block' }, mb: 1, color: 'base.100' }}
+            // A gradient's title says it is illustrative, so it stays on small screens.
+            sx={{
+              display: legend.gradient ? 'block' : { xs: 'none', lg: 'block' },
+              mb: 1,
+              color: 'base.100',
+              whiteSpace: legend.gradient ? 'nowrap' : undefined,
+            }}
           >
             {legend.title}
           </Typography>
@@ -85,19 +92,19 @@ export default function Legend({
             ))}
           </Stack>
           {legend.gradient && (
-            <Box sx={{ width: 180, maxWidth: '100%' }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center', whiteSpace: 'nowrap' }}>
+              <Typography variant="captionSmall">{legend.gradient.startLabel}</Typography>
               <Box
                 aria-hidden="true"
                 sx={{
+                  flex: '1 1 auto',
+                  minWidth: 40,
                   height: 10,
                   background: `linear-gradient(90deg, ${legend.gradient.colors.join(', ')})`,
                 }}
               />
-              <Stack direction="row" sx={{ justifyContent: 'space-between', mt: 0.5 }}>
-                <Typography variant="captionSmall">{legend.gradient.startLabel}</Typography>
-                <Typography variant="captionSmall">{legend.gradient.endLabel}</Typography>
-              </Stack>
-            </Box>
+              <Typography variant="captionSmall">{legend.gradient.endLabel}</Typography>
+            </Stack>
           )}
         </Box>
       ))}

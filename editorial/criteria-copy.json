@@ -43,9 +43,9 @@
             },
             {
               "key": "ecology.summary.chips",
-              "label": "Species chips",
+              "label": "Selected Species of Interest chips",
               "kind": "list",
-              "source": "src/features/scenarios/content/results.ts · evaluationTeams[0].entityGroups “Species”",
+              "source": "src/features/scenarios/content/results.ts · evaluationTeams[0].entityGroups “Selected Species of Interest”",
               "claude": "Egeria densa\nLargemouth Bass\nOverbite Clam\nStriped Bass\nChinook Salmon\nLongfin Smelt",
               "gpt": "Brazilian waterweed\nLargemouth bass\nOverbite clam\nStriped bass\nChinook salmon\nLongfin smelt",
               "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Definitions\n“The definition of a just transition is\"ensuring that no one is left behind or pushed behind in the transition to low-carbon and environmentally sustainable economies and societies\" (Committee for Development Policy, 2023, p. 1). In terms of Delta ecology, we…”\n“The Delta is widely regarded as a “novel ecosystem.” Novel ecosystems are defined as highly altered ecosystem states, usually as a result of intensive resource extraction, to the point where restoration to an earlier, historic state is considered unfeasible.…”",
@@ -508,72 +508,6 @@
               "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“We are approaching habitat availability strictly from an accessible aquatic habitat perspective. We acknowledge that managed wetlands and rice may function as habitat for some floodplain spawning species, birds, mammals, and invertebrates, but we are strictly…”\n“In addition to habitat function, we also assessed the impacts of habitat acreage increases for species to access. This evaluates only tidal habitat, as managed wetlands and wet soil agriculture require periodic draining, so the habitat is not available…”",
               "yours": "",
               "note": ""
-            },
-            {
-              "key": "ecology.components.3.name",
-              "label": "4 · Name",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].name",
-              "claude": "Conceptual Model",
-              "gpt": "Ecological tradeoffs",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.components.3.summary",
-              "label": "4 · Summary (also on the evaluation page)",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].summary",
-              "claude": "How each future shifts food webs, habitat access, and the wider relationships across the Delta ecosystem.",
-              "gpt": "Explains why the same change in salinity, temperature, flow, or habitat can benefit some species while creating challenges for others.",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.components.3.spec.0",
-              "label": "4 · Describes",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].spec[0].value",
-              "claude": "Food-web changes, habitat accessibility, and ecosystem-wide interactions",
-              "gpt": "Differences among species, life stages, places, and seasons",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Species of Interest\n“Longfin smelt juvenile - longfin smelt are a migratory, anadromous species. The adults migrate to freshwater reaches of the estuary to spawn. Larvae hatch in freshwater, then spend the first few weeks of life in fresh to brackish water before migrating to…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.components.3.spec.1",
-              "label": "4 · Form",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].spec[1].value",
-              "claude": "Comparative conceptual models, one per scenario",
-              "gpt": "Qualitative interpretation",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.components.3.spec.2",
-              "label": "4 · Where",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].spec[2].value",
-              "claude": "The Delta ecosystem as a whole",
-              "gpt": "Across modeled regions and scenarios",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Species of Interest\n“Proportion of total suitable days: We summed the number of suitable days (values of 1) and divided by the total number of days per run to calculate the proportion of total suitable days at each point. We then used beta regression models, within the R package…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.components.3.method",
-              "label": "4 · How it is measured (one step per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].method",
-              "claude": "Map how parts of the Delta ecosystem feed back on one another.\nMark which of those parts each future could move.\nSynthesize the results into comparative models that make differences between scenarios visible.",
-              "gpt": "Review the results for each species and ecological metric together.\nIdentify where benefits shift from one region or season to another.\nDescribe tradeoffs rather than treating one ecological response as a complete measure of ecosystem health.",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Species of Interest\n“Longfin smelt adult - Adult longfin smelt migrate to freshwater to spawn, then vacate the fresh regions of the estuary for saltier areas, mostly within the Bay region itself rather than the eastern estuary. During the spring period captured in the model,…”\n“Figure 1: Survey results from the June 2025 stakeholder workshop where participants were asked to indicate which species in the San Francisco Estuary they were most interested in seeing how adaptation scenarios would impact their abundance.”",
-              "yours": "",
-              "note": ""
             }
           ]
         },
@@ -825,6 +759,17 @@
               "note": ""
             },
             {
+              "key": "ecology.construction.steps.5.when",
+              "label": "Step 6 · When",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.steps[5].when",
+              "claude": "Public Workshop 2 · June 2025, and ongoing",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "ecology.construction.steps.5.body",
               "label": "Step 6 · Body",
               "kind": "paragraph",
@@ -885,6 +830,17 @@
               "claude": "Environmental justice looks at whether the burdens of each future fall unfairly on Delta communities, paying attention to how vulnerable each community is to climate hazards.",
               "gpt": "The environmental justice criterion asks whether people of every race, culture, income, and background are treated fairly and meaningfully involved as Delta decisions are made. It focuses on vulnerable communities, where exposure to climate hazards intersects with greater sensitivity and fewer resources for adapting or recovering. Every in-Delta community is classified as at least moderately vulnerable.",
               "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Why does this criterion matter?\n“When the overwhelming majority of interviewees perceive governance as unfair, it's time for a change. Acting in ways that bolster EJ ideals is essential to ensuring a just transition. As aforementioned, the just transition is defined as \"ensuring that no one…”",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.summary.chipsNote",
+              "label": "People and communities note",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.brief.chipsNote",
+              "claude": "Each community in the Delta has a vulnerability score of moderate, high, or highest vulnerability, derived from the Delta Stewardship Council’s [Vulnerability to Climate Change in the Delta interactive map](https://deltascience.shinyapps.io/Delta_vulnerability_map/).",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
@@ -1013,13 +969,24 @@
               "note": ""
             },
             {
-              "key": "environmental-justice.why.quote",
-              "label": "Quote",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.why.quote",
-              "claude": "The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No.",
-              "gpt": "“The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No. And is it cohesive? No.”",
-              "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Why does this criterion matter?\n“\"The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No. And is it cohesive? No.\"”",
+              "key": "environmental-justice.why.stats.2.value",
+              "label": "Stat 3: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.why.stats[2].value",
+              "claude": "8.7%",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.why.stats.2.label",
+              "label": "Stat 3: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.why.stats[2].label",
+              "claude": "of interviewees were unsure",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             }
@@ -1082,17 +1049,6 @@
           "page": "criterion",
           "entries": [
             {
-              "key": "environmental-justice.components.intro",
-              "label": "Introduction",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.components.intro",
-              "claude": "Scores run from −5 to +5 relative to baseline.",
-              "gpt": "The criterion is organized into 3 complementary metrics. Read them together to understand both measured outcomes and important qualitative conditions.",
-              "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Upon distilling the feedback from EJ community members and advocates, the Just Transitions in the Delta team found metrics they had the capabilities to assess, metrics that other subteams within the Just Transitions in the Delta project were already…”",
-              "yours": "",
-              "note": ""
-            },
-            {
               "key": "environmental-justice.components.0.name",
               "label": "1 · Name",
               "kind": "line",
@@ -1144,17 +1100,6 @@
               "claude": "49 in-Delta drinking-water system locations (46 for the outflow runs), each moved into the nearest channel",
               "gpt": "49 modeled locations derived from in-Delta public water systems",
               "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Final Metrics\n“Salinity Impacts to in-Delta Drinking Water: Assessment of salinity changes on in-Delta drinking water systems' ability to meet safe drinking water standards, with special attention to impact to communities of variable vulnerability (classified in accordance…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "environmental-justice.components.0.spec.3",
-              "label": "1 · Reported for",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.components.items[0].spec[3].value",
-              "claude": "Whole run, wet season, dry season, and each vulnerability class",
-              "gpt": "Moderate, High, and Highest vulnerability",
-              "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Highest Vulnerability\n“In total, there are 3 points classified as high vulnerability:”",
               "yours": "",
               "note": ""
             },
@@ -1452,6 +1397,50 @@
               "note": ""
             },
             {
+              "key": "environmental-justice.construction.facts.4.value",
+              "label": "Fact 5: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[4].value",
+              "claude": "3",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.facts.4.label",
+              "label": "Fact 5: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[4].label",
+              "claude": "metrics within project scope",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.facts.5.value",
+              "label": "Fact 6: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[5].value",
+              "claude": "14",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.facts.5.label",
+              "label": "Fact 6: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[5].label",
+              "claude": "indicators behind each vulnerability rating",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "environmental-justice.construction.steps.0.title",
               "label": "Step 1 · Title",
               "kind": "line",
@@ -1724,17 +1713,6 @@
               "claude": "Before colonization, the Delta was home to many Tribes, including the Bay Miwok, Coast Miwok, Plains Miwok, Maidu, Nisenan, Ohlone, Patwin, Pomo, Wappo, Wintun, and Yokuts. Their connections to the land, the water, and the life it supports remain deep.",
               "gpt": "Indigenous peoples have longstanding relationships with the Delta watershed, its waters, lands, and nonhuman life. Colonization displaced communities and excluded them from land ownership and many Delta decisions.",
               "gptReference": "Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx → Why does this criterion matter?\n“Prior to colonization, the Sacramento-San Joaquin Delta (hereafter \"Delta\") was home to many Tribes, including the Bay Miwok, Coast Miwok, Plains Miwok, Maidu, Nisenan, Ohlone, Patwin, Pomo, Wappo, Wintun, and Yokuts (Delta Stewardship Council, 2025).…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecocultural-restoration.why.1",
-              "label": "Paragraph 2",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.why.paragraphs[1]",
-              "claude": "As independent rightsholders, Indigenous communities’ values belong in Delta decisions. The Delta’s species, and the flow of water itself, are bound up with Indigenous worldviews.",
-              "gpt": "Indigenous communities are rightsholders, not simply stakeholders. A just transition cannot occur without their leadership, inclusion, and authority in decisions that affect ancestral lands and waters.",
-              "gptReference": "Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx → Why does this criterion matter?\n“First and foremost, as independent rightsholders, Indigenous communities' values and perspectives need to be incorporated in Delta decision-making. Non-human life forms across the Delta watershed, as well as the flow of water itself, are deeply tied to…”",
               "yours": "",
               "note": ""
             },
@@ -2171,6 +2149,28 @@
               "note": ""
             },
             {
+              "key": "ecocultural-restoration.construction.facts.4.value",
+              "label": "Fact 5: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[4].value",
+              "claude": "3",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.facts.4.label",
+              "label": "Fact 5: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[4].label",
+              "claude": "descriptive metrics",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "ecocultural-restoration.construction.steps.0.title",
               "label": "Step 1 · Title",
               "kind": "line",
@@ -2200,6 +2200,17 @@
               "claude": "Bring TEK in from the start",
               "gpt": "Build a reciprocal framework",
               "gptReference": "Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“As part of a commitment to spotlight historically underrepresented or intentionally excluded communities, the Just Transitions in the Delta team intentionally set out to invite people and groups who have typically not been as involved in Delta decision-making…”",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.steps.1.when",
+              "label": "Step 2 · When",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.steps[1].when",
+              "claude": "Public Workshop 1 · June 2024",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
@@ -2449,17 +2460,6 @@
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Definitions\n“While ecosystems in the Delta are adapted to intermittent drought conditions, low inflows to the Delta are associated with increased pollutants and nutrient concentrations, water temperatures, and salinity (Mosley, 2015). Further, hotter and drier conditions…”",
               "yours": "Water-dependent recreation is any activity that relies on the Delta’s water. Some depend on the water directly, such as boating, angling, and birding. Others depend on the species and habitats the water supports, such as waterfowl hunting and day use: picnicking, camping, and historical and cultural visits.",
               "note": ""
-            },
-            {
-              "key": "recreation.what.1",
-              "label": "Paragraph 2",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · recreation.what[1]",
-              "claude": "When water warms or salinity creeps inland, fish, birds, and waterfowl respond first, and the people who fish, hunt, or watch them respond in turn. Recreation becomes a public-facing signal of habitat health.",
-              "gpt": "It considers boating, angling, birding, day use, and waterfowl hunting. Results are viewed both across the full year and during the seasons when each activity is most common or ecologically sensitive.",
-              "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Definitions\n“Geographically, the whole of the Delta region extends nearly 70 miles inland from the Pacific Ocean and comprises a 3,370 km² network of rivers, diked islands, and marshlands, with around 1,330 miles of levees enclosing 57 islands and tracts (Figure 1) (Delta…”",
-              "yours": "When water warms or salinity creeps inland, fish, birds, and waterfowl respond first, and the people who fish, hunt, or watch them respond in turn (State Water Resources Control Board, 2025; Jenkins et al., 2026). Recreation becomes a public-facing signal of habitat health.",
-              "note": "add the citation from the reference here, but optional if the source doesn't have this"
             }
           ]
         },
@@ -2952,17 +2952,6 @@
               "note": ""
             },
             {
-              "key": "recreation.construction.steps.1.points",
-              "label": "Step 2 · Points (one per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[1].points",
-              "claude": "Angling: Central Valley Angler Survey (CDFW), Delta locations; Chinook salmon and striped bass recur most.\nBoating: cell and vehicle counts at 16 public motorized boat launches (StreetLight Data).\nBirding: eBird observations at publicly accessible protected areas, from Antioch Dunes to the Yolo Bypass.\nDay use: monthly State Parks counts at Brannan Island and Delta Meadows; Franks Tract left out to avoid double-counting boaters.\nWaterfowl hunting: CDFW harvest records at eight public wetland units, including Yolo, Grizzly Island, and Twitchell.",
-              "gpt": "Use 32 points for adaptation scenarios.\nUse 19 points for tiered outflows.",
-              "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“We selected five water-dependent activities: angling, birding, boating, day use at state parks, and waterfowl hunting, in order to measure those activities against our Tiered Outflows and Adaptation Scenarios. This selection is based on decadal survey and…”",
-              "yours": "Angling: Central Valley Angler Survey; Chinook salmon and striped bass recur most (California Department of Fish and Wildlife, 2023).\nBoating: vehicle counts at 16 public motorized boat launches (StreetLight Data, Inc., 2026).\nBirding: eBird observations at publicly accessible protected areas, from Antioch Dunes to the Yolo Bypass (Fink et al., 2024; GreenInfo Network, 2025).\nDay use: monthly State Parks counts at Brannan Island and Delta Meadows (California State Parks, 2023).\nWaterfowl hunting: CDFW harvest records at eight public wetland units, including Yolo, Grizzly Island, and Twitchell (California Department of Fish and Wildlife, 2023).",
-              "note": "add dataset links (as part of the references) if they exist in original"
-            },
-            {
               "key": "recreation.construction.steps.2.title",
               "label": "Step 3 · Title",
               "kind": "line",
@@ -2974,6 +2963,17 @@
               "note": ""
             },
             {
+              "key": "recreation.construction.steps.2.when",
+              "label": "Step 3 · When",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[2].when",
+              "claude": "Public Workshop 2 · June 2025, and ongoing",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "recreation.construction.steps.2.body",
               "label": "Step 3 · Body",
               "kind": "paragraph",
@@ -2982,28 +2982,6 @@
               "gpt": "Published evidence was used to identify salinity and temperature levels that may affect participation, safety, or species supporting each activity.",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“Water-dependent recreation in the Delta depends heavily on snowmelt and winter precipitation; we measure both yearly overall outcomes and seasonal outcomes, to track how activities respond to runoff year type at the year and seasonal peak levels. Furthermore,…”",
               "yours": "Each activity gets the temperature and salinity limits tied to known shifts in participation or in the species it depends on. Habitat and restoration rank first in the criterion’s hierarchy, then temperature, then salinity.",
-              "note": ""
-            },
-            {
-              "key": "recreation.construction.steps.3.title",
-              "label": "Step 4 · Title",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[3].title",
-              "claude": "Prepare the model output",
-              "gpt": "Calculate daily conditions",
-              "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“Water-dependent recreation in the Delta depends heavily on snowmelt and winter precipitation; we measure both yearly overall outcomes and seasonal outcomes, to track how activities respond to runoff year type at the year and seasonal peak levels. Furthermore,…”",
-              "yours": "Calculate daily conditions",
-              "note": ""
-            },
-            {
-              "key": "recreation.construction.steps.3.body",
-              "label": "Step 4 · Body",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[3].body",
-              "claude": "Conductivity is converted to µS/cm, and the model’s 15-minute values are averaged to one value per day. A brief spike above a limit does not count unless the daily average crosses it, a deliberately conservative choice.",
-              "gpt": "Fifteen-minute model outputs were converted to daily averages and compared with each activity threshold.",
-              "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“We selected five water-dependent activities: angling, birding, boating, day use at state parks, and waterfowl hunting, in order to measure those activities against our Tiered Outflows and Adaptation Scenarios. This selection is based on decadal survey and…”",
-              "yours": "Daily average salinity and water temperature are computed to compare with the respective thresholds for each activity.",
               "note": ""
             }
           ]
@@ -3242,17 +3220,6 @@
           "page": "criterion",
           "entries": [
             {
-              "key": "economy.components.intro",
-              "label": "Introduction",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.components.intro",
-              "claude": "Changes in applied water and land use are tracked in the narrative rather than scored, since they drive the three scored metrics.",
-              "gpt": "The criterion is organized into 3 complementary metrics. Read them together to understand both measured outcomes and important qualitative conditions.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → What are the components of this criterion?\n“Two further indicators — Applied Water Use Change and Land Use Change — are tracked narratively rather than scored on their own, since they are the mechanism behind the three scored metrics rather than separate economic outcomes.”",
-              "yours": "",
-              "note": ""
-            },
-            {
               "key": "economy.components.0.name",
               "label": "1 · Name",
               "kind": "line",
@@ -3392,17 +3359,6 @@
               "claude": "Salinity pathway: convert each revenue change to jobs with IMPLAN ratios by region.\nLand-use pathway: run New Green Watershed’s adjusted regional base case through IMPLAN directly.\nReport direct jobs and total jobs, which add IMPLAN’s regional multipliers (table below).",
               "gpt": "Convert salinity-driven revenue changes to jobs using regional IMPLAN ratios.\nFor New Green Watershed, use the adjusted land-use economy modeled in IMPLAN.\nReport direct jobs and total jobs including regional multiplier effects.",
               "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Methods\n“What we are measuring: full- and part-time jobs tied to Delta farm activity, directly and through supporting businesses, via IMPLAN. For the salinity pathway, revenue changes are converted to jobs with IMPLAN ratios by region, as described under Gross Revenue…”\n“What we are measuring: wages, business income, and taxes generated by Delta farm activity once revenue works its way through the regional economy, via IMPLAN. As with Employment, New Green Watershed's land-use pathway uses Cai et al. IMPLAN run of the…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.components.1.caveats",
-              "label": "2 · Caveats (one per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.components.items[1].caveats",
-              "claude": "New Green Watershed’s land-use results are first-order and preliminary.",
-              "gpt": "Jobs are annual full- and part-time positions, not full-time equivalents.\nSome direct land-conversion estimates use sector ratios and remain preliminary.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Methods\n“What we are measuring: full- and part-time jobs tied to Delta farm activity, directly and through supporting businesses, via IMPLAN. For the salinity pathway, revenue changes are converted to jobs with IMPLAN ratios by region, as described under Gross Revenue…”\n“● Employment Change — the change in full- and part-time jobs tied to that farm activity, directly and through supporting businesses.”",
               "yours": "",
               "note": ""
             },
@@ -3756,6 +3712,182 @@
     }
   ],
   "orphans": [
+    {
+      "key": "ecology.components.3.name",
+      "label": "4 · Name",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].name",
+      "claude": "Conceptual Model",
+      "gpt": "Ecological tradeoffs",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.components.3.summary",
+      "label": "4 · Summary (also on the evaluation page)",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].summary",
+      "claude": "How each future shifts food webs, habitat access, and the wider relationships across the Delta ecosystem.",
+      "gpt": "Explains why the same change in salinity, temperature, flow, or habitat can benefit some species while creating challenges for others.",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.components.3.spec.0",
+      "label": "4 · Describes",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].spec[0].value",
+      "claude": "Food-web changes, habitat accessibility, and ecosystem-wide interactions",
+      "gpt": "Differences among species, life stages, places, and seasons",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Species of Interest\n“Longfin smelt juvenile - longfin smelt are a migratory, anadromous species. The adults migrate to freshwater reaches of the estuary to spawn. Larvae hatch in freshwater, then spend the first few weeks of life in fresh to brackish water before migrating to…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.components.3.spec.1",
+      "label": "4 · Form",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].spec[1].value",
+      "claude": "Comparative conceptual models, one per scenario",
+      "gpt": "Qualitative interpretation",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Species fundamental niches: For six species (Chinook salmon, longfin smelt, striped bass, largemouth bass, overbite clam, and Brazilian waterweed), we calculated the proportion of time that a given location in the Delta fell within the salinity and…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.components.3.spec.2",
+      "label": "4 · Where",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].spec[2].value",
+      "claude": "The Delta ecosystem as a whole",
+      "gpt": "Across modeled regions and scenarios",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Species of Interest\n“Proportion of total suitable days: We summed the number of suitable days (values of 1) and divided by the total number of days per run to calculate the proportion of total suitable days at each point. We then used beta regression models, within the R package…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.components.3.method",
+      "label": "4 · How it is measured (one step per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[3].method",
+      "claude": "Map how parts of the Delta ecosystem feed back on one another.\nMark which of those parts each future could move.\nSynthesize the results into comparative models that make differences between scenarios visible.",
+      "gpt": "Review the results for each species and ecological metric together.\nIdentify where benefits shift from one region or season to another.\nDescribe tradeoffs rather than treating one ecological response as a complete measure of ecosystem health.",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Species of Interest\n“Longfin smelt adult - Adult longfin smelt migrate to freshwater to spawn, then vacate the fresh regions of the estuary for saltier areas, mostly within the Bay region itself rather than the eastern estuary. During the spring period captured in the model,…”\n“Figure 1: Survey results from the June 2025 stakeholder workshop where participants were asked to indicate which species in the San Francisco Estuary they were most interested in seeing how adaptation scenarios would impact their abundance.”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "environmental-justice.why.quote",
+      "label": "Quote",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.why.quote",
+      "claude": "The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No.",
+      "gpt": "“The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No. And is it cohesive? No.”",
+      "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Why does this criterion matter?\n“\"The decision-makers are coming from different agencies with different missions, different agendas, different levels of resources. So is it equitable? No. And is it cohesive? No.\"”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "environmental-justice.components.intro",
+      "label": "Introduction",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.components.intro",
+      "claude": "Scores run from −5 to +5 relative to baseline.",
+      "gpt": "The criterion is organized into 3 complementary metrics. Read them together to understand both measured outcomes and important qualitative conditions.",
+      "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Upon distilling the feedback from EJ community members and advocates, the Just Transitions in the Delta team found metrics they had the capabilities to assess, metrics that other subteams within the Just Transitions in the Delta project were already…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "environmental-justice.components.0.spec.3",
+      "label": "1 · Reported for",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.components.items[0].spec[3].value",
+      "claude": "Whole run, wet season, dry season, and each vulnerability class",
+      "gpt": "Moderate, High, and Highest vulnerability",
+      "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Highest Vulnerability\n“In total, there are 3 points classified as high vulnerability:”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecocultural-restoration.why.1",
+      "label": "Paragraph 2",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.why.paragraphs[1]",
+      "claude": "As independent rightsholders, Indigenous communities’ values belong in Delta decisions. The Delta’s species, and the flow of water itself, are bound up with Indigenous worldviews.",
+      "gpt": "Indigenous communities are rightsholders, not simply stakeholders. A just transition cannot occur without their leadership, inclusion, and authority in decisions that affect ancestral lands and waters.",
+      "gptReference": "Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx → Why does this criterion matter?\n“First and foremost, as independent rightsholders, Indigenous communities' values and perspectives need to be incorporated in Delta decision-making. Non-human life forms across the Delta watershed, as well as the flow of water itself, are deeply tied to…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "recreation.what.1",
+      "label": "Paragraph 2",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · recreation.what[1]",
+      "claude": "When water warms or salinity creeps inland, fish, birds, and waterfowl respond first, and the people who fish, hunt, or watch them respond in turn. Recreation becomes a public-facing signal of habitat health.",
+      "gpt": "It considers boating, angling, birding, day use, and waterfowl hunting. Results are viewed both across the full year and during the seasons when each activity is most common or ecologically sensitive.",
+      "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Definitions\n“Geographically, the whole of the Delta region extends nearly 70 miles inland from the Pacific Ocean and comprises a 3,370 km² network of rivers, diked islands, and marshlands, with around 1,330 miles of levees enclosing 57 islands and tracts (Figure 1) (Delta…”",
+      "yours": "When water warms or salinity creeps inland, fish, birds, and waterfowl respond first, and the people who fish, hunt, or watch them respond in turn (State Water Resources Control Board, 2025; Jenkins et al., 2026). Recreation becomes a public-facing signal of habitat health.",
+      "note": "add the citation from the reference here, but optional if the source doesn't have this"
+    },
+    {
+      "key": "recreation.construction.steps.1.points",
+      "label": "Step 2 · Points (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[1].points",
+      "claude": "Angling: Central Valley Angler Survey (CDFW), Delta locations; Chinook salmon and striped bass recur most.\nBoating: cell and vehicle counts at 16 public motorized boat launches (StreetLight Data).\nBirding: eBird observations at publicly accessible protected areas, from Antioch Dunes to the Yolo Bypass.\nDay use: monthly State Parks counts at Brannan Island and Delta Meadows; Franks Tract left out to avoid double-counting boaters.\nWaterfowl hunting: CDFW harvest records at eight public wetland units, including Yolo, Grizzly Island, and Twitchell.",
+      "gpt": "Use 32 points for adaptation scenarios.\nUse 19 points for tiered outflows.",
+      "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“We selected five water-dependent activities: angling, birding, boating, day use at state parks, and waterfowl hunting, in order to measure those activities against our Tiered Outflows and Adaptation Scenarios. This selection is based on decadal survey and…”",
+      "yours": "Angling: Central Valley Angler Survey; Chinook salmon and striped bass recur most (California Department of Fish and Wildlife, 2023).\nBoating: vehicle counts at 16 public motorized boat launches (StreetLight Data, Inc., 2026).\nBirding: eBird observations at publicly accessible protected areas, from Antioch Dunes to the Yolo Bypass (Fink et al., 2024; GreenInfo Network, 2025).\nDay use: monthly State Parks counts at Brannan Island and Delta Meadows (California State Parks, 2023).\nWaterfowl hunting: CDFW harvest records at eight public wetland units, including Yolo, Grizzly Island, and Twitchell (California Department of Fish and Wildlife, 2023).",
+      "note": "add dataset links (as part of the references) if they exist in original"
+    },
+    {
+      "key": "recreation.construction.steps.3.title",
+      "label": "Step 4 · Title",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[3].title",
+      "claude": "Prepare the model output",
+      "gpt": "Calculate daily conditions",
+      "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“Water-dependent recreation in the Delta depends heavily on snowmelt and winter precipitation; we measure both yearly overall outcomes and seasonal outcomes, to track how activities respond to runoff year type at the year and seasonal peak levels. Furthermore,…”",
+      "yours": "Calculate daily conditions",
+      "note": ""
+    },
+    {
+      "key": "recreation.construction.steps.3.body",
+      "label": "Step 4 · Body",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · recreation.construction.steps[3].body",
+      "claude": "Conductivity is converted to µS/cm, and the model’s 15-minute values are averaged to one value per day. A brief spike above a limit does not count unless the daily average crosses it, a deliberately conservative choice.",
+      "gpt": "Fifteen-minute model outputs were converted to daily averages and compared with each activity threshold.",
+      "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“We selected five water-dependent activities: angling, birding, boating, day use at state parks, and waterfowl hunting, in order to measure those activities against our Tiered Outflows and Adaptation Scenarios. This selection is based on decadal survey and…”",
+      "yours": "Daily average salinity and water temperature are computed to compare with the respective thresholds for each activity.",
+      "note": ""
+    },
+    {
+      "key": "economy.components.intro",
+      "label": "Introduction",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.components.intro",
+      "claude": "Changes in applied water and land use are tracked in the narrative rather than scored, since they drive the three scored metrics.",
+      "gpt": "The criterion is organized into 3 complementary metrics. Read them together to understand both measured outcomes and important qualitative conditions.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → What are the components of this criterion?\n“Two further indicators — Applied Water Use Change and Land Use Change — are tracked narratively rather than scored on their own, since they are the mechanism behind the three scored metrics rather than separate economic outcomes.”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.components.1.caveats",
+      "label": "2 · Caveats (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.components.items[1].caveats",
+      "claude": "New Green Watershed’s land-use results are first-order and preliminary.",
+      "gpt": "Jobs are annual full- and part-time positions, not full-time equivalents.\nSome direct land-conversion estimates use sector ratios and remain preliminary.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Methods\n“What we are measuring: full- and part-time jobs tied to Delta farm activity, directly and through supporting businesses, via IMPLAN. For the salinity pathway, revenue changes are converted to jobs with IMPLAN ratios by region, as described under Gross Revenue…”\n“● Employment Change — the change in full- and part-time jobs tied to that farm activity, directly and through supporting businesses.”",
+      "yours": "",
+      "note": ""
+    },
     {
       "key": "recreation.components.0.caveats",
       "label": "1 · Caveats (one per line)",

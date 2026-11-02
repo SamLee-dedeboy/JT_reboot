@@ -7,14 +7,14 @@ import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import PageRail from '../../../ui/PageRail'
 import TeamIcon from '../../../ui/TeamIcon'
-import { evaluationTeams, resultFamilies } from '../content'
+import { evaluationTeams } from '../content'
 import { teamStyle } from '../teamStyle'
 import EvaluationFramework from './EvaluationFramework'
 import ResultsHero from './ResultsHero'
 import { fullBleedBand } from './styles'
 
 const sectionNavigation = [
-  { id: 'how-evaluated', label: 'How are scenarios evaluated?' },
+  { id: 'how-evaluated', label: 'Comparative Scenario Evaluation' },
   ...evaluationTeams.map((team) => ({
     id: team.id,
     label: teamStyle[team.id].shortLabel,
@@ -22,14 +22,11 @@ const sectionNavigation = [
     color: teamStyle[team.id].color,
     icon: <TeamIcon team={teamStyle[team.id].icon} size={18} />,
   })),
-  { id: 'scenario-results', label: 'Scenario results' },
+  { id: 'scenario-results', label: 'Scenario takeaways' },
   { id: 'how-compared', label: 'How are scenarios compared?' },
 ] as const
 
 type SectionId = (typeof sectionNavigation)[number]['id']
-
-/** Result families a visitor can open, each showing every criterion's view of one scenario. */
-const scenarioFamilies = resultFamilies.filter((family) => family.id !== 'overview')
 
 const sectionSx = {
   gridColumn: { lg: 2 },
@@ -69,7 +66,7 @@ export default function EvaluationPage() {
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <ResultsHero
           title="Comparative Scenario Evaluation"
-          summary="Five criteria examine the ecological, eco-cultural, community, recreational, and economic effects of every future. Explore what each criterion measures, then compare results across scenarios."
+          summary="Five criteria examine the ecological, eco-cultural, community, recreational, and economic effects of every future scenario. Explore what each criterion measures, then compare results across scenarios."
         />
 
         <Container maxWidth={false} sx={{ width: '90dvw', px: 0, py: 0 }}>
@@ -106,13 +103,16 @@ export default function EvaluationPage() {
               <Typography id="how-evaluated-title" variant="h2" sx={{ mb: jtSpacing.gap.md }}>
                 How are scenarios evaluated?
               </Typography>
-              <Typography variant="body1" sx={{ mb: jtSpacing.section.md, color: 'base.100' }}>
+              <Typography
+                variant="body1"
+                sx={{ mb: jtSpacing.section.md, color: 'base.100', maxWidth: '100ch' }}
+              >
                 No single model or criterion can adequately assess all that a potential future
                 adaptation scenario might mean for the Delta. A change that improves water quality
                 in one place may affect habitat, recreation, Tribal relationships, or agricultural
                 livelihoods somewhere else. To capture these different values and concerns, all
                 scenarios are evaluated by five criteria. Each criterion uses a distinct set of
-                metrics, evidence, and methods, and in combination show how scenarios compare in
+                metrics, evidence, and methods, and in combination shows how scenarios compare in
                 terms of benefits, drawbacks, and trade-offs.
               </Typography>
               <EvaluationFramework showIntroduction={false} />
@@ -128,40 +128,30 @@ export default function EvaluationPage() {
               ]}
             >
               <Typography id="scenario-results-title" variant="h2">
-                Scenario results
+                Scenario takeaways
               </Typography>
               <Typography
                 variant="body1"
                 sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
               >
-                Pick a scenario to see its modeled results alongside findings from every evaluation
-                criterion.
+                Choose a scenario to see key takeaways from all five evaluation criteria in one
+                place.
               </Typography>
-              {/* The families overview comes first: how each family fared before any one scenario. */}
-              <Button
-                component={Link}
-                to="/scenarios/evaluation/families"
-                variant="contained"
-                endIcon={<ArrowForwardIcon />}
-                sx={{ mt: jtSpacing.component.lg }}
-              >
-                The three families at a glance
-              </Button>
               <Stack
-                direction={{ xs: 'column', sm: 'row' }}
+                direction="row"
                 useFlexGap
                 spacing={jtSpacing.gap.sm}
-                sx={{
-                  mt: jtSpacing.component.lg,
-                  flexWrap: 'wrap',
-                  alignItems: { xs: 'stretch', sm: 'center' },
-                }}
+                sx={{ mt: jtSpacing.component.lg, alignItems: 'center', flexWrap: 'wrap' }}
               >
-                {scenarioFamilies.map((family) => (
-                  <Button key={family.id} component={Link} to={family.href} variant="outlined">
-                    {family.label}
-                  </Button>
-                ))}
+                <Button disabled variant="contained">
+                  Explore scenario takeaways
+                </Button>
+                <Typography
+                  variant="captionSmall"
+                  sx={{ color: 'primary.main', fontStyle: 'italic' }}
+                >
+                  Forthcoming
+                </Typography>
               </Stack>
             </Box>
 
@@ -181,10 +171,10 @@ export default function EvaluationPage() {
                 variant="body1"
                 sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
               >
-                Each criterion places every scenario on a −5 to +5 scale, with the shared baseline
-                fixed at 0. A score shows the direction and size of change from baseline. Each
-                criterion defines how its underlying metrics and qualitative evidence translate into
-                that common scale.
+                Explore the evaluation scores from two perspectives: compare how one scenario
+                performs across all criteria, or compare all scenarios within a single criterion.
+                You can also adjust the importance of each criterion to see how different priorities
+                change the overall ranking.
               </Typography>
               <Button
                 component={Link}
@@ -193,7 +183,7 @@ export default function EvaluationPage() {
                 endIcon={<ArrowForwardIcon />}
                 sx={{ mt: jtSpacing.component.lg }}
               >
-                Open ranking visualization
+                Explore scenario rankings
               </Button>
             </Box>
           </Box>

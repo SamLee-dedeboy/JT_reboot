@@ -48,11 +48,11 @@ const RESULTS = 'src/features/scenarios/content/results.ts'
 
 // The chip group the evaluation page shows for each criterion (EvaluationFramework.tsx).
 const chipGroup: Record<TeamId, string> = {
-  ecology: 'Species',
+  ecology: 'Selected Species of Interest',
   'environmental-justice': 'People and communities',
   'ecocultural-restoration': 'People and communities',
   recreation: 'People',
-  economy: 'Economic sectors',
+  economy: 'Economic Status Indicators',
 }
 
 const lines = (items: readonly string[] | undefined) => (items ?? []).join('\n')
@@ -85,6 +85,17 @@ export function buildCriteriaFields(): CopyCriterion[] {
           live: story.brief.what,
           source: at('brief.what'),
         },
+        ...(story.brief.chipsNote
+          ? [
+              {
+                key: key('summary.chipsNote'),
+                label: `${chipGroup[id]} note`,
+                kind: 'paragraph' as const,
+                live: story.brief.chipsNote,
+                source: at('brief.chipsNote'),
+              },
+            ]
+          : []),
         {
           key: key('summary.chips'),
           label: `${chipGroup[id]} chips`,

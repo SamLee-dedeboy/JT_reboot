@@ -23,6 +23,16 @@ export function getMapMode(): MapMode {
 
 export const isOfflineMapEnabled = () => getMapMode() === 'offline'
 
+/**
+ * `text-font` for a label layer: the bundled font offline, otherwise the online
+ * font, or Mapbox's default when none is given. Offline, any other font stack
+ * asks public/fonts for glyphs that do not exist.
+ */
+export const labelFontLayout = (onlineFont?: string[]) => {
+  if (isOfflineMapEnabled()) return { 'text-font': ['Proxima Nova Semibold'] }
+  return onlineFont ? { 'text-font': onlineFont } : {}
+}
+
 const tokens = mapTokens.offlineBasemap
 const symbolRank: ExpressionSpecification = ['get', 'symbolrank']
 const isRoad: ExpressionSpecification = ['==', ['get', 'kind'], 'road']

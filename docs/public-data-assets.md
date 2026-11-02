@@ -53,10 +53,12 @@ as a compatibility alias. The current offline style uses the two GeoJSON files i
 `geospatial-assets/basemap/` and Proxima Nova glyphs in `public/fonts/`.
 
 In offline mode, Mapbox-hosted thematic sources are not mounted, preventing hidden
-network requests. The home salinity animation has a local replacement (below). The
-others are still a follow-up: shared station points, the salinity snapshot on the
-tiered-outflows narration map, and several New Green Watershed vector/raster layers
-will be absent until equivalent bundled assets are populated. Moving the basemap
+network requests. The home salinity animation and the tiered-outflows salinity
+snapshot have a local replacement (below). The others are still a follow-up: shared
+station points and the New Green Watershed land subsidence layer will be absent until
+equivalent bundled assets are populated. Label layers must use `labelFontLayout`, since
+only Proxima Nova is bundled. Its ◆ and ◇ glyphs are drawn by
+`node scripts/build-offline-marker-glyphs.mjs`. Moving the basemap
 to local vector tiles or PMTiles is desirable after the exhibit because the current
 two GeoJSON sources total about 36 MB before compression.
 
@@ -74,8 +76,8 @@ uncompressed) for offline mode. Online mode still streams the Mapbox tilesets.
 - Coverage: z7-z10, overzoomed past z10. 572 tiles, about 24 MB. 0-byte tiles fill empty
   areas inside the bounds, because SPA fallbacks such as `vite preview` answer a missing
   tile with `index.html` and a 200, which the map cannot parse.
-- Routes and loading: home hero and the site-wide screensaver, only in offline mode.
-  Tiles load per pair as playback reaches them.
+- Routes and loading: home hero, the site-wide screensaver, and the tiered-outflows
+  narration map, only in offline mode. Tiles load per pair as playback reaches them.
 - License: not recorded in the source notes.
 
 ## Current large assets

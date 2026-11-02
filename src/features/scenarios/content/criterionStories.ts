@@ -36,7 +36,7 @@ export interface ConstructionStep {
 export interface CriterionStory {
   source: string
   /** For the evaluation page: why the criterion is in the set, what it is, and why it matters. */
-  brief: { rationale: string; what: string; why: string }
+  brief: { rationale: string; what: string; why: string; chipsNote?: string }
   what: string[]
   why: { paragraphs: string[]; stats?: Array<{ value: string; label: string }>; quote?: string }
   construction: {
@@ -52,7 +52,7 @@ const ecology: CriterionStory = {
     'The Story Behind the Criterion: Delta Ecology. L. Williams Duman and E. Platzer, UC Davis, August 2026 (draft).',
   brief: {
     rationale:
-      'Each future adaptation scenario will change salinity, water temperature, habitat conditions, and food webs, affecting the ability of native and introduced species to persist. The Delta’s current and future ecology is of broad concern.',
+      'Each future adaptation scenario will change salinity, water temperature, habitat conditions, and food webs, affecting the ability of native and introduced species to persist. The Delta’s current and future ecology is of broad concern for many.',
     what: 'The ecology criterion assesses how adaptation scenarios affect the Delta aquatic ecosystem by evaluating projected environmental conditions, food webs, and habitat availability.',
     why: 'The Delta has lost more than 90% of its historic wetlands. Several species of cultural and ecological importance are critically endangered, and others are declining. People rely on the Delta ecosystem for subsistence, cultural practice, and recreation, and a just transition must ensure a better future for its non-human species.',
   },
@@ -226,24 +226,6 @@ const ecology: CriterionStory = {
           'New Green Watershed’s Cache–Lindsey Slough restoration does not change salinity; it is there for the aquatic community.',
         ],
       },
-      {
-        name: 'Conceptual Model',
-        summary:
-          'How each scenario shifts **food webs, habitat access**, and the wider relationships across the Delta ecosystem.',
-        spec: [
-          {
-            label: 'Describes',
-            value: 'Food-web changes, habitat accessibility, and ecosystem-wide interactions',
-          },
-          { label: 'Form', value: 'Comparative conceptual models, one per scenario' },
-          { label: 'Where', value: 'The Delta ecosystem as a whole' },
-        ],
-        method: [
-          'Map how parts of the Delta ecosystem feed back on one another.',
-          'Mark which of those parts each scenario could move.',
-          'Synthesize the results into comparative models that make differences between scenarios visible.',
-        ],
-      },
     ],
   },
 }
@@ -255,6 +237,8 @@ const environmentalJustice: CriterionStory = {
     rationale:
       'Understanding where and how negative impacts to vulnerable communities occur is important for decision-makers assessing the equitable distribution of scenario benefits and trade-offs. The three metrics reflect priorities identified by Delta communities and local environmental justice organizations.',
     what: 'Environmental justice assesses whether scenario burdens fall unfairly on Delta communities, paying attention to community vulnerability to climate hazards. It compares scenarios through drinking-water quality, flood risk reduction, and harmful-algal-bloom conditions.',
+    chipsNote:
+      'Each community in the Delta has a vulnerability score of moderate, high, or highest vulnerability, derived from the Delta Stewardship Council’s [Vulnerability to Climate Change in the Delta interactive map](https://deltascience.shinyapps.io/Delta_vulnerability_map/).',
     why: '82.6% of the project’s interviewees said Delta decision-making is not equitable or fair. Every in-Delta community is vulnerable to some degree, so knowing where undue burdens may occur helps decision-makers avoid them.',
   },
   what: [
@@ -303,7 +287,7 @@ const environmentalJustice: CriterionStory = {
       },
       {
         title: 'Sort priorities by who can measure them',
-        body: 'Feedback fell into six value areas: water quality and quantity, community and recreation, flood risk, ecological restoration and recovery, ecocultural restoration and Indigenous sovereignty, and a sustainable economy.',
+        body: 'Feedback fell into six value areas: water quality and quantity, community and recreation, flood risk, ecological restoration and recovery, eco-cultural restoration and Indigenous sovereignty, and a sustainable economy.',
         points: [
           'Measured here: drinking water, flood risk, and harmful algal bloom conditions.',
           'Measured by other criteria: recreation and ecology (Recreation, Ecology), agriculture (Economy), Indigenous sovereignty (its own criterion).',
@@ -422,13 +406,13 @@ const ecoculturalRestoration: CriterionStory = {
     'The Story Behind the Criterion: Eco-Cultural Restoration and Indigenous Sovereignty. Social Science Team, UC Davis, September 2026 (draft).',
   brief: {
     rationale:
-      'Native Tribes were the original stewards of the Delta. A just transition should address the legacies of settler colonialism, genocide, forced removal, and land reclamation by respecting Tribal sovereignty, restoring ecoculturally valued habitats and species, increasing land access, and restoring Indigenous knowledge, stewardship, guardianship, and lifeways.',
-    what: 'Ecocultural restoration restores ecosystems and Indigenous cultures simultaneously as interconnected and reciprocal processes. This criterion assesses whether scenarios advance ecosystem restoration, land access, Indigenous science and Traditional Ecological Knowledge, and Tribal sovereignty.',
+      'Native Tribes were the original stewards of the Delta. A just transition should address the legacies of settler colonialism, genocide, forced removal, and land reclamation by respecting Tribal sovereignty, restoring eco-culturally valued habitats and species, increasing land access, and restoring Indigenous knowledge, stewardship, guardianship, and lifeways.',
+    what: 'Eco-cultural restoration entails the restoration of ecosystems and Indigenous human cultures simultaneously as interconnected and reciprocal processes. It is the intentional inclusion of cultural restoration and reparation into ecological restoration planning, design, and stewardship. In the Delta, this entails engaging Indigenous people in ecological planning and design efforts so that eco-cultural restoration might occur in a collaborative, equitable, and self-determined manner.\n\nIndigenous sovereignty refers to the inherent, pre-existing right of Indigenous peoples to self-determine, govern themselves, manage their lands and resources, and maintain their unique cultures, languages, and legal systems independently of external nation-state dominion.\n\nThis criterion assesses if and how the project’s adaptation scenarios advance eco-cultural restoration and Indigenous sovereignty, as measured across four metrics: ecosystem restoration, land access, implementation and application of Indigenous science & Traditional Ecological Knowledge, and recognition and application of Tribal sovereignty.',
     why: 'The Delta was home to many Tribes long before colonization, and their ties to its land, water, and life run deep. A just transition in the Delta cannot happen without Indigenous leadership and inclusion in Delta decision-making.',
   },
   what: [
-    'Leaving no one behind means accounting for past wrongs, including the exclusion of Tribal and Indigenous communities from Delta decisions. That makes ecocultural restoration and Indigenous sovereignty pillars of a just transition.',
-    'Ecocultural restoration restores land and Indigenous cultures simultaneously as a connected and reciprocal process, with Indigenous people taking part in planning, design, and stewardship in a collaborative, self-determined way. Indigenous sovereignty is a nation’s inherent right to govern themselves and live their own way of life, free from interference. Two main pillars of this criterion are intergenerational stewardship, and intergenerational prosperity and well-being.',
+    'Leaving no one behind means accounting for past wrongs, including the exclusion of Tribal and Indigenous communities from Delta decisions. That makes eco-cultural restoration and Indigenous sovereignty pillars of a just transition.',
+    'Eco-cultural restoration restores land and Indigenous cultures simultaneously as a connected and reciprocal process, with Indigenous people taking part in planning, design, and stewardship in a collaborative, self-determined way. Indigenous sovereignty is a nation’s inherent right to govern themselves and live their own way of life, free from interference. Two main pillars of this criterion are intergenerational stewardship, and intergenerational prosperity and well-being.',
   ],
   why: {
     paragraphs: [
@@ -472,7 +456,7 @@ const ecoculturalRestoration: CriterionStory = {
       {
         title: 'Draw the connections',
         when: 'Tribal Workshop 1 · November 2024',
-        body: 'Interview results, literature, and conversations with Indigenous Advisory Committee members became a diagram of how ecocultural restoration and sovereignty reinforce each other. Workshop participants reviewed it, and it was distilled into four metrics.',
+        body: 'Interview results, literature, and conversations with Indigenous Advisory Committee members became a diagram of how eco-cultural restoration and sovereignty reinforce each other. Workshop participants reviewed it, and it was distilled into four metrics.',
       },
       {
         title: 'Review and refine',
@@ -500,12 +484,12 @@ const ecoculturalRestoration: CriterionStory = {
   },
   components: {
     intro:
-      'The four metrics are equally important and interdependent. Only habitat restoration can be evaluated spatially and quantitatively across scenarios. Land access, Tribal sovereignty, and Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively as potential advanced by restoration scenarios.',
+      'The four metrics are equally important and interdependent. Only ecosystem restoration can be evaluated spatially and quantitatively across scenarios. Land access, Tribal sovereignty, and Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively as potential advanced by restoration scenarios.',
     items: [
       {
-        name: 'Restoration of Native Ecosystems and Ecosystem Functions',
+        name: 'Ecosystem Restoration',
         summary:
-          'Recovering and protecting the Delta’s **native, culturally significant** species and ecosystems through habitat creation, restoration, and environmental flows.',
+          'Recovering and protecting the Delta’s **native, culturally significant species and ecosystems** through habitat creation, restoration, and environmental flows.',
         spec: [
           { label: 'Measures', value: 'Change in restored acres in each scenario' },
           { label: 'Unit', value: 'Acres, by habitat type' },
@@ -554,9 +538,9 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        name: 'Increased Access to Landscapes for Stewardship, Subsistence, Ceremony, and Cultural Practices',
+        name: 'Increased Land Access',
         summary:
-          '**Returning land** to Tribes or **co-managing** it with them for stewardship, subsistence, ceremony, and cultural practice.',
+          '**Returning land** to Tribes or **co-managing** it with Tribes and Tribal governments for stewardship, subsistence, ceremony, and cultural practice.',
         spec: [
           {
             label: 'Measures',
@@ -603,9 +587,9 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        name: 'Implementation of Indigenous Science & Traditional Ecological Knowledge (TEK)',
+        name: 'Implementation and Application of Indigenous Science & Traditional Ecological Knowledge (TEK)',
         summary:
-          'Bringing **Traditional Ecological Knowledge** into management and land-use decisions in partnership with Tribal representatives and practitioners.',
+          'Bringing **Traditional Ecological Knowledge** into management and land use decisions in partnership with Tribal representatives and practitioners.',
         spec: [
           { label: 'Measures', value: 'Avenues through which TEK can be applied' },
           { label: 'Unit', value: 'Descriptive' },
@@ -641,7 +625,7 @@ const ecoculturalRestoration: CriterionStory = {
         ],
       },
       {
-        name: 'Recognition and Application of Indigenous Sovereignty, Tribal Governance, and Rights',
+        name: 'Recognition and Application of Tribal Sovereignty',
         summary:
           'Advancing Indigenous peoples’ **inherent right to govern** themselves, their lands, and resources, and to maintain their cultures and ways of life.',
         spec: [
@@ -888,8 +872,8 @@ const economy: CriterionStory = {
     'Economy criterion results for data visualization, v19. WSM Lab, UC Merced, 1 November 2026.',
   brief: {
     rationale:
-      'Agriculture is the Delta’s primary land use and economic sector. Increased salinity can reduce agricultural production, while land-use changes such as wetland restoration can also affect the economy. This criterion assesses those potential changes across all scenarios.',
-    what: 'Economy examines what happens to the Delta’s agricultural economy when salinity and landscape conditions change. It tracks gross revenue, employment, and value added.',
+      'Agriculture is currently the primary land use and primary economic sector in the Delta and thus is important to consider in any future transition. Increased salinity in the Delta can reduce agricultural production (since crops require fresh water). Changes in land use (such as wetland restoration) can also affect the Delta’s economy. This criterion assesses impacts of these potential changes across all scenarios.',
+    what: 'Economy examines what happens to the Delta’s agricultural economy when salinity and landscape conditions in the Delta change. It does this by tracking changes in gross revenue (production), employment, and income.',
     why: 'Nearly 500,000 acres of irrigated farmland, and the packing houses, equipment dealers, and trucking tied to them, make up a working economy. Every scenario affects the economy, and the effects show up in paychecks and farm budgets.',
   },
   what: [
