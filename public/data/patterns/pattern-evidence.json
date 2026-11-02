@@ -22,17 +22,17 @@
           "startDate": "2018-10-01",
           "endDate": "2019-01-13",
           "label": "Operable gates closed",
-          "description": "First inferred Franks Tract gate-closure period used for the regional sensitivity analysis.",
-          "provenance": "curated-gate-operation-schedule",
+          "description": "Franks Tract gate closure from the Bolster and Fortify gate schedule.",
+          "provenance": "public/data/operations/bolster-and-fortify-gate-schedule.json",
           "reviewStatus": "reviewed"
         },
         {
           "id": "gates-closed-2019",
-          "startDate": "2019-11-26",
+          "startDate": "2019-11-27",
           "endDate": "2019-12-10",
           "label": "Operable gates closed",
-          "description": "Second inferred Franks Tract gate-closure period used for the regional sensitivity analysis.",
-          "provenance": "curated-gate-operation-schedule",
+          "description": "Franks Tract gate closure from the Bolster and Fortify gate schedule.",
+          "provenance": "public/data/operations/bolster-and-fortify-gate-schedule.json",
           "reviewStatus": "reviewed"
         },
         {
@@ -40,9 +40,9 @@
           "startDate": "2020-07-15",
           "endDate": "2020-11-29",
           "label": "Operable gates closed",
-          "description": "Provisional third gate-closure period; the curated dashboard findings focus on the shared October–November response window.",
-          "provenance": "curated-gate-operation-schedule",
-          "reviewStatus": "needs-review"
+          "description": "Franks Tract gate closure from the Bolster and Fortify gate schedule; the gates stay closed through the end of the data.",
+          "provenance": "public/data/operations/bolster-and-fortify-gate-schedule.json",
+          "reviewStatus": "reviewed"
         }
       ]
     },

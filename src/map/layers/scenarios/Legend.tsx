@@ -1,5 +1,6 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { map } from '../../../theme'
+import { isOfflineMapEnabled } from '../../offlineBasemapStyle'
 import { layersBySlug, type MapScope } from './config'
 
 interface LegendProps {
@@ -15,7 +16,9 @@ export default function Legend({
   selectedHabitatType,
   visibilityScope = 'delta',
 }: LegendProps) {
+  const offline = isOfflineMapEnabled()
   const legends = (layersBySlug[scenarioSlug] ?? [])
+    .filter((source) => !(offline && source.url?.startsWith('mapbox://') && !source.offlineData))
     .filter((source) => (source.visibilityScope ?? 'delta') === visibilityScope)
     .map((source) => source.legend)
     .filter((legend): legend is NonNullable<typeof legend> => legend != null)

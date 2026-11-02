@@ -11,14 +11,17 @@ import {
 import { Box, Stack, Typography, useTheme } from '@mui/material'
 import { motion } from 'framer-motion'
 import { formatDate, formatNumber, valueColor } from '../format'
+import { chartTextSize, useCompactExplorer } from '../explorerType'
 import type { HistogramBrush, RangeMode, Scenario, ScenarioDataset, Station } from '../types'
 
 const WIDTH = 190
-const PAD = { left: 52, right: 18, top: 18, bottom: 34 }
+const PAD = { left: 68, right: 18, top: 18, bottom: 34 }
+const BASELINE_LABEL_CLEARANCE = 30
 
 interface StationHistogramProps {
   data: ScenarioDataset
   region: string
+  lassoStationIds: string[]
   scenario: Scenario
   dateIndex: number
   onBrushChange: (brush: HistogramBrush) => void
@@ -41,6 +44,7 @@ interface StationEntry {
 function StationHistogram({
   data,
   region,
+  lassoStationIds,
   scenario,
   dateIndex,
   onBrushChange,
@@ -54,6 +58,7 @@ function StationHistogram({
   const brushPositionRef = useRef<[number, number] | null>(null)
   const plotRef = useRef<HTMLDivElement | null>(null)
   const [height, setHeight] = useState(310)
+  const compact = useCompactExplorer()
   const [isMeasured, setIsMeasured] = useState(false)
   useLayoutEffect(() => {
     const node = plotRef.current
@@ -78,9 +83,26 @@ function StationHistogram({
     [data.stations, scenario, dateIndex, region],
   )
   const values = useMemo(() => entries.map(({ value }) => value), [entries])
+  const lassoed = useMemo(() => new Set(lassoStationIds), [lassoStationIds])
+  const inLasso = useCallback(
+    (station: Station) => lassoed.has(String(station.station_id)),
+    [lassoed],
+  )
+  const lassoCount = useMemo(
+    () => entries.filter(({ station }) => inLasso(station)).length,
+    [entries, inLasso],
+  )
+  // The spread describes the lassoed stations when there are any, as the timeline's does.
+  const spreadValues = useMemo(
+    () =>
+      lassoed.size
+        ? entries.filter(({ station }) => inLasso(station)).map(({ value }) => value)
+        : values,
+    [entries, inLasso, lassoed, values],
+  )
   const rangeBounds = useMemo<[number, number] | null>(() => {
-    if (rangeMode === 'minmax' || !values.length) return null
-    const sorted = [...values].sort((a, b) => a - b)
+    if (rangeMode === 'minmax' || !spreadValues.length) return null
+    const sorted = [...spreadValues].sort((a, b) => a - b)
     const quantile = (fraction: number) => {
       const position = (sorted.length - 1) * fraction
       const lower = Math.floor(position)
@@ -89,21 +111,24 @@ function StationHistogram({
       return sorted[lower] * (1 - weight) + sorted[upper] * weight
     }
     return rangeMode === 'p90' ? [quantile(0.05), quantile(0.95)] : [quantile(0.25), quantile(0.75)]
-  }, [rangeMode, values])
-  const minimum = values.length ? Math.min(...values, 0) : -1
-  const maximum = values.length ? Math.max(...values, 0) : 1
+  }, [rangeMode, spreadValues])
+  // The axis fits the stations in focus and keeps the baseline; dots beyond it aren't drawn.
+  const focusValues = rangeBounds ?? spreadValues
+  const minimum = focusValues.length ? Math.min(...focusValues, 0) : -1
+  const maximum = focusValues.length ? Math.max(...focusValues, 0) : 1
   const y = useCallback(
     (value: number) =>
       height -
       PAD.bottom -
-      ((value - minimum) / Math.max(1, maximum - minimum)) * (height - PAD.top - PAD.bottom),
+      ((value - minimum) / (maximum - minimum || 1)) * (height - PAD.top - PAD.bottom),
     [height, maximum, minimum],
   )
   const swarm = useMemo(() => {
     const radius = 3.5
     const center = PAD.left + (WIDTH - PAD.left - PAD.right) / 2
     const placed: SwarmPoint[] = []
-    ;[...entries]
+    entries
+      .filter(({ value }) => value >= minimum && value <= maximum)
       .sort((a, b) => a.value - b.value)
       .forEach((entry) => {
         const py = y(entry.value)
@@ -125,12 +150,12 @@ function StationHistogram({
         placed.push({ ...entry, x: center + offset, y: py })
       })
     return placed
-  }, [entries, y])
+  }, [entries, maximum, minimum, y])
   const ticks = [minimum, minimum + (maximum - minimum) / 2, maximum]
   const textStyle = {
     fill: theme.palette.base[300],
     fontFamily: theme.typography.captionSmall.fontFamily,
-    fontSize: theme.typography.captionSmall.fontSize,
+    fontSize: chartTextSize(theme),
   }
   const tickColor = (tick: number) =>
     tick > 0
@@ -146,9 +171,11 @@ function StationHistogram({
     Boolean(brush && value >= brush[0] - epsilon && value <= brush[1] + epsilon)
   const includedInRange = (value: number) =>
     !rangeBounds || (value >= rangeBounds[0] - epsilon && value <= rangeBounds[1] + epsilon)
-  const pointOpacity = (value: number) =>
-    (brush && !includes(value)) || !includedInRange(value) ? 0.18 : 0.88
-  const pointRadius = (value: number) => (includedInRange(value) ? 3.5 : 2)
+  const inFocus = ({ station, value }: StationEntry) =>
+    includedInRange(value) && (!lassoed.size || inLasso(station))
+  const pointOpacity = (point: StationEntry) =>
+    (brush && !includes(point.value)) || !inFocus(point) ? 0.18 : 0.88
+  const pointRadius = (point: StationEntry) => (inFocus(point) ? 3.5 : 2)
   const publish = (range: HistogramBrush) =>
     onBrushChange(range ? [range[0] - epsilon, range[1] + epsilon] : null)
   const rememberBrushPosition = (range: [number, number]) => {
@@ -206,15 +233,7 @@ function StationHistogram({
           [theme.breakpoints.between('lg', 'xl')]: { gap: 0 },
         })}
       >
-        <Typography
-          variant="caption"
-          sx={(theme) => ({
-            color: 'text.secondary',
-            '@media (max-width: 1919.95px)': { ...theme.typography.captionSmall },
-          })}
-        >
-          Station distribution
-        </Typography>
+        <Typography variant="chartTitle">Station distribution</Typography>
         <Typography
           variant="h5"
           sx={(theme) => ({
@@ -223,15 +242,20 @@ function StationHistogram({
             [theme.breakpoints.between('lg', 'xl')]: { ...theme.typography.button },
           })}
         >
-          {brush ? `${selectedCount} selected` : formatDate(data.dates[dateIndex])}
+          {brush
+            ? `${selectedCount} selected`
+            : lassoed.size
+              ? `${lassoCount} lassoed`
+              : formatDate(data.dates[dateIndex])}
         </Typography>
       </Stack>
       <Typography
         variant="captionSmall"
         color="text.secondary"
-        noWrap
+        noWrap={!compact}
         sx={(theme) => ({
           mt: theme.jtSpacing.component.xs,
+          ...(compact && { textAlign: 'center' }),
           [theme.breakpoints.between('lg', 'xl')]: { mt: 0 },
         })}
       >
@@ -326,21 +350,23 @@ function StationHistogram({
               key={`${scenario.key}-${dateIndex}-${point.station.station_id}`}
               cx={point.x}
               cy={point.y}
-              r={pointRadius(point.value)}
+              r={pointRadius(point)}
               fill={valueColor(point.value, mapExtent)}
-              opacity={pointOpacity(point.value)}
+              opacity={pointOpacity(point)}
+              stroke={lassoed.size && inFocus(point) ? theme.palette.common.white : 'none'}
+              strokeWidth={1}
               initial={{
                 cx: point.x,
                 cy: point.y,
                 opacity: 0,
-                r: pointRadius(point.value),
+                r: pointRadius(point),
                 scale: 0,
               }}
               animate={{
                 cx: point.x,
                 cy: point.y,
-                opacity: pointOpacity(point.value),
-                r: pointRadius(point.value),
+                opacity: pointOpacity(point),
+                r: pointRadius(point),
                 scale: 1,
               }}
               transition={{ duration: 0.35, delay: Math.min(index * 0.002, 0.35) }}
@@ -368,7 +394,6 @@ function StationHistogram({
                 style={{
                   ...textStyle,
                   fill: theme.palette.base[100],
-                  fontSize: 11,
                   fontWeight: 700,
                 }}
               >
@@ -381,17 +406,23 @@ function StationHistogram({
               </text>
             </>
           )}
-          {ticks.map((tick, index) => (
-            <text
-              key={index}
-              x={PAD.left - 7}
-              y={y(tick) + 4}
-              textAnchor="end"
-              style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}
-            >
-              {formatTick(tick)}
-            </text>
-          ))}
+          {ticks
+            // The baseline's two-line label takes this space when a tick lands beside it.
+            .filter(
+              (tick) =>
+                minimum > 0 || maximum < 0 || Math.abs(y(tick) - y(0)) > BASELINE_LABEL_CLEARANCE,
+            )
+            .map((tick, index) => (
+              <text
+                key={index}
+                x={PAD.left - 7}
+                y={y(tick) + 4}
+                textAnchor="end"
+                style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}
+              >
+                {formatTick(tick)}
+              </text>
+            ))}
         </Box>
       </Box>
     </Box>

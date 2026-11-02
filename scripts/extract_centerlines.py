@@ -1,10 +1,10 @@
 """
 Extract a routable channel-centerline network from the Delta waterway polygon.
 
-Input:  public/data/delta_waterway.geojson    (a single MultiPolygon / Polygon
+Input:  public/data/internal/kelp-fusion/delta_waterway.geojson    (a single MultiPolygon / Polygon
                                                representing the open-water
                                                surface, WGS84)
-Output: public/data/delta_waterway_lines.geojson
+Output: public/data/internal/kelp-fusion/delta_waterway_lines.geojson
                                               (FeatureCollection of LineStrings
                                                along the medial axis of the
                                                polygon, WGS84, coords rounded
@@ -48,8 +48,8 @@ from pyproj import Transformer
 from centerline.geometry import Centerline
 
 
-SRC = "public/data/delta_waterway.geojson"
-DST = "public/data/delta_waterway_lines.geojson"
+SRC = "public/data/internal/kelp-fusion/delta_waterway.geojson"
+DST = "public/data/internal/kelp-fusion/delta_waterway_lines.geojson"
 
 POLY_SIMPLIFY_M = 5.0       # polygon boundary cleanup
 INTERP_DIST_M = 50.0         # Voronoi boundary sampling spacing

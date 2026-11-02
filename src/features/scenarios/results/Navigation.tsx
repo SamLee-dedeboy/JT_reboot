@@ -1,45 +1,7 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { Box, Container, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { jtSpacing, navigation } from '../../../theme'
-import { outflowResultVariations, resultFamilies } from '../content'
-
-export type ResultFamily = (typeof resultFamilies)[number]['id']
-
-export function FamilyNavigation({
-  activeFamily,
-  scenarioSlug,
-  slrAvailable = false,
-}: {
-  activeFamily: ResultFamily
-  scenarioSlug?: string
-  slrAvailable?: boolean
-}) {
-  return (
-    <Stack direction="row" useFlexGap spacing={jtSpacing.gap.sm} sx={{ flexWrap: 'wrap' }}>
-      {resultFamilies.map((family) => {
-        const active = family.id === activeFamily
-        const href =
-          family.id === 'adaptation' && scenarioSlug
-            ? `/scenarios/${scenarioSlug}/results`
-            : family.id === 'adaptation-slr' && scenarioSlug && slrAvailable
-              ? `/scenarios/${scenarioSlug}/results?seaLevelRise=true`
-              : family.href
-        return (
-          <Button
-            key={family.id}
-            component={Link}
-            to={href}
-            variant={active ? 'contained' : 'outlined'}
-            aria-current={active ? 'page' : undefined}
-            sx={active ? undefined : { color: 'common.white', borderColor: 'base.300' }}
-          >
-            {family.label}
-          </Button>
-        )
-      })}
-    </Stack>
-  )
-}
+import { outflowResultVariations } from '../content'
 
 export function OutflowTabs({ activeVariation }: { activeVariation: string }) {
   return (

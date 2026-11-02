@@ -7,6 +7,8 @@ interface TutorialStep {
   title: string
   target: string
   paragraphs: string[]
+  // Replaces the paragraphs on the public route, which offers only its four comparisons.
+  publicParagraphs?: string[]
   interactions?: string[]
 }
 
@@ -15,26 +17,34 @@ const STEPS: TutorialStep[] = [
     title: 'Purpose of the explorer',
     target: '[data-tour="explorer-purpose"]',
     paragraphs: [
-      'Compare how salinity changes across scenarios, models, regions, stations, and time. The timeline, station distribution, and map are linked views of the same selection.',
+      'Compare how salinity changes across scenarios, regions, stations, and time. The timeline, station distribution, and map are linked views of the same selection.',
     ],
   },
   {
     title: 'Choose a comparison',
     target: '[data-tour="comparison-tabs"]',
     paragraphs: [
-      'Use these tabs to compare RMA scenarios, RMA with SCHISM, tiered-outflow runs, or (in the internal explorer) full-range SCHISM runs. Each comparison has its own available dates and scenarios.',
+      'Use this menu to switch comparisons. Each comparison has its own available dates and scenarios.',
     ],
-    interactions: ['Select any tab to load that comparison.'],
+    publicParagraphs: [
+      'Use this menu to switch between four comparisons. Each has its own available dates and scenarios.',
+      '01 Adaptation Scenario Comparison compares adaptation scenarios under current conditions.',
+      '02 Alternative Delta Outflow compares runs with different Delta outflow levels.',
+      '03 Sea Level Rise Adaptation Scenario Comparison compares adaptation scenarios with sea level rise.',
+      '04 Sea Level Rise vs. Current Comparison compares each scenario with sea level rise against the same scenario today.',
+    ],
+    interactions: ['Open the menu and select a comparison to load it.'],
   },
   {
     title: 'Set the base and selected scenarios',
     target: '[data-tour="scenario-controls"]',
     paragraphs: [
       'The selected scenario is measured relative to the base scenario. Blue identifies the base; green identifies the selected scenario.',
+      'Calling on Reserves and A Tunnel are computed against the CalSim Business as Usual run, so selecting either one locks the base. The sea level rise vs. current comparison has a single Scenario menu, because each scenario is measured against its own current run.',
     ],
     interactions: [
-      'Open either menu to change a scenario.',
-      'Use the swap button to reverse the comparison.',
+      'Open a menu to change a scenario.',
+      'Use the swap button, where available, to reverse the comparison.',
     ],
   },
   {
@@ -59,11 +69,12 @@ const STEPS: TutorialStep[] = [
     title: 'Read the timeline',
     target: '[data-tour="line-chart"]',
     paragraphs: [
-      'The green line is the selected-scenario regional average. The shaded band shows the selected station range, and the value at the top reports the current regional average deviation.',
+      'The green line averages the stations in the selected spread for the selected scenario. The shaded band shows that same station spread, and the value at the top reports the current average deviation for those stations.',
       'The labeled bands below the axis identify the water-year periods represented in the comparison.',
+      'In the adaptation scenario comparison, shaded windows mark when Bolster & Fortify’s gates are closed or when Calling on Reserves may raise outflow, which is inferred. Hover a window for its dates.',
     ],
     interactions: [
-      'Change All stations, Middle 90%, or Middle 50% to adjust the shaded range.',
+      'Change All stations, Central 90%, or Central 50% to choose which stations the average line, shaded band, and station distribution use.',
       'Open the information icons for detailed calculation notes.',
     ],
   },
@@ -115,6 +126,7 @@ const STEPS: TutorialStep[] = [
       'Pan and zoom to inspect station patterns.',
       'Click a station to open its name, ID, region, value, scenario, and date.',
       'Close the station card with its × control or click elsewhere on the map.',
+      'Select the lasso icon and draw around stations to focus the timeline and station distribution on them.',
     ],
   },
 ]
@@ -122,6 +134,7 @@ const STEPS: TutorialStep[] = [
 interface ExplorerTutorialProps {
   open: boolean
   onClose: () => void
+  publicModesOnly?: boolean
 }
 
 const targetBounds = (selector: string) => {
@@ -136,7 +149,11 @@ const targetBounds = (selector: string) => {
   }
 }
 
-export default function ExplorerTutorial({ open, onClose }: ExplorerTutorialProps) {
+export default function ExplorerTutorial({
+  open,
+  onClose,
+  publicModesOnly = false,
+}: ExplorerTutorialProps) {
   const [stepIndex, setStepIndex] = useState(0)
   const [bounds, setBounds] = useState<ReturnType<typeof targetBounds>>(null)
   const cardRef = useRef<HTMLDivElement | null>(null)
@@ -221,7 +238,11 @@ export default function ExplorerTutorial({ open, onClose }: ExplorerTutorialProp
           display: 'grid',
           gap: theme.jtSpacing.gap.sm,
           left: stepIndex === 0 ? '50%' : cardLeft,
-          maxHeight: `calc(100dvh - ${theme.spacing(4)})`,
+          // Stays on screen from wherever it sits; a long step scrolls inside the card.
+          maxHeight:
+            stepIndex === 0
+              ? `calc(100dvh - ${theme.spacing(4)})`
+              : `calc(100dvh - ${Math.max(gap, cardTop) + gap}px)`,
           overflowY: 'auto',
           p: theme.jtSpacing.component.md,
           pointerEvents: 'auto',
@@ -247,11 +268,13 @@ export default function ExplorerTutorial({ open, onClose }: ExplorerTutorialProp
             <CloseIcon />
           </IconButton>
         </Box>
-        {step.paragraphs.map((paragraph) => (
-          <Typography key={paragraph} variant="body1" component="p" color="text.secondary">
-            {paragraph}
-          </Typography>
-        ))}
+        {(publicModesOnly && step.publicParagraphs ? step.publicParagraphs : step.paragraphs).map(
+          (paragraph) => (
+            <Typography key={paragraph} variant="body1" component="p" color="text.secondary">
+              {paragraph}
+            </Typography>
+          ),
+        )}
         {step.interactions && (
           <Box
             sx={(theme) => ({

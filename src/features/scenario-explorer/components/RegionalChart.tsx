@@ -1,4 +1,5 @@
 import {
+  type ReactNode,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -7,10 +8,8 @@ import {
 } from 'react'
 import {
   Box,
-  Button,
   Divider,
   IconButton,
-  Menu,
   MenuItem,
   Paper,
   Select,
@@ -21,29 +20,51 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import CloseFullscreenIcon from '@mui/icons-material/CloseFullscreen'
 import OpenInFullIcon from '@mui/icons-material/OpenInFull'
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined'
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined'
 import { AnimatePresence, motion } from 'framer-motion'
 import { area, line } from 'd3-shape'
-import { chartTransition, formatDate, formatNumber } from '../format'
+import { chartTransition, formatDate, formatNumber, summarizeSpread } from '../format'
+import { chartTextSize, useCompactExplorer } from '../explorerType'
+import { getScenarioAnnotation } from '../scenarioAnnotations'
 import type { D1641Dataset, DashboardMode, RangeMode, Scenario, ScenarioDataset } from '../types'
 import ExplorerInfoPopover from './ExplorerInfoPopover'
+import { ControlLabel, InfoButton } from './controls'
+import { overlayChipSx, segmentedSx, smallIconSx } from './controlStyles'
 
 const DEFAULT_WIDTH = 900
 const DEFAULT_HEIGHT = 390
-const PAD = { left: 86, right: 18, top: 18, bottom: 116 }
-const DATE_LABEL_Y_OFFSET = 92
-const YEAR_BAND_Y_OFFSET = 80
-const YEAR_BAND_HEIGHT = 22
+// The shortest the plot gets. Past this the page scrolls, so the drawing and its text never shrink.
+const MIN_PLOT_HEIGHT = 340
+const FULL_GEOMETRY = {
+  pad: { left: 86, right: 18, top: 18, bottom: 116 },
+  dateLabelOffset: 92,
+  yearBandOffset: 80,
+  yearBandHeight: 22,
+  yearBandText: 17,
+  exceedanceTitle: 43,
+  tickGap: 10,
+}
+const COMPACT_GEOMETRY = {
+  pad: { left: 66, right: 8, top: 18, bottom: 98 },
+  dateLabelOffset: 83,
+  yearBandOffset: 78,
+  yearBandHeight: 18,
+  yearBandText: 14,
+  exceedanceTitle: 44,
+  tickGap: 6,
+}
+// Roughly one captionSmall character, to keep a label from running into the next window.
+const ANNOTATION_CHAR_WIDTH = 7
 const COMPLIANCE_ROW_HEIGHT = 14
 
 interface ChartSvgProps {
   data: ScenarioDataset
   dashboardMode: DashboardMode
   region: string
+  lassoStationIds: string[]
   activeKeys: string[]
   dateIndex: number
   onDateChange: (index: number) => void
@@ -60,6 +81,7 @@ interface ChartSvgProps {
   onTimeframeFocusChange: (value: TimeframeFocus) => void
   enableDateHighlights: boolean
   showTimeframeSelector: boolean
+  reading: ReactNode
 }
 
 interface RangeDatum {
@@ -81,15 +103,6 @@ const TIMEFRAME_OPTIONS: Array<{ key: TimeframeFocus; label: string }> = [
 ]
 
 const regionalSummaryCache = new WeakMap<ScenarioDataset, Map<string, SeriesSummary>>()
-
-const sortedQuantile = (sorted: number[], fraction: number): number | null => {
-  if (!sorted.length) return null
-  const position = (sorted.length - 1) * fraction
-  const lower = Math.floor(position)
-  const upper = Math.ceil(position)
-  const weight = position - lower
-  return sorted[lower] * (1 - weight) + sorted[upper] * weight
-}
 
 const SCENARIO_ABBREVIATIONS: Record<string, string> = {
   'Business as Usual': 'BAU',
@@ -114,6 +127,7 @@ function ChartSvg({
   d1641Data,
   dashboardMode,
   region,
+  lassoStationIds,
   activeKeys,
   dateIndex,
   onDateChange,
@@ -129,8 +143,12 @@ function ChartSvg({
   enableDateHighlights,
   showTimeframeSelector,
   units,
+  reading,
 }: ChartSvgProps) {
   const theme = useTheme()
+  const compact = useCompactExplorer()
+  const geometry = compact ? COMPACT_GEOMETRY : FULL_GEOMETRY
+  const { pad } = geometry
   const [scrubbing, setScrubbing] = useState(false)
   const plotRef = useRef<HTMLDivElement | null>(null)
   const [{ height, width }, setPlotSize] = useState({
@@ -142,21 +160,25 @@ function ChartSvg({
     if (!node) return undefined
     const observer = new ResizeObserver(([entry]) =>
       setPlotSize({
-        height: Math.max(DEFAULT_HEIGHT, Math.round(entry.contentRect.height)),
+        height: Math.max(MIN_PLOT_HEIGHT, Math.round(entry.contentRect.height)),
         width: Math.max(320, Math.round(entry.contentRect.width)),
       }),
     )
     observer.observe(node)
     return () => observer.disconnect()
   }, [])
-  const stationIndices = useMemo(
-    () =>
-      data.stations
-        .map((station, index) => ({ station, index }))
-        .filter(({ station }) => region === 'All regions' || station.region === region)
-        .map(({ index }) => index),
-    [data.stations, region],
-  )
+  const lassoKey = lassoStationIds.join('|')
+  const stationIndices = useMemo(() => {
+    const lassoed = new Set(lassoStationIds)
+    return data.stations
+      .map((station, index) => ({ station, index }))
+      .filter(
+        ({ station }) =>
+          (region === 'All regions' || station.region === region) &&
+          (!lassoed.size || lassoed.has(String(station.station_id))),
+      )
+      .map(({ index }) => index)
+  }, [data.stations, lassoStationIds, region])
   const series = useMemo(
     () =>
       data.scenarios
@@ -167,30 +189,14 @@ function ChartSvg({
             datasetCache = new Map()
             regionalSummaryCache.set(data, datasetCache)
           }
-          const cacheKey = `${scenario.key}|${region}|${rangeMode}`
+          const cacheKey = `${scenario.key}|${region}|${rangeMode}|${lassoKey}`
           let summary = datasetCache.get(cacheKey)
           if (!summary) {
             const dailySummaries = data.dates.map((_, date) => {
               const values = stationIndices
                 .map((index) => scenario.stationValues[index][date])
                 .filter((value): value is number => value != null && Number.isFinite(value))
-              if (!values.length) return { average: null, low: null, high: null }
-              const sorted = [...values].sort((a, b) => a - b)
-              return {
-                average: values.reduce((sum, value) => sum + value, 0) / values.length,
-                low:
-                  rangeMode === 'iqr'
-                    ? sortedQuantile(sorted, 0.25)
-                    : rangeMode === 'p90'
-                      ? sortedQuantile(sorted, 0.05)
-                      : sorted[0],
-                high:
-                  rangeMode === 'iqr'
-                    ? sortedQuantile(sorted, 0.75)
-                    : rangeMode === 'p90'
-                      ? sortedQuantile(sorted, 0.95)
-                      : sorted[sorted.length - 1],
-              }
+              return summarizeSpread(values, rangeMode)
             })
             summary = {
               values: dailySummaries.map(({ average }) => average),
@@ -212,6 +218,7 @@ function ChartSvg({
       data,
       stationIndices,
       activeKeys,
+      lassoKey,
       rangeMode,
       region,
       selectedScenarioKey,
@@ -220,32 +227,32 @@ function ChartSvg({
     ],
   )
   const previousSelectedScenario = useRef(selectedScenarioKey)
-  const previousRegion = useRef(region)
+  const previousStationSet = useRef(`${region}|${lassoKey}`)
   const [phase, setPhase] = useState('baseline')
   const [sequence, setSequence] = useState(0)
 
   useLayoutEffect(() => {
     const scenarioChanged = previousSelectedScenario.current !== selectedScenarioKey
-    const regionChanged = previousRegion.current !== region
+    const stationSetChanged = previousStationSet.current !== `${region}|${lassoKey}`
     if (scenarioChanged) {
       // Animation phase changes are intentionally synchronized to the selected series.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSequence((value) => value + 1)
       setPhase('baseline')
-    } else if (regionChanged) {
+    } else if (stationSetChanged) {
       setPhase('regionLine')
     }
     previousSelectedScenario.current = selectedScenarioKey
-    previousRegion.current = region
-  }, [selectedScenarioKey, region])
+    previousStationSet.current = `${region}|${lassoKey}`
+  }, [selectedScenarioKey, region, lassoKey])
   const allValues = series
     .flatMap((item) => [...item.values, ...item.rangeLow, ...item.rangeHigh])
     .filter((value): value is number => value != null && Number.isFinite(value))
   const extent = Math.max(1, ...allValues.map(Math.abs))
   const x = (index: number) =>
-    PAD.left + (index / Math.max(1, data.dates.length - 1)) * (width - PAD.left - PAD.right)
+    pad.left + (index / Math.max(1, data.dates.length - 1)) * (width - pad.left - pad.right)
   const y = (value: number) =>
-    PAD.top + ((extent - value) / (extent * 2)) * (height - PAD.top - PAD.bottom)
+    pad.top + ((extent - value) / (extent * 2)) * (height - pad.top - pad.bottom)
   const linePath = line<number | null>()
     .defined((value): value is number => value != null)
     .x((_, index) => x(index))
@@ -380,6 +387,16 @@ function ChartSvg({
     theme.palette.brand.primaryBlue,
     theme.palette.brand.primaryGreen,
   ])
+  const annotation = getScenarioAnnotation(dashboardMode, selectedScenarioKey)
+  const annotationWindows = (annotation?.periods ?? [])
+    .map(({ startDate, endDate, note }) => ({
+      startDate,
+      endDate,
+      note,
+      start: boundaryIndex(startDate),
+      end: data.dates.findLastIndex((date) => date <= endDate),
+    }))
+    .filter(({ start, end }) => start >= 0 && end >= start)
   const dateTicks = [0, data.dates.length - 1]
   const indexFromPointer = (event: ReactPointerEvent<SVGSVGElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect()
@@ -389,7 +406,7 @@ function ChartSvg({
       Math.min(
         data.dates.length - 1,
         Math.round(
-          ((pointerX - PAD.left) / (width - PAD.left - PAD.right)) * (data.dates.length - 1),
+          ((pointerX - pad.left) / (width - pad.left - pad.right)) * (data.dates.length - 1),
         ),
       ),
     )
@@ -397,7 +414,7 @@ function ChartSvg({
   const textStyle = {
     fill: theme.palette.base[300],
     fontFamily: theme.typography.captionSmall.fontFamily,
-    fontSize: theme.typography.captionSmall.fontSize,
+    fontSize: chartTextSize(theme),
   }
   const tickColor = (tick: number) =>
     tick > 0
@@ -408,172 +425,145 @@ function ChartSvg({
   const formatTick = (tick: number) =>
     `${formatNumber(tick)}${units === '%' && tick !== 0 ? '%' : ''}`
 
-  return (
-    <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 }}>
-      <Box
-        sx={(theme) => ({
-          alignItems: 'start',
-          display: 'grid',
-          gap: theme.jtSpacing.gap.xs,
-          gridTemplateColumns: `${PAD.left}px minmax(0, 1fr)`,
-          mx: theme.jtSpacing.component.sm,
-          py: theme.jtSpacing.component.xs,
-        })}
+  const dateRow = (
+    <>
+      <Typography variant="chartTitle">Date</Typography>
+      <Typography
+        variant={compact ? 'chartTitle' : 'h5'}
+        sx={{ '&&': { color: 'brand.primaryBlue' } }}
       >
-        <Typography
-          variant="captionSmall"
-          color="text.secondary"
+        {formatDate(data.dates[dateIndex])}
+      </Typography>
+      {enableDateHighlights && showTimeframeSelector && (
+        <Select
+          aria-label="Highlighted domain-specific timeframe"
+          size="small"
+          value={timeframeFocus}
+          onChange={(event) => onTimeframeFocusChange(event.target.value as TimeframeFocus)}
           sx={(theme) => ({
-            alignSelf: 'end',
-            lineHeight: 1.15,
-            pr: theme.jtSpacing.gap.xs,
-            textAlign: 'right',
+            height: theme.spacing(4),
+            minWidth: theme.spacing(20),
+            ml: 'auto',
+            typography: 'captionSmall',
           })}
         >
-          {units === '%' ? (
-            <>
-              <Box component="span" sx={{ display: 'block' }}>
-                Change
-              </Box>
-              <Box component="span" sx={{ display: 'block' }}>
-                from
-              </Box>
-              <Box component="span" sx={{ display: 'block' }}>
-                base (%)
-              </Box>
-            </>
-          ) : (
-            <>
-              <Box component="span" sx={{ display: 'block' }}>
-                Δ EC-AVG-AVG
-              </Box>
-              <Box component="span" sx={{ display: 'block' }}>
-                (µS/cm)
-              </Box>
-            </>
-          )}
-        </Typography>
-        <Box sx={{ display: 'grid', gap: 'inherit', mr: `${PAD.right}px` }}>
+          {TIMEFRAME_OPTIONS.map((option) => (
+            <MenuItem key={option.key} value={option.key} sx={{ typography: 'captionSmall' }}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      )}
+    </>
+  )
+  const slider = (
+    <Slider
+      aria-label="Dashboard date"
+      min={0}
+      max={data.dates.length - 1}
+      value={dateIndex}
+      onChange={(_, value) => onDateChange(value as number)}
+      onChangeCommitted={(_, value) => onDateCommit(value as number)}
+      sx={{
+        color: 'common.white',
+        ...(compact && { py: 1 }),
+        '& .MuiSlider-rail': { opacity: 0.38 },
+      }}
+    />
+  )
+
+  return (
+    <Box sx={{ display: 'flex', flex: 1, flexDirection: 'column', minHeight: 0 }}>
+      {compact ? (
+        <>
           <Box
             sx={(theme) => ({
               alignItems: 'center',
-              display: 'grid',
-              gap: theme.jtSpacing.gap.sm,
-              gridTemplateColumns: '1fr auto 1fr',
-            })}
-          >
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={(theme) => ({
-                '@media (max-width: 1919.95px)': { ...theme.typography.captionSmall },
-              })}
-            >
-              Date
-            </Typography>
-            {enableDateHighlights && showTimeframeSelector ? (
-              <Select
-                aria-label="Highlighted domain-specific timeframe"
-                size="small"
-                value={timeframeFocus}
-                onChange={(event) => onTimeframeFocusChange(event.target.value as TimeframeFocus)}
-                sx={(theme) => ({
-                  height: theme.spacing(4),
-                  minWidth: theme.spacing(20),
-                  typography: 'captionSmall',
-                })}
-              >
-                {TIMEFRAME_OPTIONS.map((option) => (
-                  <MenuItem key={option.key} value={option.key} sx={{ typography: 'captionSmall' }}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            ) : (
-              <Box />
-            )}
-            <Typography
-              variant="h5"
-              sx={{ '&&': { color: 'brand.primaryBlue' }, justifySelf: 'end' }}
-            >
-              {formatDate(data.dates[dateIndex])}
-            </Typography>
-          </Box>
-          <Slider
-            aria-label="Dashboard date"
-            min={0}
-            max={data.dates.length - 1}
-            value={dateIndex}
-            onChange={(_, value) => onDateChange(value as number)}
-            onChangeCommitted={(_, value) => onDateCommit(value as number)}
-            sx={{ color: 'common.white', '& .MuiSlider-rail': { opacity: 0.38 } }}
-          />
-          <Box
-            aria-label="Chart legend"
-            sx={(theme) => ({
-              alignItems: 'center',
-              color: 'text.secondary',
+              columnGap: theme.jtSpacing.gap.sm,
               display: 'flex',
               flexWrap: 'wrap',
-              gap: theme.jtSpacing.gap.md,
-              typography: 'captionSmall',
+              mx: theme.jtSpacing.component.xs,
+              pt: 0.5,
             })}
           >
+            {dateRow}
+            <Box sx={{ ml: 'auto', minWidth: 0 }}>{reading}</Box>
+          </Box>
+          <Box
+            sx={(theme) => ({
+              mx: theme.jtSpacing.component.xs,
+              pl: `${pad.left}px`,
+              pr: `${pad.right}px`,
+            })}
+          >
+            {slider}
+          </Box>
+        </>
+      ) : (
+        <Box
+          sx={(theme) => ({
+            alignItems: 'start',
+            display: 'grid',
+            gap: theme.jtSpacing.gap.xs,
+            gridTemplateColumns: `${pad.left}px minmax(0, 1fr)`,
+            mx: theme.jtSpacing.component.sm,
+            py: theme.jtSpacing.component.xs,
+          })}
+        >
+          <Typography
+            variant="captionSmall"
+            color="text.secondary"
+            sx={(theme) => ({
+              alignSelf: 'end',
+              lineHeight: 1.15,
+              pr: theme.jtSpacing.gap.xs,
+              textAlign: 'right',
+            })}
+          >
+            {units === '%' ? (
+              <>
+                <Box component="span" sx={{ display: 'block' }}>
+                  Change
+                </Box>
+                <Box component="span" sx={{ display: 'block' }}>
+                  from
+                </Box>
+                <Box component="span" sx={{ display: 'block' }}>
+                  base (%)
+                </Box>
+              </>
+            ) : (
+              <>
+                <Box component="span" sx={{ display: 'block' }}>
+                  Δ EC-AVG-AVG
+                </Box>
+                <Box component="span" sx={{ display: 'block' }}>
+                  (µS/cm)
+                </Box>
+              </>
+            )}
+          </Typography>
+          <Box sx={{ display: 'grid', gap: 'inherit', mr: `${pad.right}px` }}>
             <Box
-              component="span"
               sx={(theme) => ({
                 alignItems: 'center',
-                display: 'inline-flex',
-                gap: theme.jtSpacing.gap.xs,
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: theme.jtSpacing.gap.sm,
               })}
             >
-              <Box
-                component="span"
-                sx={{
-                  bgcolor: 'brand.primaryGreen',
-                  borderRadius: 999,
-                  display: 'inline-block',
-                  height: 2,
-                  width: 24,
-                }}
-              />
-              Average across{' '}
-              <Box component="strong" sx={{ fontWeight: 800 }}>
-                all stations
-              </Box>
+              {dateRow}
             </Box>
-            <Box
-              component="span"
-              sx={(theme) => ({
-                alignItems: 'center',
-                display: 'inline-flex',
-                gap: theme.jtSpacing.gap.xs,
-              })}
-            >
-              <Box
-                component="span"
-                sx={{
-                  bgcolor: 'brand.primaryGreen',
-                  border: 1,
-                  borderColor: 'brand.primaryGreen',
-                  borderRadius: 0.5,
-                  display: 'inline-block',
-                  height: 10,
-                  opacity: 0.28,
-                  width: 24,
-                }}
-              />
-              Selected shaded range
-            </Box>
+            {slider}
           </Box>
         </Box>
-      </Box>
+      )}
       <Box
         ref={plotRef}
         sx={(theme) => ({
           flex: 1,
-          minHeight: { xs: DEFAULT_HEIGHT, lg: 0 },
-          mx: theme.jtSpacing.component.sm,
+          minHeight: { xs: DEFAULT_HEIGHT, lg: MIN_PLOT_HEIGHT },
+          mx: compact ? theme.jtSpacing.component.xs : theme.jtSpacing.component.sm,
           overflow: 'hidden',
           position: 'relative',
         })}
@@ -615,19 +605,58 @@ function ChartSvg({
             <rect
               key={`timeframe-${segment.start}-${segment.end}`}
               x={x(segment.start)}
-              y={PAD.top}
+              y={pad.top}
               width={Math.max(2, x(Math.min(finalDateIndex, segment.end + 1)) - x(segment.start))}
-              height={height - PAD.top - PAD.bottom}
+              height={height - pad.top - pad.bottom}
               fill={theme.palette.brand.primaryBlue}
               opacity=".09"
             />
           ))}
+          {annotation && (
+            <g aria-label={annotation.legend}>
+              {annotationWindows.map((item, index) => {
+                const left = x(item.start)
+                const next = annotationWindows[index + 1]
+                const room = (next ? x(next.start) : width - pad.right) - left
+                return (
+                  <g key={item.start}>
+                    <Tooltip
+                      placement="top"
+                      title={`${annotation.label}: ${formatDate(item.startDate)} – ${formatDate(item.endDate)}. ${item.note ?? annotation.note}`}
+                    >
+                      <rect
+                        x={left}
+                        y={pad.top}
+                        width={Math.max(2, x(Math.min(finalDateIndex, item.end + 1)) - left)}
+                        height={height - pad.top - pad.bottom}
+                        fill={theme.palette.base[100]}
+                        opacity=".14"
+                      />
+                    </Tooltip>
+                    {room > annotation.label.length * ANNOTATION_CHAR_WIDTH && (
+                      <text
+                        x={left + 4}
+                        y={pad.top + 34}
+                        style={{
+                          ...textStyle,
+                          fill: theme.palette.common.white,
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        {annotation.label}
+                      </text>
+                    )}
+                  </g>
+                )
+              })}
+            </g>
+          )}
           <g aria-label="Value axis">
             {ticks.map((tick, index) => (
               <g key={index}>
                 <line
-                  x1={PAD.left}
-                  x2={width - PAD.right}
+                  x1={pad.left}
+                  x2={width - pad.right}
                   y1={y(tick)}
                   y2={y(tick)}
                   stroke={tickColor(tick)}
@@ -635,7 +664,7 @@ function ChartSvg({
                   strokeWidth="1"
                 />
                 <text
-                  x={PAD.left - 10}
+                  x={pad.left - geometry.tickGap}
                   y={y(tick) + 4}
                   textAnchor="end"
                   style={{ ...textStyle, fill: tickColor(tick), fontWeight: 700 }}
@@ -649,7 +678,7 @@ function ChartSvg({
             <text
               key={index}
               x={x(index)}
-              y={height - DATE_LABEL_Y_OFFSET}
+              y={height - geometry.dateLabelOffset}
               textAnchor={index === 0 ? 'start' : 'end'}
               style={textStyle}
             >
@@ -658,7 +687,7 @@ function ChartSvg({
           ))}
           <motion.path
             key={`baseline-${sequence}`}
-            d={`M ${PAD.left} ${y(0)} L ${width - PAD.right} ${y(0)}`}
+            d={`M ${pad.left} ${y(0)} L ${width - pad.right} ${y(0)}`}
             fill="none"
             stroke={theme.palette.base[400]}
             strokeLinecap="round"
@@ -673,7 +702,7 @@ function ChartSvg({
           />
           <motion.text
             key={`baseline-label-${sequence}`}
-            x={PAD.left + 8}
+            x={pad.left + 8}
             y={y(0) - 8}
             fill={theme.palette.base[100]}
             style={{ ...textStyle, fontWeight: 700 }}
@@ -683,9 +712,14 @@ function ChartSvg({
           >
             {baseScenarioLabel}
           </motion.text>
+          {compact && (
+            <text x={pad.left + 4} y={pad.top + 16} style={{ ...textStyle, pointerEvents: 'none' }}>
+              {units === '%' ? 'Change from base (%)' : 'Δ EC-AVG-AVG (µS/cm)'}
+            </text>
+          )}
           <text
-            x={width - PAD.right}
-            y={PAD.top + 16}
+            x={width - pad.right}
+            y={pad.top + 16}
             textAnchor="end"
             style={{ ...textStyle, fill: theme.palette.brand.primaryGreen, fontWeight: 700 }}
           >
@@ -728,13 +762,13 @@ function ChartSvg({
                     <defs>
                       <clipPath id={clipId}>
                         <motion.rect
-                          x={PAD.left}
-                          y={PAD.top}
-                          height={height - PAD.top - PAD.bottom}
+                          x={pad.left}
+                          y={pad.top}
+                          height={height - pad.top - pad.bottom}
                           initial={{
-                            width: phase === 'regionLine' ? width - PAD.left - PAD.right : 0,
+                            width: phase === 'regionLine' ? width - pad.left - pad.right : 0,
                           }}
-                          animate={{ width: width - PAD.left - PAD.right }}
+                          animate={{ width: width - pad.left - pad.right }}
                           transition={{
                             duration: phase === 'line' ? 1.6 : 1.4,
                             ease: [0.22, 1, 0.36, 1],
@@ -790,8 +824,8 @@ function ChartSvg({
               key={`period-boundary-${index}`}
               x1={x(index)}
               x2={x(index)}
-              y1={PAD.top}
-              y2={height - PAD.bottom}
+              y1={pad.top}
+              y2={height - pad.bottom}
               stroke={theme.palette.base[300]}
               strokeDasharray="5 5"
               strokeWidth="1.5"
@@ -803,9 +837,9 @@ function ChartSvg({
                 <g key={`${period.label}-${period.start}`}>
                   <rect
                     x={x(period.start)}
-                    y={height - YEAR_BAND_Y_OFFSET}
+                    y={height - geometry.yearBandOffset}
                     width={Math.max(0, x(period.end) - x(period.start))}
-                    height={YEAR_BAND_HEIGHT}
+                    height={geometry.yearBandHeight}
                     rx="4"
                     fill={index === 0 ? theme.palette.base[400] : 'none'}
                     stroke={index === 0 ? 'none' : theme.palette.base[300]}
@@ -813,7 +847,7 @@ function ChartSvg({
                   />
                   <text
                     x={(x(period.start) + x(period.end)) / 2}
-                    y={height - YEAR_BAND_Y_OFFSET + 17}
+                    y={height - geometry.yearBandOffset + geometry.yearBandText}
                     textAnchor="middle"
                     style={{
                       ...textStyle,
@@ -829,9 +863,15 @@ function ChartSvg({
           )}
           {complianceRows.length > 0 && (
             <text
-              x={PAD.left}
-              y={height - 43}
-              style={{ ...textStyle, fill: theme.palette.base[100], fontWeight: 700 }}
+              x={pad.left}
+              y={height - geometry.exceedanceTitle}
+              style={{
+                fill: theme.palette.common.white,
+                fontFamily: theme.typography.chartTitle.fontFamily,
+                fontSize: theme.typography.chartTitle.fontSize,
+                letterSpacing: theme.typography.chartTitle.letterSpacing,
+                textTransform: theme.typography.chartTitle.textTransform,
+              }}
             >
               D-1641 exceedance periods
             </text>
@@ -841,7 +881,7 @@ function ChartSvg({
             return (
               <g key={row.key} aria-label={`${row.label} D-1641 exceedance periods`}>
                 <text
-                  x={PAD.left - 10}
+                  x={pad.left - geometry.tickGap}
                   y={rowY + 11}
                   textAnchor="end"
                   style={{ ...textStyle, fill: row.color, fontWeight: 700 }}
@@ -849,9 +889,9 @@ function ChartSvg({
                   {row.label}
                 </text>
                 <rect
-                  x={PAD.left}
+                  x={pad.left}
                   y={rowY}
-                  width={width - PAD.left - PAD.right}
+                  width={width - pad.left - pad.right}
                   height={COMPLIANCE_ROW_HEIGHT}
                   rx="3"
                   fill="none"
@@ -880,7 +920,7 @@ function ChartSvg({
                 ))}
                 {!row.segments.length && (
                   <text
-                    x={PAD.left + 6}
+                    x={pad.left + 6}
                     y={rowY + 11}
                     style={{ ...textStyle, fill: theme.palette.base[300], fontWeight: 700 }}
                   >
@@ -893,10 +933,10 @@ function ChartSvg({
           <motion.line
             x1={x(dateIndex)}
             x2={x(dateIndex)}
-            y1={PAD.top}
-            y2={height - PAD.bottom}
-            initial={{ x1: x(dateIndex), x2: x(dateIndex), y1: PAD.top, y2: height - PAD.bottom }}
-            animate={{ x1: x(dateIndex), x2: x(dateIndex), y1: PAD.top, y2: height - PAD.bottom }}
+            y1={pad.top}
+            y2={height - pad.bottom}
+            initial={{ x1: x(dateIndex), x2: x(dateIndex), y1: pad.top, y2: height - pad.bottom }}
+            animate={{ x1: x(dateIndex), x2: x(dateIndex), y1: pad.top, y2: height - pad.bottom }}
             transition={{ duration: 0.16, ease: 'easeOut' }}
             stroke={theme.palette.common.white}
             strokeWidth="1.5"
@@ -963,6 +1003,9 @@ interface RegionalChartProps {
   d1641Data: D1641Dataset | null
   enableDateHighlights?: boolean
   useFullScenarioNames?: boolean
+  /** A scenario this comparison never offers as an overlay. */
+  hiddenOverlayKey?: string | null
+  lassoStationIds: string[]
   disableTunnelScenario?: boolean
   showTimeframeSelector?: boolean
 }
@@ -989,6 +1032,8 @@ export default function RegionalChart({
   onExpandedChange,
   enableDateHighlights = false,
   useFullScenarioNames = false,
+  hiddenOverlayKey = null,
+  lassoStationIds,
   disableTunnelScenario = false,
   showTimeframeSelector = true,
 }: RegionalChartProps) {
@@ -996,14 +1041,158 @@ export default function RegionalChart({
   const [visibilityInfoAnchor, setVisibilityInfoAnchor] = useState<HTMLButtonElement | null>(null)
   const [deviationInfoAnchor, setDeviationInfoAnchor] = useState<HTMLButtonElement | null>(null)
   const [hoveredScenarioKey, setHoveredScenarioKey] = useState<string | null>(null)
-  const [overlayMenuAnchor, setOverlayMenuAnchor] = useState<HTMLElement | null>(null)
   const [timeframeFocus, setTimeframeFocus] = useState<TimeframeFocus>('all')
   const coverage =
     rangeMode === 'iqr'
-      ? { first: 5, last: 14, label: 'Middle 50% of stations' }
+      ? { first: 5, last: 14, label: 'Central 50% of stations', legend: 'central 50%' }
       : rangeMode === 'p90'
-        ? { first: 1, last: 18, label: 'Middle 90% of stations' }
-        : { first: 0, last: 19, label: 'All stations' }
+        ? { first: 1, last: 18, label: 'Central 90% of stations', legend: 'central 90%' }
+        : { first: 0, last: 19, label: 'All stations', legend: 'all stations' }
+  const annotation = getScenarioAnnotation(dashboardMode, selectedScenario.key)
+  const compact = useCompactExplorer()
+  const readingVariant = compact ? 'chartTitle' : 'numberScore'
+  const deviationReading = (
+    <Box
+      sx={(theme) =>
+        compact
+          ? {
+              alignItems: 'center',
+              columnGap: theme.jtSpacing.gap.sm,
+              display: 'flex',
+              flexWrap: 'wrap',
+              minWidth: 0,
+            }
+          : {
+              display: 'grid',
+              gridArea: 'deviation',
+              justifyItems: { xs: 'start', md: 'end' },
+              minWidth: 0,
+            }
+      }
+    >
+      <ControlLabel inline={compact} label="Current average deviation">
+        <InfoButton label="Explain current average deviation" onClick={setDeviationInfoAnchor} />
+      </ControlLabel>
+      <Box
+        sx={(theme) => ({
+          alignItems: 'baseline',
+          display: 'flex',
+          gap: theme.jtSpacing.gap.sm,
+          whiteSpace: 'nowrap',
+        })}
+      >
+        <Typography
+          variant={readingVariant}
+          sx={{
+            color:
+              Number(rawRegionValue) > 0
+                ? 'salinity.pink'
+                : Number(rawRegionValue) < 0
+                  ? 'salinity.teal'
+                  : 'common.white',
+          }}
+        >
+          {Number(rawRegionValue) > 0 ? '+' : ''}
+          {formatNumber(rawRegionValue)}{' '}
+          <Box
+            component="span"
+            sx={{ color: 'text.secondary', typography: 'captionSmall', textTransform: 'none' }}
+          >
+            µS/cm
+          </Box>
+        </Typography>
+        <Typography
+          variant={readingVariant}
+          sx={{
+            color:
+              Number(percentRegionValue) > 0
+                ? 'salinity.pink'
+                : Number(percentRegionValue) < 0
+                  ? 'salinity.teal'
+                  : 'common.white',
+          }}
+        >
+          {Number(percentRegionValue) > 0 ? '+' : ''}
+          {formatNumber(percentRegionValue)}
+          <Box
+            component="span"
+            sx={{ color: 'text.secondary', typography: 'captionSmall', textTransform: 'none' }}
+          >
+            %
+          </Box>
+        </Typography>
+      </Box>
+    </Box>
+  )
+  const lassoLabel = `${lassoStationIds.length} lassoed ${lassoStationIds.length === 1 ? 'station' : 'stations'}`
+  const legendStations = !lassoStationIds.length
+    ? coverage.legend
+    : rangeMode === 'minmax'
+      ? lassoLabel
+      : `${coverage.legend} of ${lassoLabel}`
+  const chartLegend = (
+    <Box
+      aria-label="Chart legend"
+      sx={{
+        color: 'text.secondary',
+        display: 'grid',
+        minWidth: 0,
+        ...(compact
+          ? { mt: 0.5, typography: 'captionSmall' }
+          : { gap: 0.25, gridArea: 'legend', typography: 'controlValue' }),
+      }}
+    >
+      <Box component="span" sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+        <Box
+          component="span"
+          sx={{
+            bgcolor: 'brand.primaryGreen',
+            borderRadius: 999,
+            flex: '0 0 auto',
+            height: 2,
+            width: 24,
+          }}
+        />
+        <span>
+          Average of <strong>{legendStations}</strong>
+        </span>
+      </Box>
+      <Box component="span" sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+        <Box
+          component="span"
+          sx={{
+            bgcolor: 'brand.primaryGreen',
+            border: 1,
+            borderColor: 'brand.primaryGreen',
+            borderRadius: 0.5,
+            flex: '0 0 auto',
+            height: 10,
+            opacity: 0.28,
+            width: 24,
+          }}
+        />
+        <span>
+          Range of <strong>{legendStations}</strong>
+        </span>
+      </Box>
+      {annotation && (
+        <Box component="span" sx={{ alignItems: 'center', display: 'flex', gap: 1 }}>
+          <Box
+            component="span"
+            sx={{
+              bgcolor: 'base.100',
+              borderRadius: 0.5,
+              flex: '0 0 auto',
+              height: 10,
+              opacity: 0.32,
+              width: 24,
+            }}
+          />
+          {annotation.legend}
+        </Box>
+      )}
+    </Box>
+  )
   return (
     <Paper
       variant="outlined"
@@ -1025,103 +1214,66 @@ export default function RegionalChart({
         },
       }}
     >
+      {/* Chart settings. Compact: the spread over its legend, beside the overlays. Otherwise the spread, legend, and reading share a row, with overlays beneath */}
       <Box
-        sx={(theme) => ({
-          alignItems: 'start',
+        sx={{
           borderBottom: 1,
           borderColor: 'divider',
+          columnGap: 2,
           display: 'grid',
-          gap: theme.jtSpacing.gap.lg,
-          gridTemplateColumns: 'auto minmax(0, 1fr) auto',
-          p: theme.jtSpacing.component.sm,
-          '@media (max-width: 1919.95px)': {
-            '& .MuiTypography-caption': { ...theme.typography.captionSmall },
-          },
-          [theme.breakpoints.down('xl')]: {
-            gap: theme.jtSpacing.gap.xs,
-            gridTemplateColumns: 'auto minmax(5rem, 1fr) auto',
-            p: theme.jtSpacing.component.xs,
-          },
-        })}
-      >
-        <Box sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs })}>
-          <Box
-            sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}
-          >
-            <Typography variant="caption" color="text.secondary">
-              Shaded station spread
-            </Typography>
-            <IconButton
-              aria-label="Explain the shaded station range"
-              onClick={(event) => setBandInfoAnchor(event.currentTarget)}
-              size="small"
-              sx={{ color: 'text.secondary', p: 0 }}
-            >
-              <InfoOutlinedIcon fontSize="small" />
-            </IconButton>
-          </Box>
-          <Box
-            sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}
-          >
-            <ToggleButtonGroup
-              exclusive
-              size="small"
-              value={rangeMode}
-              onChange={(_, value) => {
-                if (value) onRangeModeChange(value)
-              }}
-              aria-label="Shaded station range"
-              sx={{
-                '@media (max-width: 1919.95px)': {
-                  '& .MuiToggleButton-root': {
-                    fontSize: '0.75rem',
-                    letterSpacing: '0.05em',
-                    px: 1.25,
-                  },
+          rowGap: 1,
+          ...(compact
+            ? { alignItems: 'start', gridTemplateColumns: 'auto minmax(0, 1fr)', px: 1, py: 0.5 }
+            : {
+                alignItems: 'end',
+                gridTemplateAreas: {
+                  xs: '"spread" "legend" "deviation" "overlay"',
+                  md: '"spread legend deviation" "overlay overlay overlay"',
                 },
-              }}
-            >
-              <ToggleButton value="minmax" sx={{ fontWeight: 800 }}>
-                All stations
-              </ToggleButton>
-              <ToggleButton value="p90">Central 90%</ToggleButton>
-              <ToggleButton value="iqr">Central 50%</ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-        </Box>
-        <Box
-          sx={(theme) => ({
-            display: 'grid',
-            gap: theme.jtSpacing.gap.xs,
-            minWidth: 0,
-            overflow: 'hidden',
-          })}
-        >
-          <Box
-            sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}
+                gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'auto minmax(0, 1fr) auto' },
+                px: 1.5,
+                py: 1,
+              }),
+        }}
+      >
+        <Box sx={{ minWidth: 0, ...(!compact && { gridArea: 'spread' }) }}>
+          <ControlLabel label="Station spread">
+            <InfoButton label="Explain the station spread" onClick={setBandInfoAnchor} />
+          </ControlLabel>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={rangeMode}
+            onChange={(_, value) => {
+              if (value) onRangeModeChange(value)
+            }}
+            aria-label="Station spread"
+            sx={segmentedSx}
           >
-            <Typography variant="caption" color="text.secondary">
-              <Box
-                component="span"
-                sx={{ display: 'none', '@media (min-width: 1920px)': { display: 'inline' } }}
-              >
-                Scenario overlay
-              </Box>
-              <Box
-                component="span"
-                sx={{ display: 'inline', '@media (min-width: 1920px)': { display: 'none' } }}
-              >
-                Overlays
-              </Box>
-            </Typography>
-            <IconButton
-              aria-label="Explain scenario visibility"
-              onClick={(event) => setVisibilityInfoAnchor(event.currentTarget)}
-              size="small"
-              sx={{ color: 'text.secondary', p: 0 }}
-            >
-              <InfoOutlinedIcon fontSize="small" />
-            </IconButton>
+            <ToggleButton value="minmax">All stations</ToggleButton>
+            <ToggleButton value="p90">Central 90%</ToggleButton>
+            <ToggleButton value="iqr">Central 50%</ToggleButton>
+          </ToggleButtonGroup>
+          {compact && chartLegend}
+        </Box>
+        {!compact && chartLegend}
+        {!compact && deviationReading}
+        <Box
+          sx={
+            compact
+              ? { minWidth: 0 }
+              : {
+                  alignItems: 'center',
+                  columnGap: 1,
+                  display: 'grid',
+                  gridArea: 'overlay',
+                  gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'auto minmax(0, 1fr)' },
+                  minWidth: 0,
+                }
+          }
+        >
+          <ControlLabel label="Scenario overlay">
+            <InfoButton label="Explain scenario visibility" onClick={setVisibilityInfoAnchor} />
             <Tooltip
               title={
                 activeKeys.length > 1
@@ -1145,85 +1297,30 @@ export default function RegionalChart({
                   disabled={activeKeys.length <= 1}
                   onClick={() => onExpandedChange(!expanded)}
                   size="small"
-                  sx={{ color: expanded ? 'brand.primaryGreen' : 'text.secondary', p: 0 }}
+                  sx={{
+                    ...smallIconSx,
+                    color: expanded ? 'brand.primaryGreen' : 'text.secondary',
+                    p: 0.25,
+                  }}
                 >
-                  {expanded ? (
-                    <CloseFullscreenIcon fontSize="small" />
-                  ) : (
-                    <OpenInFullIcon fontSize="small" />
-                  )}
+                  {expanded ? <CloseFullscreenIcon /> : <OpenInFullIcon />}
                 </IconButton>
               </Box>
             </Tooltip>
-          </Box>
-          <Button
-            aria-label="Choose scenario overlays"
-            aria-haspopup="menu"
-            onClick={(event) => setOverlayMenuAnchor(event.currentTarget)}
-            size="small"
-            startIcon={<VisibilityOutlinedIcon fontSize="small" />}
-            sx={(theme) => ({
-              display: 'inline-flex',
-              height: theme.spacing(5),
-              justifySelf: 'start',
-              minWidth: 0,
-              py: 0,
-              whiteSpace: 'nowrap',
-              '@media (min-width: 1920px)': { display: 'none' },
-            })}
-          >
-            Overlays {activeKeys.length}/
-            {data.scenarios.filter((item) => item.key !== baseScenarioKey).length}
-          </Button>
-          <Menu
-            anchorEl={overlayMenuAnchor}
-            open={Boolean(overlayMenuAnchor)}
-            onClose={() => setOverlayMenuAnchor(null)}
-          >
-            {data.scenarios
-              .filter((item) => item.key !== baseScenarioKey)
-              .map((item) => {
-                const active = activeKeys.includes(item.key)
-                const primary = item.key === selectedScenario.key
-                const unavailable =
-                  disableTunnelScenario && item.label.trim().toLowerCase() === 'a tunnel'
-                return (
-                  <MenuItem
-                    key={item.key}
-                    disabled={primary || unavailable}
-                    onClick={() => {
-                      onActiveKeysChange(
-                        active
-                          ? activeKeys.filter((key) => key !== item.key)
-                          : [...activeKeys, item.key],
-                      )
-                    }}
-                    sx={(theme) => ({ gap: theme.jtSpacing.gap.sm, typography: 'button' })}
-                  >
-                    {primary || active ? (
-                      <VisibilityOutlinedIcon
-                        fontSize="small"
-                        sx={{ color: primary ? 'brand.primaryGreen' : 'common.white' }}
-                      />
-                    ) : (
-                      <VisibilityOffOutlinedIcon fontSize="small" />
-                    )}
-                    {useFullScenarioNames ? item.label : abbreviateScenario(item.label)}
-                  </MenuItem>
-                )
-              })}
-          </Menu>
+          </ControlLabel>
           <Box
-            sx={(theme) => ({
-              display: 'none',
-              flexWrap: 'nowrap',
-              gap: theme.jtSpacing.gap.xs,
+            sx={{
+              gap: 0.25,
               minWidth: 0,
-              '@media (min-width: 1920px)': { display: 'flex' },
-            })}
+              ...(compact
+                ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, max-content))' }
+                : { display: 'flex', flexWrap: 'wrap' }),
+            }}
           >
             {data.scenarios
-              .filter((scenario) => scenario.key !== baseScenarioKey)
+              .filter(
+                (scenario) => scenario.key !== baseScenarioKey && scenario.key !== hiddenOverlayKey,
+              )
               .map((scenario) => {
                 const active = activeKeys.includes(scenario.key)
                 const primary = scenario.key === selectedScenario.key
@@ -1251,24 +1348,9 @@ export default function RegionalChart({
                           if (active && !primary) setHoveredScenarioKey(scenario.key)
                         }}
                         onMouseLeave={() => setHoveredScenarioKey(null)}
-                        sx={(theme) => ({
-                          border: 0,
-                          gap: theme.jtSpacing.gap.xs,
-                          height: theme.spacing(5),
-                          minWidth: theme.spacing(7),
-                          px: theme.jtSpacing.component.xs,
-                          typography: 'button',
-                          '&.Mui-selected': {
-                            bgcolor: 'surface',
-                            color: primary ? 'brand.primaryGreen' : 'common.white',
-                          },
-                        })}
+                        sx={overlayChipSx(primary, compact)}
                       >
-                        {visible ? (
-                          <VisibilityOutlinedIcon fontSize="small" />
-                        ) : (
-                          <VisibilityOffOutlinedIcon fontSize="small" />
-                        )}
+                        {visible ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
                         {useFullScenarioNames ? scenario.label : abbreviateScenario(scenario.label)}
                       </ToggleButton>
                     </span>
@@ -1277,95 +1359,27 @@ export default function RegionalChart({
               })}
           </Box>
         </Box>
-        <Box
-          sx={(theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs, justifyItems: 'end' })}
-        >
-          <Box
-            sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.xs })}
-          >
-            <Typography variant="caption" color="text.secondary">
-              Current average deviation
-            </Typography>
-            <IconButton
-              aria-label="Explain current average deviation"
-              onClick={(event) => setDeviationInfoAnchor(event.currentTarget)}
-              size="small"
-              sx={{ color: 'text.secondary', p: 0 }}
-            >
-              <InfoOutlinedIcon fontSize="small" />
-            </IconButton>
-          </Box>
-          <Box
-            sx={(theme) => ({
-              alignItems: 'baseline',
-              display: 'flex',
-              gap: theme.jtSpacing.gap.sm,
-              whiteSpace: 'nowrap',
-            })}
-          >
-            <Typography
-              variant="h4"
-              sx={{
-                color:
-                  Number(rawRegionValue) > 0
-                    ? 'salinity.pink'
-                    : Number(rawRegionValue) < 0
-                      ? 'salinity.teal'
-                      : 'common.white',
-              }}
-            >
-              {Number(rawRegionValue) > 0 ? '+' : ''}
-              {formatNumber(rawRegionValue)}{' '}
-              <Box
-                component="span"
-                sx={{ color: 'text.secondary', typography: 'captionSmall', textTransform: 'none' }}
-              >
-                µS/cm
-              </Box>
-            </Typography>
-            <Typography
-              variant="h4"
-              sx={{
-                color:
-                  Number(percentRegionValue) > 0
-                    ? 'salinity.pink'
-                    : Number(percentRegionValue) < 0
-                      ? 'salinity.teal'
-                      : 'common.white',
-              }}
-            >
-              {Number(percentRegionValue) > 0 ? '+' : ''}
-              {formatNumber(percentRegionValue)}
-              <Box
-                component="span"
-                sx={{ color: 'text.secondary', typography: 'captionSmall', textTransform: 'none' }}
-              >
-                %
-              </Box>
-            </Typography>
-          </Box>
-        </Box>
       </Box>
       <ExplorerInfoPopover anchor={bandInfoAnchor} onClose={() => setBandInfoAnchor(null)}>
         <Typography variant="caption" color="brand.primaryGreen">
-          About the station range
+          About the station spread
         </Typography>
         <Typography variant="h5" sx={{ '&&': { color: 'brand.primaryGreen' } }}>
-          What does the shaded range show?
+          What does the station spread show?
         </Typography>
         <Typography variant="captionSmall" component="p" color="text.secondary">
           The{' '}
           <Box component="span" sx={{ color: 'brand.primaryGreen' }}>
             line
           </Box>{' '}
-          shows the <strong>daily station average</strong>. The{' '}
+          shows the <strong>daily average of the stations in the selected spread</strong>. The{' '}
           <Box component="span" sx={{ color: 'brand.primaryGreen' }}>
-            shaded range
+            shaded band
           </Box>{' '}
           shows how station values are <strong>distributed</strong> around it.
         </Typography>
         <Typography variant="captionSmall" component="p" color="text.secondary">
-          For each date, stations are ordered from lowest to highest. The selected range includes:
+          For each date, stations are ordered from lowest to highest. The selected spread includes:
         </Typography>
         <Divider />
         <Typography variant="caption" color="brand.primaryGreen">
@@ -1442,7 +1456,7 @@ export default function RegionalChart({
                 width: 10,
               }}
             />
-            <Typography variant="captionSmall">Included in range</Typography>
+            <Typography variant="captionSmall">Included in spread</Typography>
           </Box>
           <Box
             sx={(theme) => ({
@@ -1474,8 +1488,8 @@ export default function RegionalChart({
           sx={(theme) => ({ mt: theme.jtSpacing.component.sm })}
         >
           <strong>All stations</strong> spans the lowest to highest station value.{' '}
-          <strong>Middle 90%</strong> excludes the lowest and highest 5%.{' '}
-          <strong>Middle 50%</strong> excludes the lowest and highest 25%.
+          <strong>Central 90%</strong> excludes the lowest and highest 5%.{' '}
+          <strong>Central 50%</strong> excludes the lowest and highest 25%.
         </Typography>
         <Typography
           variant="captionSmall"
@@ -1483,7 +1497,7 @@ export default function RegionalChart({
           color="text.secondary"
           sx={(theme) => ({ mt: theme.jtSpacing.component.xs })}
         >
-          The stations inside the range can change from day to day; this is not a fixed station-ID
+          The stations inside the spread can change from day to day; this is not a fixed station-ID
           selection.
         </Typography>
       </ExplorerInfoPopover>
@@ -1538,8 +1552,8 @@ export default function RegionalChart({
           <Box component="span" sx={{ color: 'brand.primaryBlue' }}>
             selected base scenario
           </Box>{' '}
-          across stations in the selected region on the displayed date. It is the same value shown
-          here when Values is switched to µS/cm.
+          across the stations in the selected spread and region on the displayed date. It is the
+          same value shown here when Values is switched to µS/cm.
         </Typography>
         <Divider />
         <Typography variant="captionSmall" component="p" color="text.secondary">
@@ -1547,9 +1561,8 @@ export default function RegionalChart({
           <Box component="span" sx={{ color: 'brand.primaryGreen' }}>
             percent change
           </Box>{' '}
-          expresses the selected scenario relative to the selected base scenario. It divides the
-          regional average EC difference by the region’s average selected base-scenario period-mean
-          EC:
+          expresses the selected scenario relative to the selected base scenario. It divides that
+          average EC difference by the region’s average selected base-scenario period-mean EC:
         </Typography>
         <Box
           sx={(theme) => ({
@@ -1562,12 +1575,12 @@ export default function RegionalChart({
           })}
         >
           <Typography variant="captionSmall">
-            Percent change = 100 × regional average EC difference ÷ regional average selected
-            base-scenario period-mean EC
+            Percent change = 100 × average EC difference ÷ regional average selected base-scenario
+            period-mean EC
           </Typography>
         </Box>
         <Typography variant="captionSmall" component="p" color="text.secondary">
-          Because both values use the same regional EC difference, they always have the same
+          Because both values use the same average EC difference, they always have the same
           direction. Positive values indicate saltier conditions than the selected base scenario;
           negative values indicate fresher conditions.
         </Typography>
@@ -1577,6 +1590,7 @@ export default function RegionalChart({
         d1641Data={d1641Data}
         dashboardMode={dashboardMode}
         region={region}
+        lassoStationIds={lassoStationIds}
         activeKeys={activeKeys}
         dateIndex={dateIndex}
         onDateChange={onDateChange}
@@ -1592,6 +1606,7 @@ export default function RegionalChart({
         enableDateHighlights={enableDateHighlights}
         showTimeframeSelector={showTimeframeSelector}
         units={units}
+        reading={compact ? deviationReading : null}
       />
     </Paper>
   )

@@ -15,7 +15,7 @@ PROJECT_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(os.environ.get("RMA_DATA_DIR", PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"))
 SCHISM_DIR = DATA_DIR / "baseline_schism" / "ec_full_extent_all_stations"
 CROSSWALK = DATA_DIR / "baseline_schism" / "shared_station_crosswalk.csv"
-OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"))
 OUT = OUTPUT_DIR / "tiered_outflows_dashboard.json"
 
 RUNS = [

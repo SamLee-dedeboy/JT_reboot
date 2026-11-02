@@ -2,15 +2,25 @@ import type { ExpressionSpecification, StyleSpecification } from 'mapbox-gl'
 import { map as mapTokens } from '../theme/map'
 import { assetUrl } from '../utils/baseUrl'
 
+export type MapMode = 'online' | 'offline'
+
 /**
- * Kiosk builds (`npm run build:kiosk`) always use the offline basemap; any other
- * build can opt in per page with `?offline=1`.
+ * One global decision controls every map in the application. Kiosk builds set
+ * VITE_MAP_MODE=offline. Other builds default to online and can be switched for
+ * the complete session URL with `?map=offline` (the legacy `?offline=1` remains
+ * supported).
  */
-export function isOfflineMapEnabled(): boolean {
-  if (import.meta.env.VITE_OFFLINE_MAP === '1') return true
-  if (typeof window === 'undefined') return false
-  return new URLSearchParams(window.location.search).get('offline') === '1'
+export function getMapMode(): MapMode {
+  const configuredMode = import.meta.env.VITE_MAP_MODE
+  if (configuredMode === 'offline' || import.meta.env.VITE_OFFLINE_MAP === '1') return 'offline'
+  if (configuredMode === 'online') return 'online'
+  if (typeof window === 'undefined') return 'online'
+
+  const search = new URLSearchParams(window.location.search)
+  return search.get('map') === 'offline' || search.get('offline') === '1' ? 'offline' : 'online'
 }
+
+export const isOfflineMapEnabled = () => getMapMode() === 'offline'
 
 const tokens = mapTokens.offlineBasemap
 const symbolRank: ExpressionSpecification = ['get', 'symbolrank']
@@ -99,12 +109,12 @@ export function createOfflineBasemapStyle(): StyleSpecification {
     sources: {
       'offline-reference': {
         type: 'geojson',
-        data: assetUrl('/data/regional-summary/offline-basemap.geojson'),
+        data: assetUrl('/data/geospatial-assets/basemap/offline-basemap.geojson'),
         attribution: '© OpenStreetMap contributors',
       },
       'offline-landuse': {
         type: 'geojson',
-        data: assetUrl('/data/regional-summary/offline-landuse.geojson'),
+        data: assetUrl('/data/geospatial-assets/basemap/offline-landuse.geojson'),
         attribution: '© OpenStreetMap contributors',
       },
     },
@@ -253,7 +263,7 @@ export function createOfflineBasemapStyle(): StyleSpecification {
         layout: {
           'symbol-placement': 'line',
           'text-field': ['get', 'name'],
-          'text-font': ['DIN Pro Regular'],
+          'text-font': ['Proxima Nova Regular'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 10, 10, 18, 16],
           'text-max-angle': 30,
           'text-padding': 1,
@@ -390,4 +400,9 @@ export function createOfflineBasemapStyle(): StyleSpecification {
       },
     ],
   }
+}
+
+/** Replace any requested online style when the application is in offline mode. */
+export function resolveMapStyle<T>(requestedStyle: T): T | StyleSpecification {
+  return isOfflineMapEnabled() ? createOfflineBasemapStyle() : requestedStyle
 }

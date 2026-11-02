@@ -16,7 +16,7 @@ DATA_DIR = Path(os.environ.get("RMA_DATA_DIR", PROJECT_DIR.parent / "JT_explorat
 UPDATE_DIR = Path(os.environ["RMA_UPDATE_DIR"]) if os.environ.get("RMA_UPDATE_DIR") else None
 SCHISM_DIR = DATA_DIR / "baseline_schism" / "ec_full_extent_all_stations"
 CROSSWALK = DATA_DIR / "baseline_schism" / "shared_station_crosswalk.csv"
-OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"))
 OUT = OUTPUT_DIR / "rma_schism_dashboard.json"
 
 SCENARIOS = [

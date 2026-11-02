@@ -4,6 +4,7 @@ import type { Map as MapboxMap } from 'mapbox-gl'
 import Map, { type MapMouseEvent, type MapProps, type MapRef } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { DELTA_MAP_STYLE, fillParentStyle, type MapViewState } from './mapCameraView'
+import { resolveMapStyle } from './offlineBasemapStyle'
 
 type BaseMapProps = Omit<
   MapProps,
@@ -48,7 +49,8 @@ export default function BaseMap({
 }: BaseMapProps) {
   const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN
   const mapRef = useRef<MapRef | null>(null)
-  const resolvedMapStyle = mapStyle ?? mapStyleUrl
+  const requestedMapStyle = mapStyle ?? mapStyleUrl
+  const resolvedMapStyle = resolveMapStyle(requestedMapStyle)
   const usesRemoteMapboxStyle =
     typeof resolvedMapStyle === 'string' && resolvedMapStyle.startsWith('mapbox://')
 

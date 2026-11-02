@@ -4,7 +4,7 @@ import path from 'node:path'
 const sourceDir =
   process.argv[2] ?? path.resolve('..', 'JT_exploration', 'RMA', 'data', 'processed', 'd1641_rma')
 const outputPath = path.resolve(
-  process.argv[3] ?? path.join('public', 'data', 'scenario-explorer', 'd1641_rma.json'),
+  process.argv[3] ?? path.join('public', 'data', 'salinity', 'scenario-explorer', 'd1641_rma.json'),
 )
 const generatedFrom = process.argv[4] ?? 'RMA/data/processed/d1641_rma'
 

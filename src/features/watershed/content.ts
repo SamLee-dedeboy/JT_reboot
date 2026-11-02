@@ -7,16 +7,16 @@ export const hero = {
   eyebrow: 'New Green Watershed',
   title: 'Upstream habitat restoration',
   summary:
-    'How could large-scale upstream restoration of the Delta affect water, carbon storage, and land cover across montane forests, wet meadows, and floodplains?',
+    'How could watershed-scale restoration of montane forests, wet meadows, and floodplains upstream of the Delta affect water, carbon storage, and land cover?',
 }
 
 export const involve = [
-  'New Green Watershed pairs restoration inside the Delta with restoration in the upstream watershed. Upstream habitat restoration focuses on three landscapes: montane forests, wet meadows, and floodplains.',
-  'Each landscape is measured against how much of it exists upstream of the Delta today and how much could be restored. The benefits are followed across five types: hydrology, ecology, eco-cultural, carbon and water quality.',
+  'New Green Watershed pairs restoration inside the Delta with restoration in the upper watershed. Upstream habitat restoration focuses on three landscapes: montane forests, wet meadows, and floodplains.',
+  'Restoration benefits are measured across five types: hydrology, ecology, eco-cultural, carbon and water quality.',
 ]
 
 export const estimationIntro =
-  'The aim is not to predict what a given restoration will do. It is to find defensible per-acre estimates of restoration outcomes that can be applied across the scenarios.'
+  'The aim is not to predict what a given restoration will do. It is to find a defensible range of per-acre estimates of restoration outcomes that can be applied across the scenarios.'
 
 export const estimationSteps: Array<{ title: string; body: string }> = [
   {
@@ -60,11 +60,11 @@ export const landscapeMethods: LandscapeMethod[] = [
           'Hand and mechanical thinning; prescribed burning, cultural burning and managed wildfire',
       },
       {
-        label: 'Measured',
+        label: 'Quantified by area',
         value: 'Evapotranspiration, runoff, forest cover, wildfire carbon emissions',
       },
       {
-        label: 'Described, not measured',
+        label: 'Qualitative benefits',
         value: 'Snowpack, wildlife habitat, eco-cultural restoration, water quality risk',
       },
     ],
@@ -100,12 +100,12 @@ export const landscapeMethods: LandscapeMethod[] = [
           'Pond-and-plug restoration; beaver dam analogs and low-tech process-based restoration',
       },
       {
-        label: 'Measured',
+        label: 'Quantified by area',
         value:
           'Groundwater elevation, evapotranspiration, flood peak, wetland cover, carbon storage',
       },
       {
-        label: 'Described, not measured',
+        label: 'Qualitative benefits',
         value:
           'Wildlife habitat, fire resistance, sediment capture, temperature, pollutant removal, eco-cultural restoration',
       },
@@ -133,12 +133,12 @@ export const landscapeMethods: LandscapeMethod[] = [
         value: 'Levee setbacks, breaches and removal; riparian restoration',
       },
       {
-        label: 'Measured',
+        label: 'Quantified by area',
         value:
           'Groundwater recharge, irrigation demand, riparian and marsh cover, soil and vegetation carbon',
       },
       {
-        label: 'Described, not measured',
+        label: 'Qualitative benefits',
         value:
           'Flood risk reduction, ecosystem productivity, pollutant removal, eco-cultural restoration',
       },
@@ -168,16 +168,19 @@ export const landscapeMethods: LandscapeMethod[] = [
 ]
 
 export const scenariosIntro =
-  'The nine scenarios come from a three-by-three matrix. The vertical axis sets how much is restored, from minimal to maximum. The horizontal axis sets which landscape restoration puts first: forests, meadows, or floodplains.'
+  'We created a set of sub-scenarios to show how different amounts of restoration (level of effort and investment), as well as prioritizing specific habitats over others, affect the projected level of benefits. These nine scenarios are shown in a three-by-three matrix. The scenarios vary on the vertical axis by how much habitat area is restored, from minimal to maximal. The scenarios vary on the horizontal axis by which landscape is prioritized for restoration: forests, meadows, or floodplains.'
 
 export const scenarioReadingExample = {
   title: 'How to read one scenario',
   paragraphs: [
-    'The white square is 100% of each landscape’s restorable area today.',
-    'Minimal restoration prioritizing forests treats 12% of the available forest area, 10% of existing meadow area, and adds floodplain habitat equal to 10% of today’s restoration opportunity. That represents about 1.4 million forest acres, 11,600 meadow acres and 6,360 floodplain acres.',
+    'In each chart, the white square is 100% of each landscape’s restorable area today.',
+    'The Minimal restoration scenario that prioritizes forest restoration includes restoration of 12% of existing forested area, 10% of existing meadow area, and creation of additional floodplain habitat equal to 10% of existing restoration opportunities. That represents about 1.4 million forest acres, 11,600 meadow acres and 6,360 floodplain acres.',
     'The other eight scenarios use the same three measures with different restoration levels and priorities.',
   ],
 }
+
+export const changesIntro =
+  'All of the sub-scenarios would create restored habitats and a wide range of regenerative benefits and increased resiliency to climate change impacts, with those benefits increasing with increased effort, and with the types of benefits achieved varying based on which habitats are prioritized.'
 
 export interface OutcomeGroup {
   id: string
@@ -191,8 +194,8 @@ export const outcomeGroups: OutcomeGroup[] = [
     id: 'water',
     title: 'Water',
     takeaways: [
-      'Less evapotranspiration in thinned forests turns into more runoff.',
-      'Floodplain restoration opens up opportunities for groundwater recharge.',
+      'Reduced evapotranspiration in thinned forests can result in additional runoff.',
+      'Floodplain restoration creates opportunities for groundwater recharge.',
       'Wide ranges reflect uncertainty and differences in geography and climate.',
     ],
     metrics: [
@@ -217,35 +220,9 @@ export const outcomeGroups: OutcomeGroup[] = [
 ]
 
 export const landCoverTakeaways = [
-  'Restoration dramatically expands rare meadow, marsh and riparian habitat.',
+  'Restoration expands rare meadow, marsh and riparian habitat.',
   'The modeled decrease in forest cover represents deliberate thinning and managed fire over 50 years, not unplanned habitat loss.',
 ]
-
-export const qualitativeIntro =
-  'Some benefits are described in the literature but not yet measured per acre, so they are not counted in the scenario totals.'
-
-export const qualitativeBenefits = {
-  columns: ['Landscape', 'Hydrology and water quality', 'Ecology'],
-  rows: [
-    {
-      landscape: 'forests',
-      hydrology: 'Snowpack; reduced water quality risk',
-      ecology: 'Wildlife habitat',
-    },
-    {
-      landscape: 'meadows',
-      hydrology: 'Sediment capture; change in temperature; pollutant removal',
-      ecology: 'Wildlife habitat; wildfire resistance',
-    },
-    {
-      landscape: 'floodplains',
-      hydrology: 'Flood risk reduction; pollutant removal',
-      ecology: 'Ecosystem productivity',
-    },
-  ] satisfies Array<{ landscape: Landscape; hydrology: string; ecology: string }>,
-  ecoCultural:
-    'In every landscape: more opportunities for cultural practice and transmission, applying Indigenous traditional ecological knowledge and reciprocal land stewardship.',
-}
 
 export const uncertainties = [
   {

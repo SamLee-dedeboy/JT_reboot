@@ -2,19 +2,19 @@ import { useEffect, useMemo, useRef, useState, useTransition, type ReactNode } f
 import {
   Box,
   CircularProgress,
-  FormControl,
   IconButton,
   Link,
   MenuItem,
-  Select,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from '@mui/material'
-import type { SelectChangeEvent } from '@mui/material/Select'
+import { ThemeProvider } from '@mui/material/styles'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { explorerControl } from '../../theme'
+import { explorerFontSizes, explorerTypographyTheme, useCompactExplorer } from './explorerType'
+import { summarizeSpread } from './format'
 import { assetUrl } from '../../utils/baseUrl'
 import DeltaMap from './components/DeltaMap'
 import RegionalChart from './components/RegionalChart'
@@ -22,6 +22,8 @@ import StationHistogram from './components/StationHistogram'
 import ExplorerHeader from './components/ExplorerHeader'
 import SalinityScale from './components/SalinityScale'
 import ExplorerInfoPopover from './components/ExplorerInfoPopover'
+import { ControlLabel, InfoButton, LabeledSelect } from './components/controls'
+import { menuItemSx, segmentedSx, smallIconSx } from './components/controlStyles'
 import ExplorerTutorial from './components/ExplorerTutorial'
 import type {
   D1641Dataset,
@@ -37,39 +39,38 @@ import type {
 } from './types'
 
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
-  'rma-scenarios': { key: 'rmaScenarios', url: '/data/scenario-explorer/salinity_dashboard.json' },
-  'rma-schism': { key: 'rmaSchism', url: '/data/scenario-explorer/rma_schism_dashboard.json' },
-  'rma-calsim': { key: 'rmaCalsim', url: '/data/scenario-explorer/rma_calsim_dashboard.json' },
+  'rma-scenarios': {
+    key: 'rmaScenarios',
+    url: '/data/salinity/scenario-explorer/salinity_dashboard.json',
+  },
+  'rma-schism': {
+    key: 'rmaSchism',
+    url: '/data/salinity/scenario-explorer/rma_schism_dashboard.json',
+  },
+  'rma-calsim': {
+    key: 'rmaCalsim',
+    url: '/data/salinity/scenario-explorer/rma_calsim_dashboard.json',
+  },
   'calsim-scenarios': {
     key: 'calsimScenarios',
-    url: '/data/scenario-explorer/calsim_scenarios_dashboard.json',
+    url: '/data/salinity/scenario-explorer/calsim_scenarios_dashboard.json',
   },
   'tiered-outflows': {
     key: 'tieredOutflows',
-    url: '/data/scenario-explorer/tiered_outflows_dashboard.json',
+    url: '/data/salinity/scenario-explorer/tiered_outflows_dashboard.json',
   },
-  'schism-runs': { key: 'schismRuns', url: '/data/scenario-explorer/schism_runs_dashboard.json' },
+  'schism-runs': {
+    key: 'schismRuns',
+    url: '/data/salinity/scenario-explorer/schism_runs_dashboard.json',
+  },
   'slr-current': {
     key: 'slrScenarios',
-    url: '/data/scenario-explorer/slr_scenarios_dashboard.json',
+    url: '/data/salinity/scenario-explorer/slr_scenarios_dashboard.json',
   },
   'slr-scenarios': {
     key: 'slrScenarios',
-    url: '/data/scenario-explorer/slr_scenarios_dashboard.json',
+    url: '/data/salinity/scenario-explorer/slr_scenarios_dashboard.json',
   },
-}
-
-interface LabeledSelectProps {
-  children: ReactNode
-  disabled?: boolean
-  label: string
-  onChange: (event: SelectChangeEvent<string>) => void
-  onInfoClick?: (button: HTMLButtonElement) => void
-  infoLabel?: string
-  value: string
-  tourId?: string
-  displayValue?: string
-  compactValue?: string
 }
 
 const renameBaseline = (label: string) => label.replace(/\bBaseline\b/gi, 'Business as Usual')
@@ -109,12 +110,6 @@ const scenarioAbbreviation = (label: string) =>
     '+30% Delta outflow': '+30% outflow',
     '-10% Delta outflow': '-10% outflow',
   })[label] ?? label
-const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen') =>
-  ({
-    color,
-    typography: 'button',
-    '&&:hover': { color: 'text.primary' },
-  }) as const
 
 function ResponsiveScenarioLabel({
   fullName = false,
@@ -137,86 +132,6 @@ function ResponsiveScenarioLabel({
   )
 }
 
-function LabeledSelect({
-  children,
-  compactValue,
-  disabled = false,
-  displayValue,
-  infoLabel,
-  label,
-  onChange,
-  onInfoClick,
-  tourId,
-  value,
-}: LabeledSelectProps) {
-  return (
-    <FormControl data-tour={tourId} size="small" sx={{ minWidth: 0, width: '100%' }}>
-      <Box
-        sx={(theme) => ({
-          alignItems: 'center',
-          display: 'flex',
-          gap: theme.jtSpacing.gap.xs,
-          mb: theme.jtSpacing.component.xs,
-        })}
-      >
-        <Typography component="label" variant="caption" sx={{ color: 'text.secondary' }}>
-          {label}
-        </Typography>
-        {onInfoClick && (
-          <IconButton
-            aria-label={infoLabel ?? `About ${label}`}
-            onClick={(event) => onInfoClick(event.currentTarget)}
-            size="small"
-            sx={{ color: 'text.secondary', p: 0 }}
-          >
-            <InfoOutlinedIcon fontSize="small" />
-          </IconButton>
-        )}
-      </Box>
-      <Select
-        disabled={disabled}
-        value={value}
-        onChange={onChange}
-        renderValue={
-          compactValue
-            ? () => (
-                <Box component="span">
-                  <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>
-                    {displayValue ?? value}
-                  </Box>
-                  <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>
-                    {compactValue}
-                  </Box>
-                </Box>
-              )
-            : undefined
-        }
-        sx={{
-          height: '2.5rem',
-          '& .MuiSelect-select': {
-            typography: 'button',
-            alignItems: 'center',
-            color:
-              label.startsWith('Map') || label.startsWith('Selected') || label === 'Scenario'
-                ? 'brand.primaryGreen'
-                : label.startsWith('Base')
-                  ? 'brand.primaryBlue'
-                  : 'text.primary',
-            display: 'flex',
-            minWidth: 0,
-            overflow: 'hidden',
-            py: 0,
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          },
-        }}
-      >
-        {children}
-      </Select>
-    </FormControl>
-  )
-}
-
 function SwapButton({
   disabled = false,
   onClick,
@@ -227,23 +142,24 @@ function SwapButton({
   label?: string
 }) {
   return (
-    <Box
-      sx={(theme) => ({
-        alignSelf: 'end',
-        display: 'grid',
-        height: theme.spacing(5),
-        placeItems: 'center',
-      })}
+    <IconButton
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      sx={{
+        ...smallIconSx,
+        alignSelf: 'flex-end',
+        border: 1,
+        borderColor: 'border.strong',
+        color: 'text.secondary',
+        flex: '0 0 auto',
+        height: explorerControl.height,
+        p: 0,
+        width: explorerControl.height,
+      }}
     >
-      <IconButton
-        aria-label={label}
-        disabled={disabled}
-        onClick={onClick}
-        sx={{ border: 1, borderColor: 'divider', borderRadius: 1, color: 'text.secondary' }}
-      >
-        <SwapHorizIcon fontSize="small" />
-      </IconButton>
-    </Box>
+      <SwapHorizIcon />
+    </IconButton>
   )
 }
 
@@ -331,6 +247,8 @@ export default function ScenarioExplorerPage({
   const [histogramDateIndex, setHistogramDateIndex] = useState(0)
   const [activeKeys, setActiveKeys] = useState<string[]>(['bolster'])
   const [histogramBrush, setHistogramBrush] = useState<HistogramBrush>(null)
+  const [lassoStationIds, setLassoStationIds] = useState<string[]>([])
+  const lassoed = useMemo(() => new Set(lassoStationIds), [lassoStationIds])
   const [valueMode, setValueMode] = useState<ValueMode>('percent')
   const [rangeMode, setRangeMode] = useState<RangeMode>('minmax')
   const [selectedModel, setSelectedModel] = useState<ModelKey>('schism')
@@ -348,6 +266,7 @@ export default function ScenarioExplorerPage({
     if (activeKeys.length <= 1 && isChartExpanded) setIsChartExpanded(false)
   }, [activeKeys.length, isChartExpanded])
   const [, startTransition] = useTransition()
+  const compact = useCompactExplorer()
   const modeTransitionTimerRef = useRef<number | null>(null)
   const dateFrameRef = useRef<number | null>(null)
   const pendingDateIndexRef = useRef(0)
@@ -368,7 +287,7 @@ export default function ScenarioExplorerPage({
       fetch(assetUrl(initialConfig.url)).then(
         (response) => response.json() as Promise<ScenarioDataset>,
       ),
-      fetch(assetUrl('/data/scenario-explorer/d1641_rma.json')).then(
+      fetch(assetUrl('/data/salinity/scenario-explorer/d1641_rma.json')).then(
         (response) => response.json() as Promise<D1641Dataset>,
       ),
     ]).then(([initialData, compliance]) => {
@@ -386,13 +305,13 @@ export default function ScenarioExplorerPage({
         ? datasets?.rmaCalsim
         : dashboardMode === 'calsim-scenarios'
           ? datasets?.calsimScenarios
-      : dashboardMode === 'tiered-outflows'
-        ? datasets?.tieredOutflows
-        : dashboardMode === 'schism-runs'
-          ? datasets?.schismRuns
-          : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
-            ? datasets?.slrScenarios
-            : datasets?.rmaScenarios
+          : dashboardMode === 'tiered-outflows'
+            ? datasets?.tieredOutflows
+            : dashboardMode === 'schism-runs'
+              ? datasets?.schismRuns
+              : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
+                ? datasets?.slrScenarios
+                : datasets?.rmaScenarios
 
   const d1641StationIds = useMemo(() => {
     if (!d1641Data) return null
@@ -420,15 +339,15 @@ export default function ScenarioExplorerPage({
       const [loadedData, loadedCompliance] = await Promise.all([
         fetch(assetUrl(config.url)).then((response) => response.json() as Promise<ScenarioDataset>),
         (nextMode === 'rma-schism' || nextMode === 'schism-runs') && !schismD1641Data
-          ? fetch(assetUrl('/data/scenario-explorer/d1641_schism.json')).then(
+          ? fetch(assetUrl('/data/salinity/scenario-explorer/d1641_schism.json')).then(
               (response) => response.json() as Promise<D1641Dataset>,
             )
           : (nextMode === 'slr-current' || nextMode === 'slr-scenarios') && !slrD1641Data
-            ? fetch(assetUrl('/data/scenario-explorer/d1641_rma_slr.json')).then(
+            ? fetch(assetUrl('/data/salinity/scenario-explorer/d1641_rma_slr.json')).then(
                 (response) => response.json() as Promise<D1641Dataset>,
               )
             : (nextMode === 'rma-calsim' || nextMode === 'calsim-scenarios') && !calsimD1641Data
-              ? fetch(assetUrl('/data/scenario-explorer/d1641_calsim.json')).then(
+              ? fetch(assetUrl('/data/salinity/scenario-explorer/d1641_calsim.json')).then(
                   (response) => response.json() as Promise<D1641Dataset>,
                 )
               : Promise.resolve(null),
@@ -484,6 +403,7 @@ export default function ScenarioExplorerPage({
     setDateIndex(nextDateIndex)
     setHistogramDateIndex(nextDateIndex)
     setHistogramBrush(null)
+    setLassoStationIds([])
     setDashboardMode(nextMode)
     modeTransitionTimerRef.current = window.setTimeout(() => {
       setIsModeTransitioning(false)
@@ -510,12 +430,15 @@ export default function ScenarioExplorerPage({
     const zeroSeries = data.dates.map(() => 0)
     const baseline: Scenario = {
       key: dashboardMode === 'calsim-scenarios' ? 'baseline-calsim' : 'baseline',
-      label: dashboardMode === 'calsim-scenarios' ? 'Business as Usual (CalSim)' : 'Business as Usual',
+      label:
+        dashboardMode === 'calsim-scenarios' ? 'Business as Usual (CalSim)' : 'Business as Usual',
       stationValues: data.stations.map(() => zeroSeries),
       regionValues: Object.fromEntries(data.regions.map((regionName) => [regionName, zeroSeries])),
     }
     return [baseline, ...data.scenarios]
   }, [dashboardMode, data])
+  // Mode 01 offers BaseCalSim only as the locked base COR and TUN are computed against.
+  const hiddenScenarioKey = dashboardMode === 'rma-scenarios' ? 'baseline-calsim' : null
   const comparisonBaseLabel = useMemo(
     () =>
       isModelComparisonMode(dashboardMode)
@@ -761,6 +684,7 @@ export default function ScenarioExplorerPage({
   }
   const selectRegion = (nextRegion: string) => {
     startTransition(() => {
+      setLassoStationIds([])
       setRegion(nextRegion)
       setHistogramBrush(null)
     })
@@ -862,6 +786,19 @@ export default function ScenarioExplorerPage({
   }, [comparisonData, selectedScenario, region])
   const currentRegionValue = (item: Scenario | undefined) => {
     if (!item) return null
+    if (rangeMode !== 'minmax' || lassoed.size) {
+      const inRegion = item.stationValues
+        .filter((_, index) => {
+          const station = rawComparisonData?.stations[index]
+          return (
+            (region === 'All regions' || station?.region === region) &&
+            (!lassoed.size || lassoed.has(String(station?.station_id)))
+          )
+        })
+        .map((series) => series[dateIndex])
+        .filter((value): value is number => value != null && Number.isFinite(value))
+      return summarizeSpread(inRegion, rangeMode).average
+    }
     const values = item.stationValues
       .map((series) => series[dateIndex])
       .filter((value): value is number => value != null)
@@ -883,7 +820,12 @@ export default function ScenarioExplorerPage({
         ? data?.scenarios.find((item) => item.key === rawSelectedScenario.currentCounterpart)
         : null
     const stationIndices = rawComparisonData.stations
-      .map((station, index) => (region === 'All regions' || station.region === region ? index : -1))
+      .map((station, index) =>
+        (region === 'All regions' || station.region === region) &&
+        (!lassoed.size || lassoed.has(String(station.station_id)))
+          ? index
+          : -1,
+      )
       .filter((index) => index >= 0)
     const stationMeans = stationIndices
       .map((stationIndex) => {
@@ -918,6 +860,7 @@ export default function ScenarioExplorerPage({
     baseScenario,
     dashboardMode,
     data,
+    lassoed,
     rawComparisonData,
     rawSelectedScenario,
     region,
@@ -944,17 +887,18 @@ export default function ScenarioExplorerPage({
     : `Explore salinity changes across scenarios, regions, stations, and time with the linked map, timeline, and station distribution. See Tutorial for help.${publicModesOnly ? '' : ' If the layout feels crowded, use a larger screen or zoom out in your browser (Ctrl/Cmd + −).'}`
 
   return (
-    <>
+    <ThemeProvider theme={explorerTypographyTheme}>
       <Box
         component="main"
         sx={(theme) => ({
+          ...explorerFontSizes(theme),
           bgcolor: 'base.800',
           boxSizing: 'border-box',
           display: 'flex',
           flexDirection: 'column',
           height: { xs: 'auto', lg: '100dvh' },
           minHeight: { xs: '100dvh', lg: 0 },
-          overflow: { xs: 'visible', lg: 'hidden' },
+          overflow: { xs: 'visible', lg: 'auto' },
           p: {
             xs: theme.jtSpacing.component.sm,
             md: theme.jtSpacing.component.md,
@@ -995,7 +939,11 @@ export default function ScenarioExplorerPage({
           showSlrModes={enableSlrModes}
           publicModesOnly={publicModesOnly}
         />
-        <ExplorerTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />
+        <ExplorerTutorial
+          open={tutorialOpen}
+          onClose={() => setTutorialOpen(false)}
+          publicModesOnly={publicModesOnly}
+        />
 
         <Box
           sx={(theme) => ({
@@ -1010,20 +958,19 @@ export default function ScenarioExplorerPage({
                   lg: 'minmax(0, 2.4fr) minmax(18rem, .7fr)',
                   xl: 'minmax(0, 2fr) minmax(20rem, .85fr)',
                 },
-            minHeight: 0,
-            overflow: { xs: 'visible', lg: 'hidden' },
           })}
         >
           <Box
             sx={(theme) => ({
               display: 'grid',
               gap: theme.jtSpacing.gap.sm,
-              gridTemplateRows: 'auto minmax(0, 1fr)',
+              // The charts keep their minimum size; a short window scrolls the page instead.
+              gridTemplateRows: 'auto minmax(min-content, 1fr)',
               minHeight: 0,
               minWidth: 0,
             })}
           >
-            <PaperControls mode={dashboardMode}>
+            <PaperControls>
               {isModelComparisonMode(dashboardMode) ? (
                 <>
                   <LabeledSelect
@@ -1100,7 +1047,11 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
                     {data.scenarios.map((item) => (
-                      <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>
+                      <MenuItem
+                        key={item.key}
+                        value={item.key}
+                        sx={menuItemSx('brand.primaryGreen')}
+                      >
                         <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
@@ -1119,7 +1070,11 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => selectSlrFamily(event.target.value)}
                   >
                     {scenarioOptions.map((item) => (
-                      <MenuItem key={item.key} value={item.key} sx={menuItemSx('brand.primaryGreen')}>
+                      <MenuItem
+                        key={item.key}
+                        value={item.key}
+                        sx={menuItemSx('brand.primaryGreen')}
+                      >
                         <ResponsiveScenarioLabel
                           fullName={publicModesOnly}
                           label={item.label.replace(/\s*\(SLR\)$/, '')}
@@ -1165,9 +1120,7 @@ export default function ScenarioExplorerPage({
                   >
                     {scenarioOptions.map((item) => (
                       <MenuItem
-                        disabled={
-                          item.key === baseScenario
-                        }
+                        disabled={item.key === baseScenario}
                         key={item.key}
                         value={item.key}
                         sx={menuItemSx('brand.primaryGreen')}
@@ -1190,20 +1143,22 @@ export default function ScenarioExplorerPage({
                     )}
                     onChange={(event) => selectBaseScenario(event.target.value)}
                   >
-                    {scenarioOptions.map((item) => (
-                      <MenuItem
-                        disabled={
-                          item.key === scenario ||
-                          (requiredComparisonBaseline(dashboardMode, scenario) !== null &&
-                            item.key !== requiredComparisonBaseline(dashboardMode, scenario))
-                        }
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryBlue')}
-                      >
-                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
-                      </MenuItem>
-                    ))}
+                    {scenarioOptions
+                      .filter((item) => item.key !== hiddenScenarioKey || item.key === baseScenario)
+                      .map((item) => (
+                        <MenuItem
+                          disabled={
+                            item.key === scenario ||
+                            (requiredComparisonBaseline(dashboardMode, scenario) !== null &&
+                              item.key !== requiredComparisonBaseline(dashboardMode, scenario))
+                          }
+                          key={item.key}
+                          value={item.key}
+                          sx={menuItemSx('brand.primaryBlue')}
+                        >
+                          <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
+                        </MenuItem>
+                      ))}
                   </LabeledSelect>
                   <SwapButton
                     disabled={requiredComparisonBaseline(dashboardMode, scenario) !== null}
@@ -1219,59 +1174,43 @@ export default function ScenarioExplorerPage({
                     )}
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
-                    {scenarioOptions.map((item) => (
-                      <MenuItem
-                        disabled={
-                          item.key === baseScenario
-                        }
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryGreen')}
-                      >
-                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
-                      </MenuItem>
-                    ))}
+                    {scenarioOptions
+                      .filter((item) => item.key !== hiddenScenarioKey)
+                      .map((item) => (
+                        <MenuItem
+                          disabled={item.key === baseScenario}
+                          key={item.key}
+                          value={item.key}
+                          sx={menuItemSx('brand.primaryGreen')}
+                        >
+                          <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
+                        </MenuItem>
+                      ))}
                   </LabeledSelect>
                 </>
               )}
               <LabeledSelect
                 tourId="region-values"
-                label="Selected Region"
+                label={compact ? 'Region' : 'Selected Region'}
+                fixedBasis={explorerControl.regionBasis}
                 value={region}
                 infoLabel="About the region definitions"
                 onInfoClick={setRegionInfoAnchor}
                 onChange={(event) => selectRegion(event.target.value)}
               >
-                <MenuItem value="All regions" sx={menuItemSx('brand.primaryGreen')}>
+                <MenuItem value="All regions" sx={menuItemSx('common.white')}>
                   All regions
                 </MenuItem>
                 {data.regions.map((item) => (
-                  <MenuItem key={item} value={item} sx={menuItemSx('brand.primaryGreen')}>
+                  <MenuItem key={item} value={item} sx={menuItemSx('common.white')}>
                     {item}
                   </MenuItem>
                 ))}
               </LabeledSelect>
-              <Box data-tour="region-values">
-                <Box
-                  sx={(theme) => ({
-                    alignItems: 'center',
-                    display: 'flex',
-                    gap: theme.jtSpacing.gap.xs,
-                    mb: theme.jtSpacing.component.xs,
-                  })}
-                >
-                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                    Values
-                  </Typography>
-                  <IconButton
-                    aria-label="About value calculations"
-                    onClick={(event) => setValuesInfoAnchor(event.currentTarget)}
-                    size="small"
-                    sx={{ color: 'text.secondary', p: 0 }}
-                  >
-                    <InfoOutlinedIcon fontSize="small" />
-                  </IconButton>
-                </Box>
+              <Box data-tour="region-values" sx={{ flex: { xs: '1 1 100%', sm: '0 0 auto' } }}>
+                <ControlLabel label="Values">
+                  <InfoButton label="About value calculations" onClick={setValuesInfoAnchor} />
+                </ControlLabel>
                 <ToggleButtonGroup
                   exclusive
                   size="small"
@@ -1283,22 +1222,19 @@ export default function ScenarioExplorerPage({
                     }
                   }}
                   aria-label="Value display mode"
-                  sx={{ height: '2.5rem' }}
+                  sx={segmentedSx}
                 >
-                  <ToggleButton value="raw" sx={{ textTransform: 'none' }}>
-                    {'\u00B5S/cm'}
-                  </ToggleButton>
-                  <ToggleButton value="percent">
-                    <Box component="span" sx={{ display: { xs: 'none', xl: 'inline' } }}>
-                      % change
-                    </Box>
-                    <Box component="span" sx={{ display: { xs: 'inline', xl: 'none' } }}>
-                      % change
-                    </Box>
-                  </ToggleButton>
+                  <ToggleButton value="raw">{'\u00B5S/cm'}</ToggleButton>
+                  <ToggleButton value="percent">% change</ToggleButton>
                 </ToggleButtonGroup>
               </Box>
-              <Box data-tour="color-scale">
+              <Box
+                data-tour="color-scale"
+                sx={{
+                  flex: `1 1 ${compact ? explorerControl.compactScaleBasis : explorerControl.scaleBasis}`,
+                  minWidth: 0,
+                }}
+              >
                 <SalinityScale extent={mapExtent} units={valueMode === 'percent' ? '%' : 'µS/cm'} />
               </Box>
             </PaperControls>
@@ -1370,9 +1306,9 @@ export default function ScenarioExplorerPage({
               </Box>
               <Typography variant="captionSmall" component="p" color="text.secondary">
                 On the map and in the station distribution, this calculation is applied to each
-                station. The current regional average uses the same relationship after averaging the
-                station EC differences and selected base-scenario references across the selected
-                region.
+                station. The current average deviation uses the same relationship: it averages the
+                EC differences across the selected station spread and the base-scenario references
+                across the selected region, or across the lassoed stations when there are any.
               </Typography>
               <Typography variant="captionSmall" component="p" color="text.secondary">
                 Positive values indicate saltier conditions than the selected base scenario;
@@ -1394,11 +1330,10 @@ export default function ScenarioExplorerPage({
                   : {
                       xs: '1fr',
                       md: 'minmax(0, 1fr) minmax(9rem, .18fr)',
+                      lg: 'minmax(0, 1fr) minmax(12rem, .22fr)',
                       xl: 'minmax(0, 1fr) minmax(8rem, .22fr)',
                     },
-                minHeight: 0,
                 minWidth: 0,
-                overflow: { xs: 'visible', lg: 'hidden' },
               })}
             >
               <RegionalChart
@@ -1423,12 +1358,15 @@ export default function ScenarioExplorerPage({
                 onExpandedChange={setIsChartExpanded}
                 enableDateHighlights={enableDateHighlights}
                 useFullScenarioNames={publicModesOnly}
+                hiddenOverlayKey={hiddenScenarioKey}
+                lassoStationIds={lassoStationIds}
                 showTimeframeSelector={!publicModesOnly}
               />
               {!isChartExpanded && (
                 <StationHistogram
                   data={comparisonData}
                   region={region}
+                  lassoStationIds={lassoStationIds}
                   scenario={selectedScenario}
                   dateIndex={histogramDateIndex}
                   onBrushChange={setHistogramBrush}
@@ -1448,11 +1386,11 @@ export default function ScenarioExplorerPage({
                   ? d1641Data
                   : dashboardMode === 'calsim-scenarios'
                     ? calsimD1641Data
-                  : dashboardMode === 'schism-runs'
-                    ? schismD1641Data
-                    : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
-                      ? chartD1641Data
-                      : null
+                    : dashboardMode === 'schism-runs'
+                      ? schismD1641Data
+                      : dashboardMode === 'slr-current' || dashboardMode === 'slr-scenarios'
+                        ? chartD1641Data
+                        : null
               }
               baseScenario={baseScenario}
               scenario={scenario}
@@ -1462,63 +1400,36 @@ export default function ScenarioExplorerPage({
               histogramBrush={histogramBrush}
               showBrushStationLabels={!publicModesOnly}
               emphasizeD1641Stations={d1641StationsOnly}
+              lassoStationIds={lassoStationIds}
+              onLassoChange={setLassoStationIds}
             />
           )}
         </Box>
       </Box>
-    </>
+    </ThemeProvider>
   )
 }
 
-function PaperControls({ children, mode }: { children: ReactNode; mode: DashboardMode }) {
+function PaperControls({ children }: { children: ReactNode }) {
+  const compact = useCompactExplorer()
   return (
     <Box
       component="section"
-      sx={(theme) => ({
-        alignItems: 'end',
+      sx={{
+        alignItems: 'flex-end',
         bgcolor: 'base.700',
         border: 1,
         borderColor: 'divider',
         borderRadius: 1,
-        display: 'grid',
+        columnGap: 1.25,
+        display: 'flex',
         flex: '0 0 auto',
-        gap: theme.jtSpacing.gap.sm,
-        gridTemplateColumns:
-          mode === 'slr-current'
-            ? 'minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
-            : isModelComparisonMode(mode)
-              ? 'minmax(0,.8fr) auto minmax(0,.8fr) minmax(0,1fr) minmax(0,1fr) auto minmax(10rem,1.35fr)'
-              : 'minmax(0,1fr) auto minmax(0,1.2fr) minmax(0,1fr) auto minmax(10rem,1.35fr)',
+        flexWrap: compact ? 'nowrap' : 'wrap',
         minWidth: 0,
-        overflow: 'hidden',
-        p: theme.jtSpacing.component.sm,
-        '@media (max-width: 1919.95px)': {
-          '& .MuiTypography-caption': { ...theme.typography.captionSmall },
-        },
-        [theme.breakpoints.down('xl')]: {
-          gridTemplateColumns:
-            mode === 'slr-current'
-              ? 'minmax(4rem,.9fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
-              : isModelComparisonMode(mode)
-                ? 'minmax(4rem,.7fr) auto minmax(4rem,.7fr) minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)'
-                : 'minmax(4rem,.75fr) auto minmax(4rem,.8fr) minmax(5rem,.8fr) auto minmax(7rem,1fr)',
-        },
-        [theme.breakpoints.down('md')]: {
-          '& .MuiTypography-caption': { ...theme.typography.captionSmall },
-          gap: theme.jtSpacing.gap.xs,
-          gridTemplateColumns:
-            mode === 'slr-current'
-              ? 'minmax(3.5rem,.75fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
-              : isModelComparisonMode(mode)
-                ? 'minmax(3.5rem,.55fr) auto minmax(3.5rem,.55fr) minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)'
-                : 'minmax(3.5rem,.6fr) auto minmax(3.5rem,.65fr) minmax(4rem,.65fr) auto minmax(5rem,.7fr)',
-          p: theme.jtSpacing.component.xs,
-        },
-        [theme.breakpoints.between('lg', 'xl')]: {
-          '& .MuiTypography-caption': { ...theme.typography.captionSmall },
-          gap: theme.jtSpacing.gap.xs,
-        },
-      })}
+        px: 1.5,
+        py: 1,
+        rowGap: 1,
+      }}
     >
       {children}
     </Box>

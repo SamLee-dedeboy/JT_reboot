@@ -106,24 +106,24 @@ const VULNERABILITY_GROUP_ORDER: VulnerabilityGroup[] = ['HIGHEST', 'HIGH', 'MOD
 
 const DATASET_PATHS: Record<ConfigurationMode, Record<DatasetMode, string>> = {
   'max-base': {
-    run15: `${import.meta.env.BASE_URL}/data/max/base/water_quality_run15.json`,
-    run16: `${import.meta.env.BASE_URL}/data/max/base/water_quality_run16.json`,
-    run17: `${import.meta.env.BASE_URL}/data/max/base/water_quality_run17.json`,
+    run15: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/max/base/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/max/base/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/max/base/water_quality_run17.json`,
   },
   'max-deanna': {
-    run15: `${import.meta.env.BASE_URL}/data/max/Deanna/water_quality_run15.json`,
-    run16: `${import.meta.env.BASE_URL}/data/max/Deanna/water_quality_run16.json`,
-    run17: `${import.meta.env.BASE_URL}/data/max/Deanna/water_quality_run17.json`,
+    run15: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/max/Deanna/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/max/Deanna/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/max/Deanna/water_quality_run17.json`,
   },
   'mean-base': {
-    run15: `${import.meta.env.BASE_URL}/data/mean/base/water_quality_run15.json`,
-    run16: `${import.meta.env.BASE_URL}/data/mean/base/water_quality_run16.json`,
-    run17: `${import.meta.env.BASE_URL}/data/mean/base/water_quality_run17.json`,
+    run15: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/mean/base/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/mean/base/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/mean/base/water_quality_run17.json`,
   },
   'mean-stringent': {
-    run15: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run15.json`,
-    run16: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run16.json`,
-    run17: `${import.meta.env.BASE_URL}/data/mean/stringent/water_quality_run17.json`,
+    run15: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/mean/stringent/water_quality_run15.json`,
+    run16: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/mean/stringent/water_quality_run16.json`,
+    run17: `${import.meta.env.BASE_URL}/data/internal/rank-visualization/mean/stringent/water_quality_run17.json`,
   },
 }
 
@@ -403,7 +403,7 @@ export default function GanttChart({
     async function loadStationInfo() {
       try {
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/data/water_quality_station_info.json`,
+          `${import.meta.env.BASE_URL}/data/internal/rank-visualization/water_quality_station_info.json`,
         )
         if (!response.ok) {
           throw new Error(`Failed to load station info (${response.status})`)

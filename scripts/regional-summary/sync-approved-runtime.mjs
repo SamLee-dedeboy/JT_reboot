@@ -15,8 +15,11 @@ const updatedLabelLocationsPath = path.join(
 const labelLocationsPath = fs.existsSync(updatedLabelLocationsPath)
   ? updatedLabelLocationsPath
   : path.join(researchRoot, 'inputs/regional_label_locations.geojson')
-const patternPath = path.join(repoRoot, 'public/data/regional-summary/pattern-list.json')
-const roiPath = path.join(repoRoot, 'public/data/regional-summary/region-of-interest.geojson')
+const patternPath = path.join(repoRoot, 'public/data/patterns/pattern-list.json')
+const roiPath = path.join(
+  repoRoot,
+  'public/data/geospatial-assets/shared/region-of-interest.geojson',
+)
 
 function parseCsv(text) {
   const rows = []
@@ -298,12 +301,12 @@ fs.writeFileSync(roiPath, `${JSON.stringify({ type: 'FeatureCollection', feature
 // Reviewed B&F records are preserved; SCHISM outflow uses its separate pipeline.
 const dashboard = JSON.parse(
   fs.readFileSync(
-    path.join(repoRoot, 'public/data/scenario-explorer/salinity_dashboard.json'),
+    path.join(repoRoot, 'public/data/salinity/scenario-explorer/salinity_dashboard.json'),
     'utf8',
   ),
 )
-const evidencePath = path.join(repoRoot, 'public/data/regional-summary/pattern-evidence.json')
-const seriesPath = path.join(repoRoot, 'public/data/regional-summary/pattern-ec-series-7d.json')
+const evidencePath = path.join(repoRoot, 'public/data/patterns/pattern-evidence.json')
+const seriesPath = path.join(repoRoot, 'public/data/patterns/pattern-ec-series-7d.json')
 const evidence = JSON.parse(fs.readFileSync(evidencePath, 'utf8'))
 const series = JSON.parse(fs.readFileSync(seriesPath, 'utf8'))
 const recommendedPath = path.join(

@@ -28,7 +28,7 @@ from pathlib import Path
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_DATA_DIR = PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"
-DEFAULT_OUTPUT_DIR = PROJECT_DIR / "public" / "data" / "scenario-explorer"
+DEFAULT_OUTPUT_DIR = PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"
 DASHBOARD_NAME = "slr_scenarios_dashboard.json"
 VALIDATION_NAME = "slr_scenarios_validation.json"
 LIVE_NAME = "salinity_dashboard.json"

@@ -1,7 +1,7 @@
 // Waterway-mesh routing primitives for KelpFusion.
 //
 // Builds a routable graph from a FeatureCollection of LineString centerlines
-// (see `public/data/delta_waterway_lines.geojson`, produced by
+// (see `public/data/internal/kelp-fusion/delta_waterway_lines.geojson`, produced by
 // `scripts/extract_centerlines.py`), snaps each station to the *nearest
 // channel segment* and splits that segment by inserting a virtual node at
 // the projection, then runs Dijkstra so kelp edges can use waterway

@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ANALYSIS = ROOT / "public" / "data" / "regional-summary" / "raw" / "bf-three-closure-analysis"
+ANALYSIS = ROOT / "public" / "data" / "patterns" / "raw" / "bf-three-closure-analysis"
 SELECTIONS = {
     "franks_tract": {
         "variant_id": "both_groups_excluded_core_only",

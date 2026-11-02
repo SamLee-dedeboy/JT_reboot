@@ -8,7 +8,6 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type React
 import { Link } from 'react-router-dom'
 import { Layer, Source } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
-import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import { jtSpacing } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
 import RegionalStackedTimeline from './RegionalStackedTimeline'
@@ -121,7 +120,7 @@ function StrategyAssetLayers({
       <Source
         id="summary-eco-strategy-regions"
         type="geojson"
-        data={assetUrl('/data/regional-summary/region-of-interest.geojson')}
+        data={assetUrl('/data/geospatial-assets/shared/region-of-interest.geojson')}
       >
         {activeSteps.has(0) ? (
           <Layer
@@ -166,7 +165,9 @@ function StrategyAssetLayers({
           <Source
             id="summary-ngw-strategy-habitats"
             type="geojson"
-            data={assetUrl('/data/regional-summary/gis/ngw-habitats.geojson')}
+            data={assetUrl(
+              '/data/geospatial-assets/scenarios/new-green-watershed/habitats.geojson',
+            )}
           >
             {activeSteps.has(0) ? (
               <Layer
@@ -204,7 +205,7 @@ function StrategyAssetLayers({
         ) : null}
         {line(
           'summary-ngw-strategy-watersheds',
-          '/data/regional-summary/gis/watershed-region.geojson',
+          '/data/geospatial-assets/scenarios/new-green-watershed/watershed-region.geojson',
           2,
         )}
       </>
@@ -230,7 +231,7 @@ function StrategyAssetLayers({
         ) : null}
         {line(
           'summary-cor-sacramento-mainstem',
-          '/data/regional-summary/gis/sacramento-river-mainstem.geojson',
+          '/data/geospatial-assets/scenarios/calling-on-reserves/sacramento-river-mainstem.geojson',
           1,
         )}
       </>
@@ -242,17 +243,17 @@ function StrategyAssetLayers({
       <>
         {area(
           'summary-bf-operable-gates',
-          '/data/regional-summary/gis/bf-franks-tract-operable-gates.geojson',
+          '/data/geospatial-assets/scenarios/bolster-and-fortify/operable-gates.geojson',
           0,
         )}
         {area(
           'summary-bf-levee-repair',
-          '/data/regional-summary/gis/bf-franks-tract-levee-repair.geojson',
+          '/data/geospatial-assets/scenarios/bolster-and-fortify/levee-repair.geojson',
           1,
         )}
         {line(
           'summary-bf-freshwater-pathway',
-          '/data/regional-summary/gis/bf-through-delta-freshwater-pathway.geojson',
+          '/data/geospatial-assets/scenarios/bolster-and-fortify/freshwater-pathway.geojson',
           2,
         )}
       </>
@@ -262,8 +263,16 @@ function StrategyAssetLayers({
   if (scenarioSlug === 'a-tunnel') {
     return (
       <>
-        {area('summary-tunnel-intakes', '/data/regional-summary/gis/delta-tunnel-sites.geojson', 0)}
-        {line('summary-tunnel-route', '/data/regional-summary/gis/delta-tunnel.geojson', 1)}
+        {area(
+          'summary-tunnel-intakes',
+          '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
+          0,
+        )}
+        {line(
+          'summary-tunnel-route',
+          '/data/geospatial-assets/scenarios/tunnel/alignment.geojson',
+          1,
+        )}
       </>
     )
   }
@@ -372,10 +381,6 @@ export default function RegionalSalinitySummary({
   const [patternsReady, setPatternsReady] = useState(false)
   const [mapCursor, setMapCursor] = useState<'default' | 'pointer'>('default')
   const mapRef = useRef<MapboxMap | null>(null)
-  const offlineMapStyle = useMemo(
-    () => (isOfflineMapEnabled() ? createOfflineBasemapStyle() : undefined),
-    [],
-  )
   const overviewBounds = useMemo(() => scenarioOverviewBounds(places), [places])
   const interactiveLayerIds = useMemo(
     () => regionalInteractiveLayerIds(mapPlaces, patternsReady),
@@ -586,7 +591,6 @@ export default function RegionalSalinitySummary({
               >
                 {/* Static map: regions and pins are selectable, but the camera stays put */}
                 <BaseMap
-                  mapStyle={offlineMapStyle}
                   mapStyleUrl={regionalMapStyleUrl}
                   initialViewState={regionalOverview}
                   dragPan={false}

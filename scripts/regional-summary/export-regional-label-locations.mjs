@@ -3,7 +3,7 @@ import path from 'node:path'
 
 const repoRoot = process.cwd()
 const researchRoot = process.argv[2] ?? 'D:/projects/JT_exploration/RMA/BDSC_regional_summary'
-const patternPath = path.join(repoRoot, 'public/data/regional-summary/pattern-list.json')
+const patternPath = path.join(repoRoot, 'public/data/patterns/pattern-list.json')
 const outputPath = path.join(researchRoot, 'inputs/regional_label_locations.geojson')
 const membershipPath = path.join(
   researchRoot,

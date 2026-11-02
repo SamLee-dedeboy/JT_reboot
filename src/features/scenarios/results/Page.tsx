@@ -11,7 +11,7 @@ import {
   slrScenarioSlugs,
   tieredOutflowsScenario,
 } from '../content'
-import { FamilyNavigation, OutflowTabs, type ResultFamily } from './Navigation'
+import { OutflowTabs } from './Navigation'
 import { explorerHref as explorerLink } from './explorerLinks'
 import ModelingOverview from './ModelingOverview'
 import ResultsHero from './ResultsHero'
@@ -35,13 +35,6 @@ export default function Page() {
   const slrAvailable =
     isAdaptation && slrScenarioSlugs.includes(scenarioSlug as (typeof slrScenarioSlugs)[number])
   const seaLevelRise = slrAvailable && searchParams.get('seaLevelRise') === 'true'
-  const family: ResultFamily = isOverview
-    ? 'overview'
-    : isOutflow
-      ? 'outflow'
-      : seaLevelRise
-        ? 'adaptation-slr'
-        : 'adaptation'
   const heroImage = isOverview
     ? '/images/scenarios/web/cover.webp'
     : isOutflow
@@ -71,13 +64,7 @@ export default function Page() {
               : 'Review modeled outcomes and the shared criteria used to compare each Delta future against baseline operations.'
           }
           image={heroImage}
-        >
-          <FamilyNavigation
-            activeFamily={family}
-            scenarioSlug={isAdaptation ? scenarioSlug : undefined}
-            slrAvailable={slrAvailable}
-          />
-        </ResultsHero>
+        />
 
         {isOutflow && <OutflowTabs activeVariation={variation.id} />}
         {isAdaptation && scenarioSlug && (

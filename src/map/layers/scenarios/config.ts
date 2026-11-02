@@ -31,6 +31,7 @@ export interface SourceConfig {
   type: 'vector' | 'raster-array' | 'geojson'
   url?: string
   data?: string | FeatureCollection
+  offlineData?: string
   tileSize?: number
   layers: LayerProps[]
   activation?: 'adaptation'
@@ -74,7 +75,7 @@ function createEcoMachineLocation(
   return {
     id,
     type: 'geojson',
-    data: assetUrl('/data/regional-summary/region-of-interest.geojson'),
+    data: assetUrl('/data/geospatial-assets/shared/region-of-interest.geojson'),
     activation: 'adaptation',
     selectionKey,
     legend,
@@ -204,7 +205,7 @@ const bolsterLegend = {
 const bolsterSources = [
   createScenarioAsset({
     id: 'scenario-bolster-operable-gates',
-    path: '/data/regional-summary/gis/bf-franks-tract-operable-gates.geojson',
+    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/operable-gates.geojson',
     selectionKey: 'operable-gates',
     color: map.scenarios.bolsterAndFortify.gates,
     geometry: 'area',
@@ -212,14 +213,14 @@ const bolsterSources = [
   }),
   createScenarioAsset({
     id: 'scenario-bolster-reconstructed-levees',
-    path: '/data/regional-summary/gis/bf-franks-tract-levee-repair.geojson',
+    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/levee-repair.geojson',
     selectionKey: 'reconstructed-levees',
     color: map.scenarios.bolsterAndFortify.levees,
     geometry: 'area',
   }),
   createScenarioAsset({
     id: 'scenario-bolster-freshwater-corridor',
-    path: '/data/regional-summary/gis/bf-through-delta-freshwater-pathway.geojson',
+    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/freshwater-pathway.geojson',
     selectionKey: 'freshwater-corridor',
     color: map.scenarios.bolsterAndFortify.corridor,
     geometry: 'line',
@@ -285,7 +286,7 @@ const tunnelLegend = {
 const tunnelSources = [
   createScenarioAsset({
     id: 'scenario-tunnel-intakes',
-    path: '/data/regional-summary/gis/delta-tunnel-sites.geojson',
+    path: '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
     selectionKey: 'tunnel-intakes',
     color: map.scenarios.tunnel.facilities,
     geometry: 'area',
@@ -294,7 +295,7 @@ const tunnelSources = [
   }),
   createScenarioAsset({
     id: 'scenario-tunnel-alignment',
-    path: '/data/regional-summary/gis/delta-tunnel.geojson',
+    path: '/data/geospatial-assets/scenarios/tunnel/alignment.geojson',
     selectionKey: 'tunnel-alignment',
     color: map.scenarios.tunnel.alignment,
     geometry: 'line',
@@ -349,7 +350,7 @@ const tunnelSources = [
   },
   createScenarioAsset({
     id: 'scenario-tunnel-pumping',
-    path: '/data/regional-summary/gis/delta-tunnel-sites.geojson',
+    path: '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
     selectionKey: 'tunnel-pumping',
     color: map.scenarios.tunnel.pumping,
     geometry: 'area',
@@ -402,6 +403,7 @@ const newGreenWatershedHabitats: SourceConfig = {
   id: 'scenario-ngw-delta-habitats',
   type: 'vector',
   url: 'mapbox://justtransition.i7mkqy',
+  offlineData: assetUrl('/data/geospatial-assets/scenarios/new-green-watershed/habitats.geojson'),
   visibilityScope: 'delta',
   activation: 'adaptation',
   selectableProperty: 'type',
@@ -462,6 +464,7 @@ const newGreenWatershedRiparian: SourceConfig = {
   id: 'scenario-ngw-riparian',
   type: 'vector',
   url: 'mapbox://justtransition.esdnqq',
+  offlineData: assetUrl('/data/geospatial-assets/scenarios/new-green-watershed/riparian.geojson'),
   visibilityScope: 'delta',
   activation: 'adaptation',
   selectionKey: 'riparian',
@@ -486,6 +489,9 @@ const legalDeltaBoundary: SourceConfig = {
   id: 'legal-delta-boundary',
   type: 'vector',
   url: 'mapbox://justtransition.xprtiz',
+  offlineData: assetUrl(
+    '/data/geospatial-assets/scenarios/new-green-watershed/legal-delta-boundary.geojson',
+  ),
   visibilityScope: 'delta',
   layers: [
     {
@@ -509,6 +515,9 @@ const statewideWatershedShade: SourceConfig = {
   id: 'statewide-watershed-shade',
   type: 'vector',
   url: 'mapbox://justtransition.cskd9m',
+  offlineData: assetUrl(
+    '/data/geospatial-assets/scenarios/new-green-watershed/watershed-shade.geojson',
+  ),
   visibilityScope: 'statewide',
   layers: [
     {
@@ -532,6 +541,9 @@ const statewideWatershedRegions: SourceConfig = {
   id: 'statewide-watershed-regions',
   type: 'vector',
   url: 'mapbox://justtransition.92mkk4',
+  offlineData: assetUrl(
+    '/data/geospatial-assets/scenarios/new-green-watershed/watershed-region.geojson',
+  ),
   visibilityScope: 'statewide',
   layers: [
     {
@@ -605,6 +617,9 @@ const statewideIndigenousTerritories: SourceConfig = {
   id: 'statewide-indigenous-territories',
   type: 'vector',
   url: 'mapbox://justtransition.5q5r23',
+  offlineData: assetUrl(
+    '/data/geospatial-assets/scenarios/new-green-watershed/indigenous-territories.geojson',
+  ),
   visibilityScope: 'statewide-ecocultural',
   layers: [
     {
@@ -641,10 +656,77 @@ const statewideIndigenousTerritories: SourceConfig = {
   ],
 }
 
+const callingOnReservesLegend = {
+  title: 'Modeled system',
+  items: [
+    {
+      label: 'Sacramento River',
+      color: map.scenarios.callingOnReserves.rivers,
+      selectionKey: 'cor-rivers',
+      kind: 'line' as const,
+    },
+    {
+      label: 'Shasta Dam and Reservoir',
+      color: map.scenarios.callingOnReserves.facilities,
+      selectionKey: 'cor-facilities',
+    },
+  ],
+}
+
+const callingOnReservesSources: SourceConfig[] = [
+  {
+    id: 'scenario-cor-sacramento-river',
+    type: 'geojson',
+    data: assetUrl(
+      '/data/geospatial-assets/scenarios/calling-on-reserves/sacramento-river-mainstem.geojson',
+    ),
+    activation: 'adaptation',
+    visibilityScope: 'statewide',
+    selectionKey: 'cor-rivers',
+    legend: callingOnReservesLegend,
+    layers: [
+      {
+        id: 'scenario-cor-sacramento-river-line',
+        type: 'line',
+        source: 'scenario-cor-sacramento-river',
+        paint: {
+          'line-color': map.scenarios.callingOnReserves.rivers,
+          'line-opacity': 0.95,
+          'line-width': 3,
+        },
+      },
+    ],
+  },
+  {
+    id: 'scenario-cor-shasta',
+    type: 'geojson',
+    data: assetUrl(
+      '/data/geospatial-assets/scenarios/calling-on-reserves/shasta-dam-reservoir.geojson',
+    ),
+    activation: 'adaptation',
+    visibilityScope: 'statewide',
+    selectionKey: 'cor-facilities',
+    layers: [
+      {
+        id: 'scenario-cor-shasta-point',
+        type: 'circle',
+        source: 'scenario-cor-shasta',
+        paint: {
+          'circle-radius': 7,
+          'circle-color': map.scenarios.callingOnReserves.facilities,
+          'circle-stroke-color': map.markers.stroke,
+          'circle-stroke-width': 2,
+        },
+      },
+    ],
+  },
+]
+
 export const layersBySlug: Record<string, SourceConfig[]> = {
   'eco-machine': [ecoMachineSuisunMarsh, ecoMachineFranksTract],
   'bolster-and-fortify': bolsterSources,
   'a-tunnel': tunnelSources,
+  'calling-on-reserves': callingOnReservesSources,
   'new-green-watershed': [
     legalDeltaBoundary,
     newGreenWatershedHabitats,
@@ -762,6 +844,15 @@ export const configBySlug: Record<string, Config> = {
       statewide: 'supporting-strategy',
       ecocultural: 'ecocultural-stewardship',
     },
+  },
+  'calling-on-reserves': {
+    ...defaultConfig,
+    interactive: true,
+    showNavigationControl: true,
+    legendActivation: 'adaptation',
+    highlightFallbackColor: map.scenarios.callingOnReserves.facilities,
+    bounds: { delta: deltaBounds, statewide: watershedOverviewBounds },
+    triggers: { statewide: 'design-approach' },
   },
 }
 

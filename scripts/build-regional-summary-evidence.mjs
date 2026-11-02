@@ -3,7 +3,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const dataDir = path.join(root, 'public/data/regional-summary')
+const gateSchedule = JSON.parse(
+  await readFile(
+    path.join(root, 'public/data/operations/bolster-and-fortify-gate-schedule.json'),
+    'utf8',
+  ),
+)
+const dataDir = path.join(root, 'public/data/patterns')
 
 function parseCsv(text) {
   const rows = []
@@ -67,7 +73,10 @@ function generatedNarrative(pattern, stations) {
 
 const patternList = JSON.parse(await readFile(path.join(dataDir, 'pattern-list.json'), 'utf8'))
 const dashboard = JSON.parse(
-  await readFile(path.join(root, 'public/data/scenario-explorer/salinity_dashboard.json'), 'utf8'),
+  await readFile(
+    path.join(root, 'public/data/salinity/scenario-explorer/salinity_dashboard.json'),
+    'utf8',
+  ),
 )
 const selectedRows = parseCsv(
   await readFile(path.join(dataDir, 'raw/selected-patterns.csv'), 'utf8'),
@@ -128,38 +137,17 @@ for (const [scenarioKey, scenarioGroup] of Object.entries(patternList.scenarios)
     regionOrder: scenarioGroup.places.map((place) => place.id),
     annotations:
       scenarioKey === 'bolster'
-        ? [
-            {
-              id: 'gates-closed-2018',
-              startDate: '2018-10-01',
-              endDate: '2019-01-13',
-              label: 'Operable gates closed',
-              description:
-                'First inferred Franks Tract gate-closure period used for the regional sensitivity analysis.',
-              provenance: 'curated-gate-operation-schedule',
-              reviewStatus: 'reviewed',
-            },
-            {
-              id: 'gates-closed-2019',
-              startDate: '2019-11-26',
-              endDate: '2019-12-10',
-              label: 'Operable gates closed',
-              description:
-                'Second inferred Franks Tract gate-closure period used for the regional sensitivity analysis.',
-              provenance: 'curated-gate-operation-schedule',
-              reviewStatus: 'reviewed',
-            },
-            {
-              id: 'gates-closed-2020',
-              startDate: '2020-07-15',
-              endDate: '2020-11-29',
-              label: 'Operable gates closed',
-              description:
-                'Provisional third gate-closure period; the curated dashboard findings focus on the shared October–November response window.',
-              provenance: 'curated-gate-operation-schedule',
-              reviewStatus: 'needs-review',
-            },
-          ]
+        ? gateSchedule.closures.map((closure) => ({
+            id: `gates-closed-${closure.startDate.slice(0, 4)}`,
+            startDate: closure.startDate,
+            endDate: closure.endDate,
+            label: 'Operable gates closed',
+            description: closure.reopens
+              ? 'Franks Tract gate closure from the Bolster and Fortify gate schedule.'
+              : 'Franks Tract gate closure from the Bolster and Fortify gate schedule; the gates stay closed through the end of the data.',
+            provenance: 'public/data/operations/bolster-and-fortify-gate-schedule.json',
+            reviewStatus: 'reviewed',
+          }))
         : [],
   }
   if (!scenario) continue

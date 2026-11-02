@@ -1,6 +1,8 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
 import { Layer, Source } from 'react-map-gl/mapbox'
+import type { LayerProps } from 'react-map-gl/mapbox'
 import { map } from '../../../theme'
+import { isOfflineMapEnabled } from '../../offlineBasemapStyle'
 import { layersBySlug, type MapScope } from './config'
 
 interface LayersProps {
@@ -10,13 +12,21 @@ interface LayersProps {
   visibilityScope?: MapScope
 }
 
+function withoutSourceLayer(layer: LayerProps): LayerProps {
+  const localLayer = { ...layer }
+  delete localLayer['source-layer']
+  return localLayer
+}
+
 export default function Layers({
   scenarioSlug,
   showAdaptationLayers = false,
   selectedHabitatType,
   visibilityScope = 'delta',
 }: LayersProps) {
+  const offline = isOfflineMapEnabled()
   const sources = (layersBySlug[scenarioSlug] ?? []).filter((source) => {
+    if (offline && source.url?.startsWith('mapbox://') && !source.offlineData) return false
     const sourceScope = source.visibilityScope ?? 'delta'
     if (visibilityScope === 'statewide-ecocultural') {
       return sourceScope === 'statewide-ecocultural'
@@ -30,13 +40,19 @@ export default function Layers({
         <Source
           key={source.id}
           id={source.id}
-          type={source.type}
-          {...(source.url == null ? {} : { url: source.url })}
-          {...(source.data == null ? {} : { data: source.data })}
-          {...(source.tileSize == null ? {} : { tileSize: source.tileSize })}
+          type={offline && source.offlineData ? 'geojson' : source.type}
+          {...(offline && source.offlineData
+            ? { data: source.offlineData }
+            : {
+                ...(source.url == null ? {} : { url: source.url }),
+                ...(source.data == null ? {} : { data: source.data }),
+                ...(source.tileSize == null ? {} : { tileSize: source.tileSize }),
+              })}
         >
           {source.layers.map((layer) => {
-            if (source.activation === 'adaptation' && layer.type === 'fill') {
+            const activeLayer = offline && source.offlineData ? withoutSourceLayer(layer) : layer
+
+            if (source.activation === 'adaptation' && activeLayer.type === 'fill') {
               const isSelected = selectedHabitatType === source.selectionKey
               const visibleOpacity =
                 selectedHabitatType && source.selectableProperty
@@ -50,14 +66,14 @@ export default function Layers({
                     ? isSelected
                       ? 0.85
                       : 0.1
-                    : (layer.paint?.['fill-opacity'] ?? 1)
+                    : (activeLayer.paint?.['fill-opacity'] ?? 1)
 
               return (
                 <Layer
-                  {...layer}
+                  {...activeLayer}
                   key={layer.id}
                   paint={{
-                    ...layer.paint,
+                    ...activeLayer.paint,
                     'fill-opacity': showAdaptationLayers ? visibleOpacity : 0,
                     'fill-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
                   }}
@@ -65,19 +81,19 @@ export default function Layers({
               )
             }
 
-            if (source.activation === 'adaptation' && layer.type === 'line') {
+            if (source.activation === 'adaptation' && activeLayer.type === 'line') {
               const isSelected = selectedHabitatType === source.selectionKey
               const visibleOpacity = selectedHabitatType
                 ? isSelected
                   ? 1
                   : 0.15
-                : (layer.paint?.['line-opacity'] ?? 1)
+                : (activeLayer.paint?.['line-opacity'] ?? 1)
               return (
                 <Layer
-                  {...layer}
+                  {...activeLayer}
                   key={layer.id}
                   paint={{
-                    ...layer.paint,
+                    ...activeLayer.paint,
                     'line-opacity': showAdaptationLayers ? visibleOpacity : 0,
                     'line-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
                     'line-width': isSelected ? 4 : 2,
@@ -86,13 +102,13 @@ export default function Layers({
               )
             }
 
-            if (selectedHabitatType && source.selectableProperty && layer.type === 'fill') {
+            if (selectedHabitatType && source.selectableProperty && activeLayer.type === 'fill') {
               return (
                 <Layer
-                  {...layer}
+                  {...activeLayer}
                   key={layer.id}
                   paint={{
-                    ...layer.paint,
+                    ...activeLayer.paint,
                     'fill-opacity': [
                       'case',
                       ['==', ['get', source.selectableProperty], selectedHabitatType],
@@ -104,14 +120,14 @@ export default function Layers({
               )
             }
 
-            if (selectedHabitatType && source.selectionKey && layer.type === 'line') {
+            if (selectedHabitatType && source.selectionKey && activeLayer.type === 'line') {
               const isSelected = selectedHabitatType === source.selectionKey
               return (
                 <Layer
-                  {...layer}
+                  {...activeLayer}
                   key={layer.id}
                   paint={{
-                    ...layer.paint,
+                    ...activeLayer.paint,
                     'line-opacity': isSelected ? 1 : 0.15,
                     'line-width': isSelected ? 4 : 2,
                   }}
@@ -119,7 +135,7 @@ export default function Layers({
               )
             }
 
-            return <Layer key={layer.id} {...layer} />
+            return <Layer key={layer.id} {...activeLayer} />
           })}
         </Source>
       ))}

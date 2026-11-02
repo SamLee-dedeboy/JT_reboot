@@ -14,7 +14,7 @@ The application uses React 19, TypeScript, Vite, React Router, MUI, Mapbox GL, D
 npm install          # Install dependencies
 npm run dev          # Start Vite at http://localhost:5173
 npm run build        # TypeScript project build + Vite production build
-npm run build:kiosk  # Production build for the offline exhibit (VITE_OFFLINE_MAP=1)
+npm run build:kiosk  # Production build for the offline exhibit (VITE_MAP_MODE=offline)
 npm run lint         # Run ESLint
 npm run format       # Format maintained files with Prettier
 npm run format:check # Check formatting without modifying files
@@ -39,8 +39,8 @@ Current route groups:
 - Public home: `/`
 - Scenarios: `/scenarios`, `/scenarios/background-context`, `/scenarios/key-parameters`, `/scenarios/:scenarioSlug`, the next steps `/scenarios/modeling` (with per-scenario results at `/scenarios/:scenarioSlug/results`), `/scenarios/evaluation` (with the families overview at `/scenarios/evaluation/families` and criterion pages at `/scenarios/evaluation/:teamId`), and performance/ranking at `/scenarios/ranking` and `/scenarios/ranking/by-criterion`. `/scenarios/results` is a legacy redirect to modeling or evaluation
 - Repository: `/pages/project-documentation`, `/pages/service-learning`, and `/pages/resources`
-- Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/scenario-explorer/d1641`, `/pages/regional-summary`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
-- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/scenario-time-lapse`, `/pages/watershed`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/breakout` (a compatibility kiosk route for the ranking feature's breakout table; one route, the team in `?team=`), `/pages/co-design-timeline`, `/pages/tribal-stewardship-spectrum`, `/pages/site-map`, `/pages/criteria-copy`, and `/design-system`
+- Data experiences: `/pages/scenario-explorer`, `/pages/scenario-explorer/internal`, `/pages/scenario-explorer/d1641`, `/pages/regional-summary`, `/pages/watershed`, and the co-design dashboard at `/pages/co-design-dashboard/*` (`flow`, `linking`, `mental-model`, `sunburst`, `sunburst-grid`)
+- Internal tools: `/pages/playground`, `/pages/baseline-exploration`, `/pages/scenario-time-lapse`, `/pages/kelp-diagram`, `/pages/rank-visualization`, `/pages/breakout` (a compatibility kiosk route for the ranking feature's breakout table; one route, the team in `?team=`), `/pages/co-design-timeline`, `/pages/tribal-stewardship-spectrum`, `/pages/site-map`, `/pages/criteria-copy`, and `/design-system`
 
 ## Source Architecture
 
@@ -53,6 +53,7 @@ The `src` directory is organized by application role and feature:
 - `src/features/repository/`: repository routes, shared repository layout, cards, tabs, timelines, and data.
 - `src/features/scenario-explorer/`: scenario explorer page, charts, controls, types, and feature-local utilities.
 - `src/features/regional-summary/`: regional summary page, tutorials, controls, map UI, and feature-local types.
+- `src/features/watershed/`: public upstream-restoration data experience and its generated outcomes.
 - `src/features/co-design/`: the co-design dashboard, migrated from the Svelte JT_dashboard app. `CoDesignDashboard.tsx` is the shell with its own nested routes; each view lives under `views/`. There is no backend: `api.ts` serves static snapshots from `public/data/co-design/`, regenerated with `scripts/co-design/snapshot_api.py`. View tokens live in `src/theme/coDesign/` (`theme.coDesign`).
 - `src/ui/`: reusable site-wide UI primitives, cards, animation components, Navbar, and Footer.
 - `src/map/`: reusable Mapbox infrastructure, map instances, layers, and KelpFusion overlays.
@@ -75,7 +76,8 @@ Keep route-specific code in its feature. Move code into `src/ui`, `src/map`, or 
 - `/pages/criteria-copy` (`src/internal/criteria-copy/`) is the user's editor for each criterion's public text (its evaluation-page summary and every section of its criterion page). The text lives in `editorial/criteria-copy.json`, with columns `claude`, `gpt`, `yours` (the user's final text), and `note` (the user's instruction for that field). Claude writes only `claude` and GPT only `gpt`; never edit `yours` or `note`. When asked to update the site from it, run `npm run copy:criteria`, apply each listed field's `yours` text at its `source`, and act on any notes. Each section's source passages from the teams' "Story Behind the Criterion" reports are in `editorial/criteria-sources/<criterion>.json` (regenerate with `python scripts/extract-criterion-reports.py`, which lists the report paths); draft against them. The field structure comes from `fields.ts`; change sections there, not in the JSON. The dev server (`vite/criteriaCopyPlugin.ts`) saves the editor's changes; the same command re-syncs the file without it.
 - `src/map/BaseMap.tsx` and `src/map/MapLayerOrchestrator.tsx` provide shared map infrastructure. Specialized map presentations live under `src/map/instances/` or within their owning feature.
 - Scenario narration maps are configured per slug in `src/map/layers/scenarios/config.ts`. Keep camera bounds, interaction controls, scroll-trigger IDs, layer scopes, legends, and highlight colors in that configuration rather than branching on scenario slugs in `IntroductionPage`. Adaptation chapters carry a `role`, and `storyInReadingOrder` (`src/features/scenarios/content/chapterOrder.ts`) puts them in the shared order (key benefits, motivation, design approach, supporting strategy) and gives each a role anchor such as `design-approach`; scroll triggers name those anchors, not chapter positions.
-- `src/map/offlineBasemapStyle.ts` is the network-free exhibit basemap enabled by `?offline=1` on the regional summary and scenario explorer, or always in `npm run build:kiosk` builds (`.env.kiosk` sets `VITE_OFFLINE_MAP=1`). It mirrors the online Mapbox Studio styles using bundled OpenStreetMap layers and glyphs; regenerate its data with `node scripts/build-offline-basemap.mjs`.
+- `src/map/offlineBasemapStyle.ts` owns the single site-wide map mode. `?map=offline` (with `?offline=1` retained as an alias) switches every map in a normal build; `npm run build:kiosk` sets `VITE_MAP_MODE=offline`. `BaseMap` resolves all requested styles through this mode, and remote Mapbox thematic sources must be suppressed or replaced while offline. The bundled style mirrors the online Mapbox Studio styles using local OpenStreetMap layers and glyphs; regenerate its data with `node scripts/build-offline-basemap.mjs`.
+- Scenario geometry under `public/data/geospatial-assets/scenarios/` is cataloged in its `manifest.json` and regenerated from the sibling `JT_exploration/website_map_assets` packages with `python scripts/populate-scenario-geospatial-assets.py`. Keep source provenance and the GeoJSON/vector-tile threshold recommendation in that manifest.
 
 ## Theme and Design System
 
@@ -150,7 +152,7 @@ These are requirements for new UI and UI refactors.
 
 ## Static Assets and Data
 
-- Static files live in `public/`, primarily under `public/images/`, `public/data/`, and `public/exports/`.
+- Static files live in `public/`, primarily under `public/images/`, `public/data/`, and `public/exports/`. Runtime data follows the directory contract in `docs/public-data-assets.md`: reusable and scenario geometry lives under `public/data/geospatial-assets/`, salinity outputs under `public/data/salinity/`, curated pattern outputs under `public/data/patterns/`, and internal-route-only inputs under `public/data/internal/`.
 - Vite uses a non-root base path. Use `src/utils/baseUrl.ts` when constructing asset URLs that must respect `import.meta.env.BASE_URL`; do not assume deployment at `/`.
 - Feature-owned static content lives near its feature, such as `src/features/home/content/`, `src/features/scenarios/content/`, and `src/features/repository/data/`.
 

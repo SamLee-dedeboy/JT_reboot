@@ -28,6 +28,7 @@ import Navbar from '../../ui/Navbar'
 import PageRail from '../../ui/PageRail'
 import ChangeRangeChart, { RestorationLevelLegend } from './ChangeRangeChart'
 import {
+  changesIntro,
   estimationIntro,
   estimationSteps,
   hero,
@@ -35,8 +36,6 @@ import {
   landCoverTakeaways,
   landscapeMethods,
   outcomeGroups,
-  qualitativeBenefits,
-  qualitativeIntro,
   scenarioReadingExample,
   scenariosIntro,
   sources,
@@ -51,9 +50,8 @@ import type { Landscape } from './types'
 /** Sections listed in the page rail; ids match the section elements below. */
 const pageSections = [
   { id: 'involve', label: 'What does upstream restoration involve?' },
-  { id: 'scenarios', label: 'What are the nine scenarios?' },
+  { id: 'scenarios', label: 'What are the nine watershed restoration sub-scenarios?' },
   { id: 'changes', label: 'How would the watershed change?' },
-  { id: 'offer', label: 'What else could restoration offer?' },
   { id: 'estimated', label: 'How were the benefits estimated?' },
   { id: 'uncertain', label: 'What remains uncertain?' },
   { id: 'sources', label: 'Sources' },
@@ -135,7 +133,7 @@ export default function UpstreamRestorationPage() {
             >
               <SectionHeading
                 variant="h3"
-                title="What are the nine scenarios?"
+                title="What are the nine watershed restoration sub-scenarios?"
                 id="scenarios-title"
                 accent={accent}
               />
@@ -166,7 +164,6 @@ export default function UpstreamRestorationPage() {
               </Box>
             </Box>
             <ChangesSection accent={accent} />
-            <OfferSection accent={accent} />
             <EstimatedSection
               accent={accent}
               landscape={landscape}
@@ -537,6 +534,9 @@ function ChangesSection({ accent }: { accent: string }) {
         id="changes-title"
         accent={accent}
       />
+      <Typography variant="body1" sx={{ color: 'base.100', mb: jtSpacing.section.sm }}>
+        {changesIntro}
+      </Typography>
       <Box sx={{ mb: jtSpacing.section.sm }}>
         <RestorationLevelLegend />
       </Box>
@@ -564,102 +564,6 @@ function ChangesSection({ accent }: { accent: string }) {
           <LandCoverChart outcomes={outcomes} />
         </OutcomeBlock>
       </Stack>
-    </Box>
-  )
-}
-
-function OfferSection({ accent }: { accent: string }) {
-  return (
-    <Box component="section" id="offer" aria-labelledby="offer-title" sx={sectionSx}>
-      <SectionHeading
-        variant="h3"
-        title="What else could restoration offer?"
-        id="offer-title"
-        accent={accent}
-      />
-      <Typography variant="body1" sx={{ color: 'base.100' }}>
-        {qualitativeIntro}
-      </Typography>
-      <Box
-        sx={{
-          mt: jtSpacing.gap.lg,
-          overflowX: 'auto',
-          border: 1,
-          borderColor: 'border.subtle',
-          borderRadius: 1,
-        }}
-      >
-        <Table size="small">
-          <TableHead>
-            <TableRow sx={{ bgcolor: alpha(accent, 0.1) }}>
-              {qualitativeBenefits.columns.map((column) => (
-                <TableCell
-                  key={column}
-                  sx={{
-                    typography: 'chartTitle',
-                    color: 'base.50',
-                    whiteSpace: 'nowrap',
-                    borderBottom: 2,
-                    borderBottomColor: accent,
-                  }}
-                >
-                  {column}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {qualitativeBenefits.rows.map((row) => (
-              <TableRow
-                key={row.landscape}
-                sx={{ '&:nth-of-type(even)': { bgcolor: 'translucent.100' } }}
-              >
-                <TableCell
-                  sx={{
-                    typography: 'tableValueStrong',
-                    color: HABITAT_META[row.landscape].baseColor,
-                    borderColor: 'border.subtle',
-                    verticalAlign: 'top',
-                  }}
-                >
-                  {HABITAT_META[row.landscape].label}
-                </TableCell>
-                {[row.hydrology, row.ecology].map((cell) => (
-                  <TableCell
-                    key={cell}
-                    sx={{
-                      typography: 'body2',
-                      color: 'base.100',
-                      borderColor: 'border.subtle',
-                      verticalAlign: 'top',
-                    }}
-                  >
-                    {cell}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-            <TableRow>
-              <TableCell
-                sx={{
-                  typography: 'tableValueStrong',
-                  color: 'common.white',
-                  borderBottom: 0,
-                  verticalAlign: 'top',
-                }}
-              >
-                Eco-cultural
-              </TableCell>
-              <TableCell
-                colSpan={2}
-                sx={{ typography: 'body2', color: 'base.100', borderBottom: 0 }}
-              >
-                {qualitativeBenefits.ecoCultural}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </Box>
     </Box>
   )
 }

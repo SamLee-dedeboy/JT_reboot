@@ -1,5 +1,6 @@
 import { Box, Button, FormControl, MenuItem, Select, Tab, Tabs, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import { explorerControl } from '../../../theme'
 import type { DashboardMode } from '../types'
 
 const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [
@@ -58,9 +59,8 @@ export default function ExplorerHeader({
       sx={(theme) => ({
         display: 'grid',
         flex: '0 0 auto',
-        gap: theme.jtSpacing.gap.sm,
-        gridTemplateRows: 'auto auto',
-        mb: theme.jtSpacing.section.xs,
+        gap: 0.75,
+        mb: theme.jtSpacing.gap.sm,
         width: '100%',
       })}
     >
@@ -69,14 +69,18 @@ export default function ExplorerHeader({
           alignItems: 'center',
           display: 'grid',
           gap: theme.jtSpacing.gap.sm,
+          gridTemplateAreas: {
+            xs: '"title tutorial" "mode mode"',
+            lg: '"title mode tutorial"',
+          },
           gridTemplateColumns: {
-            xs: '1fr',
-            lg: 'max-content minmax(24rem, 34rem) minmax(max-content, 1fr)',
+            xs: 'minmax(0, 1fr) auto',
+            lg: 'max-content minmax(20rem, 30rem) minmax(max-content, 1fr)',
           },
           width: '100%',
         })}
       >
-        <Typography component="h1" variant="h2" sx={{ alignSelf: 'center', justifySelf: 'start' }}>
+        <Typography component="h1" variant="h2" sx={{ gridArea: 'title', justifySelf: 'start' }}>
           Salinity{' '}
           <Box component="span" color="primary.main">
             difference
@@ -88,9 +92,9 @@ export default function ExplorerHeader({
             sx={{
               alignSelf: 'center',
               display: 'grid',
-              gap: 0.5,
-              justifySelf: { xs: 'stretch', lg: 'center' },
-              minWidth: { xs: 0, sm: 320 },
+              gap: 0.25,
+              gridArea: 'mode',
+              minWidth: 0,
             }}
           >
             <FormControl data-tour="comparison-tabs" size="small">
@@ -102,6 +106,7 @@ export default function ExplorerHeader({
                   slotProps: {
                     paper: {
                       sx: {
+                        borderRadius: explorerControl.fieldRadius,
                         bgcolor: 'base.700',
                         border: 1,
                         borderColor: 'brand.primaryBlue',
@@ -111,10 +116,17 @@ export default function ExplorerHeader({
                 }}
                 sx={(theme) => ({
                   bgcolor: alpha(theme.palette.brand.primaryBlue, 0.08),
+                  borderRadius: explorerControl.pillRadius,
                   color: 'brand.primaryBlue',
-                  height: theme.spacing(5),
+                  height: explorerControl.headerHeight,
                   typography: 'button',
-                  '& .MuiSelect-select': { alignItems: 'center', display: 'flex', py: 0 },
+                  '& .MuiSelect-select': {
+                    alignItems: 'center',
+                    display: 'flex',
+                    overflow: 'hidden',
+                    pl: 2,
+                    py: 0,
+                  },
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'brand.primaryBlue',
                   },
@@ -180,7 +192,7 @@ export default function ExplorerHeader({
             variant="scrollable"
             sx={(theme) => ({
               alignSelf: 'center',
-              justifySelf: { xs: 'stretch', lg: 'center' },
+              gridArea: 'mode',
               minHeight: theme.spacing(5),
               '& .MuiTabs-flexContainer': { alignItems: 'center', gap: theme.jtSpacing.gap.xs },
               '& .MuiTabs-indicator': { display: 'none' },
@@ -248,16 +260,28 @@ export default function ExplorerHeader({
         <Button
           onClick={onTutorialOpen}
           variant="outlined"
-          sx={(theme) => ({
+          sx={{
             alignSelf: 'center',
-            height: theme.spacing(5),
-            justifySelf: { xs: 'start', lg: 'end' },
-          })}
+            gridArea: 'tutorial',
+            height: explorerControl.headerHeight,
+            justifySelf: 'end',
+          }}
         >
           Tutorial
         </Button>
       </Box>
-      <Typography component="p" variant="caption" color="text.secondary">
+      {/* One line once there is room; a phone wraps it so nothing is lost without hover. */}
+      <Typography
+        component="p"
+        variant="controlValue"
+        title={description}
+        sx={{
+          color: 'base.100',
+          overflow: { md: 'hidden' },
+          textOverflow: { md: 'ellipsis' },
+          whiteSpace: { md: 'nowrap' },
+        }}
+      >
         {description}
       </Typography>
     </Box>

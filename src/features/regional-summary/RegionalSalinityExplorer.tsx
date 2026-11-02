@@ -28,7 +28,6 @@ import {
 } from './regionalSalinityMap'
 import ScenarioStrategyGuide from './ScenarioStrategyGuide'
 import { type RegionalPlace } from './regionalSummaryData'
-import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import {
   regionalMapScales,
   regionalSummaryControlStyles,
@@ -61,7 +60,7 @@ interface BolsterStrategyLayer {
 
 const bolsterStrategyLayers: BolsterStrategyLayer[] = [
   {
-    path: '/data/regional-summary/gis/bf-franks-tract-operable-gates.geojson',
+    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/operable-gates.geojson',
     type: 'area',
     bounds: [
       [-121.585826, 38.029868],
@@ -69,7 +68,7 @@ const bolsterStrategyLayers: BolsterStrategyLayer[] = [
     ],
   },
   {
-    path: '/data/regional-summary/gis/bf-franks-tract-levee-repair.geojson',
+    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/levee-repair.geojson',
     type: 'area',
     bounds: [
       [-121.591647, 38.031175],
@@ -77,7 +76,7 @@ const bolsterStrategyLayers: BolsterStrategyLayer[] = [
     ],
   },
   {
-    path: '/data/regional-summary/gis/bf-through-delta-freshwater-pathway.geojson',
+    path: '/data/geospatial-assets/scenarios/bolster-and-fortify/freshwater-pathway.geojson',
     type: 'line',
     bounds: [
       [-121.584181, 37.851688],
@@ -160,10 +159,6 @@ export default function RegionalSalinityExplorer({
   const [strategyGuideStep, setStrategyGuideStep] = useState(0)
   const [mapCursor, setMapCursor] = useState<'grab' | 'pointer'>('grab')
   const mapRef = useRef<MapboxMap | null>(null)
-  const offlineMapStyle = useMemo(
-    () => (isOfflineMapEnabled() ? createOfflineBasemapStyle() : undefined),
-    [],
-  )
 
   useEffect(() => {
     const map = mapRef.current
@@ -509,7 +504,6 @@ export default function RegionalSalinityExplorer({
                 </Box>
               ) : null}
               <BaseMap
-                mapStyle={offlineMapStyle}
                 mapStyleUrl={regionalMapStyleUrl}
                 initialViewState={regionalOverview}
                 dragPan
@@ -614,7 +608,7 @@ export default function RegionalSalinityExplorer({
                   <Source
                     id="eco-strategy-regions"
                     type="geojson"
-                    data={assetUrl('/data/regional-summary/region-of-interest.geojson')}
+                    data={assetUrl('/data/geospatial-assets/shared/region-of-interest.geojson')}
                   >
                     <Layer
                       id="eco-strategy-fill"
@@ -653,7 +647,9 @@ export default function RegionalSalinityExplorer({
                   <Source
                     id="cor-strategy-sacramento-mainstem"
                     type="geojson"
-                    data={assetUrl('/data/regional-summary/gis/sacramento-river-mainstem.geojson')}
+                    data={assetUrl(
+                      '/data/geospatial-assets/scenarios/calling-on-reserves/sacramento-river-mainstem.geojson',
+                    )}
                   >
                     <Layer
                       id="cor-strategy-sacramento-mainstem-line"
@@ -674,7 +670,9 @@ export default function RegionalSalinityExplorer({
                   <Source
                     id="ngw-strategy-habitats"
                     type="geojson"
-                    data={assetUrl('/data/regional-summary/gis/ngw-habitats.geojson')}
+                    data={assetUrl(
+                      '/data/geospatial-assets/scenarios/new-green-watershed/habitats.geojson',
+                    )}
                   >
                     <Layer
                       id="ngw-strategy-habitat-fill"
@@ -709,7 +707,9 @@ export default function RegionalSalinityExplorer({
                     <Source
                       id="ngw-strategy-watersheds"
                       type="geojson"
-                      data={assetUrl('/data/regional-summary/gis/watershed-region.geojson')}
+                      data={assetUrl(
+                        '/data/geospatial-assets/scenarios/new-green-watershed/watershed-region.geojson',
+                      )}
                     >
                       <Layer
                         id="ngw-strategy-watershed-line"
@@ -724,7 +724,9 @@ export default function RegionalSalinityExplorer({
                     <Source
                       id="ngw-strategy-watershed-labels"
                       type="geojson"
-                      data={assetUrl('/data/regional-summary/gis/watershed-region-labels.geojson')}
+                      data={assetUrl(
+                        '/data/geospatial-assets/scenarios/new-green-watershed/watershed-region-labels.geojson',
+                      )}
                     >
                       <Layer
                         id="ngw-strategy-watershed-label"
@@ -750,7 +752,9 @@ export default function RegionalSalinityExplorer({
                     <Source
                       id="tunnel-strategy-sites"
                       type="geojson"
-                      data={assetUrl('/data/regional-summary/gis/delta-tunnel-sites.geojson')}
+                        data={assetUrl(
+                          '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
+                        )}
                     >
                       {strategyGuideStep === 0 ? (
                         <Layer
@@ -776,7 +780,7 @@ export default function RegionalSalinityExplorer({
                       <Source
                         id="tunnel-strategy-route"
                         type="geojson"
-                        data={assetUrl('/data/regional-summary/gis/delta-tunnel.geojson')}
+                        data={assetUrl('/data/geospatial-assets/scenarios/tunnel/alignment.geojson')}
                       >
                         <Layer
                           id="tunnel-strategy-route-line"

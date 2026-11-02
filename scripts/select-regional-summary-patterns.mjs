@@ -64,7 +64,7 @@ function csvValue(value) {
 const [ecoMachineCsvPath, patternsPath, decisionsPath, outputPath, preservedPatternsArgument] =
   process.argv.slice(2)
 const preservedPatternsPath =
-  preservedPatternsArgument ?? 'public/data/regional-summary/raw/north-franks-tract-patterns.csv'
+  preservedPatternsArgument ?? 'public/data/patterns/raw/north-franks-tract-patterns.csv'
 
 if (!ecoMachineCsvPath || !patternsPath || !decisionsPath || !outputPath) {
   throw new Error(

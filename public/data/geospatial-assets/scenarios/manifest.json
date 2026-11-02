@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "sourceRoot": "../JT_exploration/website_map_assets",
+  "thresholdsBytes": {
+    "geojson": 500000,
+    "vectorTiles": 2000000
+  },
+  "assets": [
+    {
+      "path": "bolster-and-fortify/freshwater-pathway.geojson",
+      "source": "JT_exploration website_map_assets/B&F and curated narrow waterway export",
+      "features": 1,
+      "bytes": 8137,
+      "delivery": "geojson"
+    },
+    {
+      "path": "bolster-and-fortify/levee-repair.geojson",
+      "source": "JT_exploration curated levee_narrow export",
+      "features": 1,
+      "bytes": 2482,
+      "delivery": "geojson"
+    },
+    {
+      "path": "bolster-and-fortify/operable-gates.geojson",
+      "source": "JT_exploration website_map_assets/B&F/scenario_bf_franks_tract_operable_gates.zip",
+      "features": 2,
+      "bytes": 10637,
+      "delivery": "geojson"
+    },
+    {
+      "path": "calling-on-reserves/sacramento-river-mainstem.geojson",
+      "source": "JT_exploration website_map_assets/COR/scenario_cor_major_rivers_tributaries.zip",
+      "features": 1,
+      "bytes": 238690,
+      "delivery": "geojson"
+    },
+    {
+      "path": "calling-on-reserves/shasta-dam-reservoir.geojson",
+      "source": "website_map_assets/COR/scenario_cor_cvp_dams_website_in_use.zip",
+      "features": 1,
+      "bytes": 240,
+      "delivery": "geojson"
+    },
+    {
+      "path": "eco-machine/franks-tract.geojson",
+      "source": "public/data/geospatial-assets/shared/region-of-interest.geojson",
+      "features": 1,
+      "bytes": 4951,
+      "delivery": "geojson"
+    },
+    {
+      "path": "eco-machine/suisun-marsh.geojson",
+      "source": "public/data/geospatial-assets/shared/region-of-interest.geojson",
+      "features": 1,
+      "bytes": 25698,
+      "delivery": "geojson"
+    },
+    {
+      "path": "new-green-watershed/habitats.geojson",
+      "source": "JT_exploration website_map_assets/NGW/scenario_ngw_delta_habitats.zip",
+      "features": 3,
+      "bytes": 8930809,
+      "delivery": "vector-tiles-candidate"
+    },
+    {
+      "path": "new-green-watershed/indigenous-territories.geojson",
+      "source": "website_map_assets/NGW/scenario_ngw_indigenous_territories.zip",
+      "features": 72,
+      "bytes": 2164297,
+      "delivery": "vector-tiles-candidate"
+    },
+    {
+      "path": "new-green-watershed/legal-delta-boundary.geojson",
+      "source": "JT_exploration/website_map_assets/legal_delta_boundary.zip",
+      "features": 1,
+      "bytes": 116402,
+      "delivery": "geojson"
+    },
+    {
+      "path": "new-green-watershed/riparian.geojson",
+      "source": "website_map_assets/NGW/scenario_ngw_riparian.zip",
+      "features": 18,
+      "bytes": 31508,
+      "delivery": "geojson"
+    },
+    {
+      "path": "new-green-watershed/watershed-region-labels.geojson",
+      "source": "curated runtime label points",
+      "features": 4,
+      "bytes": 640,
+      "delivery": "geojson"
+    },
+    {
+      "path": "new-green-watershed/watershed-region.geojson",
+      "source": "JT_exploration website_map_assets/NGW/watershed_region.zip",
+      "features": 4,
+      "bytes": 5402162,
+      "delivery": "vector-tiles-candidate"
+    },
+    {
+      "path": "new-green-watershed/watershed-shade.geojson",
+      "source": "website_map_assets/NGW/watershed_shade.zip",
+      "features": 1,
+      "bytes": 3131836,
+      "delivery": "vector-tiles-candidate"
+    },
+    {
+      "path": "tunnel/alignment.geojson",
+      "source": "JT_exploration BDSC regional-summary tunnel input",
+      "features": 2,
+      "bytes": 9312,
+      "delivery": "geojson"
+    },
+    {
+      "path": "tunnel/sites.geojson",
+      "source": "JT_exploration BDSC regional-summary tunnel-sites input",
+      "features": 16,
+      "bytes": 30953,
+      "delivery": "geojson"
+    }
+  ]
+}

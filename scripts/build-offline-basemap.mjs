@@ -2,8 +2,8 @@
  * Builds the reference layers for the offline exhibit basemap
  * (src/map/offlineBasemapStyle.ts) from OpenStreetMap:
  *
- * - public/data/regional-summary/offline-basemap.geojson: roads, settlement and bay labels
- * - public/data/regional-summary/offline-landuse.geojson: landuse and lake polygons
+ * - public/data/geospatial-assets/basemap/offline-basemap.geojson: roads, settlement and bay labels
+ * - public/data/geospatial-assets/basemap/offline-landuse.geojson: landuse and lake polygons
  *
  *   node scripts/build-offline-basemap.mjs [--reference-only] [cache-dir]
  *
@@ -18,7 +18,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
-const outputDir = path.join(scriptDir, '../public/data/regional-summary')
+const outputDir = path.join(scriptDir, '../public/data/geospatial-assets/basemap')
 const args = process.argv.slice(2)
 // --reference-only rebuilds roads, labels, and ocean without the slow landuse tiles.
 const referenceOnly = args.includes('--reference-only')

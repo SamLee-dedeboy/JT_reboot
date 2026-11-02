@@ -37,6 +37,10 @@ export const map = {
       alignment: palette.accent.yellow,
       pumping: palette.accent.purple,
     },
+    callingOnReserves: {
+      rivers: palette.brand.primaryBlue,
+      facilities: palette.accent.yellow,
+    },
     newGreenWatershedSubsidence: {
       elevation0: 'rgba(0,0,0,0)',
       elevationMinus5: 'rgba(96,120,128,0.2)',

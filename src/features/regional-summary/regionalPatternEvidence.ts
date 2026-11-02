@@ -61,7 +61,7 @@ export function usePatternEvidence() {
 
   useEffect(() => {
     const controller = new AbortController()
-    fetch(assetUrl('/data/regional-summary/pattern-evidence.json'), { signal: controller.signal })
+    fetch(assetUrl('/data/patterns/pattern-evidence.json'), { signal: controller.signal })
       .then((response) => {
         if (!response.ok) throw new Error(`Evidence request failed (${response.status})`)
         return response.json() as Promise<PatternEvidenceDataset>
@@ -85,7 +85,7 @@ export function useSurroundingStationEvidence() {
 
   useEffect(() => {
     const controller = new AbortController()
-    fetch(assetUrl('/data/regional-summary/pattern-surrounding-stations.json'), {
+    fetch(assetUrl('/data/patterns/pattern-surrounding-stations.json'), {
       signal: controller.signal,
     })
       .then((response) => {

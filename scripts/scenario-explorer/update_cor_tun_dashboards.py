@@ -19,7 +19,7 @@ import build_slr_scenarios_dashboard as builder
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_CURRENT_ROOT = PROJECT_DIR.parent / "JT_exploration" / "RMA" / "EC_current_2018_2020_7scen"
 DEFAULT_SLR_ROOT = PROJECT_DIR.parent / "JT_exploration" / "RMA" / "EC_SLR_2018_2020_7scen"
-DEFAULT_OUTPUT_DIR = PROJECT_DIR / "public" / "data" / "scenario-explorer"
+DEFAULT_OUTPUT_DIR = PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"
 PREFIXES = {"baseline": "BaseCalSim", "reserve": "COR", "tunnel": "DCP"}
 
 

@@ -58,7 +58,7 @@ const mergeScenarioKey = optionalArgumentIsGeometry ? undefined : optionalArgume
 const franksTractGeometryPath = optionalArgumentIsGeometry
   ? optionalArgument
   : secondOptionalArgument
-const northFranksTractGeometryPath = 'public/data/regional-summary/raw/north_franks_tract.geojson'
+const northFranksTractGeometryPath = 'public/data/patterns/raw/north_franks_tract.geojson'
 if (!shortlistPath || !clusterPath || !geometryPath || !outputPath) {
   throw new Error(
     'Usage: node build-regional-summary-interface-data.mjs <shortlist.csv> <clusters.csv> <geometries.geojson> <output.json> [merge-scenario-key] [franks-tract.geojson]',

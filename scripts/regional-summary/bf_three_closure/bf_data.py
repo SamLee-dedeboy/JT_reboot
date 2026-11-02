@@ -2,7 +2,7 @@
 the three-closure pattern and station-sensitivity analysis.
 
 Source data is never modified. Reads only:
-  - public/data/scenario-explorer/salinity_dashboard.json (daily mean EC, baseline + scenario deltas)
+  - public/data/salinity/scenario-explorer/salinity_dashboard.json (daily mean EC, baseline + scenario deltas)
 
 Reuses the SAME reconstruction approach as JT_exploration's
 RMA/BDSC_regional_summary/internal/analysis/bdsc-preparation/confluence_data.py (station_daily

@@ -1,4 +1,5 @@
 import { palette } from '../../theme/index'
+import type { RangeMode } from './types'
 
 export const scenarioColors = [
   palette.salinity.pink,
@@ -32,6 +33,30 @@ export const quantile = (values: number[], fraction: number): number | null => {
   const upper = Math.ceil(position)
   const weight = position - lower
   return sorted[lower] * (1 - weight) + sorted[upper] * weight
+}
+
+const sortedQuantile = (sorted: number[], fraction: number): number | null => {
+  if (!sorted.length) return null
+  const position = (sorted.length - 1) * fraction
+  const lower = Math.floor(position)
+  const upper = Math.ceil(position)
+  const weight = position - lower
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight
+}
+
+const mean = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length
+
+/** One date's stations under the chosen spread: its range, and the average of what falls inside. */
+export const summarizeSpread = (values: number[], rangeMode: RangeMode) => {
+  if (!values.length) return { average: null, low: null, high: null }
+  const sorted = [...values].sort((a, b) => a - b)
+  if (rangeMode === 'minmax')
+    return { average: mean(values), low: sorted[0], high: sorted[sorted.length - 1] }
+  const [lowFraction, highFraction] = rangeMode === 'p90' ? [0.05, 0.95] : [0.25, 0.75]
+  const low = sortedQuantile(sorted, lowFraction)!
+  const high = sortedQuantile(sorted, highFraction)!
+  const inside = sorted.filter((value) => value >= low && value <= high)
+  return { average: mean(inside.length ? inside : sorted), low, high }
 }
 
 const rgbChannels = (hex: string) =>

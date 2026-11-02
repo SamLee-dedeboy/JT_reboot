@@ -72,7 +72,7 @@ export function useRegionalPlaces(scenarioSlug: string, scenarioKeyOverride?: st
   useEffect(() => {
     const controller = new AbortController()
 
-    fetch(assetUrl('/data/regional-summary/pattern-list.json'), {
+    fetch(assetUrl('/data/patterns/pattern-list.json'), {
       signal: controller.signal,
     })
       .then((response) => {

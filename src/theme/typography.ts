@@ -119,6 +119,14 @@ export const typography = {
   cardBody: { fontFamily: fontBody, fontSize: '1.02rem', lineHeight: 1.5 },
   meta: { fontFamily: fontBody, fontSize: '0.95rem', lineHeight: 1.3 },
   controlLabel: { fontFamily: fontBody, fontSize: '0.8125rem', lineHeight: 1.2 },
+  // Body text in a dashboard's controls: no larger than 18px, without a button's capitals.
+  controlValue: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.98rem, 0.42rem + 0.625vw, 1.125rem)',
+    lineHeight: 1.2,
+    letterSpacing: 0,
+    textTransform: 'none',
+  },
   navigationLabel: {
     fontFamily: fontBody,
     fontSize: 'clamp(1rem, 0.7rem + 0.5vw, 1.2rem)',

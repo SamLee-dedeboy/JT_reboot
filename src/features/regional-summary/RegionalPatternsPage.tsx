@@ -10,7 +10,6 @@ import BaseMap from '../../map/BaseMap'
 import { assetUrl } from '../../utils/baseUrl'
 import type { ScenarioContent } from '../scenarios/content'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
-import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import {
   type PatternEvidence,
   type PatternStationEvidence,
@@ -191,7 +190,7 @@ function RegionalPatternEvidence({
 
   useEffect(() => {
     const controller = new AbortController()
-    fetch(assetUrl('/data/regional-summary/pattern-ec-series-7d.json'), {
+    fetch(assetUrl('/data/patterns/pattern-ec-series-7d.json'), {
       signal: controller.signal,
     })
       .then((response) => response.json() as Promise<EventSeriesDataset>)
@@ -651,10 +650,6 @@ function StationMap({
   const theme = useTheme()
   const mapRef = useRef<MapboxMap | null>(null)
   const [patternReady, setPatternReady] = useState(false)
-  const offlineMapStyle = useMemo(
-    () => (isOfflineMapEnabled() ? createOfflineBasemapStyle() : undefined),
-    [],
-  )
   const regionColor =
     place.trend === 'fresher'
       ? theme.palette.salinity.teal
@@ -701,7 +696,6 @@ function StationMap({
   return (
     <Box sx={{ width: '100%', height: '100%', minHeight: 0, overflow: 'hidden' }}>
       <BaseMap
-        mapStyle={offlineMapStyle}
         mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
         initialViewState={{
           longitude: place.coordinates[0],

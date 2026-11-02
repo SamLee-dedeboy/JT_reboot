@@ -5,7 +5,9 @@ import Navbar from '../ui/Navbar'
 import { assetUrl } from '../utils/baseUrl'
 import { navigation } from '../theme'
 
-const DATA_URL = assetUrl('/data/scenario-time-lapse/scenario_region_ec_avg_avg_timeseries.json')
+const DATA_URL = assetUrl(
+  '/data/internal/scenario-time-lapse/scenario_region_ec_avg_avg_timeseries.json',
+)
 const SALINITY_COLORS = [
   '#7ed2e1',
   '#70c1d5',

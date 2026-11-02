@@ -10,7 +10,8 @@ const analysisFolder = minus10
   ? 'delta_outflow_minus10_regional_sensitivity'
   : 'delta_outflow_regional_sensitivity'
 const analysisDir = path.join(researchRoot, `internal/analysis/${analysisFolder}`)
-const runtimeDir = path.join(repoRoot, 'public/data/regional-summary')
+const patternDir = path.join(repoRoot, 'public/data/patterns')
+const geospatialDir = path.join(repoRoot, 'public/data/geospatial-assets/shared')
 const scenarioKey = minus10 ? 'schism_run17_minus10pct_outflow' : 'schism_run16_plus30pct_outflow'
 const scenarioLabel = minus10 ? 'Decrease Delta Outflow (−10%)' : 'Increase Delta Outflow (+30%)'
 const rmaRoot = path.resolve(researchRoot, '..')
@@ -153,7 +154,7 @@ const browserStationGeojson = {
   })),
 }
 fs.writeFileSync(
-  path.join(runtimeDir, 'schism-modeled-stations-405.geojson'),
+  path.join(geospatialDir, 'schism-modeled-stations-405.geojson'),
   `${JSON.stringify(browserStationGeojson)}\n`,
 )
 const candidates = parseCsv(
@@ -229,7 +230,7 @@ const places = [...grouped.entries()].map(([regionId, rows]) => {
   }
 })
 
-const patternListPath = path.join(runtimeDir, 'pattern-list.json')
+const patternListPath = path.join(patternDir, 'pattern-list.json')
 const patternList = JSON.parse(fs.readFileSync(patternListPath, 'utf8'))
 patternList.scenarios[scenarioKey] = {
   label: scenarioLabel,
@@ -241,7 +242,7 @@ patternList.sourceRecordCount = Object.values(patternList.scenarios)
   .reduce((sum, place) => sum + place.patterns.length, 0)
 fs.writeFileSync(patternListPath, `${JSON.stringify(patternList, null, 2)}\n`)
 
-const roiPath = path.join(runtimeDir, 'region-of-interest.geojson')
+const roiPath = path.join(geospatialDir, 'region-of-interest.geojson')
 const roi = JSON.parse(fs.readFileSync(roiPath, 'utf8'))
 const promotedIds = new Set(places.filter((place) => place.geometry).map((place) => place.id))
 roi.features = roi.features.filter((feature) => !promotedIds.has(feature.properties.region_id))
@@ -262,7 +263,7 @@ fs.writeFileSync(roiPath, `${JSON.stringify(roi, null, 2)}\n`)
 const sourceSeries = JSON.parse(
   fs.readFileSync(path.join(analysisDir, 'regional_ec_series_7d.json'), 'utf8'),
 ).series
-const runtimeSeriesPath = path.join(runtimeDir, 'pattern-ec-series-7d.json')
+const runtimeSeriesPath = path.join(patternDir, 'pattern-ec-series-7d.json')
 const runtimeSeries = JSON.parse(fs.readFileSync(runtimeSeriesPath, 'utf8'))
 for (const row of robustRows) {
   const source = Object.values(sourceSeries).find(
@@ -279,7 +280,7 @@ for (const row of robustRows) {
 }
 fs.writeFileSync(runtimeSeriesPath, `${JSON.stringify(runtimeSeries)}\n`)
 
-const evidencePath = path.join(runtimeDir, 'pattern-evidence.json')
+const evidencePath = path.join(patternDir, 'pattern-evidence.json')
 const evidence = JSON.parse(fs.readFileSync(evidencePath, 'utf8'))
 evidence.scenarios[scenarioKey] = {
   label: scenarioLabel,

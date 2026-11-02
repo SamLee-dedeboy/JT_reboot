@@ -4,7 +4,7 @@
     python3 scripts/build-subteam-regions.py
 
 Reads scripts/data/subteam-regions/subteam_regions.shp (WGS84) and the Delta
-waterway outline in public/data/delta_waterway.geojson, simplifies both, projects
+waterway outline in public/data/internal/kelp-fusion/delta_waterway.geojson, simplifies both, projects
 them once into one shared SVG frame, and writes the TypeScript module. No GDAL or
 pyshp: the shapefile reader below handles the polygon subset this needs.
 
@@ -28,7 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SHP = ROOT / "scripts/data/subteam-regions/subteam_regions"
 WEST_DELTA = ROOT / "scripts/data/subteam-regions/west_delta_merged.gpkg"
 ECO_BAYS = ROOT / "scripts/data/subteam-regions/eco-bay-polygons.geojson"
-WATER = ROOT / "public/data/delta_waterway.geojson"
+WATER = ROOT / "public/data/internal/kelp-fusion/delta_waterway.geojson"
 OUT = ROOT / "src/internal/rank-visualization/subteams/regionShapes.ts"
 
 TEAM = {"ECO": "ecology", "ECON": "economy", "EJ": "environmentalJustice", "REC": "recreation"}
@@ -281,7 +281,7 @@ def main():
         "//",
         "// Source: scripts/data/subteam-regions/subteam_regions.shp plus the merged West Delta",
         "// GeoPackage and Ecology Bay polygons (WGS84, Oct 2026), and",
-        "// the Delta waterway outline in public/data/delta_waterway.geojson, both",
+        "// the Delta waterway outline in public/data/internal/kelp-fusion/delta_waterway.geojson, both",
         "// Douglas-Peucker simplified and projected once into one shared frame.",
         "//",
         "// The region names here are NOT the keys the app stores values under. This is a",

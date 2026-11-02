@@ -90,7 +90,9 @@ export default function KelpFusionMap({
 
     async function loadSets() {
       try {
-        const response = await fetch(`${import.meta.env.BASE_URL}/data/water_quality_run15.json`)
+        const response = await fetch(
+          `${import.meta.env.BASE_URL}/data/internal/kelp-fusion/water_quality_run15.json`,
+        )
         if (!response.ok) throw new Error(`Failed to load data (${response.status})`)
 
         const payload = (await response.json()) as RawWaterQualityData
@@ -154,7 +156,7 @@ export default function KelpFusionMap({
     async function loadGraph() {
       try {
         const response = await fetch(
-          `${import.meta.env.BASE_URL}/data/delta_waterway_lines.geojson`,
+          `${import.meta.env.BASE_URL}/data/internal/kelp-fusion/delta_waterway_lines.geojson`,
         )
         if (!response.ok) throw new Error(`Failed to load mesh (${response.status})`)
         const fc = await response.json()

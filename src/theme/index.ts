@@ -5,6 +5,7 @@ export {
   navigation,
   numbering,
   ranking,
+  explorerControl,
 } from './theme'
 export { palette } from './palette'
 export { typography, fontBody, fontHeading } from './typography'

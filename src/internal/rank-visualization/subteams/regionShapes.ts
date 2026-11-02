@@ -2,7 +2,8 @@
 //
 // Source: scripts/data/subteam-regions/subteam_regions.shp plus the merged West Delta
 // GeoPackage and Ecology Bay polygons (WGS84, Oct 2026), and
-// the Delta waterway outline in public/data/delta_waterway.geojson, both
+// the Delta waterway outline in
+// public/data/internal/kelp-fusion/delta_waterway.geojson, both
 // Douglas-Peucker simplified and projected once into one shared frame.
 //
 // The region names here are NOT the keys the app stores values under. This is a

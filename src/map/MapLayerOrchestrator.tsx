@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import DeltaStationPointsLayer from './layers/DeltaStationPointsLayer'
+import { isOfflineMapEnabled } from './offlineBasemapStyle'
 
 interface LayerCycleConfig {
   layerIds: string[]
@@ -127,10 +128,11 @@ export default function MapLayerOrchestrator({
   showDeltaStations = true,
 }: MapLayerOrchestratorProps) {
   useLayerCycle(map, layerCycle)
+  const canLoadRemoteStationTiles = !isOfflineMapEnabled()
 
   return (
     <>
-      {showDeltaStations && (
+      {showDeltaStations && canLoadRemoteStationTiles && (
         <DeltaStationPointsLayer
           highlightedStationIndex={highlightedStationIndex}
           unacceptableOver75={unacceptableOver75}

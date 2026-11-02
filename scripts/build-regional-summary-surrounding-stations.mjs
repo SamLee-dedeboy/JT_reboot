@@ -3,10 +3,13 @@ import path from 'node:path'
 
 const root = process.cwd()
 const dashboard = JSON.parse(
-  fs.readFileSync(path.join(root, 'public/data/scenario-explorer/salinity_dashboard.json'), 'utf8'),
+  fs.readFileSync(
+    path.join(root, 'public/data/salinity/scenario-explorer/salinity_dashboard.json'),
+    'utf8',
+  ),
 )
 const patternList = JSON.parse(
-  fs.readFileSync(path.join(root, 'public/data/regional-summary/pattern-list.json'), 'utf8'),
+  fs.readFileSync(path.join(root, 'public/data/patterns/pattern-list.json'), 'utf8'),
 )
 
 const scenarioData = new Map(
@@ -59,6 +62,6 @@ for (const [scenarioKey, scenario] of Object.entries(patternList.scenarios)) {
   }
 }
 
-const output = path.join(root, 'public/data/regional-summary/pattern-surrounding-stations.json')
+const output = path.join(root, 'public/data/patterns/pattern-surrounding-stations.json')
 fs.writeFileSync(output, JSON.stringify({ patterns }))
 console.log(`Wrote ${Object.keys(patterns).length} event station sets to ${output}`)

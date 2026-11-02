@@ -8,7 +8,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "public" / "data" / "regional-summary"
+DATA = ROOT / "public" / "data" / "patterns"
 ANALYSIS = DATA / "raw" / "bf-three-closure-analysis"
 
 SELECTIONS = {

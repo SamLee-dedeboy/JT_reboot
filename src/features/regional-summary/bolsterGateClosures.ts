@@ -1,53 +1,28 @@
+import gateSchedule from '../../../public/data/operations/bolster-and-fortify-gate-schedule.json'
+
 export interface BolsterGateClosure {
-  id: 'closure-1' | 'closure-2' | 'closure-3'
+  id: string
   label: string
   startDate: string
   endDate: string
-  provisional: boolean
-  uncertaintyDays: number
-  provenance: string
+  /** False when the gates are still closed at the end of the data. */
+  reopens: boolean
 }
 
 /**
- * Franks Tract gate-closure windows used by the Bolster & Fortify regional analysis.
- *
- * These dates describe inferred gate operation, not the narrower salinity-response
- * episodes selected for display. The first two windows come from the established
- * gate-event assumptions. Closure 3 remains a visual estimate until an exact
- * operational time series is available.
+ * Franks Tract gate closures within the analysis period, from the schedule in
+ * `public/data/operations/`. Change the dates there. They describe gate operation, not the narrower salinity-response episodes selected for
+ * display.
  */
-export const bolsterGateClosures: readonly BolsterGateClosure[] = [
-  {
-    id: 'closure-1',
+export const bolsterGateClosures: readonly BolsterGateClosure[] = gateSchedule.closures.map(
+  ({ id, startDate, endDate, reopens }) => ({
+    id,
     label: 'Gates closed',
-    startDate: '2018-10-01',
-    endDate: '2019-01-13',
-    provisional: false,
-    uncertaintyDays: 2,
-    provenance:
-      'Inferred from the plotted gate-operation variable. The simulation begins with the gate closed; reopening is inferred as January 14, 2019.',
-  },
-  {
-    id: 'closure-2',
-    label: 'Gates closed',
-    startDate: '2019-11-26',
-    endDate: '2019-12-10',
-    provisional: false,
-    uncertaintyDays: 2,
-    provenance:
-      'Inferred from the plotted gate-operation variable. Closure begins around November 26–27, 2019; reopening is inferred as December 11, 2019.',
-  },
-  {
-    id: 'closure-3',
-    label: 'Gates closed (provisional)',
-    startDate: '2020-07-15',
-    endDate: '2020-11-29',
-    provisional: true,
-    uncertaintyDays: 2,
-    provenance:
-      'Visually inferred from the supplied gate-operation plot. No exact operational time series has been located; replace these dates if one becomes available.',
-  },
-] as const
+    startDate,
+    endDate,
+    reopens,
+  }),
+)
 
 /** Recommended display window for the recurring closure-3 salinity response. */
 export const bolsterClosure3DisplayWindow = {

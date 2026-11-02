@@ -9,12 +9,16 @@ const DATASETS = {
   dailyMean: {
     label: 'Daily Average',
     description: 'Daily regional averages from averaged EC baseline data',
-    url: assetUrl('/data/baseline-exploration/region_ec_avg_avg_daily_mean_timeseries.json'),
+    url: assetUrl(
+      '/data/internal/baseline-exploration/region_ec_avg_avg_daily_mean_timeseries.json',
+    ),
   },
   dailyMax: {
     label: 'Daily Maximum',
     description: 'Daily regional maxima from averaged EC baseline data',
-    url: assetUrl('/data/baseline-exploration/region_ec_avg_avg_daily_max_timeseries.json'),
+    url: assetUrl(
+      '/data/internal/baseline-exploration/region_ec_avg_avg_daily_max_timeseries.json',
+    ),
   },
 } as const
 const SALINITY_COLORS = [

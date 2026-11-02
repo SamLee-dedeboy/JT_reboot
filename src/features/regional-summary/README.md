@@ -48,23 +48,20 @@ mockup informed by the sibling `JT_exploration/RMA/artwork` project.
 
 ### Offline basemap
 
-`npm run build:kiosk` builds the site with the offline basemap always on
-(`.env.kiosk` sets `VITE_OFFLINE_MAP=1`); serve it with `npm run preview`. In other
-builds, append `?offline=1` to `/pages/regional-summary` (or
-`/pages/scenario-explorer`) to replace the remote Mapbox Studio style with the self-contained exhibit basemap in
-`src/map/offlineBasemapStyle.ts`. Both pages share one style: the scenario
+`npm run build:kiosk` builds the complete site in offline map mode
+(`.env.kiosk` sets `VITE_MAP_MODE=offline`); serve it with `npm run preview`. In other
+builds, append `?map=offline` to any route (`?offline=1` remains an alias) to replace
+remote Mapbox Studio styles across the site with the self-contained exhibit basemap in
+`src/map/offlineBasemapStyle.ts`. Every map shares one mode and style: the scenario
 explorer's water color with the common land, road, and label specs. It copies the online land, landuse, road, water, and label specs, and load only
 files served by this application:
 
-- `public/data/delta_waterway*.geojson`: Delta and Bay water.
-- `public/data/regional-summary/offline-basemap.geojson`: OpenStreetMap roads,
+- `public/data/geospatial-assets/basemap/offline-basemap.geojson`: OpenStreetMap roads,
   settlement labels (with a Mapbox-style `symbolrank`), and bay labels.
-- `public/data/regional-summary/offline-landuse.geojson`: OpenStreetMap
+- `public/data/geospatial-assets/basemap/offline-landuse.geojson`: OpenStreetMap
   farmland, wood, park, residential, and lake polygons.
-- `public/fonts/`: glyph ranges for Proxima Nova Regular/Semibold, DIN Pro
-  Regular, and the default `Open Sans Regular,Arial Unicode MS Regular` stack
-  used by symbol layers that do not set `text-font` (including the ◆/◇ station
-  markers).
+- `public/fonts/`: bundled Proxima Nova Regular/Semibold glyph ranges used by
+  the offline symbol layers.
 
 All regional polygons, station evidence, and strategy-guide geometries continue
 to use the existing bundled files. `BaseMap` requires a Mapbox token only when
@@ -106,7 +103,7 @@ GeoJSON files.
   gates and levee repair remain visible together during the first two steps;
   both retain a green outline while only the active intervention receives a
   green fill. The web-ready WGS84 exports live in
-  `public/data/regional-summary/gis/`; the pathway source is reprojected from
+  `public/data/geospatial-assets/scenarios/bolster-and-fortify/`; the pathway source is reprojected from
   Web Mercator during conversion by `scripts/convert-bf-strategy-gis.py`. The
   levee-repair layer has since been replaced with the narrower
   `levee_narrow.geojson` waterway region from `JT_exploration`, so rerunning
@@ -189,12 +186,11 @@ GeoJSON files.
   directions, or unclear. Pink, teal, and yellow map treatments reinforce those
   states, and the selected-place card states the direction in text.
 
-The runtime loads only the explicitly curated files kept directly in
-`public/data/regional-summary/`:
+The runtime loads only the explicitly curated pattern and geometry files:
 
-- `pattern-list.json` contains approved places and findings.
-- `pattern-ec-series-7d.json` contains chart series for those findings only.
-- `region-of-interest.geojson` contains the approved or explicitly labeled
+- `public/data/patterns/pattern-list.json` contains approved places and findings.
+- `public/data/patterns/pattern-ec-series-7d.json` contains chart series for those findings only.
+- `public/data/geospatial-assets/shared/region-of-interest.geojson` contains the approved or explicitly labeled
   approximate map geometries.
 
 The current curated Bolster and Fortify set contains North Franks Tract,
@@ -213,20 +209,25 @@ the runtime files above.
 
 ### Bolster and Fortify gate schedule
 
-`bolsterGateClosures.ts` is the feature-owned source of truth for the inferred
-Franks Tract gate-operation windows shown on the detailed timeline:
+`public/data/operations/bolster-and-fortify-gate-schedule.json` is the source of
+truth for the Franks Tract gate schedule across the website, and
+`bolsterGateClosures.ts` reads it:
 
 - Closure 1: October 1, 2018 through January 13, 2019.
-- Closure 2: November 26 through December 10, 2019.
-- Closure 3: approximately July 15 through November 29, 2020.
+- Closure 2: November 27 through December 10, 2019.
+- Closure 3: July 15 through November 29, 2020, with no reopening.
 
-The dates describe gate operation, not the narrower qualifying salinity-response
-episodes. All transitions were inferred from a plotted gate-operation variable
-and carry approximately two days of uncertainty. Closure 3 is explicitly
-provisional because no exact operational time series has been located. The
-current recommended response window for closure 3 is October 1 through November
-29, 2020; this is gate-associated timing and must not be described as proof that
-the closure caused the response.
+These dates cover the analysis period. Before October 1, 2018 is model spin-up, and
+salinity data ends November 29, 2020. The file's `sourceTable` keeps the full
+schedule. The dates describe gate operation, not the narrower qualifying
+salinity-response episodes. The current recommended response window for closure 3
+is October 1 through November 29, 2020; this is gate-associated timing and must not
+be described as proof that the closure caused the response.
+
+The analysis in `scripts/regional-summary/bf_three_closure/` used earlier inferred
+dates and is not being rerun. Its closure 2 start differs by one day, and closure 3
+`reviewNote` text in `pattern-list.json` mentions a reopening that the schedule
+does not have. The site does not display those notes.
 
 ### Calling on Reserves release schedule
 
@@ -273,13 +274,13 @@ in place and communicate hover, keyboard focus, and selection through glow.
 The timeline sits at 70% of the view; only the selected event's
 vertical detail card appears below it, clamped inside the viewport. The compact
 static event slices are generated by
-`scripts/build-regional-summary-event-series.py`; its checked-in runtime output is `public/data/regional-summary/pattern-ec-series-7d.json`; the full SQLite time-series
+`scripts/build-regional-summary-event-series.py`; its checked-in runtime output is `public/data/patterns/pattern-ec-series-7d.json`; the full SQLite time-series
 database is never shipped to the browser.
 
 The detailed map colors both selected-region and surrounding stations for the active event window.
 Run `node scripts/build-regional-summary-surrounding-stations.mjs` after changing the curated
 patterns or scenario dashboard data. It writes the checked-in runtime file
-`public/data/regional-summary/pattern-surrounding-stations.json` from the daily station baseline and
+`public/data/patterns/pattern-surrounding-stations.json` from the daily station baseline and
 scenario-difference series.
 
 The detailed view's **Stations within the region** map renders immediately,

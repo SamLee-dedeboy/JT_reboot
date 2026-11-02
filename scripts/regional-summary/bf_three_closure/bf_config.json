@@ -1,7 +1,7 @@
 {
   "_comment": "Configuration for the Bolster & Fortify three-closure pattern and station-sensitivity analysis (D:/projects/JT_reboot/src/features/regional-summary/bf-pattern-sensitivity-prompt.md). Every threshold/window/duration rule is read from this file and is copied verbatim from the reviewed internal/analysis/methodology_pilot/pilot_config.json in the sibling JT_exploration project - see bf_data.py / bf_sensitivity.py for the reuse mechanism (cross-project import, both are local sibling directories).",
   "inputs": {
-    "salinity_dashboard": "public/data/scenario-explorer/salinity_dashboard.json"
+    "salinity_dashboard": "public/data/salinity/scenario-explorer/salinity_dashboard.json"
   },
   "scenario": {
     "key": "bolster",
@@ -108,5 +108,5 @@
     "general_disclaimer": "Exploratory Bolster & Fortify gate-closure pattern and station-sensitivity analysis. Not a regulatory compliance determination. Not reviewed or approved for the public interface. Language describes timing association only (\"during the closure\", \"gate-associated timing\") - never causal.",
     "sign_convention_label": "Positive = Bolster & Fortify saltier (higher EC) than Business as Usual. Negative = Bolster & Fortify fresher (lower EC) than Business as Usual."
   },
-  "output_paths": { "analysis_dir": "public/data/regional-summary/raw/bf-three-closure-analysis" }
+  "output_paths": { "analysis_dir": "public/data/patterns/raw/bf-three-closure-analysis" }
 }

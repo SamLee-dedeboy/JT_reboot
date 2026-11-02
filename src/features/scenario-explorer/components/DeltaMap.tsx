@@ -1,11 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Box, Paper, Typography } from '@mui/material'
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
+import { Box, IconButton, Paper, Tooltip, Typography } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
+import HighlightAltIcon from '@mui/icons-material/HighlightAlt'
+import { polygonContains } from 'd3'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../mapConfig'
-import { createOfflineBasemapStyle, isOfflineMapEnabled } from '../../../map/offlineBasemapStyle'
-import { palette } from '../../../theme/index'
+import { resolveMapStyle } from '../../../map/offlineBasemapStyle'
+import { explorerControl, palette } from '../../../theme/index'
+import { useCompactExplorer } from '../explorerType'
+import { smallIconSx } from './controlStyles'
 import type { FeatureCollection, Point } from 'geojson'
 import type { GeoJSONSource } from 'mapbox-gl'
 import type {
@@ -31,7 +36,12 @@ interface MapCanvasProps {
   d1641Data: D1641Dataset | null
   showBrushStationLabels?: boolean
   emphasizeD1641Stations?: boolean
+  lassoStationIds: string[]
+  onLassoChange: (stationIds: string[]) => void
 }
+
+// A lasso shorter than this many pointer samples was a click, not a drawn shape.
+const MIN_LASSO_POINTS = 3
 
 type ComplianceState = 'none' | 'compliant' | 'exceeded' | 'insufficient' | 'high-tide'
 
@@ -144,11 +154,16 @@ function MapCanvas({
   histogramBrush,
   showBrushStationLabels = true,
   emphasizeD1641Stations = false,
+  lassoStationIds,
+  onLassoChange,
 }: MapCanvasProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const popupRef = useRef<mapboxgl.Popup | null>(null)
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null)
+  const [lassoActive, setLassoActive] = useState(false)
+  const [lassoPath, setLassoPath] = useState<[number, number][]>([])
+  const [lassoMissed, setLassoMissed] = useState(false)
   const selectedScenario = data.scenarios.find((item) => item.key === scenario)!
   const baseScenarioLabel =
     data.scenarios.find((item) => item.key === baseScenario)?.label ?? 'Base scenario'
@@ -200,6 +215,12 @@ function MapCanvas({
                 ? 1
                 : 0,
             hasBrush: histogramBrush != null ? 1 : 0,
+            lassoed:
+              (region === 'All regions' || station.region === region) &&
+              lassoStationIds.includes(String(station.station_id))
+                ? 1
+                : 0,
+            hasLasso: lassoStationIds.length ? 1 : 0,
             d1641State: combinedState,
             d1641Onset: selectedCompliance.onset || baseStationCompliance.onset ? 1 : 0,
             exceedanceScenarios,
@@ -226,6 +247,7 @@ function MapCanvas({
       data.units,
       dateIndex,
       histogramBrush,
+      lassoStationIds,
       mapExtent,
       region,
       scenarioCompliance,
@@ -247,7 +269,7 @@ function MapCanvas({
     if (!containerRef.current) return
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: isOfflineMapEnabled() ? createOfflineBasemapStyle() : SCENARIO_EXPLORER_MAP_STYLE,
+      style: resolveMapStyle(SCENARIO_EXPLORER_MAP_STYLE),
       bounds: MAP_BOUNDS,
       fitBoundsOptions: { padding: 10 },
       attributionControl: false,
@@ -275,7 +297,11 @@ function MapCanvas({
           'circle-color': ['get', 'color'],
           'circle-opacity': [
             'case',
-            ['all', ['==', ['get', 'hasBrush'], 1], ['==', ['get', 'active'], true]],
+            [
+              'all',
+              ['any', ['==', ['get', 'hasBrush'], 1], ['==', ['get', 'hasLasso'], 1]],
+              ['==', ['get', 'active'], true],
+            ],
             0.42,
             ['==', ['get', 'active'], true],
             0.96,
@@ -418,6 +444,18 @@ function MapCanvas({
           'circle-opacity-transition': { duration: 250 },
         },
       })
+      map.addLayer({
+        id: 'station-lasso-highlight',
+        type: 'circle',
+        source: 'stations',
+        filter: ['==', ['get', 'lassoed'], 1],
+        paint: {
+          'circle-radius': 6.25,
+          'circle-color': ['get', 'color'],
+          'circle-stroke-color': palette.common.white,
+          'circle-stroke-width': 1.5,
+        },
+      })
       if (showBrushStationLabels) {
         map.addLayer({
           id: 'station-brush-label',
@@ -440,7 +478,7 @@ function MapCanvas({
       }
       const showStationPopup = (event: mapboxgl.MapMouseEvent) => {
         const feature = map.queryRenderedFeatures(event.point, {
-          layers: ['station-brush-highlight', 'stations'],
+          layers: ['station-lasso-highlight', 'station-brush-highlight', 'stations'],
         })[0]
         if (!feature || feature.geometry.type !== 'Point') return
         const properties = feature.properties ?? {}
@@ -616,144 +654,302 @@ function MapCanvas({
     return () => window.cancelAnimationFrame(frame)
   }, [dateIndex, onsetSignature])
 
+  useEffect(() => {
+    if (!lassoActive) return undefined
+    const cancelOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setLassoActive(false)
+      setLassoPath([])
+    }
+    document.addEventListener('keydown', cancelOnEscape)
+    return () => document.removeEventListener('keydown', cancelOnEscape)
+  }, [lassoActive])
+
+  const pointerPosition = (event: PointerEvent<SVGSVGElement>): [number, number] => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    return [event.clientX - bounds.left, event.clientY - bounds.top]
+  }
+  const startLasso = (event: PointerEvent<SVGSVGElement>) => {
+    event.currentTarget.setPointerCapture(event.pointerId)
+    popupRef.current?.remove()
+    setLassoMissed(false)
+    setLassoPath([pointerPosition(event)])
+  }
+  const extendLasso = (event: PointerEvent<SVGSVGElement>) => {
+    if (!lassoPath.length) return
+    const next = pointerPosition(event)
+    setLassoPath((path) => [...path, next])
+  }
+  const finishLasso = () => {
+    const map = mapRef.current
+    const path = lassoPath
+    setLassoPath([])
+    if (!map || path.length < MIN_LASSO_POINTS) return
+    const inside = data.stations
+      .filter((station) => {
+        if (region !== 'All regions' && station.region !== region) return false
+        const { x, y } = map.project([station.longitude, station.latitude])
+        return polygonContains(path, [x, y])
+      })
+      .map((station) => String(station.station_id))
+    // Stay armed after a miss so the next try doesn't need another click on the tool.
+    setLassoMissed(!inside.length)
+    if (!inside.length) return
+    onLassoChange(inside)
+    setLassoActive(false)
+  }
+
   return (
-    <Box
-      ref={containerRef}
-      sx={{
-        flex: 1,
-        minHeight: { xs: '32.5rem', lg: 0 },
-        '& .mapboxgl-popup': {
-          maxWidth: 'min(22rem, calc(100% - 1rem)) !important',
-          '@media (max-width: 1919.95px)': {
-            maxWidth: 'min(17rem, calc(100% - 1rem)) !important',
+    <>
+      <Box
+        ref={containerRef}
+        sx={{
+          flex: 1,
+          minHeight: { xs: '32.5rem', lg: 0 },
+          '& .mapboxgl-popup': {
+            maxWidth: 'min(22rem, calc(100% - 1rem)) !important',
+            '@media (max-width: 1919.95px)': {
+              maxWidth: 'min(17rem, calc(100% - 1rem)) !important',
+            },
           },
-        },
-        '& .mapboxgl-popup-content': {
-          bgcolor: 'base.700',
-          border: 1,
-          borderColor: 'divider',
-          borderRadius: 1,
-          boxShadow: 6,
-          color: 'text.primary',
-          maxHeight: 'calc(100dvh - 4rem)',
-          overflowX: 'hidden',
-          overflowY: 'auto',
-          overflowWrap: 'anywhere',
-          p: 0,
-        },
-        '& .mapboxgl-popup-close-button': {
-          bgcolor: 'transparent !important',
-          color: 'text.secondary',
-          fontSize: '1.25rem',
-          p: 1,
-        },
-        '& .mapboxgl-popup-close-button:hover, & .mapboxgl-popup-close-button:focus-visible': {
-          bgcolor: 'transparent !important',
-          color: 'brand.primaryGreen',
-        },
-        '& .mapboxgl-popup-tip': { borderTopColor: 'base.700' },
-        '& .station-popup-content': (theme) => ({
-          display: 'grid',
-          gap: theme.jtSpacing.gap.xs,
-          p: theme.jtSpacing.component.sm,
-          pr: theme.jtSpacing.component.lg,
-          '@media (max-width: 1919.95px)': {
-            gap: theme.spacing(0.5),
+          '& .mapboxgl-popup-content': {
+            bgcolor: 'base.700',
+            border: 1,
+            borderColor: 'divider',
+            borderRadius: 1,
+            boxShadow: 6,
+            color: 'text.primary',
+            maxHeight: 'calc(100dvh - 4rem)',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            overflowWrap: 'anywhere',
+            p: 0,
+          },
+          '& .mapboxgl-popup-close-button': {
+            bgcolor: 'transparent !important',
+            color: 'text.secondary',
+            fontSize: '1.25rem',
+            p: 1,
+          },
+          '& .mapboxgl-popup-close-button:hover, & .mapboxgl-popup-close-button:focus-visible': {
+            bgcolor: 'transparent !important',
+            color: 'brand.primaryGreen',
+          },
+          '& .mapboxgl-popup-tip': { borderTopColor: 'base.700' },
+          '& .station-popup-content': (theme) => ({
+            display: 'grid',
+            gap: theme.jtSpacing.gap.xs,
+            p: theme.jtSpacing.component.sm,
+            pr: theme.jtSpacing.component.lg,
+            '@media (max-width: 1919.95px)': {
+              gap: theme.spacing(0.5),
+              p: theme.jtSpacing.component.xs,
+              pr: theme.jtSpacing.component.md,
+            },
+          }),
+          '& .station-popup-title': (theme) => ({
+            color: 'brand.primaryGreen',
+            fontWeight: 400,
+            lineHeight: 1.3,
+            textTransform: 'none',
+            typography: 'body1',
+            '@media (max-width: 1919.95px)': {
+              ...theme.typography.caption,
+              color: theme.palette.brand.primaryGreen,
+            },
+          }),
+          '& .station-popup-metadata, & .station-popup-context': {
+            color: 'text.secondary',
+            typography: 'captionSmall',
+          },
+          '& .station-popup-compliance': (theme) => ({
+            borderTop: 1,
+            borderColor: 'divider',
+            color: 'common.white',
+            display: 'grid',
+            gap: theme.jtSpacing.gap.xs,
+            mt: 0.5,
+            pt: 1,
+          }),
+          '& .station-popup-compliance-heading': {
+            color: 'text.secondary',
+            fontWeight: 400,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            typography: 'captionSmall',
+          },
+          '& .station-popup-compliance-station': (theme) => ({
+            color: 'brand.primaryGreen',
+            fontWeight: 400,
+            lineHeight: 1.3,
+            textTransform: 'none',
+            typography: 'body1',
+            '@media (max-width: 1919.95px)': {
+              ...theme.typography.caption,
+              color: theme.palette.brand.primaryGreen,
+            },
+          }),
+          '& .station-popup-rule': (theme) => ({
+            bgcolor: 'base.800',
+            borderLeft: 3,
+            borderColor: 'accent.yellow',
+            display: 'grid',
+            gap: theme.jtSpacing.gap.xs,
+            my: 0.5,
             p: theme.jtSpacing.component.xs,
-            pr: theme.jtSpacing.component.md,
+          }),
+          '& .station-popup-rule-label': {
+            color: 'brand.primaryGreen',
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            typography: 'captionSmall',
           },
-        }),
-        '& .station-popup-title': (theme) => ({
-          color: 'brand.primaryGreen',
-          fontWeight: 400,
-          lineHeight: 1.3,
-          textTransform: 'none',
-          typography: 'body1',
-          '@media (max-width: 1919.95px)': {
-            ...theme.typography.caption,
-            color: theme.palette.brand.primaryGreen,
+          '& .station-popup-rule-text': {
+            color: 'common.white',
+            lineHeight: 1.4,
+            typography: 'captionSmall',
           },
-        }),
-        '& .station-popup-metadata, & .station-popup-context': {
-          color: 'text.secondary',
-          typography: 'captionSmall',
-        },
-        '& .station-popup-compliance': (theme) => ({
-          borderTop: 1,
-          borderColor: 'divider',
-          color: 'common.white',
-          display: 'grid',
+          '& .station-popup-statuses': (theme) => ({
+            display: 'grid',
+            gap: theme.jtSpacing.gap.xs,
+          }),
+          '& .station-popup-status': {
+            alignItems: 'start',
+            display: 'grid',
+            gap: 0.25,
+            gridTemplateColumns: 'minmax(0, 1fr) auto',
+            '@media (max-width: 1919.95px)': {
+              gridTemplateColumns: 'minmax(0, 1fr)',
+            },
+          },
+          '& .station-popup-status-label': { fontWeight: 400, typography: 'captionSmall' },
+          '& .station-popup-status-text': {
+            textAlign: 'right',
+            typography: 'captionSmall',
+            '@media (max-width: 1919.95px)': { textAlign: 'left' },
+          },
+          '& .station-popup-status-label-base, & .station-popup-status-text-base': {
+            color: 'brand.primaryBlue',
+          },
+          '& .station-popup-status-label-selected, & .station-popup-status-text-selected': {
+            color: 'brand.primaryGreen',
+          },
+          '& .station-popup-value': { color: 'text.primary', typography: 'h5' },
+          '& .station-popup-value-positive': { color: 'salinity.pink' },
+          '& .station-popup-value-negative': { color: 'salinity.teal' },
+          '& .station-popup-value-neutral': { color: 'text.primary' },
+        }}
+      />
+      {lassoActive && (
+        <Box
+          component="svg"
+          aria-label="Draw around stations on the map"
+          onPointerDown={startLasso}
+          onPointerMove={extendLasso}
+          onPointerUp={finishLasso}
+          onPointerCancel={() => setLassoPath([])}
+          sx={{
+            cursor: 'crosshair',
+            height: '100%',
+            inset: 0,
+            position: 'absolute',
+            touchAction: 'none',
+            width: '100%',
+            zIndex: 1,
+          }}
+        >
+          {lassoPath.length > 1 && (
+            <polygon
+              points={lassoPath.map((point) => point.join(',')).join(' ')}
+              fill={palette.common.white}
+              fillOpacity={0.12}
+              stroke={palette.common.white}
+              strokeDasharray="4 4"
+              strokeWidth={1.5}
+            />
+          )}
+        </Box>
+      )}
+      <Box
+        sx={(theme) => ({
+          alignItems: 'center',
+          bottom: theme.spacing(10.5),
+          display: 'flex',
           gap: theme.jtSpacing.gap.xs,
-          mt: 0.5,
-          pt: 1,
-        }),
-        '& .station-popup-compliance-heading': {
-          color: 'text.secondary',
-          fontWeight: 400,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          typography: 'captionSmall',
-        },
-        '& .station-popup-compliance-station': (theme) => ({
-          color: 'brand.primaryGreen',
-          fontWeight: 400,
-          lineHeight: 1.3,
-          textTransform: 'none',
-          typography: 'body1',
-          '@media (max-width: 1919.95px)': {
-            ...theme.typography.caption,
-            color: theme.palette.brand.primaryGreen,
-          },
-        }),
-        '& .station-popup-rule': (theme) => ({
-          bgcolor: 'base.800',
-          borderLeft: 3,
-          borderColor: 'accent.yellow',
-          display: 'grid',
-          gap: theme.jtSpacing.gap.xs,
-          my: 0.5,
-          p: theme.jtSpacing.component.xs,
-        }),
-        '& .station-popup-rule-label': {
-          color: 'brand.primaryGreen',
-          fontWeight: 700,
-          letterSpacing: '0.08em',
-          textTransform: 'uppercase',
-          typography: 'captionSmall',
-        },
-        '& .station-popup-rule-text': {
-          color: 'common.white',
-          lineHeight: 1.4,
-          typography: 'captionSmall',
-        },
-        '& .station-popup-statuses': (theme) => ({ display: 'grid', gap: theme.jtSpacing.gap.xs }),
-        '& .station-popup-status': {
-          alignItems: 'start',
-          display: 'grid',
-          gap: 0.25,
-          gridTemplateColumns: 'minmax(0, 1fr) auto',
-          '@media (max-width: 1919.95px)': {
-            gridTemplateColumns: 'minmax(0, 1fr)',
-          },
-        },
-        '& .station-popup-status-label': { fontWeight: 400, typography: 'captionSmall' },
-        '& .station-popup-status-text': {
-          textAlign: 'right',
-          typography: 'captionSmall',
-          '@media (max-width: 1919.95px)': { textAlign: 'left' },
-        },
-        '& .station-popup-status-label-base, & .station-popup-status-text-base': {
-          color: 'brand.primaryBlue',
-        },
-        '& .station-popup-status-label-selected, & .station-popup-status-text-selected': {
-          color: 'brand.primaryGreen',
-        },
-        '& .station-popup-value': { color: 'text.primary', typography: 'h5' },
-        '& .station-popup-value-positive': { color: 'salinity.pink' },
-        '& .station-popup-value-negative': { color: 'salinity.teal' },
-        '& .station-popup-value-neutral': { color: 'text.primary' },
-      }}
-    />
+          position: 'absolute',
+          right: '10px',
+          zIndex: 2,
+        })}
+      >
+        {lassoActive && (
+          <Typography
+            role="status"
+            variant="captionSmall"
+            sx={{
+              bgcolor: 'base.700',
+              borderRadius: explorerControl.fieldRadius,
+              color: 'common.white',
+              px: 1,
+              py: 0.5,
+            }}
+          >
+            {lassoMissed ? 'No stations there. Try again.' : 'Draw around stations'}
+          </Typography>
+        )}
+        {!lassoActive && lassoStationIds.length > 0 && (
+          <Box
+            sx={{
+              alignItems: 'center',
+              bgcolor: 'base.700',
+              borderRadius: explorerControl.fieldRadius,
+              color: 'common.white',
+              display: 'flex',
+              gap: 0.25,
+              pl: 1,
+              pr: 0.25,
+              py: 0.25,
+            }}
+          >
+            <Typography variant="captionSmall">
+              {lassoStationIds.length} {lassoStationIds.length === 1 ? 'station' : 'stations'}
+            </Typography>
+            <IconButton
+              aria-label="Clear lasso"
+              size="small"
+              onClick={() => onLassoChange([])}
+              sx={{ ...smallIconSx, color: 'text.secondary', p: 0.25 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        )}
+        <Tooltip title={lassoActive ? 'Cancel lasso' : 'Lasso stations'} placement="left">
+          <IconButton
+            aria-label="Lasso stations"
+            aria-pressed={lassoActive}
+            onClick={() => {
+              setLassoActive((active) => !active)
+              setLassoMissed(false)
+              setLassoPath([])
+            }}
+            sx={{
+              ...smallIconSx,
+              bgcolor: lassoActive ? 'primary.main' : 'base.700',
+              border: 1,
+              borderColor: lassoActive ? 'primary.main' : 'border.strong',
+              borderRadius: explorerControl.fieldRadius,
+              color: lassoActive ? 'common.black' : 'common.white',
+              height: explorerControl.height,
+              width: explorerControl.height,
+              '&:hover': { bgcolor: lassoActive ? 'primary.main' : 'base.900' },
+            }}
+          >
+            <HighlightAltIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    </>
   )
 }
 
@@ -770,7 +966,10 @@ export default function DeltaMap({
   histogramBrush,
   showBrushStationLabels = true,
   emphasizeD1641Stations = false,
+  lassoStationIds,
+  onLassoChange,
 }: DeltaMapProps) {
+  const compact = useCompactExplorer()
   return (
     <Paper
       data-tour="map"
@@ -799,6 +998,8 @@ export default function DeltaMap({
         histogramBrush={histogramBrush}
         showBrushStationLabels={showBrushStationLabels}
         emphasizeD1641Stations={emphasizeD1641Stations}
+        lassoStationIds={lassoStationIds}
+        onLassoChange={onLassoChange}
       />
       {d1641Data && (
         <Paper
@@ -807,22 +1008,36 @@ export default function DeltaMap({
           sx={(theme) => ({
             bgcolor: 'base.700',
             borderRadius: 1,
-            display: 'grid',
-            gap: theme.jtSpacing.gap.xs,
-            left: theme.jtSpacing.component.sm,
-            p: theme.jtSpacing.component.xs,
             position: 'absolute',
-            top: theme.jtSpacing.component.sm,
+            ...(compact
+              ? {
+                  left: theme.jtSpacing.component.xs,
+                  maxWidth: `calc(100% - ${theme.spacing(theme.jtSpacing.component.xs * 2)})`,
+                  px: theme.jtSpacing.component.xs,
+                  py: 0.25,
+                  top: theme.jtSpacing.component.xs,
+                }
+              : {
+                  display: 'grid',
+                  gap: theme.jtSpacing.gap.xs,
+                  left: theme.jtSpacing.component.sm,
+                  p: theme.jtSpacing.component.xs,
+                  top: theme.jtSpacing.component.sm,
+                }),
           })}
         >
           <Box
-            sx={(theme) => ({ alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.sm })}
+            sx={(theme) =>
+              compact
+                ? { display: 'grid' }
+                : { alignItems: 'center', display: 'flex', gap: theme.jtSpacing.gap.sm }
+            }
           >
             <Typography variant="captionSmall" sx={{ color: 'common.white' }}>
               ◇ D-1641 compliance station
             </Typography>
             <Typography variant="captionSmall" sx={{ color: 'accent.yellow', fontWeight: 800 }}>
-              ◆ Active exceedance: B! base · S! selected
+              ◆ {compact ? 'Exceedance' : 'Active exceedance'}: B! base · S! selected
             </Typography>
           </Box>
         </Paper>

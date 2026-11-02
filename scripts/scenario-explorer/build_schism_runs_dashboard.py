@@ -17,7 +17,7 @@ BASE = DATA_DIR / "baseline_schism"
 SCHISM_DIR = BASE / "ec_full_extent_all_stations"
 MASTER = DATA_DIR / "all_point_stations_finalized.csv"
 RUN27_STATIONS = BASE / "raw" / "station.in.run_27.txt"
-OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"))
 OUT = OUTPUT_DIR / "schism_runs_dashboard.json"
 RUNS = [
     {"key": "run27", "label": "Business As Usual · Run 27", "run": "27"},

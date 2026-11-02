@@ -1,8 +1,28 @@
 # Scenario Explorer
 
-Interactive comparison of RMA scenarios, paired RMA/SCHISM output, and tiered-outflow SCHISM runs.
+Interactive salinity comparison. The public route (`/pages/scenario-explorer`) offers four modes: 01 Adaptation Scenario Comparison, 02 Alternative Delta Outflow, 03 Sea Level Rise Adaptation Scenario Comparison, and 04 Sea Level Rise vs. Current Comparison. The internal and D-1641 routes also offer the model and run comparisons.
 
-Append `?offline=1` to use the network-free exhibit basemap (`src/map/offlineBasemapStyle.ts`) instead of the online Mapbox Studio style. See the regional summary README for its data and rebuild steps.
+Append `?map=offline` to switch every map on the site to the network-free exhibit mode (`?offline=1` remains a compatibility alias). See `src/map/offlineBasemapStyle.ts` and the regional summary README for its data and rebuild steps.
+
+## Station spread
+
+The Station spread control decides which stations count on each date: all of them, or those inside the central 90% or 50% of that date's values. The timeline's line, its shaded band, and the current average deviation all use that set (`summarizeSpread` in `format.ts`). The percent reading still divides by the whole region's base-scenario mean unless a lasso is active.
+
+The station distribution's axis fits the same set, always including the baseline; stations beyond the axis are not drawn.
+
+## Layout
+
+The visualizations are the last thing to shrink. The timeline plot has a minimum height (`MIN_PLOT_HEIGHT`) and is redrawn at its measured size rather than scaled, so a short window scrolls the page and controls compact first.
+
+Between the `lg` and `xl` breakpoints, `useCompactExplorer` in `explorerType.ts` switches to a condensed layout: the top row holds the color scale, the spread and legend stack beside a two-column overlay grid, and the date row holds the reading. Every other width keeps the full layout. In that range `explorerType.ts` also steps the explorer's text down to 16, 14, and 12px. Chart axis and data labels stop at 14px. The steps apply through CSS variables on the page root, so popovers and menus keep the site's sizes, and SVG text follows them too.
+
+## Scenario annotations
+
+In mode 01, the timeline shades the operating windows of the selected scenario (`scenarioAnnotations.ts`): Bolster & Fortify's gate closures, from `public/data/operations/bolster-and-fortify-gate-schedule.json`, and Calling on Reserves' potential higher outflow, which is inferred and comes from `src/features/regional-summary`. They are not drawn for sea level rise modes, where B&F's salinity-triggered gates would close on other dates.
+
+## Map lasso
+
+The lasso icon on the map lets people draw around stations in the selected region. Until it is cleared, the timeline, its shaded band, and the current average deviation use only those stations, with Station spread applied inside that set, and the station distribution highlights them against any other stations inside its axis. The percent reading divides by those stations' base-scenario mean. Changing the region or the comparison clears the lasso.
 
 ## Provenance
 
@@ -12,7 +32,7 @@ Confirm the original code and dataset licensing before distributing this feature
 
 ## Data
 
-The browser loads generated files from `public/data/scenario-explorer`. The internal route additionally exposes the full-range SCHISM comparison:
+The browser loads generated files from `public/data/salinity/scenario-explorer`. The internal route additionally exposes the full-range SCHISM comparison:
 
 - `salinity_dashboard.json`
 - `rma_schism_dashboard.json`
@@ -38,7 +58,7 @@ python scripts/scenario-explorer/build_d1641_calsim.py \
   --processor ../JT_exploration/RMA/scripts/process_rma_d1641.py \
   --data-dir ../JT_exploration/RMA/data \
   --output-dir ../JT_exploration/RMA/derived/d1641_calsim_source \
-  --json-output public/data/scenario-explorer/d1641_calsim.json
+  --json-output public/data/salinity/scenario-explorer/d1641_calsim.json
 ```
 
 The dashboard builder reads the delivered `EC-AVG-AVG` files. The D-1641 builder reads the
@@ -55,7 +75,7 @@ CalSim-baseline COR/TUN family.
 python scripts/scenario-explorer/build_slr_scenarios_dashboard.py --slr-root <path to RMA/SLR_data>
 ```
 
-`RMA_SLR_DATA_DIR` may be used in place of `--slr-root`. `RMA_DATA_DIR` (or `--current-data-dir`) points to the current-condition RMA data and defaults to the sibling `JT_exploration/RMA/data`. `SCENARIO_EXPLORER_OUTPUT_DIR` (or `--output-dir`) defaults to `public/data/scenario-explorer`.
+`RMA_SLR_DATA_DIR` may be used in place of `--slr-root`. `RMA_DATA_DIR` (or `--current-data-dir`) points to the current-condition RMA data and defaults to the sibling `JT_exploration/RMA/data`. `SCENARIO_EXPLORER_OUTPUT_DIR` (or `--output-dir`) defaults to `public/data/salinity/scenario-explorer`.
 
 After that base build, update COR and TUN from the October 29, 2026 seven-scenario deliveries:
 
@@ -67,7 +87,8 @@ The updater defaults to `JT_exploration/RMA/EC_current_2018_2020_7scen` and
 `JT_exploration/RMA/EC_SLR_2018_2020_7scen`; override them with `--current-root` and `--slr-root`.
 It updates `salinity_dashboard.json` and `slr_scenarios_dashboard.json`. COR and TUN are always
 represented relative to the matching `BaseCalSim` run. The UI consequently locks those scenarios
-to `baseline-calsim` in public mode 01 and `baseline-calsim-slr` in public mode 03. Public mode 04
+to `baseline-calsim` in public mode 01 and `baseline-calsim-slr` in public mode 03. Mode 01 shows
+`baseline-calsim` only as that locked base, never as a choice or an overlay. Public mode 04
 uses each scenario's current counterpart, so the common CalSim baseline cancels and the displayed
 difference is SLR scenario minus current scenario.
 

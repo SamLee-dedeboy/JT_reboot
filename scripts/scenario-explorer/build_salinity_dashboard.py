@@ -17,7 +17,7 @@ from xml.etree import ElementTree as ET
 PROJECT_DIR = Path(__file__).resolve().parents[2]
 DATA_DIR = Path(os.environ.get("RMA_DATA_DIR", PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"))
 UPDATE_DIR = Path(os.environ["RMA_UPDATE_DIR"]) if os.environ.get("RMA_UPDATE_DIR") else None
-OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "scenario-explorer"))
+OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"))
 WORKBOOK = DATA_DIR / "ALL POINT STATIONS_FINAL REVISION_MAY 2026.xlsx"
 STATIONS_OUT = OUTPUT_DIR / "all_386_unique_stations.csv"
 DASHBOARD_OUT = OUTPUT_DIR / "salinity_dashboard.json"

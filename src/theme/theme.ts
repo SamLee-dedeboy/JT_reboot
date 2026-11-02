@@ -142,6 +142,25 @@ export const ranking = {
   },
 } as const
 
+// The salinity explorer's controls. Height grows with controlValue's type; inset and
+// fieldInline are spacing multipliers; the bases are a control's starting width in a row.
+export const explorerControl = {
+  height: 'clamp(34px, 1.25rem + 1vw, 40px)',
+  labelHeight: 24,
+  headerHeight: 36,
+  inset: 0.25,
+  fieldInline: 1.25,
+  fieldBasis: '10.5rem',
+  regionBasis: '8rem',
+  scaleBasis: '19rem',
+  compactScaleBasis: '8rem',
+  chipHeight: 28,
+  fieldRadius: '6px',
+  pillRadius: 999,
+  iconSize: 18,
+  dotSize: 8,
+} as const
+
 export const logoWordmark = {
   desktopMinWidth: 220,
   containerLineHeight: 1.05,
@@ -189,6 +208,7 @@ const theme = createTheme({
   chart,
   coDesign,
   ranking,
+  explorerControl,
 })
 
 export default theme

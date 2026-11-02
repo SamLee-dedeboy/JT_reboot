@@ -18,7 +18,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "public/data/regional-summary"
+DATA_DIR = Path(__file__).resolve().parent.parent / "public/data/patterns"
+GEOSPATIAL_DIR = (
+    Path(__file__).resolve().parent.parent / "public/data/geospatial-assets/shared"
+)
 RAW_DIR = DATA_DIR / "raw"
 
 CORRIDOR_PATTERN_ID = "586a7d2d02653c70"
@@ -96,7 +99,7 @@ def main() -> None:
     )
 
     # Region-of-interest geometries.
-    region_path = DATA_DIR / "region-of-interest.geojson"
+    region_path = GEOSPATIAL_DIR / "region-of-interest.geojson"
     region_collection = json.loads(region_path.read_text(encoding="utf-8"))
     station_ids = {
         "clifton_court_forebay": CLIFTON_STATION_IDS,

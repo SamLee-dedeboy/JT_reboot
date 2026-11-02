@@ -31,7 +31,7 @@ from build_slr_scenarios_dashboard import BOUNDARY_STATIONS, DUPLICATE_RESOLUTIO
 
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
-DATA_OUTPUT_DIR = PROJECT_DIR / "public" / "data" / "scenario-explorer"
+DATA_OUTPUT_DIR = PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"
 DEFAULT_DATA_DIR = PROJECT_DIR.parent / "JT_exploration" / "RMA" / "data"
 SOURCE = "California State Water Resources Control Board Decision 1641"
 GENERATED_FROM = "RMA/SLR_data/processed/d1641_rma_slr"

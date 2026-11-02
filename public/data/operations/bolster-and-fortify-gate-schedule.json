@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "scenario": "bolster-and-fortify",
+  "title": "Bolster and Fortify - Franks Tract Gate Operations",
+  "source": "Gate operations plot and schedule table supplied by the project team, received 2026-11-01. Replaces the dates previously inferred from a plot.",
+  "timeConvention": "Dates and times as written in the source table. 24:00 is the end of that day.",
+  "analysisPeriod": { "startDate": "2018-10-01", "endDate": "2020-11-29" },
+  "sourceTable": [
+    "01AUG2018 0.00 CLOSED",
+    "13JAN2019 24.00 OPEN",
+    "27NOV2019 12.00 CLOSED",
+    "10DEC2019 24.00 OPEN",
+    "15JUL2020 12.00 CLOSED",
+    "31DEC2020 24.00 CLOSED"
+  ],
+  "closures": [
+    {
+      "id": "closure-1",
+      "startDate": "2018-10-01",
+      "startTime": "00:00",
+      "endDate": "2019-01-13",
+      "endTime": "24:00",
+      "reopens": true
+    },
+    {
+      "id": "closure-2",
+      "startDate": "2019-11-27",
+      "startTime": "12:00",
+      "endDate": "2019-12-10",
+      "endTime": "24:00",
+      "reopens": true
+    },
+    {
+      "id": "closure-3",
+      "startDate": "2020-07-15",
+      "startTime": "12:00",
+      "endDate": "2020-11-29",
+      "endTime": "24:00",
+      "reopens": false
+    }
+  ],
+  "notes": [
+    "closures covers the analysis period. Before 2018-10-01 is model spin-up, and salinity data ends 2020-11-29.",
+    "sourceTable keeps the full schedule: closure 1 begins during spin-up on 2018-08-01, and the table ends on 2020-12-31 with the gates still closed."
+  ]
+}

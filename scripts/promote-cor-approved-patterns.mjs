@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const repoRoot = path.resolve(import.meta.dirname, '..')
-const runtimePath = path.join(repoRoot, 'public/data/regional-summary/pattern-list.json')
+const runtimePath = path.join(repoRoot, 'public/data/patterns/pattern-list.json')
 const approvedLedger = process.argv[2]
 
 const releases = [

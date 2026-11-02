@@ -16,7 +16,7 @@ import bf_data as bd
 import bf_sensitivity as bs
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-OUT = SCRIPT_DIR.parents[2] / "public" / "data" / "regional-summary" / "raw" / "bf-three-closure-analysis"
+OUT = SCRIPT_DIR.parents[2] / "public" / "data" / "patterns" / "raw" / "bf-three-closure-analysis"
 OUT.mkdir(parents=True, exist_ok=True)
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate src/internal/watershed/outcomes.ts from the upland restoration workbook.
+"""Generate src/features/watershed/outcomes.ts from the upland restoration workbook.
 
 The source is Maggie Gallagher's "NGW Upland Restoration Scenario Outcomes"
 workbook (v4, October 2026), outside the repo; pass its path:
@@ -21,7 +21,7 @@ import sys
 
 import openpyxl
 
-OUT = "src/internal/watershed/outcomes.ts"
+OUT = "src/features/watershed/outcomes.ts"
 
 LEVELS = {"minimal restoration": "min", "medium restoration": "med", "maximum restoration": "max"}
 PRIORITY_COLUMNS = {"G": "forest", "H": "meadow", "I": "floodplain"}

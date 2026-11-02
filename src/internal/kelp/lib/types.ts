@@ -56,7 +56,7 @@ export interface SetStat {
  *
  * Nodes are lng/lat positions; `adj[i]` lists the neighbors of node i with
  * geodesic edge lengths in meters (Haversine). Built once at app startup
- * from `public/data/delta_waterway_lines.geojson` by
+ * from `public/data/internal/kelp-fusion/delta_waterway_lines.geojson` by
  * `buildWaterwayGraphFromGeoJSON`.
  */
 export interface WaterwayGraph {
