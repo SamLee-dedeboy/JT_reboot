@@ -449,7 +449,7 @@ function recreationEconomy(): CriterionNode {
       SCORING_EMAIL,
       ...sourcesFor('rec-economy'),
     ],
-    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound; every service scores +5 for both. Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
+    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound; every service scores +5 for both. Day use and boating share one amenity/recreation row. Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
     children: [
       ...(economy.children ?? []).map((service) =>
         adapt(service, {

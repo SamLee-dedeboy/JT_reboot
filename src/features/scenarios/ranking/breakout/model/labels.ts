@@ -40,7 +40,7 @@ export const TEAM_TAKEAWAYS: Partial<Record<TeamKey, string[]>> = {
     'The most impactful way an adaptation scenario, like the ones presented in this exercise, can influence a system likely lies in **landscape-level conversion and habitat creation.**',
   ],
   recreation: [
-    'Our main "recreation" score **floats around zero,** showing that, at a grand scale, no perceived changes would sway Delta recreation to happen less or more under salinity and temperature changes. However, because the score averages regional and seasonal differences, it acts as a muffling step.',
+    'Our main "recreation" score floats around zero, showing that, at a grand scale, no perceived changes would sway Delta recreation to happen less or more under salinity and temperature changes. However, because the score averages regional and seasonal differences, it acts as a muffling step.',
     'In reality, scores and metrics interact with each other and with regional thresholds, showing that **potential recreation displacement from one region to another** could happen based on days above our selected thresholds, which in turn would affect the mosaic of recreational access at different times for Delta regions.',
   ],
   environmentalJustice: [
@@ -77,9 +77,9 @@ export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
     'Upstream restoration: Our evaluation metrics are primarily based on **conditions within the Delta proper, and its downstream waterways.** However, the ++New Green Watershed++ scenario incorporates restoration throughout the entire watershed, including montane meadows, floodplains, and forests in the Sierra. These upstream alterations would likely increase the flows entering the estuary, and might also extend new habitat to anadromous and migratory species of concern, like salmon. Our models were not able to incorporate these hydrological or land-related effects. Collaborators have assessed the general benefits of expanding upstream habitat, but their evaluations are not reliant on hydrological model outputs.',
   ],
   recreation: [
-    'Deduced scores: Scores for Bolster & Fortify (0), A Tunnel (-3), and Calling on Reserves (-1) are deduced; there are no solid acres attached to these scenarios, unlike Eco Machine, New Green Watershed, and Business as Usual. They are scored this way because changes in water conveyance and years to project completion along Delta towns would affect recreation economies throughout the Delta through the building and restructuring of water resources; even without major acreage changes, they would hinder the recreation economy in different ways. Furthermore, because these scenarios follow future-based impacts, no breakdowns below the "All together" level are provided by region.',
-    'Infrastructure impacts: Infrastructure impacts affect only Bolster & Fortify and A Tunnel because of their anticipated future changes, expanding on the caveat scores’ reasoning for Habitat Restoration based on infrastructural changes (Caveat 1). Their scores, Bolster & Fortify (-1) and A Tunnel (-3), imply that for Bolster & Fortify, the building of salinity gates surrounding Franks Tract would be detrimental to boaters, blocking access to waterways during dry periods to prevent salinity encroachment, while A Tunnel would impact recreation economies throughout Delta towns that depend on recreation and tourism and would also make certain areas inaccessible for extended periods of time.',
-    'Restored acres: Restored acres for Eco Machine and New Green Watershed are positive (+) changes relative to Business as Usual’s existing protected areas (current inventory, accessible and non-accessible: 108,301 acres). Eco Machine’s +43,100 acres would bring the total to 151,401 acres; New Green Watershed’s +458,948 acres, without upland restoration, to about 567,249 acres.',
+    'Deduced scores: Scores for ++Bolster & Fortify++ (0), ++A Tunnel++ (-3), and ++Calling on Reserves++ (-1) are deduced; there are no solid acres attached to these scenarios, unlike ++Eco Machine++, ++New Green Watershed++, and ++Business as Usual++. They are scored this way because changes in water conveyance and years to project completion along Delta towns would affect recreation economies throughout the Delta through the building and restructuring of water resources; even without major acreage changes, they would hinder the recreation economy in different ways. Furthermore, because these scenarios follow future-based impacts, no breakdowns below the "All together" level are provided by region.',
+    'Infrastructure impacts: Infrastructure impacts affect only ++Bolster & Fortify++ and ++A Tunnel++ because of their anticipated future changes, expanding on the caveat scores’ reasoning for Habitat Restoration based on infrastructural changes (Caveat 1). Their scores, ++Bolster & Fortify++ (-1) and ++A Tunnel++ (-3), imply that for ++Bolster & Fortify++, the building of salinity gates surrounding Franks Tract would be detrimental to boaters, blocking access to waterways during dry periods to prevent salinity encroachment, while ++A Tunnel++ would impact recreation economies throughout Delta towns that depend on recreation and tourism and would also make certain areas inaccessible for extended periods of time.',
+    'Restored acres: Restored acres for ++Eco Machine++ and ++New Green Watershed++ are positive (+) changes relative to ++Business as Usual++’s existing protected areas (current inventory, accessible and non-accessible: 108,301 acres). ++Eco Machine++’s +43,100 acres would bring the total to 151,401 acres; ++New Green Watershed++’s +458,948 acres, without upland restoration, to about 567,249 acres.',
     'Sea level rise columns: The sea level rise columns reuse current-conditions acres and dollars, so restoration and economy weren’t re-modeled for sea level rise.',
     'The "All together" score: The "All together" score averages regions, which can hide offsetting regional changes.',
   ],
@@ -548,12 +548,9 @@ export const METRIC_DEFINITIONS: Record<
       'The recreation economy is measured by a conservative valuation of ecosystem services in dollars per acre per year, encompassing the five activities. In short, we calculate four ecosystem service scenarios for restored acres procured from our Ecology team (separate from the Habitat Restoration Metric), assigning monetary values to the following measures: Recreational fishing (angling), Amenity/Recreation (Day Use and Boating combined), Biodiversity (Birding), and Recreational Hunting (Waterfowl Hunting).',
     measures: 'The yearly value of recreation on restored land.',
     computed:
-      'The value of four recreation services on restored land, added on top of Business as Usual’s existing protected land.',
+      'The value of four recreation services on restored land, with day use and boating sharing the amenity/recreation values, added on top of Business as Usual’s existing protected land.',
     considered: [
-      [
-        'Services',
-        'Amenity and recreation, biodiversity, recreational hunting, recreational fishing',
-      ],
+      ['Services', 'Day use and boating, birding, waterfowl hunting, angling'],
       ['New Green Watershed', 'By Delta region'],
       ['Eco Machine', 'Delta-wide'],
     ],

@@ -540,6 +540,15 @@ function byRecRegion(by: Partial<Record<ScenarioKey, (number | null)[]>>) {
  * Watershed at LOW and HIGH restoration, by region, from the same sheet's "Ecosystem
  * service value by scenario" table.
  */
+const REC_AMENITY_ECONOMY_VALUES = {
+  ngw: [15612588, 15746642, 20864682, 23127159],
+  quarter: [15612588, 10938914, 20864682, 10541095],
+  full: [15612588, 15746642, 22766589, 54681904],
+  bau: [6756577, 8874896, 20864682, 3844774],
+  score: [5, 5, 5, 0, 5],
+  em: [15612588, 514036, null, null],
+}
+
 const REC_ECONOMY_SERVICES: {
   key: string
   label: string
@@ -552,17 +561,12 @@ const REC_ECONOMY_SERVICES: {
 }[] = [
   {
     key: 'amenity',
-    label: 'Amenity and recreation · day use and boating',
-    ngw: [15612588, 15746642, 20864682, 23127159],
-    quarter: [15612588, 10938914, 20864682, 10541095],
-    full: [15612588, 15746642, 22766589, 54681904],
-    bau: [6756577, 8874896, 20864682, 3844774],
-    score: [5, 5, 5, 0, 5],
-    em: [15612588, 514036, null, null],
+    label: 'Day use and boating',
+    ...REC_AMENITY_ECONOMY_VALUES,
   },
   {
     key: 'biodiversity',
-    label: 'Biodiversity · birding',
+    label: 'Birding',
     ngw: [6790924, 6849233, 9075400, 10059498],
     quarter: [6790924, 4758041, 9075400, 4585004],
     full: [6790924, 6849233, 9902662, 23784698],
@@ -572,7 +576,7 @@ const REC_ECONOMY_SERVICES: {
   },
   {
     key: 'hunting',
-    label: 'Recreational hunting · waterfowl',
+    label: 'Waterfowl hunting',
     ngw: [3903042, 3936555, 5216031, 5781635],
     quarter: [3903042, 2734655, 5216031, 2635203],
     full: [3903042, 3936555, 5691494, 13670109],
@@ -582,7 +586,7 @@ const REC_ECONOMY_SERVICES: {
   },
   {
     key: 'fishing',
-    label: 'Recreational fishing · angling',
+    label: 'Angling',
     ngw: [11867981, 11969883, 15860385, 17580217],
     quarter: [11867981, 8315266, 15860385, 8012862],
     full: [11867981, 11969883, 17306128, 41566703],
@@ -726,7 +730,7 @@ const RECREATION: CriterionNode = {
       provenance: 'reported',
       unit: 'usdValue',
       betterHigher: true,
-      note: 'Recreation’s “Overall $” sheet (26 Oct 2026) as published: the yearly value of four recreation services, in 2025 dollars, for New Green Watershed at 50% restoration and for Business as Usual (existing protected land), each with a score against Business as Usual. Per-acre values are from Brander and Schuyt (2004), adjusted by the CPI. Delta-wide is the sum of the four regions (the sheet’s own Delta-wide adds an upland band outside the Delta, which is left out); the Delta-wide score is the sheet’s. The team scores each service and publishes no single economy score; the sheet has no Eco Machine, Bolster & Fortify, Calling on Reserves or A Tunnel column. Separately, visitor-sector earnings 2001–2023 run +19.6% in critical years and +20.3% in wet years but −21.8% in dry and −27.5% in above-normal years.',
+      note: 'Recreation’s “Overall $” sheet (26 Oct 2026) as published: the yearly value of four recreation services, in 2025 dollars, for New Green Watershed at 50% restoration and for Business as Usual (existing protected land), each with a score against Business as Usual. Day use and boating share the same amenity/recreation values. Per-acre values are from Brander and Schuyt (2004), adjusted by the CPI. Delta-wide is the sum of the four regions (the sheet’s own Delta-wide adds an upland band outside the Delta, which is left out); the Delta-wide score is the sheet’s. The team scores each service and publishes no single economy score; the sheet has no Eco Machine, Bolster & Fortify, Calling on Reserves or A Tunnel column. Separately, visitor-sector earnings 2001–2023 run +19.6% in critical years and +20.3% in wet years but −21.8% in dry and −27.5% in above-normal years.',
       places: REC_PLACES,
       periods: NO_FACET,
       values: {},
