@@ -1516,7 +1516,7 @@ const ECO_CULTURAL: CriterionNode = {
         ),
         habitatNode(
           'uplandWetland',
-          'Upland managed wetland',
+          'Forests',
           'upper',
           48213,
           'At the 0.25MW level; 85,523 at 0.5MW and 207,004 at Full MW. These match Economy’s land-conversion table exactly, which the earlier figures did not.',

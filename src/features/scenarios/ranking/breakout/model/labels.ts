@@ -227,7 +227,7 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-ec-restoration-rice': 'Wet-soil agriculture',
   'bk-ec-restoration-tidal': 'Tidal wetlands',
   'bk-ec-restoration-transitional': 'Transitional habitats',
-  'bk-ec-restoration-uplandWetland': 'Wetlands',
+  'bk-ec-restoration-uplandWetland': 'Forests',
   'bk-ec-restoration-meadow': 'Meadows',
   'bk-ec-restoration-floodplain': 'Floodplains',
   'bk-ec-restoration-functional-flow': 'Potential for functional flows',
