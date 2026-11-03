@@ -7,6 +7,7 @@ import type {
   CriterionNode,
   ScenarioKey,
 } from '../../../../../internal/rank-visualization/drilldown/model'
+import { fmtScore } from '../../../../../internal/rank-visualization/data'
 import type { Point } from './chartKit'
 import { UI } from './labels'
 import type { Breakout } from '../useBreakout'
@@ -128,6 +129,7 @@ export function splitRows(nodes: CriterionNode[]) {
  * rounds to nothing reads as the unit's plain zero ("0%"), never "+0%" or "−0%".
  */
 export function signed(value: number, unit: CriterionNode['unit']): string {
+  if (unit === 'score') return scoreText(value)
   const strip = (text: string) => text.replace(/^[+\-−]\s*/, '')
   const zero = strip(fmtValue(0, unit))
   const text = strip(fmtValue(Math.abs(value), unit))
@@ -190,9 +192,12 @@ export function pointAt(
   return { scenario, period, value: raw - base.value, why: '', raw, base }
 }
 
-/** A score as text with an explicit sign: "+2", "−1", "0". */
-export const scoreText = (value: number) =>
-  value > 0 ? `+${value}` : value < 0 ? `−${-value}` : '0'
+/**
+ * A score as text: a whole point with an explicit sign ("+2", "−1", "0"). The data
+ * keeps the teams' decimals (Ecology's 3.1 still ranks above a 3); only the text rounds,
+ * the same way the By scenario view does.
+ */
+export const scoreText = fmtScore
 
 /** "Longfin smelt, juvenile" → the species and its life stage; other labels pass through. */
 export function lifeStage(label: string): { name: string; stage?: string } {

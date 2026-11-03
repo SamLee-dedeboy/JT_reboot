@@ -10,7 +10,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import type { MouseEvent, ReactNode } from 'react'
 import { ranking } from '../../../../../theme'
-import { TEAMS, cellFill } from '../../../../../internal/rank-visualization/data'
+import { TEAMS, cellFill, roundScore } from '../../../../../internal/rank-visualization/data'
 import { rankAt } from '../../../../../internal/rank-visualization/drilldown/cellValue'
 import { ANY, fmtValue } from '../../../../../internal/rank-visualization/drilldown/model'
 import type {
@@ -947,12 +947,15 @@ function Cell({
   const empty = value === null
   // Both mark a number that will never exist, so both recede the same way.
   const versionOnly = empty && (why === UI.versionOnly || why === UI.notApplicable)
-  const fill = empty || !score ? undefined : cellFill(value)
+  // A score's shade follows the whole point it shows, so +0.34 reads as the 0 it says.
+  const fill = empty || !score ? undefined : cellFill(roundScore(value))
   const text = empty
     ? why
-    : signedText && unit !== 'score'
-      ? signed(value, unit)
-      : fmtValue(value, unit)
+    : unit === 'score'
+      ? scoreText(value)
+      : signedText
+        ? signed(value, unit)
+        : fmtValue(value, unit)
   // A detail that reads as zero (no acres, no change, a −0.001% that prints 0%) is
   // background, so it recedes.
   const quiet =

@@ -3,7 +3,7 @@
 import { Box, Popover, Stack, Typography, useTheme } from '@mui/material'
 import type { ReactNode } from 'react'
 import { jtSpacing } from '../../../../../theme'
-import { TEAMS, cellFill } from '../../../../../internal/rank-visualization/data'
+import { TEAMS, cellFill, roundScore } from '../../../../../internal/rank-visualization/data'
 import { TeamMark } from '../../../../../internal/rank-visualization/drilldown/DrillBits'
 import type { Coords } from '../../../../../internal/rank-visualization/drilldown/cellValue'
 import { ANY, fmtValue } from '../../../../../internal/rank-visualization/drilldown/model'
@@ -155,7 +155,7 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
                   px: 1.25,
                   py: 0.5,
                   borderRadius: 0.6,
-                  bgcolor: point.raw === null ? 'transparent' : cellFill(point.raw),
+                  bgcolor: point.raw === null ? 'transparent' : cellFill(roundScore(point.raw)),
                   color: point.raw === null ? 'base.300' : 'common.white',
                 }}
               >

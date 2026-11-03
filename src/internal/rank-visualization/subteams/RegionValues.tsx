@@ -14,7 +14,7 @@
 import { Box, ButtonBase, Typography, useTheme } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { jtSpacing, ranking } from '../../../theme'
-import { cellFill } from '../data'
+import { cellFill, fmtScore, roundScore } from '../data'
 import type { TeamKey } from '../data'
 import { CellDetail } from '../drilldown/CellDetail'
 import { valueAt } from '../drilldown/cellValue'
@@ -206,7 +206,7 @@ export function RegionValues({
     if (value === null) return null
     if (plainValues) return { fill: cellFill(0), opacity: 1 }
     if (isScore && (reading === 'level' || sameStyleForChange))
-      return { fill: cellFill(value), opacity: 1 }
+      return { fill: cellFill(roundScore(value)), opacity: 1 }
     if (scoreScale) return { fill: cellFill(scoreOf(value)), opacity: 1 }
     if (sameStyleForChange) {
       const share = Math.min(1, Math.abs(value) / max)
@@ -236,6 +236,8 @@ export function RegionValues({
 
   /** A region's number as printed on it: as published, or signed against the baseline. */
   const mapText = (value: number) => {
+    // Scores print as whole points, as the ranking views do; the data keeps decimals.
+    if (isScore) return fmtScore(value)
     if (reading !== 'change') return fmtValue(value, unit)
     // A change that rounds to nothing is the unit's plain zero ("0%"), unsigned.
     const zero = unsigned(fmtValue(0, unit))

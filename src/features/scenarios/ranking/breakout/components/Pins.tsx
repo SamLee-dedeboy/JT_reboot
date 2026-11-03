@@ -5,7 +5,7 @@ import { Box, Button, Chip, Stack, TextField } from '@mui/material'
 import { useState } from 'react'
 import { jtSpacing } from '../../../../../theme'
 import { ANY, fmtValue } from '../../../../../internal/rank-visualization/drilldown/model'
-import { read } from '../model/cells'
+import { read, scoreText } from '../model/cells'
 import { scenarioName } from '../model/labels'
 import { pageX } from '../styles'
 import type { Breakout, Pin } from '../useBreakout'
@@ -114,7 +114,8 @@ function pinToMarkdown(p: Pin, state: Breakout): string[] {
     if (!node) continue
     const cells = p.scenarios.map((s) => {
       const r = read(node, s, p.place, p.period, p.climate ?? 'current')
-      return r.value === null ? r.why : fmtValue(r.value, node.unit)
+      if (r.value === null) return r.why
+      return node.unit === 'score' ? scoreText(r.value) : fmtValue(r.value, node.unit)
     })
     lines.push(`| ${node.label} | ${cells.join(' | ')} |`)
   }
