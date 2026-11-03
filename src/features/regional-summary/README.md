@@ -233,7 +233,7 @@ does not have. The site does not display those notes.
 
 `public/data/operations/calling-on-reserves-release-schedule.json` is the source of
 truth for the COR release schedule across the website: months when COR releases
-more than, less than, or about the same as Business as Usual (CalSim) at Keswick.
+more than, less than, or about the same as Business as Usual (CalSim) at Shasta Dam.
 `callingOnReservesReleasePeriods.ts` reads its higher-release periods:
 
 - January 1 through February 28, 2019.
@@ -249,6 +249,16 @@ The broad discovery builder is `scripts/build-regional-summary-interface-data.mj
 The reproducible selection step is `scripts/select-regional-summary-patterns.mjs`.
 Keep their inputs and working outputs outside `public/` unless a reviewed subset
 is being deliberately promoted to the curated runtime files.
+
+`public/data/patterns/pattern-list-provisional.json` holds patterns from the October 2026
+named-region refresh for Current Calling on Reserves and A Tunnel and all five sea level rise runs.
+`scripts/regional-summary/select-provisional-refresh-patterns.mjs` selects them with the rules behind
+the approved set: a mapped region, at least 17 days, 78.7% station agreement, 50 µS/cm and 2%, and
+each scenario's approved regions, plus the release story for Calling on Reserves. A Tunnel has no
+approved set to follow. Bolster & Fortify's focal regions come from `run_bf_focal_slr.py` in the
+analysis folder. Every decision is recorded in `provisional_review.csv` beside the analysis. The
+modeling page marks these views with a primary green PROVISIONAL chip beside the timeline title until
+the team reviews them. They do not change the approved files or the kiosk.
 
 Selecting a place enables **View regional patterns**. The next screen presents
 dated detected events as a Gantt timeline across the shared October
@@ -322,13 +332,16 @@ so polygons, flipping stripes, split pins, and place cards stay identical.
 `regionalMapScales` in `regionalSummaryStyles.ts` holds the `touch` (kiosk) and
 `web` (modeling page) sizes for pins, labels, and cards.
 
-On the modeling page the section opens with a sentence summarizing which regions get
-saltier, fresher, or flip, then recaps the scenario's strategies (from
-`scenarioStrategies.ts`, shared with the kiosk guide) beside a static map: regions
+On the modeling page a future is chosen on the shared `ChoiceCards` (the ranking
+page's card style). Its baseline, name, and a takeaway saying which regions get
+saltier, stay fresher, or shift sit above the recap of the scenario's strategies
+(from `scenarioStrategies.ts`, shared with the kiosk guide) and a static map: regions
 and pins open their card, but the camera cannot be dragged or zoomed. The place card
 has no timeline action. Below the map, `RegionalStackedTimeline.tsx` stacks every
-region's events on one simulation timeline, with season or operations bands and
-water-year type underneath; selecting a bar shows only its event details. Date
+region's events on one simulation timeline. Only event bars are filled, because only
+they can be selected: release, gate, and season periods are annotated above the rows
+with dashed guides through them, and water years are bracketed under the axis.
+Selecting a bar shows its average difference, EC change, and date range. Date
 helpers shared with the kiosk timeline live in `regionalTimeline.ts`.
 
 ## Touchscreen requirements

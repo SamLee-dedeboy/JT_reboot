@@ -14999,9 +14999,9 @@
       "type": "Feature",
       "properties": {
         "region_id": "southern_delta",
-        "region_name": "Southern Delta",
+        "region_name": "South Delta",
         "kind": "reviewed_polygon",
-        "geometry_note": "Uses the reviewed Southern Delta geometry from inputs/waterway_regions."
+        "geometry_note": "Uses the reviewed South Delta geometry from inputs/waterway_regions."
       },
       "geometry": {
         "type": "Polygon",

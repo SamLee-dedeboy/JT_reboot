@@ -155,12 +155,16 @@ export interface CriterionNode {
   inferredSlices?: string[]
   /** Scenarios the subteam marks as not applicable: no number exists, and none is coming. */
   notApplicable?: ScenarioKey[]
+  /** Shows the subteam's own number, never a difference from a baseline. */
+  asPublished?: boolean
   /** The subteam has not published this yet, though it is expected: every empty cell says so. */
   forthcoming?: boolean
   /** The same, for some scenarios only: the +30% outflow run where a team has not published it. */
   forthcomingFor?: ScenarioKey[]
   /** The same, for one scenario at some places only: Eco Machine restores nothing in the North or South Delta. */
   notApplicableAt?: Partial<Record<ScenarioKey, string[]>>
+  /** The same, for one scenario in some periods only: the +30% outflow run has no water years. */
+  notApplicableIn?: Partial<Record<ScenarioKey, string[]>>
   /** Rich grid with its own renderer, where one scalar would misreport the source. */
   detail?: 'waterAge'
   /**

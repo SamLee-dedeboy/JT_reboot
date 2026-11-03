@@ -814,9 +814,8 @@ function Timeline({
         {domain.isOutflowComparison ? (
           <>
             {[
-              ['2020-08-01', '2020-10-01', 'Dry year'],
-              ['2020-10-01', '2021-10-01', 'Critical dry year'],
-              ['2021-10-01', '2022-01-01', 'Critical dry year'],
+              ['2020-10-01', '2021-10-01', 'Critical year'],
+              ['2021-10-01', '2022-01-01', 'Critical year'],
             ].map(([startDate, endDate, label], index) => {
               const left = datePosition(startDate, domain)
               const width = datePosition(endDate, domain) - left
@@ -825,9 +824,9 @@ function Timeline({
                   key={startDate}
                   sx={{
                     width: `${width}%`,
-                    bgcolor: alpha(theme.palette.salinity.pink, index === 0 ? 0.14 : 0.22),
+                    bgcolor: alpha(theme.palette.salinity.pink, 0.22),
                     borderLeft: 4,
-                    borderRight: index === 2 ? 4 : 0,
+                    borderRight: index === 1 ? 4 : 0,
                     borderColor: 'salinity.pink',
                     px: 1,
                     display: 'flex',
@@ -882,7 +881,7 @@ function Timeline({
               }}
             >
               <Typography sx={regionalSummaryDetailTypography.timelineLabel}>
-                Critical dry year
+                Critical year
               </Typography>
             </Box>
           </>

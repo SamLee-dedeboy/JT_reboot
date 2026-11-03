@@ -1,11 +1,7 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
-import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined'
-import ThermostatOutlinedIcon from '@mui/icons-material/ThermostatOutlined'
-import WaterDropOutlinedIcon from '@mui/icons-material/WaterDropOutlined'
 import WavesOutlinedIcon from '@mui/icons-material/WavesOutlined'
-import { Box, Button, Stack, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { csvParse } from 'd3'
 import type { FeatureCollection, Point } from 'geojson'
@@ -15,48 +11,29 @@ import { Link } from 'react-router-dom'
 import BaseMap from '../../../map/BaseMap'
 import Camera from '../../../map/layers/scenarios/Camera'
 import Layers from '../../../map/layers/scenarios/Layers'
-import Legend from '../../../map/layers/scenarios/Legend'
 import { getConfig } from '../../../map/layers/scenarios/config'
-import { jtSpacing, ranking } from '../../../theme'
+import { jtSpacing, map } from '../../../theme'
 import PageRail from '../../../ui/PageRail'
 import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import { SalinityResultsHeading } from '../../regional-summary/RegionalSalinitySummary'
+import ChoiceCards from './ChoiceCards'
 import ModeledSalinity from './ModeledSalinity'
-import {
-  GateScheduleTable,
-  GateTimeline,
-  ReleasePeriods,
-  ReleaseTimeline,
-} from './OperationSchedules'
-import { fullBleedBand } from './styles'
+import { GateTimeline, ReleaseTimeline } from './OperationSchedules'
+import { fullBleedBand, waterYearColor } from './styles'
 
 const overviewNavigation = [
   { id: 'how-modeled', label: 'How are scenarios modeled?' },
-  { id: 'shared-baseline', label: 'Two baselines', indent: true },
-  { id: 'model-setup', label: 'Where and when', indent: true },
-  { id: 'what-is-modeled', label: 'What is modeled', indent: true },
-  { id: 'scenario-implementations', label: 'How each future is built', indent: true },
+  { id: 'shared-baseline', label: 'Three baselines', indent: true },
+  { id: 'outflow-variations', label: 'Outflow variations', indent: true },
+  { id: 'adaptation-scenarios', label: 'Adaptation scenarios', indent: true },
   { id: 'modeled-salinity', label: 'Where salinity changes' },
   { id: 'next-step', label: 'How scenarios are evaluated' },
 ] as const
 
-const heroParts = [
-  {
-    href: '#how-modeled',
-    label: 'The method',
-    description: 'The model, its baselines, and how each of the five futures is built.',
-  },
-  {
-    href: '#modeled-salinity',
-    label: 'The results',
-    description: 'Pick a future and see which places get saltier or fresher, and when.',
-  },
-] as const
-
-const implementationGroups = [
-  { id: 'landscape', label: 'Changes to landscape' },
-  { id: 'flow', label: 'Changes to water flow' },
+const outflowVariations = [
+  { id: 'plus30', group: 'outflow', label: '+30% Delta outflow' },
+  { id: 'minus10', group: 'outflow', label: '−10% Delta outflow' },
 ] as const
 
 const implementationDetails = [
@@ -89,18 +66,31 @@ const implementationDetails = [
     group: 'flow',
     slug: 'a-tunnel',
     label: 'A Tunnel',
-    detailTitle: 'Run details',
-    lead: 'Forthcoming',
+    detailTitle: 'A new route beneath the Delta',
+    lead: 'A Tunnel is based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project.',
   },
   {
     id: 'reserves',
     group: 'flow',
     slug: 'calling-on-reserves',
     label: 'Calling on Reserves',
-    detailTitle: 'How Keswick releases change',
-    lead: 'Each bar is one month’s release at Keswick, in cubic feet per second (cfs), compared with CalSim Base.',
+    detailTitle: 'How Shasta Dam releases change',
+    lead: 'Each bar is one month’s release at Shasta Dam, in cubic feet per second (cfs), compared with CalSim Baseline. Shading marks periods of higher flow above the line and lower flow below it.',
   },
 ] as const
+
+const implementationGroups = [
+  {
+    id: 'landscape',
+    title: 'Changes to landscape, compared with the Baseline',
+    options: implementationDetails.filter(({ group }) => group === 'landscape'),
+  },
+  {
+    id: 'flow',
+    title: 'Changes to water flow, compared with CalSim Baseline',
+    options: implementationDetails.filter(({ group }) => group === 'flow'),
+  },
+]
 
 const ecoMachineAreas = [
   {
@@ -124,73 +114,205 @@ const newGreenWatershedAreas = [
 
 const baselineRows = [
   {
-    baseline: 'Base',
-    description:
-      'A near-future “business as usual” condition that includes planned restoration at sites such as Little Egbert Tract and Prospect Island.',
-    changes: 'Landscape',
-    group: 'landscape',
+    baseline: 'Historical Baseline',
+    description: 'Current conditions modeled in SCHISM.',
+    model: 'SCHISM',
+    changes: 'Amount of Delta outflow',
+    group: 'outflow',
+    scenarios: '2 outflow variations',
   },
   {
-    baseline: 'CalSim Base',
+    baseline: 'Baseline',
     description:
-      'A run on the same landscape—including planned restoration at sites such as Little Egbert Tract and Prospect Island—driven by CalSim flows.',
+      'Current conditions modeled in RMA, including planned restoration at sites such as Little Egbert Tract and Prospect Island.',
+    model: 'RMA',
+    changes: 'Landscape',
+    group: 'landscape',
+    scenarios: '3 adaptation scenarios',
+  },
+  {
+    baseline: 'CalSim Baseline',
+    description:
+      'Current conditions modeled in RMA on the same landscape as Baseline, driven by CalSim flows.',
+    model: 'RMA',
     changes: 'Water flow',
     group: 'flow',
+    scenarios: '2 adaptation scenarios',
   },
 ] as const
 
 const baselineNotes = [
   {
     title: 'Sea level rise.',
-    body: 'Runs were repeated with 2 feet of sea level rise, the only rise modeled, and those runs are compared with the matching baseline that also has 2 feet of sea level rise.',
+    body: 'RMA runs were repeated with 2 feet of sea level rise, the only rise modeled, and those runs are compared with the matching baseline that also has 2 feet of sea level rise. The SCHISM outflow runs have no sea level rise version.',
     Icon: WavesOutlinedIcon,
   },
   {
-    title: 'Same locations.',
-    body: 'Outputs from every run are sampled at the same stations, so differences can be compared consistently through time and across regions.',
+    title: 'Same locations within a model.',
+    body: 'Each scenario and its baseline are compared at the same stations. RMA and SCHISM use different station sets, shown below.',
     Icon: PlaceOutlinedIcon,
   },
 ] as const
 
-// Water age sits last: unlike the other two, it exists only as image snapshots.
+// Water age sits last: unlike the other two, it exists only as snapshots, and only in RMA.
 const modeledOutputs = [
   {
     title: 'Salinity',
     body: 'Electrical conductivity (EC) shows how salty or fresh the water is and how the salinity boundary moves through the Delta.',
-    availability: 'Across space and time',
-    Icon: WaterDropOutlinedIcon,
   },
   {
     title: 'Water temperature',
     body: 'Modeled temperature helps identify when and where conditions may support or stress temperature-sensitive species.',
-    availability: 'Across space and time',
-    Icon: ThermostatOutlinedIcon,
   },
   {
     title: 'Water age',
     body: 'The time since water entered an area helps identify slow-moving conditions that may favor harmful algal blooms.',
-    availability: 'Image snapshots only',
-    Icon: ImageOutlinedIcon,
+    availability: 'We only have snapshots of water age, not a full time series.',
+    adaptationOnly: true,
   },
 ] as const
 
-/** The simulation's periods, sized by their length in days. */
-const simulationPeriods = [
-  { days: 61, label: 'Spin-up', start: 'Aug 2018', tone: 'spinUp' },
-  { days: 365, label: 'Wet · WY 2019', start: 'Oct 2018', tone: 'base.400' },
-  { days: 366, label: 'Dry · WY 2020', start: 'Oct 2019', tone: 'base.500' },
-  { days: 59, label: 'Critical dry', start: 'Oct–Nov 2020', tone: 'base.600' },
-] as const
-
-const simulationColumns = simulationPeriods.map(({ days }) => `${days}fr`).join(' ')
+/** Each model's run on its own axis, sized in days from the start of spin-up. */
+const simulationTimelines = {
+  schism: {
+    ariaLabel:
+      'SCHISM timeline: spin-up from August 11 to September 30, 2020, then critical water year 2021 and the start of critical water year 2022, ending January 1, 2022.',
+    days: 508,
+    spinUpLabel: 'Spin-up, Aug 11–Sep 30, 2020',
+    // Too narrow to hold its own label, so the last period is named above it.
+    endLabel: 'Critical water year 2022',
+    periods: [
+      { days: 51, tone: 'spinUp' },
+      { days: 365, label: 'Critical water year 2021', tone: 'critical' },
+      { days: 92, tone: 'critical', divided: true },
+    ],
+    ticks: [
+      { day: 51, label: 'Oct 2020' },
+      { day: 416, label: 'Oct 2021' },
+      { day: 508, label: 'Jan 2022' },
+    ],
+  },
+  rma: {
+    ariaLabel:
+      'RMA timeline: spin-up in August and September 2018, wet water year 2019, dry water year 2020, then critical water year 2021 for October and November 2020.',
+    days: 853,
+    spinUpLabel: 'Spin-up, Aug–Sep 2018',
+    endLabel: 'Critical water year 2021, Oct–Nov 2020',
+    periods: [
+      { days: 61, tone: 'spinUp' },
+      { days: 365, label: 'Wet water year 2019', tone: 'wet' },
+      { days: 366, label: 'Dry water year 2020', tone: 'dry' },
+      { days: 61, tone: 'critical', divided: true },
+    ],
+    ticks: [
+      { day: 61, label: 'Oct 2018' },
+      { day: 426, label: 'Oct 2019' },
+      { day: 792, label: 'Oct 2020' },
+    ],
+  },
+} as const
 
 const GOLDEN_GATE = { longitude: -122.478, latitude: 37.82 }
 
-/** Frames the Bay and the Delta together, from the Golden Gate to the eastern stations. */
-const stationMapBounds: [[number, number], [number, number]] = [
-  [-122.62, 37.42],
-  [-121.18, 38.82],
+type MapLabelData = {
+  text: string
+  longitude: number
+  latitude: number
+  side?: 'left' | 'right'
+  /** Marks a place added by this scenario, in green. */
+  added?: boolean
+  /** Leaves out the dot where the map already draws the feature. */
+  bare?: boolean
+  /** Extra space between the place and its label, in pixels. */
+  offset?: number
+}
+
+/**
+ * Suisun Marsh and Franks Tract are drawn as areas, and the Lindsey-Cache Slough area is drawn around
+ * three of the additions. The four areas New Green Watershed adds have no mapped boundaries of their
+ * own yet, so each is marked at its approximate location.
+ */
+const ecoMachinePlaces: MapLabelData[] = [
+  { text: 'Suisun Marsh', longitude: -121.99, latitude: 38.15 },
+  { text: 'Franks Tract', longitude: -121.615, latitude: 38.042 },
 ]
+
+// Green marks what a scenario adds: these two are new in Eco Machine, and carried over in New Green Watershed.
+const ecoMachineLabels = ecoMachinePlaces.map((place) => ({ ...place, added: true }))
+
+const newGreenWatershedLabels: MapLabelData[] = [
+  ...ecoMachinePlaces,
+  { text: 'Dutch Slough', longitude: -121.675, latitude: 38.005, side: 'right', added: true },
+  { text: 'Egbert Tract', longitude: -121.665, latitude: 38.265, added: true },
+  { text: 'Hastings Tract', longitude: -121.76, latitude: 38.272, side: 'right', added: true },
+  {
+    text: 'Northern Cache Slough Complex',
+    longitude: -121.72,
+    latitude: 38.325,
+    side: 'right',
+    added: true,
+  },
+]
+
+const BOLSTER_LABEL_OFFSET = 16
+
+/** The gates sit at the centers of their footprints in bolster-and-fortify/operable-gates.geojson. */
+const bolsterLabels: MapLabelData[] = [
+  {
+    text: 'Operable gate',
+    longitude: -121.58435,
+    latitude: 38.06291,
+    added: true,
+    offset: BOLSTER_LABEL_OFFSET,
+  },
+  {
+    text: 'Reconstructed levees',
+    longitude: -121.582,
+    latitude: 38.047,
+    bare: true,
+    offset: BOLSTER_LABEL_OFFSET,
+  },
+  {
+    text: 'Operable gate',
+    longitude: -121.58494,
+    latitude: 38.03057,
+    added: true,
+    offset: BOLSTER_LABEL_OFFSET,
+  },
+]
+
+/** Frames all six areas in New Green Watershed, and Eco Machine's two on the same view. */
+const restoredAreaBounds: [[number, number], [number, number]] = [
+  [-122.32, 37.96],
+  [-121.32, 38.6],
+]
+
+/** Close on Franks Tract, where the gates and levees are. */
+const bolsterGateBounds: [[number, number], [number, number]] = [
+  [-121.66, 38.0],
+  [-121.46, 38.09],
+]
+
+const tunnelLabels: MapLabelData[] = [
+  {
+    text: 'Northern Delta intakes',
+    longitude: -121.535,
+    latitude: 38.363,
+    side: 'right',
+    bare: true,
+  },
+  { text: 'Tunnel alignment', longitude: -121.42, latitude: 38.117, bare: true },
+  { text: 'Bethany pumping facilities', longitude: -121.56, latitude: 37.79, bare: true },
+]
+
+/** Close on the Bay and the Delta, from the Golden Gate to the eastern stations. */
+const stationMapBounds: [[number, number], [number, number]] = [
+  [-122.55, 37.5],
+  [-121.2, 38.62],
+]
+
+/** The same text width as the team methodology pages. */
+const textMaxWidth = '100ch'
 
 const sectionSx = {
   scrollMarginTop: 110,
@@ -202,71 +324,23 @@ const sectionSx = {
 type OverviewSectionId = (typeof overviewNavigation)[number]['id']
 type Implementation = (typeof implementationDetails)[number]
 type ImplementationId = Implementation['id']
-
-/** The hero's two parts of this page, in the ranking hero's card style. */
-export function OverviewParts() {
-  return (
-    <Box
-      component="nav"
-      aria-label="Parts of this page"
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: ranking.viewCard.columns },
-        gap: jtSpacing.gap.md,
-        pt: jtSpacing.gap.sm,
-      }}
-    >
-      {heroParts.map((part, index) => (
-        <Box
-          component="a"
-          key={part.href}
-          href={part.href}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: jtSpacing.gap.sm,
-            px: jtSpacing.component.lg,
-            py: jtSpacing.component.md,
-            border: 1,
-            borderColor: 'border.strong',
-            bgcolor: 'translucent.darkSurface',
-            color: 'common.white',
-            textDecoration: 'none',
-            '&:hover, &:focus-visible': {
-              bgcolor: 'translucent.primaryGreen',
-              borderColor: 'primary.main',
-              outline: 'none',
-            },
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.xs }}>
-            <Typography component="span" variant="chartTitle" sx={{ color: 'primary.main' }}>
-              {String(index + 1).padStart(2, '0')}
-            </Typography>
-            <Typography component="span" variant="chartTitle">
-              {part.label}
-            </Typography>
-            <ArrowForwardRoundedIcon fontSize="small" sx={{ ml: 'auto' }} />
-          </Box>
-          <Typography variant="body2">{part.description}</Typography>
-        </Box>
-      ))}
-    </Box>
-  )
-}
+type Future = (typeof outflowVariations)[number] | Implementation
+type StationModel = keyof typeof simulationTimelines
 
 function SubsectionHeading({
   id,
   title,
+  color,
   children,
 }: {
   id: string
-  title: string
+  title: ReactNode
+  color?: string
   children?: ReactNode
 }) {
   return (
     <>
-      <Typography id={id} variant="h3" component="h3">
+      <Typography id={id} variant="h3" component="h3" sx={{ color }}>
         {title}
       </Typography>
       {children && (
@@ -275,7 +349,7 @@ function SubsectionHeading({
           sx={{
             mt: jtSpacing.gap.sm,
             color: 'base.100',
-            maxWidth: jtSpacing.paragraphMaxWidth.default,
+            maxWidth: textMaxWidth,
           }}
         >
           {children}
@@ -285,8 +359,8 @@ function SubsectionHeading({
   )
 }
 
-/** Comparison table: each baseline, what its futures change, and the futures themselves. */
-function BaselineTable({ onSelectFuture }: { onSelectFuture: (id: ImplementationId) => void }) {
+/** Comparison table: each baseline, its model, what its scenarios change, and the scenarios. */
+function BaselineTable({ onSelectFuture }: { onSelectFuture: (future: Future) => void }) {
   const headSx = { typography: 'columnHead', pb: jtSpacing.gap.sm, textAlign: 'left' }
   const cellSx = { py: jtSpacing.component.lg, pr: jtSpacing.gap.lg, verticalAlign: 'top' }
 
@@ -294,18 +368,21 @@ function BaselineTable({ onSelectFuture }: { onSelectFuture: (id: Implementation
     <Box sx={{ mt: jtSpacing.component.lg, overflowX: 'auto', overflowY: 'hidden' }}>
       <Box
         component="table"
-        sx={{ width: '100%', minWidth: 640, borderCollapse: 'collapse', textAlign: 'left' }}
+        sx={{ width: '100%', minWidth: 760, borderCollapse: 'collapse', textAlign: 'left' }}
       >
         <thead>
           <tr>
-            <Box component="th" scope="col" sx={{ ...headSx, width: '44%' }}>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '38%' }}>
               Compared with
             </Box>
-            <Box component="th" scope="col" sx={{ ...headSx, width: '18%' }}>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '10%' }}>
+              Model
+            </Box>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '16%' }}>
               Changes
             </Box>
             <Box component="th" scope="col" sx={headSx}>
-              Futures
+              Scenarios
             </Box>
           </tr>
         </thead>
@@ -326,21 +403,29 @@ function BaselineTable({ onSelectFuture }: { onSelectFuture: (id: Implementation
               </Box>
               <Box component="td" sx={cellSx}>
                 <Typography variant="cardTitle" component="span">
+                  {row.model}
+                </Typography>
+              </Box>
+              <Box component="td" sx={cellSx}>
+                <Typography variant="cardTitle" component="span">
                   {row.changes}
                 </Typography>
               </Box>
               <Box component="td" sx={{ ...cellSx, pr: 0 }}>
+                <Typography variant="columnHead" component="p" sx={{ mb: jtSpacing.gap.xs }}>
+                  {row.scenarios}
+                </Typography>
                 <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
-                  {implementationDetails
+                  {[...outflowVariations, ...implementationDetails]
                     .filter(({ group }) => group === row.group)
-                    .map(({ id, label }) => (
+                    .map((future) => (
                       <Button
-                        key={id}
+                        key={future.id}
                         variant="outlined"
-                        onClick={() => onSelectFuture(id)}
+                        onClick={() => onSelectFuture(future)}
                         sx={{ color: 'common.white', borderColor: 'base.300' }}
                       >
-                        {label}
+                        {future.label}
                       </Button>
                     ))}
                 </Stack>
@@ -353,44 +438,170 @@ function BaselineTable({ onSelectFuture }: { onSelectFuture: (id: Implementation
   )
 }
 
-/** Every model output station, on a map framed from the Golden Gate boundary to the Delta. */
-function StationMap() {
+/** One labeled block within a group of futures. */
+function GroupBlock({ id, title, children }: { id?: string; title: string; children: ReactNode }) {
+  return (
+    <Box id={id} sx={{ minWidth: 0, scrollMarginTop: 110 }}>
+      <Typography variant="h4" component="h4" sx={{ mb: jtSpacing.gap.sm }}>
+        {title}
+      </Typography>
+      {children}
+    </Box>
+  )
+}
+
+/** The outputs one model reports. Water age comes from RMA alone, so it is picked out in green. */
+function ModeledOutputs({ model }: { model: StationModel }) {
+  return (
+    <Stack spacing={jtSpacing.gap.sm}>
+      {modeledOutputs
+        .filter((output) => model === 'rma' || !('adaptationOnly' in output))
+        .map((output) => (
+          <Box key={output.title}>
+            <Typography
+              variant="cardTitle"
+              component="p"
+              sx={{ color: 'adaptationOnly' in output ? 'primary.main' : 'common.white' }}
+            >
+              {output.title}
+            </Typography>
+            <Typography variant="body2">
+              {output.body}
+              {'availability' in output && ` ${output.availability}`}
+            </Typography>
+          </Box>
+        ))}
+    </Stack>
+  )
+}
+
+/** Where a model samples, beside when it runs and what it reports. */
+function ModelOverview({ model, stationNote }: { model: StationModel; stationNote: string }) {
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 2fr) minmax(0, 3fr)' },
+        gap: jtSpacing.gap.xl,
+        alignItems: 'start',
+        mt: jtSpacing.component.lg,
+      }}
+    >
+      <GroupBlock title="Station locations">
+        <Typography variant="body2" sx={{ mb: jtSpacing.gap.sm }}>
+          {stationNote}
+        </Typography>
+        <StationMap model={model} />
+      </GroupBlock>
+      <Stack spacing={jtSpacing.component.lg} sx={{ minWidth: 0 }}>
+        <GroupBlock title="Simulation time">
+          <SimulationTimeline model={model} />
+        </GroupBlock>
+        <GroupBlock title="What is modeled">
+          <ModeledOutputs model={model} />
+        </GroupBlock>
+      </Stack>
+    </Box>
+  )
+}
+/** A place named directly on a map, in place of a legend. */
+function MapLabel({
+  text,
+  longitude,
+  latitude,
+  side = 'left',
+  added,
+  bare,
+  offset = 0,
+}: MapLabelData) {
+  return (
+    <Marker longitude={longitude} latitude={latitude} anchor={side}>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: side === 'left' ? 'row' : 'row-reverse',
+          alignItems: 'center',
+          gap: 0.75,
+        }}
+      >
+        {!bare && (
+          <Box
+            sx={{
+              width: 12,
+              height: 12,
+              borderRadius: '50%',
+              bgcolor: added ? 'primary.main' : 'common.white',
+              ...(side === 'left' ? { ml: -0.75 } : { mr: -0.75 }),
+            }}
+          />
+        )}
+        <Typography
+          variant="meta"
+          sx={{
+            px: 1,
+            py: 0.5,
+            bgcolor: 'translucent.800',
+            color: 'common.white',
+            // Long names wrap on phones, where they would otherwise run off the map.
+            display: 'block',
+            maxWidth: { xs: 84, md: 'none' },
+            whiteSpace: { md: 'nowrap' },
+            ...(side === 'left' ? { ml: `${offset}px` } : { mr: `${offset}px` }),
+          }}
+        >
+          {text}
+        </Typography>
+      </Box>
+    </Marker>
+  )
+}
+
+/** One model's output stations, on a map framed from the Golden Gate boundary to the Delta. */
+function StationMap({ model }: { model: StationModel }) {
   const theme = useTheme()
   const [stations, setStations] = useState<FeatureCollection<Point> | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
-    fetch(assetUrl('/data/salinity/scenario-explorer/all_386_unique_stations.csv'), {
-      signal: controller.signal,
+    const { signal } = controller
+    const request: Promise<FeatureCollection<Point>> =
+      model === 'rma'
+        ? fetch(assetUrl('/data/salinity/scenario-explorer/all_386_unique_stations.csv'), {
+            signal,
+          })
+            .then((response) => response.text())
+            .then((text) => ({
+              type: 'FeatureCollection',
+              features: csvParse(text).map((row) => ({
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  type: 'Point',
+                  coordinates: [Number(row.longitude), Number(row.latitude)],
+                },
+              })),
+            }))
+        : fetch(assetUrl('/data/geospatial-assets/shared/schism-modeled-stations-405.geojson'), {
+            signal,
+          }).then((response) => response.json() as Promise<FeatureCollection<Point>>)
+    request.then(setStations).catch((reason: unknown) => {
+      if (reason instanceof DOMException && reason.name === 'AbortError') return
+      setStations(null)
     })
-      .then((response) => response.text())
-      .then((text) =>
-        setStations({
-          type: 'FeatureCollection',
-          features: csvParse(text).map((row) => ({
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: [Number(row.longitude), Number(row.latitude)],
-            },
-          })),
-        }),
-      )
-      .catch((reason: unknown) => {
-        if (reason instanceof DOMException && reason.name === 'AbortError') return
-        setStations(null)
-      })
     return () => controller.abort()
-  }, [])
+  }, [model])
 
   return (
     <Box
       role="img"
-      aria-label="Map of the San Francisco Bay and Delta showing the 386 model stations and the Golden Gate salinity boundary."
+      aria-label={
+        model === 'rma'
+          ? 'Map of the San Francisco Bay and Delta showing the 386 RMA stations and the Golden Gate salinity boundary.'
+          : 'Map of the San Francisco Bay and Delta showing the SCHISM stations, a different set from the RMA stations.'
+      }
       sx={{
         position: 'relative',
-        height: { xs: 420, md: 560 },
+        height: 400,
         overflow: 'hidden',
         border: 1,
         borderColor: 'border.default',
@@ -418,122 +629,148 @@ function StationMap() {
             />
           </Source>
         )}
-        <Marker {...GOLDEN_GATE} anchor="left">
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-            <Box
-              sx={{
-                width: 12,
-                height: 12,
-                borderRadius: '50%',
-                bgcolor: 'primary.main',
-                ml: -0.75,
-              }}
-            />
-            <Typography
-              variant="meta"
-              sx={{
-                px: 1,
-                py: 0.5,
-                bgcolor: 'translucent.800',
-                color: 'common.white',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Golden Gate salinity boundary
-            </Typography>
-          </Box>
-        </Marker>
+        {model === 'rma' && (
+          <MapLabel {...GOLDEN_GATE} text="Golden Gate salinity boundary" added />
+        )}
       </BaseMap>
     </Box>
   )
 }
 
-/** The simulation period as one bar, with the point where results begin marked. */
-function SimulationBar() {
+/** One model's simulation period on its own time axis, labeled by water year type. */
+function SimulationTimeline({ model }: { model: StationModel }) {
+  const { ariaLabel, days, spinUpLabel, endLabel, periods, ticks } = simulationTimelines[model]
+
   return (
-    <Box sx={{ mt: jtSpacing.component.lg, overflowX: 'auto', overflowY: 'hidden' }}>
-      <Box sx={{ minWidth: 640 }}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: simulationColumns }}>
-          <Typography
-            variant="columnHead"
-            sx={{
-              gridColumn: 2,
-              pl: 1,
-              pb: 1,
-              color: 'primary.main',
-              borderLeft: 2,
-              borderColor: 'primary.main',
-            }}
-          >
-            Results start
-          </Typography>
-        </Box>
+    <>
+      <Box sx={{ overflowX: 'auto', overflowY: 'hidden' }}>
         <Box
           role="img"
-          aria-label="Simulation timeline: spin-up in August and September 2018, wet water year 2019, dry water year 2020, then critical dry October to November 2020."
-          sx={{ display: 'grid', gridTemplateColumns: simulationColumns, minHeight: 58 }}
+          aria-label={ariaLabel}
+          sx={{
+            minWidth: 360,
+            // Room for a last axis label centered on the end of the axis.
+            pr: 4,
+          }}
         >
-          {simulationPeriods.map((period) => (
-            <Box
-              key={period.label}
-              sx={[
-                {
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  px: 0.5,
-                  textAlign: 'center',
-                },
-                period.tone === 'spinUp'
-                  ? (theme) => ({
-                      backgroundImage: `repeating-linear-gradient(135deg, ${theme.palette.translucent[400]} 0 5px, transparent 5px 10px)`,
-                    })
-                  : { bgcolor: period.tone },
-              ]}
-            >
-              <Typography
-                variant={period.days > 100 ? 'cardTitle' : 'meta'}
-                sx={{ color: 'common.white' }}
-              >
-                {period.label}
-              </Typography>
-            </Box>
-          ))}
-        </Box>
-        <Box
-          aria-hidden="true"
-          sx={{ display: 'grid', gridTemplateColumns: simulationColumns, mt: 0.75 }}
-        >
-          {simulationPeriods.map((period, index) => (
-            <Typography
-              key={period.start}
-              variant="meta"
-              sx={{
-                color: 'base.100',
-                whiteSpace: 'nowrap',
-                justifySelf: index === simulationPeriods.length - 1 ? 'end' : 'start',
-              }}
-            >
-              {period.start}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              gap: jtSpacing.gap.sm,
+              mb: 0.5,
+            }}
+          >
+            <Typography variant="meta" sx={{ color: 'base.100' }}>
+              {spinUpLabel}
             </Typography>
-          ))}
+            <Typography variant="meta" sx={{ color: 'base.100' }}>
+              {endLabel}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: periods.map((period) => `minmax(0, ${period.days}fr)`).join(' '),
+              minHeight: 58,
+            }}
+          >
+            {periods.map((period, index) => (
+              <SimulationPeriod key={index} period={period} />
+            ))}
+          </Box>
+          <Box
+            aria-hidden="true"
+            sx={{
+              position: 'relative',
+              mt: 1,
+              height: (theme) => theme.spacing(4),
+              borderTop: 1,
+              borderColor: 'base.100',
+            }}
+          >
+            {ticks.map(({ day, label }) => (
+              <Stack
+                key={label}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: `${(day / days) * 100}%`,
+                  transform: 'translateX(-50%)',
+                  alignItems: 'center',
+                }}
+              >
+                <Box sx={{ width: '1px', height: 6, bgcolor: 'base.100' }} />
+                <Typography variant="meta" sx={{ color: 'base.100', whiteSpace: 'nowrap' }}>
+                  {label}
+                </Typography>
+              </Stack>
+            ))}
+          </Box>
         </Box>
       </Box>
+    </>
+  )
+}
+
+type SimulationPeriodData = (typeof simulationTimelines)[StationModel]['periods'][number]
+
+function SimulationPeriod({ period }: { period: SimulationPeriodData }) {
+  if (period.tone === 'spinUp') {
+    return (
+      <Box
+        sx={(theme) => ({
+          backgroundImage: `repeating-linear-gradient(135deg, ${theme.palette.translucent[400]} 0 5px, transparent 5px 10px)`,
+        })}
+      />
+    )
+  }
+  return (
+    <Box
+      sx={[
+        {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          px: 0.5,
+          textAlign: 'center',
+          bgcolor: waterYearColor[period.tone],
+        },
+        'divided' in period && { borderLeft: 2, borderColor: 'base.800' },
+      ]}
+    >
+      {'label' in period && (
+        <Typography variant="meta" sx={{ color: 'common.white' }}>
+          {period.label}
+        </Typography>
+      )}
     </Box>
   )
 }
 
 function ScenarioMap({ implementation }: { implementation: Implementation }) {
-  const mapConfig = getConfig(implementation.slug)
-  const bounds = mapConfig.bounds.delta
-  // Calling on Reserves' river and dam sit upstream of the Delta, in the statewide layers.
-  const visibilityScope = implementation.id === 'reserves' ? 'statewide' : 'delta'
+  const { id, slug, label } = implementation
+  // New Green Watershed builds on Eco Machine's two areas, then marks the four it adds.
+  const layerSlug = id === 'ngw' ? 'eco-machine' : slug
+  const mapConfig = getConfig(slug)
+  const labels = {
+    eco: ecoMachineLabels,
+    ngw: newGreenWatershedLabels,
+    bolster: bolsterLabels,
+    tunnel: tunnelLabels,
+  }[id as string]
+  const bounds =
+    id === 'eco' || id === 'ngw'
+      ? restoredAreaBounds
+      : id === 'bolster'
+        ? bolsterGateBounds
+        : mapConfig.bounds.delta
 
   return (
     <Box
-      aria-label={`Interactive map for ${implementation.label}`}
+      aria-label={`Interactive map for ${label}`}
       sx={{
-        height: { xs: 420, lg: 620 },
+        height: id === 'bolster' ? 340 : { xs: 420, lg: 480 },
         position: 'relative',
         overflow: 'hidden',
         border: 1,
@@ -543,7 +780,7 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
       }}
     >
       <BaseMap
-        key={implementation.slug}
+        key={slug}
         initialViewState={mapConfig.initialViewState}
         mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
         interactive={mapConfig.interactive}
@@ -555,20 +792,45 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
       >
         {bounds && <Camera bounds={bounds} />}
         <Layers
-          scenarioSlug={implementation.slug}
+          scenarioSlug={layerSlug}
           showAdaptationLayers
-          visibilityScope={visibilityScope}
+          visibilityScope="delta"
+          hiddenSelectionKeys={
+            id === 'bolster' ? ['freshwater-corridor', 'operable-gates'] : undefined
+          }
         />
+        {id === 'ngw' && (
+          <Source
+            id="ngw-lindsey-cache-slough"
+            type="geojson"
+            data={assetUrl('/data/geospatial-assets/subteams/lindsey-cache-slough.geojson')}
+          >
+            <Layer
+              id="ngw-lindsey-cache-slough-fill"
+              type="fill"
+              paint={{
+                'fill-color': map.scenarios.cartography.mutedFeature,
+                'fill-opacity': 0.42,
+              }}
+            />
+            <Layer
+              id="ngw-lindsey-cache-slough-line"
+              type="line"
+              paint={{
+                'line-color': map.scenarios.cartography.feature,
+                'line-opacity': 0.95,
+                'line-width': 2,
+              }}
+            />
+          </Source>
+        )}
+        {labels?.map((place) => (
+          <MapLabel key={`${place.text}-${place.latitude}`} {...place} />
+        ))}
         {mapConfig.showNavigationControl && (
-          <NavigationControl position="bottom-right" showCompass={false} />
+          <NavigationControl position="top-right" showCompass={false} />
         )}
       </BaseMap>
-      <Legend
-        scenarioSlug={implementation.slug}
-        visibilityScope={visibilityScope}
-        visible
-        selectedHabitatType={null}
-      />
     </Box>
   )
 }
@@ -581,34 +843,31 @@ function BaselineRestorationNote() {
         Already in the baseline
       </Typography>
       <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs }}>
-        Planned restoration at Little Egbert Tract and Prospect Island is part of Base, so it is not
-        counted as a change here.
+        Planned restoration at Little Egbert Tract and Prospect Island is part of the Baseline, so
+        it is not counted as a change here.
       </Typography>
     </Box>
   )
 }
 
-function EcoMachineAreas() {
+function NamedList({ items }: { items: readonly { name: string; body: string }[] }) {
   return (
-    <>
-      <Box sx={{ mt: jtSpacing.component.md, borderTop: 1, borderColor: 'border.strong' }}>
-        {ecoMachineAreas.map(({ name, body }) => (
-          <Box
-            component="article"
-            key={name}
-            sx={{ py: jtSpacing.gap.md, borderBottom: 1, borderColor: 'border.default' }}
-          >
-            <Typography variant="cardTitle" component="h5">
-              {name}
-            </Typography>
-            <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs }}>
-              {body}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-      <BaselineRestorationNote />
-    </>
+    <Box sx={{ mt: jtSpacing.component.md, borderTop: 1, borderColor: 'border.strong' }}>
+      {items.map(({ name, body }) => (
+        <Box
+          component="article"
+          key={name}
+          sx={{ py: jtSpacing.gap.md, borderBottom: 1, borderColor: 'border.default' }}
+        >
+          <Typography variant="cardTitle" component="h5">
+            {name}
+          </Typography>
+          <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs }}>
+            {body}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
   )
 }
 
@@ -668,10 +927,9 @@ function NewGreenWatershedAreas() {
   )
 }
 
-/** What each future changes: its restored areas or operating schedule, and its map. */
+/** What each scenario changes: its restored areas or operating schedule, and its map. */
 function ImplementationPanel({ implementation }: { implementation: Implementation }) {
   const { id, detailTitle, lead } = implementation
-  const hasTimeline = id === 'bolster' || id === 'reserves'
 
   const heading = (
     <>
@@ -683,7 +941,7 @@ function ImplementationPanel({ implementation }: { implementation: Implementatio
         sx={{
           mt: jtSpacing.gap.sm,
           color: 'base.50',
-          maxWidth: jtSpacing.paragraphMaxWidth.default,
+          maxWidth: textMaxWidth,
         }}
       >
         {lead}
@@ -691,33 +949,79 @@ function ImplementationPanel({ implementation }: { implementation: Implementatio
     </>
   )
 
-  return (
-    <Box sx={{ mt: jtSpacing.component.lg }}>
-      {hasTimeline && (
-        <Box sx={{ mb: jtSpacing.component.lg }}>
-          {heading}
-          <Box sx={{ mt: jtSpacing.component.md }}>
-            {id === 'bolster' ? <GateTimeline /> : <ReleaseTimeline />}
-          </Box>
+  if (id === 'reserves') {
+    return (
+      <Box sx={{ mt: jtSpacing.component.lg }}>
+        {heading}
+        <Box sx={{ mt: jtSpacing.component.md }}>
+          <ReleaseTimeline />
         </Box>
-      )}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
-          gap: jtSpacing.gap.xl,
-          alignItems: 'start',
-        }}
-      >
-        <Box sx={{ minWidth: 0 }}>
-          {!hasTimeline && heading}
-          {id === 'eco' && <EcoMachineAreas />}
-          {id === 'ngw' && <NewGreenWatershedAreas />}
-          {id === 'bolster' && <GateScheduleTable />}
-          {id === 'reserves' && <ReleasePeriods />}
-        </Box>
-        <ScenarioMap implementation={implementation} />
       </Box>
+    )
+  }
+
+  if (id === 'bolster') {
+    return (
+      <Box sx={{ mt: jtSpacing.component.lg }}>
+        {heading}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'minmax(0, 3fr) minmax(0, 2fr)' },
+            gap: jtSpacing.gap.xl,
+            alignItems: 'center',
+            mt: jtSpacing.component.md,
+          }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <GateTimeline />
+          </Box>
+          <ScenarioMap implementation={implementation} />
+        </Box>
+      </Box>
+    )
+  }
+
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
+        gap: jtSpacing.gap.xl,
+        alignItems: id === 'tunnel' ? 'stretch' : 'start',
+        mt: jtSpacing.component.lg,
+      }}
+    >
+      <Box sx={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        {heading}
+        {id === 'eco' && (
+          <>
+            <NamedList items={ecoMachineAreas} />
+            <BaselineRestorationNote />
+          </>
+        )}
+        {id === 'ngw' && <NewGreenWatershedAreas />}
+        {id === 'tunnel' && (
+          <Box
+            sx={{
+              flex: 1,
+              minHeight: 200,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mt: jtSpacing.component.md,
+              p: jtSpacing.component.md,
+              border: '1px dashed',
+              borderColor: 'base.100',
+              borderRadius: 1,
+              textAlign: 'center',
+            }}
+          >
+            <Typography variant="placeholderNote">Simulation details forthcoming</Typography>
+          </Box>
+        )}
+      </Box>
+      <ScenarioMap implementation={implementation} />
     </Box>
   )
 }
@@ -729,26 +1033,30 @@ export default function ModelingOverview() {
     implementationDetails.find(({ id }) => id === selectedImplementationId) ??
     implementationDetails[0]
 
-  const showFuture = (id: ImplementationId) => {
-    setSelectedImplementationId(id)
-    document.getElementById('scenario-implementations')?.scrollIntoView({ behavior: 'smooth' })
+  const showFuture = (future: Future) => {
+    if (future.group !== 'outflow') setSelectedImplementationId(future.id)
+    const target = future.group === 'outflow' ? 'outflow-variations' : 'scenario-implementations'
+    document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // The active section is the last one to have reached the reading line, in either scroll direction.
   useEffect(() => {
-    const elements = overviewNavigation
-      .map(({ id }) => document.getElementById(id))
-      .filter((element): element is HTMLElement => Boolean(element))
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter(({ isIntersecting }) => isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
-        if (visible) setActiveSection(visible.target.id as OverviewSectionId)
-      },
-      { rootMargin: '-28% 0px -58% 0px', threshold: [0, 0.2, 0.5] },
-    )
-    elements.forEach((element) => observer.observe(element))
-    return () => observer.disconnect()
+    const update = () => {
+      const readingLine = window.innerHeight * 0.3
+      let current: OverviewSectionId = overviewNavigation[0].id
+      for (const { id } of overviewNavigation) {
+        const top = document.getElementById(id)?.getBoundingClientRect().top
+        if (top !== undefined && top <= readingLine) current = id
+      }
+      setActiveSection(current)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
   }, [])
 
   return (
@@ -784,14 +1092,15 @@ export default function ModelingOverview() {
             How are scenarios modeled?
           </Typography>
           <Typography
-            variant="bodyLarge"
+            variant="body1"
             component="p"
-            sx={{ mt: jtSpacing.gap.lg, maxWidth: '62ch', color: 'base.50' }}
+            sx={{ mt: jtSpacing.gap.lg, maxWidth: textMaxWidth, color: 'base.50' }}
           >
-            We used the two-dimensional RMA Bay-Delta hydrodynamic and water-quality model to test
-            five futures: three that change the Delta’s landscape and two that change the water
-            flowing into it. Every run tracks salinity, water temperature, and water age, and runs
-            were also repeated with 2 feet of sea level rise.
+            We tested 2 outflow variations and 5 adaptation scenarios, using two hydrodynamic
+            models. SCHISM tests the outflow variations, which change the amount of Delta outflow.
+            The two-dimensional RMA Bay-Delta model tests the adaptation scenarios: three change the
+            Delta’s landscape and two change the water flowing into it. Each is compared with a
+            baseline from the same model.
           </Typography>
         </Box>
 
@@ -801,9 +1110,21 @@ export default function ModelingOverview() {
           aria-labelledby="shared-baseline-title"
           sx={sectionSx}
         >
-          <SubsectionHeading id="shared-baseline-title" title="Two baselines for comparison">
-            Each future is read only against its own baseline, so the difference reflects the one
-            thing that future changes.
+          <SubsectionHeading
+            id="shared-baseline-title"
+            title={
+              <>
+                Three baselines for{' '}
+                <Box component="span" sx={{ color: 'primary.main' }}>
+                  Business as Usual
+                </Box>
+              </>
+            }
+          >
+            All three baselines represent the same thing: current conditions, with no outflow
+            variation or adaptation scenario applied. Only the modeling differs. Each scenario is
+            read against the baseline modeled the same way, so the difference reflects the one thing
+            that scenario changes. Results from different rows are not directly comparable.
           </SubsectionHeading>
           <BaselineTable onSelectFuture={showFuture} />
           <Box
@@ -832,149 +1153,56 @@ export default function ModelingOverview() {
 
         <Box
           component="section"
-          id="model-setup"
-          aria-labelledby="model-setup-title"
+          id="outflow-variations"
+          aria-labelledby="outflow-variations-title"
           sx={sectionSx}
         >
-          <SubsectionHeading id="model-setup-title" title="Where and when" />
-          <Box
-            sx={{
-              mt: jtSpacing.component.lg,
-              display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 5fr) minmax(0, 4fr)' },
-              gap: jtSpacing.gap.xl,
-              alignItems: 'start',
-            }}
-          >
-            <StationMap />
-            <Stack spacing={jtSpacing.gap.xl}>
-              <Box>
-                <Typography variant="h4" component="h4">
-                  Spatial boundary
-                </Typography>
-                <Typography variant="body2" sx={{ mt: jtSpacing.gap.sm }}>
-                  The model covers the San Francisco Bay–Sacramento–San Joaquin Delta system. Its
-                  salinity boundary is at the Golden Gate, where ocean salinity enters the model.
-                  From there, salinity is tracked through channels, restored areas, and stations as
-                  electrical conductivity (EC).
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="h4" component="h4">
-                  Stations
-                </Typography>
-                <Typography variant="body2" sx={{ mt: jtSpacing.gap.sm }}>
-                  Model output is sampled at 386 stations spread across the Bay and the Delta.
-                </Typography>
-              </Box>
-            </Stack>
-          </Box>
-          <Box sx={{ mt: jtSpacing.section.sm }}>
-            <Typography variant="h4" component="h4">
-              Simulation time
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ mt: jtSpacing.gap.sm, maxWidth: jtSpacing.paragraphMaxWidth.default }}
-            >
-              The simulation runs from August 2018 through November 2020. August and September 2018
-              are spin-up, letting the model settle, so results start in October 2018. That span
-              covers contrasting hydrologic conditions: water year 2019 was wet, while water year
-              2020 was dry.
-            </Typography>
-            <SimulationBar />
-          </Box>
-        </Box>
-
-        <Box
-          component="section"
-          id="what-is-modeled"
-          aria-labelledby="what-is-modeled-title"
-          sx={sectionSx}
-        >
-          <SubsectionHeading id="what-is-modeled-title" title="What is modeled">
-            Each scenario run produces three water-quality outputs. Salinity and water temperature
-            can be traced across both space and time; water age is available as image snapshots.
+          <SubsectionHeading id="outflow-variations-title" title="Outflow variations">
+            2 variations, modeled in SCHISM, compared with Historical Baseline.
           </SubsectionHeading>
-          <Box
-            sx={{
-              mt: jtSpacing.component.lg,
-              display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'repeat(3, minmax(0, 1fr))' },
-              gap: jtSpacing.gap.md,
-            }}
-          >
-            {modeledOutputs.map(({ title, body, availability, Icon }) => (
-              <Stack
-                component="article"
-                key={title}
-                spacing={jtSpacing.gap.sm}
-                sx={{
-                  p: jtSpacing.component.lg,
-                  bgcolor: 'translucent.50',
-                  border: 1,
-                  borderColor: 'border.default',
-                }}
-              >
-                <Icon sx={{ color: 'common.white' }} fontSize="large" />
-                <Typography variant="h4" component="h4">
-                  {title}
-                </Typography>
-                <Typography variant="body2">{body}</Typography>
-                <Typography
-                  variant="columnHead"
-                  sx={{ mt: 'auto !important', pt: jtSpacing.gap.sm, color: 'base.200' }}
-                >
-                  {availability}
-                </Typography>
-              </Stack>
-            ))}
+          <ModelOverview
+            model="schism"
+            stationNote="SCHISM output is sampled at 405 stations, which are a different set from RMA’s."
+          />
+          <Box sx={{ mt: jtSpacing.component.lg }}>
+            <GroupBlock title="How each future is built">
+              <Typography variant="body1" sx={{ color: 'base.50', maxWidth: textMaxWidth }}>
+                These runs apply a statistical change to the amount of Delta outflow. A 30% increase
+                generally pushes saltwater farther toward the ocean, potentially reducing salinity
+                in the Delta. A 10% decrease allows saltwater to move farther inland, potentially
+                intensifying existing challenges for Delta communities, ecosystems, and water users.
+              </Typography>
+            </GroupBlock>
           </Box>
         </Box>
 
         <Box
           component="section"
-          id="scenario-implementations"
-          aria-labelledby="scenario-implementations-title"
-          sx={sectionSx}
+          id="adaptation-scenarios"
+          aria-labelledby="adaptation-scenarios-title"
+          sx={{ ...sectionSx, borderTop: 3, borderColor: 'primary.main' }}
         >
-          <SubsectionHeading id="scenario-implementations-title" title="How each future is built" />
-          <Box
-            sx={{
-              mt: jtSpacing.component.lg,
-              display: 'grid',
-              gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: '3fr 2fr' },
-              columnGap: jtSpacing.gap.xl,
-              rowGap: jtSpacing.gap.md,
-              borderBottom: 1,
-              borderColor: 'border.default',
-            }}
+          <SubsectionHeading
+            id="adaptation-scenarios-title"
+            title="Adaptation scenarios"
+            color="primary.main"
           >
-            {implementationGroups.map((group) => {
-              const futures = implementationDetails.filter((future) => future.group === group.id)
-              return (
-                <Box key={group.id} sx={{ minWidth: 0 }}>
-                  <Typography variant="columnHead" component="p">
-                    {group.label}
-                  </Typography>
-                  <Tabs
-                    value={
-                      selectedImplementation.group === group.id ? selectedImplementationId : false
-                    }
-                    onChange={(_, value: ImplementationId) => setSelectedImplementationId(value)}
-                    aria-label={group.label}
-                    variant="scrollable"
-                    scrollButtons={false}
-                  >
-                    {futures.map(({ id, label }) => (
-                      <Tab key={id} value={id} label={label} />
-                    ))}
-                  </Tabs>
-                </Box>
-              )
-            })}
+            5 scenarios, modeled in RMA, compared with the Baseline or CalSim Baseline.
+          </SubsectionHeading>
+          <ModelOverview
+            model="rma"
+            stationNote="RMA output is sampled at 386 stations spread across the Bay and the Delta. Its salinity boundary is at the Golden Gate, where ocean salinity enters the model."
+          />
+          <Box sx={{ mt: jtSpacing.component.lg }}>
+            <GroupBlock id="scenario-implementations" title="How each future is built">
+              <ChoiceCards
+                groups={implementationGroups}
+                value={selectedImplementationId}
+                onChange={(id) => setSelectedImplementationId(id as ImplementationId)}
+              />
+              <ImplementationPanel implementation={selectedImplementation} />
+            </GroupBlock>
           </Box>
-          <ImplementationPanel implementation={selectedImplementation} />
         </Box>
       </Box>
 
@@ -1001,11 +1229,11 @@ export default function ModelingOverview() {
             mt: jtSpacing.gap.md,
             mb: jtSpacing.section.sm,
             color: 'base.100',
-            maxWidth: '78ch',
+            maxWidth: textMaxWidth,
           }}
         >
           Pick an outflow variation or adaptation scenario to see which places get saltier or
-          fresher than Business as Usual, and in which seasons and water years.
+          fresher than its baseline, and in which seasons and water years.
         </Typography>
         <ModeledSalinity showHeading={false} headingId="modeled-salinity-title" />
       </Box>
@@ -1031,7 +1259,7 @@ export default function ModelingOverview() {
         </Typography>
         <Typography
           variant="body1"
-          sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
+          sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: textMaxWidth }}
         >
           Salinity results show where and when the water changes, not what those changes mean. The
           same shift can play out differently for ecology, recreation, environmental justice, the

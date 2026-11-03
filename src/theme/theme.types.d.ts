@@ -17,6 +17,7 @@ declare module '@mui/material/styles' {
   interface TypographyVariants {
     bodyLarge: CSSProperties
     captionSmall: CSSProperties
+    placeholderNote: CSSProperties
     columnHead: CSSProperties
     eyebrow: CSSProperties
     logo: CSSProperties
@@ -44,6 +45,7 @@ declare module '@mui/material/styles' {
     chartAxis: CSSProperties
     chartValue: CSSProperties
     chartValueLarge: CSSProperties
+    statValue: CSSProperties
     numberGhost: CSSProperties
     numberArticle: CSSProperties
     numberRank: CSSProperties
@@ -108,6 +110,7 @@ declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     bodyLarge: true
     captionSmall: true
+    placeholderNote: true
     columnHead: true
     eyebrow: true
     logo: true
@@ -135,6 +138,7 @@ declare module '@mui/material/Typography' {
     chartAxis: true
     chartValue: true
     chartValueLarge: true
+    statValue: true
     numberGhost: true
     numberArticle: true
     numberRank: true

@@ -305,7 +305,7 @@ function ScoreValue({ scenario }: { scenario: WeightedScenario }) {
 const OVERALL_GAP = { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md }
 
 /** The run every other scenario is scored against: 0 on every criterion. */
-const BASELINES = new Set(['Business as Usual', 'Historic Baseline'])
+const BASELINES = new Set(['Business as Usual', 'Historical Baseline'])
 
 /** Beside the baseline's zero line: which side is better and which worse than today. */
 function BaselineSides() {

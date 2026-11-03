@@ -1,59 +1,234 @@
-import { Box, ButtonBase, Typography } from '@mui/material'
+import { Box, ButtonBase, Stack, Typography } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
 import { motion, useReducedMotion } from 'framer-motion'
-import { useState } from 'react'
-import { jtSpacing } from '../../theme'
-import { InterpretationCard } from './RegionalPatternsPage'
-import { usePatternEvidence } from './regionalPatternEvidence'
+import { useState, type ReactNode } from 'react'
+import { jtSpacing, ranking } from '../../theme'
+import TagChip from '../../ui/TagChip'
+import { usePatternEvidence, type PatternEvidence } from './regionalPatternEvidence'
 import { getRegionalTimelineContextPeriods } from './regionalTimelineContext'
-import { datedEvents, datePosition, eventPlacement, timelineDomain } from './regionalTimeline'
+import {
+  datedEvents,
+  datePosition,
+  eventPlacement,
+  timelineDomain,
+  valueFormat,
+} from './regionalTimeline'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
 
 interface RegionalStackedTimelineProps {
   scenarioSlug: string
-  scenarioTitle: string
   places: RegionalPlace[]
+  provisional?: boolean
+  seaLevelRise?: boolean
   /** Region highlighted on the map; its row is emphasized here. */
   focusedPlaceId: string | null
   onFocusPlace: (placeId: string) => void
 }
 
-const labelColumn = { xs: '104px', sm: '168px' }
-const trackHeight = 24
-const barHeight = 12
+const labelColumn = { xs: '104px', sm: '220px' }
 
-/** Water-year bands beneath the axis; the outflow comparison runs on a later period. */
-function waterYearBands(scenarioSlug: string) {
+const legendDirections = [
+  { direction: 'saltier', label: 'Saltier' },
+  { direction: 'fresher', label: 'Fresher' },
+] as const
+
+/** What a row of context periods is about, beside the periods' own name. */
+const contextSubjects: Record<string, string> = {
+  'Higher release': 'Shasta Dam',
+  'Gates closed': 'Franks Tract gates',
+  'Dry Season': 'Season',
+}
+
+/** Periods closer than this share of the axis share one label, since two would collide. */
+const mergeLabelsWithin = 12
+
+const bracketHeight = 5
+
+const dayFormat = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  timeZone: 'UTC',
+})
+const monthFormat = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' })
+const utcDate = (date: string) => new Date(`${date}T00:00:00Z`)
+
+function formatDateRange(start: string, end: string) {
+  const [from, to] = [utcDate(start), utcDate(end)]
+  const fromYear = from.getUTCFullYear() === to.getUTCFullYear() ? '' : `, ${from.getUTCFullYear()}`
+  return `${dayFormat.format(from)}${fromYear} to ${dayFormat.format(to)}, ${to.getUTCFullYear()}`
+}
+
+/** A period's dates, by month where it runs whole months. */
+function formatPeriod(start: string, end: string) {
+  const [from, to] = [utcDate(start), utcDate(end)]
+  const lastOfMonth = new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth() + 1, 0)).getUTCDate()
+  if (from.getUTCDate() !== 1 || to.getUTCDate() !== lastOfMonth) return formatDateRange(start, end)
+  const [first, last] = [monthFormat.format(from), monthFormat.format(to)]
+  const [firstYear, lastYear] = [from.getUTCFullYear(), to.getUTCFullYear()]
+  if (firstYear !== lastYear) return `${first} ${firstYear}–${last} ${lastYear}`
+  return first === last ? `${last} ${lastYear}` : `${first}–${last} ${lastYear}`
+}
+
+/** Periods sharing a label, naming a year they share only once. */
+function joinPeriods(periods: string[]) {
+  const year = periods[periods.length - 1].slice(-4)
+  return periods
+    .map((period, index) =>
+      index < periods.length - 1 && period.endsWith(year)
+        ? period.replace(/,? \d{4}$/, '')
+        : period,
+    )
+    .join(' and ')
+}
+
+/** A label over a stretch of the axis, kept inside the axis near either end. */
+function axisLabelSx(left: number, right: number) {
+  const center = (left + right) / 2
+  if (center < 15) return { left: `${left}%` }
+  if (center > 80) return { right: `${100 - right}%`, textAlign: 'right' as const }
+  return { left: `${center}%`, transform: 'translateX(-50%)', textAlign: 'center' as const }
+}
+
+/** Water years beneath the axis, with shorter names on phones; outflow runs on a later period. */
+function waterYears(scenarioSlug: string) {
   return timelineDomain(scenarioSlug).isOutflowComparison
     ? [
-        { start: '2020-08-01', end: '2020-10-01', label: 'Dry year', tone: 'dry' as const },
         {
           start: '2020-10-01',
+          end: '2021-10-01',
+          label: 'Critical water year 2021',
+          shortLabel: 'Critical 2021',
+        },
+        {
+          start: '2021-10-01',
           end: '2022-01-01',
-          label: 'Critical dry year',
-          tone: 'critical' as const,
+          label: 'Critical water year 2022',
+          shortLabel: '2022',
         },
       ]
     : [
-        { start: '2018-10-01', end: '2019-10-01', label: 'Wet year', tone: 'wet' as const },
-        { start: '2019-10-01', end: '2020-10-01', label: 'Dry year', tone: 'dry' as const },
-        {
-          start: '2020-10-01',
-          end: '2020-11-29',
-          label: 'Critical dry year',
-          tone: 'critical' as const,
-        },
+        { start: '2018-10-01', end: '2019-10-01', label: 'Wet water year 2019', shortLabel: 'Wet' },
+        { start: '2019-10-01', end: '2020-10-01', label: 'Dry water year 2020', shortLabel: 'Dry' },
+        { start: '2020-10-01', end: '2020-11-29', label: 'Critical 2021', shortLabel: 'Critical' },
       ]
+}
+
+function signed(value: number, unit: string) {
+  const sign = value > 0 ? '+' : value < 0 ? '−' : ''
+  return `${sign}${valueFormat.format(Math.abs(value))}${unit}`
+}
+
+const counted = (count: number, noun: string) => `${count} ${noun}${count === 1 ? '' : 's'}`
+
+function EventStat({
+  label,
+  value,
+  caption,
+  color,
+}: {
+  label: string
+  value: string
+  caption?: string
+  color?: string
+}) {
+  return (
+    <Box sx={{ minWidth: 0 }}>
+      <Typography variant="columnHead" component="p" sx={{ mb: jtSpacing.gap.xs }}>
+        {label}
+      </Typography>
+      <Typography variant="statValue" component="p" sx={{ color }}>
+        {value}
+      </Typography>
+      {caption ? (
+        <Typography variant="body2" sx={{ mt: jtSpacing.gap.xs, color: 'base.100' }}>
+          {caption}
+        </Typography>
+      ) : null}
+    </Box>
+  )
+}
+
+/** The selected event: how much it differs, the EC behind that, and when it happened. */
+function EventDetails({
+  placeName,
+  pattern,
+  evidence,
+}: {
+  placeName: string
+  pattern: RegionalPattern
+  evidence?: PatternEvidence
+}) {
+  const reduceMotion = useReducedMotion()
+  const color = pattern.direction === 'fresher' ? 'salinity.teal' : 'salinity.pink'
+  const difference =
+    pattern.differenceEc == null
+      ? 'Unavailable'
+      : [
+          signed(pattern.differenceEc, ' µS/cm'),
+          pattern.differencePct == null ? null : `(${signed(pattern.differencePct, '%')})`,
+        ]
+          .filter(Boolean)
+          .join(' ')
+  const ec = (value: number | null) => (value == null ? '—' : valueFormat.format(value))
+  const stations = evidence?.stationEvidence.stationCount ?? pattern.stationCount
+  const qualifyingDays = pattern.qualifyingDays ?? pattern.durationDays
+
+  return (
+    <Box
+      component={motion.div}
+      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduceMotion ? 0 : 0.42, ease: 'easeOut' }}
+    >
+      <Typography variant="cardTitle" component="p" sx={{ mb: jtSpacing.gap.md }}>
+        {placeName} was{' '}
+        <Box component="span" sx={{ color }}>
+          {pattern.direction ?? 'different'}
+        </Box>
+      </Typography>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: 'minmax(0, 1fr)',
+            md: 'repeat(3, auto)',
+          },
+          justifyContent: 'space-between',
+          gap: { xs: jtSpacing.gap.md, md: jtSpacing.gap.lg },
+        }}
+      >
+        <EventStat label="Average difference" value={difference} color={color} />
+        <EventStat
+          label="EC change"
+          value={`${ec(pattern.baselineEc)} → ${ec(pattern.scenarioEc)}`}
+          caption={stations == null ? 'µS/cm' : `µS/cm, based on ${counted(stations, 'station')}`}
+        />
+        <EventStat
+          label="Date range"
+          value={
+            pattern.startDate && pattern.endDate
+              ? formatDateRange(pattern.startDate, pattern.endDate)
+              : '—'
+          }
+          caption={
+            qualifyingDays == null ? undefined : `${counted(qualifyingDays, 'qualifying day')}`
+          }
+        />
+      </Box>
+    </Box>
+  )
 }
 
 /**
  * Every region's salinity events stacked on one simulation timeline, with seasonal or
- * operational context and water-year type underneath. Selecting a bar shows its details.
+ * operational context annotated above and water years bracketed beneath. Only the event bars
+ * are filled, since only they can be selected.
  */
 export default function RegionalStackedTimeline({
   scenarioSlug,
-  scenarioTitle,
   places,
+  provisional = false,
+  seaLevelRise = false,
   focusedPlaceId,
   onFocusPlace,
 }: RegionalStackedTimelineProps) {
@@ -61,7 +236,7 @@ export default function RegionalStackedTimeline({
   const reduceMotion = useReducedMotion()
   const evidence = usePatternEvidence()
   const domain = timelineDomain(scenarioSlug)
-  const contextPeriods = getRegionalTimelineContextPeriods(scenarioSlug)
+  const contextPeriods = getRegionalTimelineContextPeriods(scenarioSlug, seaLevelRise)
   const [selected, setSelected] = useState<{ pattern: RegionalPattern; placeId: string } | null>(
     null,
   )
@@ -70,14 +245,83 @@ export default function RegionalStackedTimeline({
   const directionColor = (direction: RegionalPattern['direction']) =>
     direction === 'fresher' ? theme.palette.salinity.teal : theme.palette.salinity.pink
 
-  const rowLabel = (text: string) => (
-    <Typography variant="captionSmall" sx={{ alignSelf: 'center', pr: 1 }}>
-      {text.toUpperCase()}
+  const contextName = contextPeriods.find(({ label }) => label)?.label ?? ''
+  const contextLabels: { left: number; right: number; dates: string[] }[] = []
+  for (const { startDate, endDate } of contextPeriods) {
+    const left = datePosition(startDate, domain)
+    const right = datePosition(endDate, domain)
+    const dates = formatPeriod(startDate, endDate)
+    const previous = contextLabels[contextLabels.length - 1]
+    if (previous && left - previous.right < mergeLabelsWithin) {
+      previous.right = right
+      previous.dates.push(dates)
+    } else {
+      contextLabels.push({ left, right, dates: [dates] })
+    }
+  }
+  const years = waterYears(scenarioSlug)
+  const guideEdges = contextPeriods.flatMap(({ startDate, endDate }) => [
+    datePosition(startDate, domain),
+    datePosition(endDate, domain),
+  ])
+
+  const rowLabel = (children: ReactNode, alignSelf: 'start' | 'end') => (
+    <Typography variant="columnHead" sx={{ alignSelf, pr: 1 }}>
+      {children}
     </Typography>
+  )
+
+  const directions = legendDirections.filter(({ direction }) =>
+    places.some((place) =>
+      datedEvents(place).some((pattern) => (pattern.direction ?? 'saltier') === direction),
+    ),
   )
 
   return (
     <Box>
+      {/* Title, and the key to the bars */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          gap: jtSpacing.gap.md,
+          mb: jtSpacing.component.md,
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={jtSpacing.gap.md}
+          useFlexGap
+          sx={{ flexWrap: 'wrap', alignItems: 'center' }}
+        >
+          <Typography variant="h3" component="h3">
+            Salinity pattern timeline
+          </Typography>
+          {provisional ? <TagChip fill="primary.main" label="PROVISIONAL" /> : null}
+        </Stack>
+        <Stack direction="row" spacing={jtSpacing.gap.md}>
+          {directions.map(({ direction, label }) => (
+            <Stack
+              key={direction}
+              direction="row"
+              spacing={jtSpacing.gap.xs}
+              sx={{ alignItems: 'center' }}
+            >
+              <Box
+                sx={{
+                  width: ranking.legend.swatchWidth,
+                  borderTop: ranking.legend.swatchHeight,
+                  borderColor: directionColor(direction),
+                }}
+              />
+              <Typography variant="body2">{label}</Typography>
+            </Stack>
+          ))}
+        </Stack>
+      </Box>
+
       <Box
         sx={{
           display: 'grid',
@@ -85,9 +329,69 @@ export default function RegionalStackedTimeline({
             xs: `${labelColumn.xs} minmax(0, 1fr)`,
             sm: `${labelColumn.sm} minmax(0, 1fr)`,
           },
-          rowGap: 0.25,
         }}
       >
+        {/* Seasonal or operational context, written out rather than drawn as bars */}
+        {contextPeriods.length ? (
+          <>
+            {rowLabel(
+              <>
+                <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+                  {contextSubjects[contextName] ?? contextName}
+                </Box>
+                <Box component="span" sx={{ display: { md: 'none' } }}>
+                  {contextName}
+                </Box>
+              </>,
+              'end',
+            )}
+            <Box sx={{ position: 'relative', height: { xs: 14, md: 56 } }}>
+              {contextLabels.map(({ left, right, dates }) => (
+                <Box
+                  key={left}
+                  sx={{
+                    ...axisLabelSx(left, right),
+                    position: 'absolute',
+                    top: 0,
+                    display: { xs: 'none', md: 'block' },
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Typography
+                    variant="captionSmall"
+                    component="p"
+                    sx={{ color: 'brand.primaryBlue' }}
+                  >
+                    {contextName}
+                  </Typography>
+                  <Typography variant="captionSmall" component="p">
+                    {joinPeriods(dates)}
+                  </Typography>
+                </Box>
+              ))}
+              {contextPeriods.map(({ id, startDate, endDate }) => {
+                const left = datePosition(startDate, domain)
+                return (
+                  <Box
+                    key={id}
+                    aria-hidden="true"
+                    sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: `${left}%`,
+                      width: `${datePosition(endDate, domain) - left}%`,
+                      height: bracketHeight,
+                      border: 1,
+                      borderBottom: 0,
+                      borderColor: 'brand.primaryBlue',
+                    }}
+                  />
+                )
+              })}
+            </Box>
+          </>
+        ) : null}
+
         {/* One event track per region */}
         {places.map((place) => {
           const focused = place.id === focusedPlaceId
@@ -99,33 +403,59 @@ export default function RegionalStackedTimeline({
                 sx={{
                   justifyContent: 'flex-start',
                   textAlign: 'left',
-                  pl: 1,
+                  py: 0.5,
                   pr: 1,
-                  borderLeft: 3,
-                  borderColor: focused ? 'primary.main' : 'transparent',
+                  borderTop: 1,
+                  borderTopColor: 'border.subtle',
                   color: focused ? 'primary.main' : 'common.white',
                   '&:hover, &.Mui-focusVisible': { color: 'primary.main' },
                 }}
               >
-                <Typography variant="navigationLabel">{place.name}</Typography>
+                <Typography variant="body2" sx={{ color: 'inherit' }}>
+                  {place.name}
+                </Typography>
               </ButtonBase>
               <Box
                 sx={{
                   position: 'relative',
-                  height: trackHeight,
+                  minHeight: ranking.trackHeight,
+                  borderTop: 1,
+                  borderColor: 'border.subtle',
                   bgcolor: focused ? 'translucent.100' : 'transparent',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: '50%',
-                    height: 1,
-                    bgcolor: 'border.subtle',
-                    transform: 'translateY(-50%)',
-                  },
                 }}
               >
+                {/* Where each context period starts and ends */}
+                {guideEdges.map((edge, index) => (
+                  <Box
+                    key={index}
+                    aria-hidden="true"
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      bottom: 0,
+                      left: `${edge}%`,
+                      borderLeft: '1px dashed',
+                      borderColor: 'translucent.primaryBlueStrong',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                ))}
+                {/* Each new water year */}
+                {years.slice(1).map(({ start }) => (
+                  <Box
+                    key={start}
+                    aria-hidden="true"
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      bottom: 0,
+                      left: `${datePosition(start, domain)}%`,
+                      borderLeft: 1,
+                      borderColor: 'border.strong',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                ))}
                 {datedEvents(place).map((pattern) => {
                   const placement = eventPlacement(pattern, domain)
                   const color = directionColor(pattern.direction)
@@ -149,8 +479,9 @@ export default function RegionalStackedTimeline({
                         left: `${placement.left}%`,
                         width: `${placement.width}%`,
                         minWidth: 10,
-                        top: (trackHeight - barHeight) / 2,
-                        height: barHeight,
+                        top: '50%',
+                        mt: `${-ranking.bar.height / 2}px`,
+                        height: ranking.bar.height,
                         zIndex: 1,
                         bgcolor: color,
                         transformOrigin: 'left center',
@@ -170,9 +501,14 @@ export default function RegionalStackedTimeline({
 
         {/* Simulation axis */}
         <Box />
-        <Box sx={{ position: 'relative', height: 34, mt: 0.5 }}>
+        <Box sx={{ position: 'relative', height: 34 }}>
           <Box
-            sx={{ position: 'absolute', inset: '0 0 auto 0', height: 2, bgcolor: 'common.white' }}
+            sx={{
+              position: 'absolute',
+              inset: '0 0 auto 0',
+              borderTop: 1,
+              borderColor: 'base.300',
+            }}
           />
           {domain.ticks.map(([date, label], index) => (
             <Box
@@ -186,14 +522,22 @@ export default function RegionalStackedTimeline({
               }}
             >
               <Box
-                sx={{ width: 2, height: 8, bgcolor: 'common.white', mx: index === 0 ? 0 : 'auto' }}
+                sx={{
+                  width: '1px',
+                  height: 6,
+                  bgcolor: 'base.300',
+                  mx: index === 0 ? 0 : 'auto',
+                }}
               />
               <Typography
                 variant="captionSmall"
                 sx={{
                   whiteSpace: 'nowrap',
-                  // Quarter labels collide on phones; keep every other one.
-                  display: { xs: index % 2 ? 'none' : 'block', sm: 'block' },
+                  // Quarter labels collide: keep every other one, and only the ends on phones.
+                  display: {
+                    xs: index === 0 || index === domain.ticks.length - 1 ? 'block' : 'none',
+                    sm: index % 2 === 0 || index === domain.ticks.length - 1 ? 'block' : 'none',
+                  },
                 }}
               >
                 {label}
@@ -202,90 +546,42 @@ export default function RegionalStackedTimeline({
           ))}
         </Box>
 
-        {/* Seasonal or operational context */}
-        {contextPeriods.length ? (
-          <>
-            {rowLabel(contextPeriods[0].id.startsWith('dry-season') ? 'Season' : 'Operations')}
-            <Box sx={{ position: 'relative', height: 30 }}>
-              {contextPeriods.map((period) => {
-                const left = datePosition(period.startDate, domain)
-                const width = datePosition(period.endDate, domain) - left
-                return (
-                  <Box
-                    key={period.id}
-                    sx={{
-                      position: 'absolute',
-                      top: 15,
-                      left: `${left}%`,
-                      width: `${width}%`,
-                      minWidth: 6,
-                      borderTop: 1,
-                      borderColor: 'brand.primaryBlue',
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      justifyContent: 'center',
-                      overflow: 'visible',
-                    }}
-                  >
-                    {period.label && (
-                      <Typography
-                        variant="captionSmall"
-                        sx={{
-                          px: jtSpacing.component.xs,
-                          bgcolor: 'base.800',
-                          color: 'brand.primaryBlue',
-                          transform: 'translateY(-50%)',
-                          whiteSpace: 'nowrap',
-                          ...(left > 75 ? { position: 'absolute', right: 0 } : {}),
-                        }}
-                      >
-                        {period.label.toUpperCase()}
-                      </Typography>
-                    )}
-                  </Box>
-                )
-              })}
-            </Box>
-          </>
-        ) : null}
-
-        {/* Water-year type */}
-        {rowLabel('Water year')}
+        {/* Water years, bracketed like the axis they belong to */}
+        {rowLabel('Water year', 'start')}
         <Box sx={{ position: 'relative', height: 30 }}>
-          {waterYearBands(scenarioSlug).map((band) => {
-            const left = datePosition(band.start, domain)
-            const width = datePosition(band.end, domain) - left
-            const color =
-              band.tone === 'wet' ? theme.palette.primary.main : theme.palette.salinity.pink
+          {years.map(({ start, end, label, shortLabel }) => {
+            const left = datePosition(start, domain)
+            const right = datePosition(end, domain)
             return (
-              <Box
-                key={band.start}
-                sx={{
-                  position: 'absolute',
-                  top: 15,
-                  left: `${left}%`,
-                  width: `${width}%`,
-                  borderTop: 2,
-                  borderColor: color,
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  justifyContent: 'center',
-                  minWidth: 0,
-                  overflow: 'visible',
-                }}
-              >
+              <Box key={start} sx={{ display: 'contents' }}>
+                <Box
+                  aria-hidden="true"
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: `${left}%`,
+                    width: `${right - left}%`,
+                    height: bracketHeight,
+                    border: 1,
+                    borderBottom: 0,
+                    borderColor: 'base.300',
+                  }}
+                />
                 <Typography
                   variant="captionSmall"
-                  noWrap
                   sx={{
-                    px: jtSpacing.component.xs,
-                    bgcolor: 'base.800',
-                    color,
-                    transform: 'translateY(-50%)',
-                    ...(left > 75 ? { position: 'absolute', right: 0 } : {}),
+                    ...axisLabelSx(left, right),
+                    position: 'absolute',
+                    top: 8,
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  {band.label.toUpperCase()}
+                  <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>
+                    {label}
+                  </Box>
+                  <Box component="span" sx={{ display: { md: 'none' } }}>
+                    {shortLabel}
+                  </Box>
                 </Typography>
               </Box>
             )
@@ -294,29 +590,26 @@ export default function RegionalStackedTimeline({
       </Box>
 
       {/* Details for the selected event */}
-      <Box sx={{ mt: jtSpacing.component.lg }}>
+      <Box
+        sx={{
+          mt: jtSpacing.component.md,
+          py: jtSpacing.component.md,
+          borderTop: 1,
+          borderBottom: 1,
+          borderColor: 'border.strong',
+        }}
+      >
         {selected && selectedPlace ? (
-          <InterpretationCard
+          <EventDetails
             key={selected.pattern.id}
-            scenarioTitle={scenarioTitle}
             placeName={selectedPlace.name}
             pattern={selected.pattern}
             evidence={evidence?.patterns[selected.pattern.id]}
           />
         ) : (
-          <Box
-            sx={{
-              px: jtSpacing.component.md,
-              py: jtSpacing.component.md,
-              borderLeft: 4,
-              borderColor: 'border.default',
-              bgcolor: 'base.800',
-            }}
-          >
-            <Typography variant="body2" sx={{ color: 'base.200' }}>
-              Select a bar to see that event's details.
-            </Typography>
-          </Box>
+          <Typography variant="body2" sx={{ color: 'base.100' }}>
+            Select a bar to see that event's details.
+          </Typography>
         )}
       </Box>
     </Box>

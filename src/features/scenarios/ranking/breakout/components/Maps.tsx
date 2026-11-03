@@ -152,11 +152,12 @@ export function Maps({
           team={team}
           scenarios={state.columns}
           dimmed={dimmed}
-          reading={state.reading}
+          reading={node.asPublished ? 'level' : state.reading}
           sameStyleForChange
+          plainValues={node.asPublished}
           scoreScale
           // A share is scored one point per percentage point against Business as Usual.
-          scorePerPoint={node.unit === 'share' ? 0.01 : undefined}
+          scorePerPoint={node.unit === 'share' && !node.asPublished ? 0.01 : undefined}
           onScale={onScale}
           hideLegend
           fit
@@ -186,7 +187,7 @@ export function Maps({
                 coords.scenario as ScenarioKey,
                 coords.period,
               ),
-              diff: state.reading === 'change',
+              diff: state.reading === 'change' && !node.asPublished,
               outflowSet: state.setId === 'outflow',
               coords,
             })
@@ -195,7 +196,10 @@ export function Maps({
             hint: UI.mapPickRegion,
             pickedHint: UI.mapPickedRegion,
             noValue: (scenario) =>
-              outflowUnderSlr(scenario, state.climate) ? UI.notApplicable : UI.forthcoming,
+              outflowUnderSlr(scenario, state.climate) ||
+              node.notApplicableIn?.[scenario]?.includes(year ?? state.period)
+                ? UI.notApplicable
+                : UI.forthcoming,
           }}
         />
       </Box>

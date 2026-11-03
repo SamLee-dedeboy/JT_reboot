@@ -123,7 +123,7 @@ const regionConfig = {
     coordinates: [-121.68, 38.23],
   },
   southern_delta: {
-    name: 'Southern Delta',
+    name: 'South Delta',
     polygon: 'south_delta.geojson',
     coordinates: [-121.56, 37.78],
   },

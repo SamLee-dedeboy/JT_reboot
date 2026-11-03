@@ -58,6 +58,8 @@ export interface RegionValuesProps {
   fit?: boolean
   /** Shade a difference the way a value is shaded, the sign left to the number. */
   sameStyleForChange?: boolean
+  /** Neutral regions, for a measure the table shows without better or worse. */
+  plainValues?: boolean
   /** Print each region's number on it, so the map reads without hovering. */
   showValues?: boolean
   /**
@@ -112,6 +114,7 @@ export function RegionValues({
   hideLegend,
   fit,
   sameStyleForChange,
+  plainValues,
   showValues,
   scoreScale,
   onScale,
@@ -201,6 +204,7 @@ export function RegionValues({
         : 0
   const fillFor = (value: number | null): { fill: string; opacity: number } | null => {
     if (value === null) return null
+    if (plainValues) return { fill: cellFill(0), opacity: 1 }
     if (isScore && (reading === 'level' || sameStyleForChange))
       return { fill: cellFill(value), opacity: 1 }
     if (scoreScale) return { fill: cellFill(scoreOf(value)), opacity: 1 }
@@ -238,27 +242,28 @@ export function RegionValues({
     const text = unsigned(fmtValue(Math.abs(value), unit))
     return text === zero ? zero : `${value > 0 ? '+' : '−'}${text}`
   }
-  const scale: MapScale | null = !anyValue
-    ? null
-    : isScore
-      ? { worse: '−5', better: '+5', note: 'score, −5 to +5' }
-      : ruled
-        ? {
-            worse: '−5',
-            better: '+5',
-            note: `score: +1 per percentage point ${direction > 0 ? 'above' : 'below'} Business as Usual, ±5 at most`,
-          }
-        : reading === 'change'
+  const scale: MapScale | null =
+    !anyValue || plainValues
+      ? null
+      : isScore
+        ? { worse: '−5', better: '+5', note: 'score, −5 to +5' }
+        : ruled
           ? {
-              worse: mapText(-direction * max),
-              better: mapText(direction * max),
-              note: `change in ${unitLabel}, ${direction > 0 ? 'more' : 'less'} is better`,
+              worse: '−5',
+              better: '+5',
+              note: `score: +1 per percentage point ${direction > 0 ? 'above' : 'below'} Business as Usual, ±5 at most`,
             }
-          : {
-              worse: mapText(direction > 0 ? lo : hi),
-              better: mapText(direction > 0 ? hi : lo),
-              note: `${unitLabel}, ${direction > 0 ? 'more' : 'less'} is better`,
-            }
+          : reading === 'change'
+            ? {
+                worse: mapText(-direction * max),
+                better: mapText(direction * max),
+                note: `change in ${unitLabel}, ${direction > 0 ? 'more' : 'less'} is better`,
+              }
+            : {
+                worse: mapText(direction > 0 ? lo : hi),
+                better: mapText(direction > 0 ? hi : lo),
+                note: `${unitLabel}, ${direction > 0 ? 'more' : 'less'} is better`,
+              }
   const scaleKey = scale ? `${scale.worse}|${scale.better}|${scale.note}` : ''
   useEffect(() => {
     if (onScale) onScale(scaleKey ? scale : null)

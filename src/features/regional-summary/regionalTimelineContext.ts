@@ -32,7 +32,16 @@ const drySeasonPeriods: readonly RegionalTimelineContextPeriod[] = [
 /** Edit the scenario-specific contextual bands displayed above the salinity events here. */
 export function getRegionalTimelineContextPeriods(
   scenarioSlug: string,
+  seaLevelRise = false,
 ): readonly RegionalTimelineContextPeriod[] {
+  // Like the explorer's sea level rise modes: the operating dates describe current conditions.
+  if (
+    seaLevelRise &&
+    (scenarioSlug === 'bolster-and-fortify' || scenarioSlug === 'calling-on-reserves')
+  ) {
+    return []
+  }
+
   if (scenarioSlug === 'bolster-and-fortify') return bolsterGateClosures
 
   if (scenarioSlug === 'calling-on-reserves') {

@@ -49,7 +49,7 @@ const regionalPlaceContent: Record<string, Record<string, RegionalPlaceEditorial
         'This fortified corridor is intended to carry freshwater toward the southern pumping plants while keeping the route operable during drought.',
       keyTakeaway: [
         { text: 'Generally fresher', highlight: 'fresher', strong: true },
-        { text: ' during the critical dry period in October–November 2020.' },
+        { text: ' during the critical water year, in October–November 2020.' },
       ],
     },
     clifton_court_forebay: {

@@ -5,12 +5,12 @@ export interface CallingOnReservesReleasePeriod {
   label: string
   startDate: string
   endDate: string
-  /** One value per calendar month, relative to Business as Usual at Keswick. */
+  /** One value per calendar month, relative to Business as Usual at Shasta Dam. */
   monthlyDifferenceCfs: readonly number[]
 }
 
 /**
- * Periods when Calling on Reserves releases more than Business as Usual at Keswick, from the
+ * Periods when Calling on Reserves releases more than Business as Usual at Shasta Dam, from the
  * schedule in `public/data/operations/`. Change the dates there.
  */
 export const callingOnReservesReleasePeriods: readonly CallingOnReservesReleasePeriod[] =

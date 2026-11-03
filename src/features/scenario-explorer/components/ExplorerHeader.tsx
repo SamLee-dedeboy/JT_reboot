@@ -1,6 +1,9 @@
 import { Box, Button, FormControl, MenuItem, Select, Tab, Tabs, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { Link } from 'react-router-dom'
 import { explorerControl } from '../../../theme'
+import { useCompactExplorer } from '../explorerType'
 import type { DashboardMode } from '../types'
 
 const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [
@@ -44,6 +47,7 @@ export default function ExplorerHeader({
   showSlrModes = false,
   publicModesOnly = false,
 }: ExplorerHeaderProps) {
+  const compact = useCompactExplorer()
   const availableModes = publicModesOnly
     ? PUBLIC_MODES
     : MODES.filter(
@@ -70,12 +74,12 @@ export default function ExplorerHeader({
           display: 'grid',
           gap: theme.jtSpacing.gap.sm,
           gridTemplateAreas: {
-            xs: '"title tutorial" "mode mode"',
-            lg: '"title mode tutorial"',
+            xs: '"title tutorial" "back back" "mode mode"',
+            lg: '"title back mode tutorial"',
           },
           gridTemplateColumns: {
             xs: 'minmax(0, 1fr) auto',
-            lg: 'max-content minmax(20rem, 30rem) minmax(max-content, 1fr)',
+            lg: 'max-content max-content minmax(20rem, 30rem) minmax(max-content, 1fr)',
           },
           width: '100%',
         })}
@@ -87,6 +91,22 @@ export default function ExplorerHeader({
           </Box>{' '}
           explorer
         </Typography>
+        <Button
+          component={Link}
+          to="/scenarios/modeling"
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          aria-label="Back to Modeling"
+          sx={{
+            alignSelf: 'center',
+            gridArea: 'back',
+            height: explorerControl.headerHeight,
+            justifySelf: 'start',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {compact ? 'Back' : 'Back to Modeling'}
+        </Button>
         {showSlrModes || publicModesOnly ? (
           <Box
             sx={{

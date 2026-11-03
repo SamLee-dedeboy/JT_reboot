@@ -252,7 +252,7 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-ec-sovereignty-waterRights': 'Water Rights',
 
   // Qualitative rows under a scored metric
-  'bk-ej-flood-judgement': 'Change in flood risk',
+  'bk-ej-flood-judgement': 'Flood risk descriptive change from Business as Usual',
   'bk-rec-economy-infrastructure': 'Infrastructure impact',
 }
 
@@ -698,10 +698,6 @@ export const TEAM_PERIOD_MONTHS: Partial<Record<TeamKey, Record<string, string>>
     '2019': 'Feb 1 – Jun 1, 2019',
     '2020': 'Feb 1 – Jun 1, 2020',
     both: 'Feb 1 – Jun 1 of both years',
-  },
-  environmentalJustice: {
-    wet: 'Oct 2018 – Sep 2019 (water year 2019, a wet year)',
-    dry: 'Oct 2019 – Sep 2020 (water year 2020, a dry year)',
   },
 }
 

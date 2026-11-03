@@ -113,7 +113,7 @@ const regionConfig = {
     polygon: 'lindsey_cache_slough.geojson',
   },
   central_delta: { name: 'Central Delta', coordinates: [-121.58, 38.02] },
-  southern_delta: { name: 'Southern Delta', coordinates: [-121.56, 37.78] },
+  southern_delta: { name: 'South Delta', coordinates: [-121.56, 37.78] },
 }
 
 const recommended = JSON.parse(

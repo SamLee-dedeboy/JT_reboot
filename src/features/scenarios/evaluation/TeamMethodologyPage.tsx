@@ -2,19 +2,20 @@
 // Criterion" report into a technical summary: what it is, why it matters, how
 // it was built, and how each component is measured. Scenario results live on
 // the per-scenario team pages.
+import AddIcon from '@mui/icons-material/Add'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import RemoveIcon from '@mui/icons-material/Remove'
 import {
   Box,
   Button,
+  ButtonBase,
   Container,
   Stack,
-  Tab,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  Tabs,
   Typography,
   useMediaQuery,
 } from '@mui/material'
@@ -45,8 +46,7 @@ import { teamStyle } from '../teamStyle'
 import { findTeam, methodologyPath } from './paths'
 import { CitedText } from './citations'
 import { CitationContext, referenceId } from './citationContext'
-import { evaluationCardSx } from './styles'
-import { EvaluationHero, SectionHeading, TeamTabs } from './shared'
+import { CaveatsPanel, Diamond, EvaluationHero, SectionHeading, TeamTabs } from './shared'
 
 export default function TeamMethodologyPage() {
   const { teamId } = useParams()
@@ -117,6 +117,12 @@ export default function TeamMethodologyPage() {
                 gridColumn: { lg: 2 },
                 p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
                 '& > *': { maxWidth: jtSpacing.layout.data.maxWidth },
+                // The what, why and regions overview runs together; dividers start after it
+                '& > #components, & > #construction, & > #references': {
+                  pt: jtSpacing.section.md,
+                  borderTop: 2,
+                  borderColor: alpha(color, 0.5),
+                },
               }}
             >
               <WhatSection story={story} accent={color} />
@@ -435,15 +441,6 @@ function OutcomesSentence({
 }
 
 /** The team-colored diamond that marks a bullet, centred on its first line. */
-function Diamond({ accent }: { accent: string }) {
-  return (
-    <Box
-      aria-hidden="true"
-      sx={{ width: 6, height: 6, mt: 0.875, bgcolor: accent, transform: 'rotate(45deg)' }}
-    />
-  )
-}
-
 /** Bullets in a tinted box, each with a team-colored diamond. */
 function PointList({ points, accent }: { points: string[]; accent: string }) {
   return (
@@ -678,10 +675,13 @@ function RegionsSection({ regions, accent }: { regions: CriterionRegions; accent
   )
 }
 
+const COUNT_WORDS: Record<number, string> = { 3: 'three', 4: 'four' }
+
 function ComponentsSection({ story, accent }: SectionProps) {
   const { intro, items } = story.components
   const [active, setActive] = useState(0)
   const item = items[active]
+  const [lead, ...details] = item.spec
 
   return (
     <Box component="section" id="components" aria-labelledby="components-title" sx={sectionSx}>
@@ -699,78 +699,116 @@ function ComponentsSection({ story, accent }: SectionProps) {
           {intro}
         </Typography>
       )}
-      <Tabs
-        value={active}
-        onChange={(_, next: number) => setActive(next)}
-        variant="scrollable"
-        allowScrollButtonsMobile
-        aria-label="Components"
+      <Typography
+        variant="body1"
+        sx={{
+          ...methodologyTextColumnSx,
+          mt: intro ? jtSpacing.gap.sm : jtSpacing.gap.xs,
+          color: 'base.100',
+        }}
+      >
+        This criterion has {COUNT_WORDS[items.length] ?? items.length} components. Select one to see
+        how it is measured.
+      </Typography>
+
+      <Box
         sx={{
           mt: jtSpacing.gap.lg,
-          borderBottom: 1,
-          borderColor: 'border.subtle',
-          '& .MuiTabs-indicator': { bgcolor: accent },
-          '& .MuiTab-root.Mui-selected': { color: accent },
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: `repeat(${items.length % 2 ? items.length : 2}, minmax(0, 1fr))`,
+            lg: `repeat(${items.length}, minmax(0, 1fr))`,
+          },
+          gap: jtSpacing.gap.sm,
         }}
       >
         {items.map((component, index) => (
-          <Tab
+          <ComponentCard
             key={component.name}
-            label={`${String(index + 1).padStart(2, '0')} ${component.name}`}
-            id={`component-tab-${index}`}
-            aria-controls="component-panel"
+            number={index + 1}
+            name={component.name}
+            summary={component.summary}
+            selected={index === active}
+            accent={accent}
+            onSelect={() => setActive(index)}
           />
         ))}
-      </Tabs>
+      </Box>
 
       <Box
-        role="tabpanel"
         id="component-panel"
-        aria-labelledby={`component-tab-${active}`}
+        role="region"
+        aria-label={item.name}
         sx={{ pt: jtSpacing.section.sm }}
       >
-        <Typography variant="body1" sx={{ ...methodologyTextColumnSx, color: 'base.50' }}>
-          <CitedText text={item.summary} />
-        </Typography>
-
-        {/* Spec sheet beside the ordered method */}
         <Box
           sx={{
-            mt: jtSpacing.gap.lg,
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1fr) minmax(0, 1.15fr)' },
-            gap: { xs: jtSpacing.gap.lg, md: jtSpacing.section.sm },
-            alignItems: 'start',
+            pb: jtSpacing.gap.lg,
+            borderBottom: 1,
+            borderColor: 'border.subtle',
           }}
         >
-          <Box
-            component="dl"
-            sx={{ ...evaluationCardSx, m: 0, borderTop: 3, borderTopColor: accent }}
+          <Typography component="p" variant="navigationSubLabel" sx={{ color: accent }}>
+            {lead.label}
+          </Typography>
+          <Typography
+            component="p"
+            variant="editorialEmphasis"
+            sx={{ ...methodologyTextColumnSx, mt: 0.5, color: 'base.50' }}
           >
-            {item.spec.map((row, index) => (
+            {lead.value}
+          </Typography>
+          <Box component="dl" sx={{ m: 0, mt: jtSpacing.gap.sm }}>
+            {details.map((row, index) => (
               <Box
                 key={row.label}
                 sx={{
-                  py: jtSpacing.component.sm,
-                  borderTop: index ? 1 : 0,
-                  borderColor: 'border.subtle',
+                  ...methodologyTextColumnSx,
+                  mt: index ? jtSpacing.gap.xs : 0,
+                  display: 'grid',
+                  gridTemplateColumns: '5em minmax(0, 1fr)',
+                  alignItems: 'baseline',
                 }}
               >
                 <Typography component="dt" variant="navigationSubLabel" sx={{ color: 'base.200' }}>
                   {row.label}
                 </Typography>
-                <Typography component="dd" variant="body2" sx={{ m: 0, mt: 0.5, color: 'base.50' }}>
+                <Typography component="dd" variant="body2" sx={{ m: 0, color: 'base.100' }}>
                   {row.value}
                 </Typography>
               </Box>
             ))}
           </Box>
+        </Box>
 
+        {/* The ordered method, with its caveats always in view beside it */}
+        <Box
+          sx={{
+            mt: jtSpacing.gap.lg,
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              md: item.caveats ? 'minmax(0, 7fr) minmax(0, 5fr)' : '1fr',
+            },
+            gap: { xs: jtSpacing.gap.lg, md: jtSpacing.section.sm },
+            alignItems: 'start',
+          }}
+        >
           <Box>
             <Typography variant="navigationLabel" component="h3">
               Method
             </Typography>
-            <Box component="ol" sx={{ m: 0, p: 0, mt: jtSpacing.gap.sm, listStyle: 'none' }}>
+            <Box
+              component="ol"
+              sx={{
+                ...(item.caveats ? {} : methodologyTextColumnSx),
+                m: 0,
+                p: 0,
+                mt: jtSpacing.gap.sm,
+                listStyle: 'none',
+              }}
+            >
               {item.method.map((step, index) => (
                 <Box
                   component="li"
@@ -794,71 +832,113 @@ function ComponentsSection({ story, accent }: SectionProps) {
                 </Box>
               ))}
             </Box>
+            {item.link && (
+              <Button
+                component={Link}
+                to={item.link.to}
+                variant="contained"
+                sx={{ mt: jtSpacing.gap.md }}
+              >
+                {item.link.label}
+              </Button>
+            )}
           </Box>
+
+          {item.caveats && (
+            <CaveatsPanel
+              accent={accent}
+              caveats={item.caveats.map((caveat) => ({
+                key: caveat,
+                content: <CitedText text={caveat} />,
+              }))}
+            />
+          )}
         </Box>
 
         {item.tables?.map((table) => (
-          <StoryDataTable key={table.caption} table={table} accent={accent} />
+          <OptionalTable key={`${item.name}-${table.caption}`} table={table} accent={accent} />
         ))}
-
-        {item.link && (
-          <Button
-            component={Link}
-            to={item.link.to}
-            variant="contained"
-            sx={{ mt: jtSpacing.gap.lg }}
-          >
-            {item.link.label}
-          </Button>
-        )}
-
-        {item.caveats && (
-          <Box
-            sx={{
-              mt: jtSpacing.gap.lg,
-              p: jtSpacing.component.md,
-              bgcolor: alpha(accent, 0.06),
-            }}
-          >
-            <Typography variant="navigationSubLabel" component="h3" sx={{ color: accent }}>
-              Caveats and Clarifications
-            </Typography>
-            <Box component="ul" sx={{ m: 0, mt: jtSpacing.gap.sm, p: 0, listStyle: 'none' }}>
-              {item.caveats.map((caveat, index) => (
-                <Box
-                  component="li"
-                  key={caveat}
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: '8px minmax(0, 1fr)',
-                    columnGap: jtSpacing.gap.sm,
-                    mt: index ? jtSpacing.gap.sm : 0,
-                  }}
-                >
-                  <Diamond accent={accent} />
-                  <Typography variant="body2" sx={{ color: 'base.50' }}>
-                    <CitedText text={caveat} />
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        )}
       </Box>
+    </Box>
+  )
+}
+
+/** A component as a numbered card; selecting it shows its details below the row. */
+function ComponentCard({
+  number,
+  name,
+  summary,
+  selected,
+  accent,
+  onSelect,
+}: {
+  number: number
+  name: string
+  summary: string
+  selected: boolean
+  accent: string
+  onSelect: () => void
+}) {
+  return (
+    <ButtonBase
+      onClick={onSelect}
+      aria-pressed={selected}
+      aria-controls="component-panel"
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        gap: jtSpacing.gap.sm,
+        p: jtSpacing.component.md,
+        textAlign: 'left',
+        color: 'inherit',
+        border: 1,
+        borderColor: 'border.subtle',
+        borderTop: 3,
+        borderTopColor: selected ? accent : 'border.subtle',
+        borderRadius: 1,
+        bgcolor: selected ? alpha(accent, 0.1) : 'transparent',
+        '&:hover': { bgcolor: selected ? alpha(accent, 0.1) : 'translucent.100' },
+        '&.Mui-focusVisible': { outline: 2, outlineColor: accent, outlineOffset: 2 },
+      }}
+    >
+      <Typography component="span" variant="statNumber" sx={{ color: accent }}>
+        {number}
+      </Typography>
+      <Typography component="span" variant="h4" sx={{ color: 'base.50' }}>
+        {name}
+      </Typography>
+      <Typography component="span" variant="body2" sx={{ color: 'base.100' }}>
+        <CitedText text={summary} />
+      </Typography>
+    </ButtonBase>
+  )
+}
+
+/** A component's data table, closed until asked for. */
+function OptionalTable({ table, accent }: { table: StoryTable; accent: string }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Box sx={{ mt: jtSpacing.gap.lg }}>
+      <Button
+        variant="outlined"
+        startIcon={open ? <RemoveIcon /> : <AddIcon />}
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        sx={{ color: accent, borderColor: 'border.subtle' }}
+      >
+        {table.caption}
+      </Button>
+      {open && <StoryDataTable table={table} accent={accent} />}
     </Box>
   )
 }
 
 function StoryDataTable({ table, accent }: { table: StoryTable; accent: string }) {
   return (
-    <Box component="figure" sx={{ m: 0, mt: jtSpacing.gap.lg }}>
-      <Typography
-        component="figcaption"
-        variant="navigationSubLabel"
-        sx={{ color: accent, mb: jtSpacing.gap.sm }}
-      >
-        {table.caption}
-      </Typography>
+    <Box component="figure" aria-label={table.caption} sx={{ m: 0, mt: jtSpacing.gap.sm }}>
       <Box
         sx={{
           overflowX: 'auto',

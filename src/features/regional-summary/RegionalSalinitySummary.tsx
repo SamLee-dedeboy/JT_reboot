@@ -1,15 +1,16 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
-import { Box, Button, IconButton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Box, Button, IconButton, Typography } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useReducedMotion } from 'framer-motion'
 import type { Map as MapboxMap } from 'mapbox-gl'
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Layer, Source } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
-import { jtSpacing } from '../../theme'
+import { jtSpacing, ranking } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
+import { Segmented } from '../scenarios/ranking/breakout/components/controls'
 import RegionalStackedTimeline from './RegionalStackedTimeline'
 import { RegionalPlaceLayers, RegionalPlacePreview } from './RegionalSalinityMapParts'
 import {
@@ -27,7 +28,7 @@ import {
   type RegionalReleaseView,
 } from './regionalSalinityMap'
 import { scenarioStrategies } from './scenarioStrategies'
-import type { RegionalPlace } from './regionalSummaryData'
+import { isProvisionalScenarioKey, type RegionalPlace } from './regionalSummaryData'
 import { regionalMapScales } from './regionalSummaryStyles'
 
 interface RegionalSalinitySummaryProps {
@@ -35,6 +36,7 @@ interface RegionalSalinitySummaryProps {
   scenarioSlug: string
   scenarioTitle: string
   scenarioKeyOverride?: string
+  seaLevelRise?: boolean
   explorerHref: string
   headingId: string
   showHeading?: boolean
@@ -55,6 +57,11 @@ export function SalinityResultsHeading({ id }: { id: string }) {
     </Typography>
   )
 }
+
+/** The strategies beside the map, with the chosen future and its summary above them. */
+const resultColumns = { xs: 'minmax(0, 1fr)', lg: 'minmax(260px, 0.42fr) minmax(0, 1fr)' }
+
+const releaseViewOptions = regionalReleaseViewOptions.map(([value, label]) => ({ value, label }))
 
 const strategyCameras: Record<
   string,
@@ -319,52 +326,44 @@ function Fresher() {
   )
 }
 
-/** One sentence condensing the regional takeaways: which places get saltier, fresher, or flip. */
-function FindingSummary({
-  scenarioTitle,
-  places,
-}: {
-  scenarioTitle: string
-  places: RegionalPlace[]
-}) {
-  const named = (trend: RegionalPlace['trend']) =>
-    joinNames(places.filter((place) => place.trend === trend).map((place) => place.name))
-  const clauses: ReactNode[] = []
-  if (named('saltier'))
-    clauses.push(
-      <>
-        makes {named('saltier')} <Saltier />
-      </>,
-    )
-  if (named('fresher'))
-    clauses.push(
-      <>
-        keeps {named('fresher')} <Fresher />
-      </>,
-    )
-  if (named('flipping'))
-    clauses.push(
-      <>
-        shifts {named('flipping')} between <Saltier /> and <Fresher /> periods
-      </>,
-    )
-  const separator = (index: number) => {
-    if (index === 0) return null
-    if (index < clauses.length - 1) return ', '
-    return clauses.length > 2 ? ', and ' : ' and '
-  }
+/** The run each scenario's salinity differences are read against. */
+function baselineFor(scenarioSlug: string, seaLevelRise = false) {
+  if (scenarioSlug === 'alternative-delta-outflows') return 'the Historical Baseline'
+  const baseline =
+    scenarioSlug === 'calling-on-reserves' || scenarioSlug === 'a-tunnel'
+      ? 'the CalSim Baseline'
+      : 'the Baseline'
+  return seaLevelRise ? `${baseline} with 2 feet of sea level rise` : baseline
+}
+
+/** The regional takeaways: which places get saltier, stay fresher, or shift between the two. */
+function FindingSummary({ places }: { places: RegionalPlace[] }) {
+  const inTrend = (trend: RegionalPlace['trend']) =>
+    places.filter((place) => place.trend === trend).map((place) => place.name)
+  const verb = (names: string[], one: string, many: string) => (names.length === 1 ? one : many)
+  const saltier = inTrend('saltier')
+  const fresher = inTrend('fresher')
+  const flipping = inTrend('flipping')
 
   return (
     <Typography variant="body1" sx={{ color: 'base.100', maxWidth: '78ch' }}>
-      Compared with Business as Usual, {scenarioTitle}{' '}
-      {clauses.map((clause, index) => (
-        <Fragment key={index}>
-          {separator(index)}
-          {clause}
-        </Fragment>
-      ))}
-      . These changes arrive in particular seasons and water years rather than all year round, as
-      the timeline below shows.
+      {saltier.length ? (
+        <>
+          {joinNames(saltier)} {verb(saltier, 'gets', 'get')} <Saltier />.{' '}
+        </>
+      ) : null}
+      {fresher.length ? (
+        <>
+          {joinNames(fresher)} {verb(fresher, 'stays', 'stay')} <Fresher />.{' '}
+        </>
+      ) : null}
+      {flipping.length ? (
+        <>
+          {joinNames(flipping)} {verb(flipping, 'shifts', 'shift')} between <Saltier /> and{' '}
+          <Fresher /> periods.{' '}
+        </>
+      ) : null}
+      These changes arrive in particular seasons and water years rather than all year round.
     </Typography>
   )
 }
@@ -378,19 +377,21 @@ export default function RegionalSalinitySummary({
   scenarioSlug,
   scenarioTitle,
   scenarioKeyOverride,
+  seaLevelRise = false,
   explorerHref,
   headingId,
   showHeading = true,
 }: RegionalSalinitySummaryProps) {
   const theme = useTheme()
   const reduceMotion = useReducedMotion()
-  const isCallingOnReserves = scenarioSlug === 'calling-on-reserves'
+  const showReleaseTiming = scenarioSlug === 'calling-on-reserves' && !seaLevelRise
+  const provisional = isProvisionalScenarioKey(scenarioKeyOverride)
   const strategies = scenarioStrategies[scenarioSlug] ?? []
   const { places, loading, error } = useCuratedRegionalPlaces(scenarioSlug, scenarioKeyOverride)
   const [releaseView, setReleaseView] = useState<RegionalReleaseView>('all')
   const mapPlaces = useMemo(
-    () => (isCallingOnReserves ? filterPlacesByReleaseView(places, releaseView) : places),
-    [isCallingOnReserves, places, releaseView],
+    () => (showReleaseTiming ? filterPlacesByReleaseView(places, releaseView) : places),
+    [showReleaseTiming, places, releaseView],
   )
   const [previewPlaceId, setPreviewPlaceId] = useState<string | null>(null)
   const [focusedPlaceId, setFocusedPlaceId] = useState<string | null>(null)
@@ -469,23 +470,34 @@ export default function RegionalSalinitySummary({
     <Box component="section" aria-labelledby={headingId}>
       {showHeading ? <SalinityResultsHeading id={headingId} /> : null}
 
-      {/* Written summary */}
+      {/* The baseline, the chosen future's name, and its takeaway */}
       <Box
         sx={{
-          mt: jtSpacing.gap.md,
+          mt: showHeading ? jtSpacing.gap.md : 0,
+          pt: jtSpacing.component.lg,
+          borderTop: 1,
+          borderColor: 'border.strong',
         }}
       >
-        {loading ? (
-          <Typography variant="body1" sx={{ color: 'base.100' }}>
-            Loading regional findings…
-          </Typography>
-        ) : ready ? (
-          <FindingSummary scenarioTitle={scenarioTitle} places={places} />
-        ) : (
-          <Typography variant="body1" sx={{ color: 'base.100' }}>
-            Regional salinity results for this scenario are still being prepared.
-          </Typography>
-        )}
+        <Typography variant="eyebrow" component="p">
+          Compared with {baselineFor(scenarioSlug, seaLevelRise)}
+        </Typography>
+        <Typography variant="h2" component="h3" sx={{ mt: jtSpacing.gap.xs }}>
+          {scenarioTitle}
+        </Typography>
+        <Box sx={{ mt: jtSpacing.gap.sm }}>
+          {loading ? (
+            <Typography variant="body1" sx={{ color: 'base.100' }}>
+              Loading regional findings…
+            </Typography>
+          ) : ready ? (
+            <FindingSummary places={places} />
+          ) : (
+            <Typography variant="body1" sx={{ color: 'base.100' }}>
+              Regional salinity results for this scenario are still being prepared.
+            </Typography>
+          )}
+        </Box>
       </Box>
 
       {ready ? (
@@ -493,12 +505,9 @@ export default function RegionalSalinitySummary({
           {/* Strategies recap beside the regional map */}
           <Box
             sx={{
-              mt: jtSpacing.section.md,
+              mt: jtSpacing.component.lg,
               display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                lg: strategies.length ? 'minmax(260px, 0.42fr) minmax(0, 1fr)' : '1fr',
-              },
+              gridTemplateColumns: strategies.length ? resultColumns : '1fr',
               gap: jtSpacing.gap.lg,
               alignItems: 'start',
             }}
@@ -566,26 +575,34 @@ export default function RegionalSalinitySummary({
               </Box>
             ) : null}
 
-            <Box>
-              {isCallingOnReserves ? (
-                <ToggleButtonGroup
-                  exclusive
-                  size="small"
-                  value={releaseView}
-                  onChange={(_, value: RegionalReleaseView | null) => {
-                    if (!value || value === releaseView) return
-                    setReleaseView(value)
-                    setPreviewPlaceId(null)
+            <Box sx={{ position: 'relative', minWidth: 0 }}>
+              {/* Over the map's corner on wider screens, so the map lines up with the strategies */}
+              {showReleaseTiming ? (
+                <Box
+                  sx={{
+                    position: { xs: 'static', md: 'absolute' },
+                    top: (theme) => theme.spacing(jtSpacing.gap.sm),
+                    left: (theme) => theme.spacing(jtSpacing.gap.sm),
+                    zIndex: 1,
+                    width: 'fit-content',
+                    maxWidth: 1,
+                    mb: { xs: jtSpacing.gap.sm, md: 0 },
+                    borderRadius: ranking.setToggle.radius,
+                    bgcolor: 'translucent.darkSurface',
                   }}
-                  aria-label="Calling on Reserves release timing"
-                  sx={{ mb: jtSpacing.gap.md }}
                 >
-                  {regionalReleaseViewOptions.map(([value, label]) => (
-                    <ToggleButton key={value} value={value}>
-                      {label}
-                    </ToggleButton>
-                  ))}
-                </ToggleButtonGroup>
+                  <Segmented
+                    label="Calling on Reserves release timing"
+                    value={releaseView}
+                    options={releaseViewOptions}
+                    onChange={(value) => {
+                      setReleaseView(value)
+                      setPreviewPlaceId(null)
+                    }}
+                    dense
+                    wrap
+                  />
+                </Box>
               ) : null}
               <Box
                 sx={{
@@ -656,19 +673,17 @@ export default function RegionalSalinitySummary({
 
           {/* Every region's events on one simulation timeline */}
           <Box sx={{ mt: jtSpacing.section.md }}>
-            <Typography variant="h3" component="h3" sx={{ mb: jtSpacing.component.md }}>
-              Salinity pattern timeline
-            </Typography>
             <RegionalStackedTimeline
               scenarioSlug={scenarioSlug}
-              scenarioTitle={scenarioTitle}
               places={places}
+              provisional={provisional}
+              seaLevelRise={seaLevelRise}
               focusedPlaceId={focusedPlaceId}
               onFocusPlace={focusFromTimeline}
             />
             <Box
               sx={{
-                mt: jtSpacing.component.xl,
+                mt: jtSpacing.component.lg,
                 display: 'flex',
                 flexDirection: { xs: 'column', sm: 'row' },
                 alignItems: { xs: 'flex-start', sm: 'center' },
@@ -684,7 +699,7 @@ export default function RegionalSalinitySummary({
                 variant="outlined"
                 endIcon={<ArrowForwardIcon />}
               >
-                Open the public modeling explorer
+                Open salinity difference explorer
               </Button>
             </Box>
           </Box>

@@ -631,7 +631,7 @@ export function Matrix({
                     score={ranked}
                     lowerBetter={lowerIsBetter(node.id)}
                     baseline={diff && cell.scenario === state.baseline}
-                    signedText={diff}
+                    signedText={diff && !node.asPublished}
                     onClick={
                       cell.raw !== null
                         ? (event) =>

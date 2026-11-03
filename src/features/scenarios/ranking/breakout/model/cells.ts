@@ -58,7 +58,11 @@ export function read(
       why: versionOnly ? UI.versionOnly : UI.forthcoming,
     }
   }
-  if (node.notApplicable?.includes(scenario) || node.notApplicableAt?.[scenario]?.includes(place))
+  if (
+    node.notApplicable?.includes(scenario) ||
+    node.notApplicableAt?.[scenario]?.includes(place) ||
+    node.notApplicableIn?.[scenario]?.includes(period)
+  )
     return { value: null as number | null, why: UI.notApplicable }
   if (cell.value === null && (node.forthcoming || node.forthcomingFor?.includes(scenario)))
     return { value: null as number | null, why: UI.forthcoming }
@@ -177,6 +181,7 @@ export function pointAt(
 ): CellPoint {
   const here = read(node, scenario, state.place, period, state.climate)
   if (here.value === null) return { scenario, period, ...here, raw: null, base: null }
+  if (node.asPublished) return { scenario, period, ...here, raw: here.value, base: null }
   const base = baselineAt(state, node, scenario, period)
   const raw = here.value
   if (state.reading !== 'change') return { scenario, period, ...here, raw, base }

@@ -118,6 +118,14 @@ export const typography = {
   cardTitle: { fontFamily: fontBody, fontSize: '1.2rem', lineHeight: 1.3, fontWeight: 700 },
   cardBody: { fontFamily: fontBody, fontSize: '1.02rem', lineHeight: 1.5 },
   meta: { fontFamily: fontBody, fontSize: '0.95rem', lineHeight: 1.3 },
+  // Stands in for content that is still to come: body-sized, but lighter and quieter.
+  placeholderNote: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)',
+    lineHeight: 1.3,
+    fontWeight: 300,
+    color: palette.base[100],
+  },
   controlLabel: { fontFamily: fontBody, fontSize: '0.8125rem', lineHeight: 1.2 },
   // Body text in a dashboard's controls: no larger than 18px, without a button's capitals.
   controlValue: {
@@ -243,6 +251,12 @@ export const typography = {
   },
   chartValue: { fontFamily: fontHeading, fontSize: '0.9rem', lineHeight: 1 },
   chartValueLarge: { fontFamily: fontHeading, fontSize: '1.15rem', lineHeight: 1 },
+  // A reading called out on its own, such as a selected event's difference or dates.
+  statValue: {
+    fontFamily: fontHeading,
+    fontSize: 'clamp(1.2rem, 0.8rem + 0.7vw, 1.65rem)',
+    lineHeight: 1.15,
+  },
   numberGhost: {
     fontFamily: fontHeading,
     fontSize: 'clamp(1.8rem, 1.4rem + 1vw, 2.2rem)',

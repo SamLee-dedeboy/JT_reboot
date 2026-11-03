@@ -8,12 +8,8 @@
 //   - Values the subteam did not publish as a criterion score are INFERRED, flagged
 //     in `provisional` and marked with * on screen. Two kinds, one label, because a
 //     reader needs the same warning from both: Ecology's whole column is the mean of
-//     its two published metric ranks. EJ's Calling on Reserves and A Tunnel are
-//     marked pending by their subteam and carry stand-ins here. None of these are
-//     the subteams' own numbers. Recreation's column is its own score (26 Oct 2026).
-//     The public ranking page (features/scenarios/ranking) shows these like any other
-//     score, so the PLACEHOLDER notes on each `scores` line below are the record of
-//     which values are stand-ins.
+//     its two published metric ranks. None of these are the subteams' own numbers.
+//     Recreation's column is its own score (26 Oct 2026), and EJ's is its own (Nov 2026).
 // The six adaptation scenarios and the tiered outflow runs are separate sets: the
 // outflow runs use a different increment and are never ranked with the adaptations.
 import { alpha } from '@mui/material/styles'
@@ -66,7 +62,8 @@ export const TEAMS: Team[] = [
 export const SCENARIOS: Scenario[] = [
   {
     // Ecology: the team's own score, from the ranking table workbook (Nov 2026).
-    // EJ: the only scenario above 0.
+    // EJ: the team's own score (ranking table workbook, Nov 2026), the mean of drinking
+    // water +2, flood risk +3 and water age −3.
     // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
     // Recreation: 0, the team's own score (ranking table workbook, Nov 2026): Suisun
     // Marsh −2 and Central Delta +1 average out.
@@ -76,8 +73,7 @@ export const SCENARIOS: Scenario[] = [
     provisional: [false, false, false, false, false],
   },
   {
-    // Ecology: the team's own score, from the ranking table workbook (Nov 2026). EJ fell from +1 to 0 when the Oct 2026
-    // slides dropped the two seasonal drinking-water scores from its average.
+    // Ecology and EJ: the teams' own scores, from the ranking table workbook (Nov 2026).
     // Recreation: 0, the same as New Green Watershed in every place.
     name: 'Eco Machine',
     color: voting.scenario.ecoMachine,
@@ -86,6 +82,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     // Recreation: 0 on every activity, Delta-wide.
+    // EJ: the team's own score (ranking table workbook, Nov 2026).
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
     scores: [0, 0, 0, -1, 0],
@@ -95,23 +92,22 @@ export const SCENARIOS: Scenario[] = [
     // Economy: 0 in both water years and with sea level rise (v19, 1 Nov 2026),
     // against RMA's own base run for this scenario.
     // Recreation: 0 (ranking table workbook, Nov 2026).
-    // EJ*: "pending" for want of a water-age result; 0 is the mean of the two metrics
-    // it has (drinking water 0, flood risk 0; ranking table workbook, Nov 2026).
+    // EJ: the team's own score, with water age 0 (ranking table workbook, Nov 2026).
     name: 'Calling on Reserves',
     color: voting.scenario.callingOnReserves,
-    scores: [-0.33, 0, 0, 0, 1], // PLACEHOLDER: Env. Justice
-    provisional: [false, false, true, false, false],
+    scores: [-0.33, 0, 0, 0, 1],
+    provisional: [false, false, false, false, false],
   },
   {
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
     // withdrew the drinking-water numbers the Sept report published for it.
-    // Recreation: 0 (ranking table workbook, Nov 2026). EJ*: mean of the two metrics it has (drinking water 0,
-    // flood risk +1; ranking table workbook, Nov 2026). Economy: −1 (v19, 1 Nov 2026), from a dry-year salinity
+    // Recreation: 0 and EJ: the team's own score, with water age 0 (ranking table workbook, Nov 2026).
+    // Economy: −1 (v19, 1 Nov 2026), from a dry-year salinity
     // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0.33, 0, 0.5, -1, -2], // PLACEHOLDER: Env. Justice
-    provisional: [false, false, true, false, false],
+    scores: [0.33, 0, 0, -1, -2],
+    provisional: [false, false, false, false, false],
   },
   {
     name: 'Business as Usual',
@@ -137,9 +133,9 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     name: 'More outflow (+30%)',
     color: voting.scenario.moreOutflow,
     // Recreation: +1, the average of its regions (ranking table workbook, Nov 2026).
-    // EJ*: the team cleared its +4 from that workbook; its drinking-water score is still +4.
+    // EJ: +4, the team's own score in that workbook.
     scores: [null, 1, 4, null, 3],
-    provisional: [false, false, true, false, false],
+    provisional: [false, false, false, false, false],
   },
   {
     // EJ publishes −1 for the whole run and both seasons, then an "average" of −1.5
@@ -150,7 +146,7 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     provisional: NOT_INFERRED,
   },
   {
-    name: 'Historic Baseline',
+    name: 'Historical Baseline',
     color: voting.scenario.businessAsUsual,
     scores: [null, null, 0, null, 0],
     provisional: NOT_INFERRED,

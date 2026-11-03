@@ -110,6 +110,12 @@ export default function TypographyContent({ guideSx }: { guideSx?: SxProps<Theme
       content: 'Compact metadata text, used by color swatch hex values.',
     },
     {
+      label: 'Placeholder Note',
+      variantName: 'placeholderNote',
+      variant: theme.typography.placeholderNote as TypographyToken,
+      content: 'Stands in for content that is still to come.',
+    },
+    {
       label: 'Button',
       variantName: 'button',
       variant: theme.typography.button as TypographyToken,

@@ -8,7 +8,7 @@ the data the site uses, so these numbers are the site's numbers.
 | --------------------- | ------------------------------------------------------------------------------------------ |
 | Ecology               | `Ranking Table (5).xlsx`, Ecology tab; same as (2) and (4)                                 |
 | Recreation            | `Ranking Table (6).xlsx`, Recreation tab, and `Restoration Scenarios NGW and ECO (2).xlsx` |
-| Environmental Justice | `Ranking Table (5).xlsx`, Env Justice tab                                                  |
+| Environmental Justice | Workbook saved 2 Nov 2026, 20:02, Env Justice tab (not the older (3) named below)          |
 | Economy               | `Ranking Table (5).xlsx`, Economy tab, and the v19 workbook (1 Nov 2026)                   |
 | Eco-cultural          | `Ranking Table (5).xlsx`, Eco-cultural tab                                                 |
 
@@ -30,15 +30,13 @@ The by-scenario page averages the five team scores (`data.ts`). A `*` is our pla
 | ---- | ------------------- | ------- | ---------- | ------------ | ------- | ------------ | ------- |
 | 1    | New Green Watershed | +3.1    | 0          | +1           | −4      | +4           | +0.82   |
 | 2    | Eco Machine         | +1.33   | 0          | 0            | 0       | +2           | +0.67   |
-| 3    | Calling on Reserves | −0.33   | 0          | 0*           | 0       | +1           | +0.13   |
+| 3    | Calling on Reserves | −0.33   | 0          | 0            | 0       | +1           | +0.13   |
 | 4    | Business as Usual   | 0       | 0          | 0            | 0       | 0            | +0.00   |
 | 5    | Bolster & Fortify   | 0       | 0          | 0            | −1      | 0            | −0.20   |
-| 6    | A Tunnel            | +0.33   | 0          | +0.5*        | −1      | −2           | −0.43   |
+| 6    | A Tunnel            | +0.33   | 0          | 0            | −1      | −2           | −0.53   |
 
-Environmental Justice has no published criterion score, so its whole column is ours:
-Eco Machine 0, New Green Watershed +1 and Bolster & Fortify 0 are carried from the
-earlier average, and Calling on Reserves 0 and A Tunnel +0.5 are the means of the two
-metrics they have. The site rounds +0.5 to +1 where it shows whole points.
+Environmental Justice's column is the team's own: the mean of drinking water, flood risk
+and water age, in whole points as the ranking table workbook displays it (Nov 2026).
 
 ## Ecology
 
@@ -206,7 +204,15 @@ Each service scores +5 for both scenarios in the sheet, beneath a row that score
 
 ## Environmental Justice
 
-No criterion score yet: the row reads Forthcoming until the water-age re-run. Places are vulnerability classes.
+Places are vulnerability classes. Under sea level rise, the criterion and water-age scores read Forthcoming
+until the water-age re-run, as do the days at each water-age area in both climates.
+
+| Score                     | Eco Machine | New Green Watershed | Bolster & Fortify | Calling on Reserves | A Tunnel | +30% outflow |
+| ------------------------- | ----------- | ------------------- | ----------------- | ------------------- | -------- | ------------ |
+| **Environmental Justice** | 0           | +1                  | 0                 | 0                   | 0        | +4           |
+| Drinking water            | +2          | +2                  | 0                 | 0                   | 0        | +4           |
+| Flood risk attenuation    | 0           | +3                  | +2                | 0                   | +1       | N/A          |
+| Water age + temperature   | −2          | −3                  | −1                | 0                   | 0        | N/A          |
 
 **Drinking water, Whole period, Current conditions**: score, then share of readings ≥ 1,050 µS/cm
 
@@ -217,7 +223,7 @@ No criterion score yet: the row reads Forthcoming until the water-age re-run. Pl
 | High (36)     | 10%               | +2 (8%)     | +2 (8%)             | 0 (10%)           | +1 (11%)            | −1 (13%) |
 | Highest (3)   | 0%                | 0 (0%)      | 0 (0%)              | 0 (0%)            | 0 (0%)              | 0 (0%)   |
 
-**Drinking water, Wet tab (water year 2019), Current conditions**: score, then share of readings ≥ 1,050 µS/cm
+**Drinking water, Wet Year (water year 2019), Current conditions**: score, then share of readings ≥ 1,050 µS/cm
 
 | Class         | Business as Usual | Eco Machine | New Green Watershed | Bolster & Fortify | Calling on Reserves | A Tunnel |
 | ------------- | ----------------- | ----------- | ------------------- | ----------------- | ------------------- | -------- |
@@ -226,7 +232,7 @@ No criterion score yet: the row reads Forthcoming until the water-age re-run. Pl
 | High (36)     | 7%                | +1 (6%)     | +1 (6%)             | −1 (8%)           | 0 (10%)             | −1 (11%) |
 | Highest (3)   | 0%                | 0 (0%)      | 0 (0%)              | 0 (0%)            | 0 (0%)              | 0 (0%)   |
 
-**Drinking water, Dry tab (water year 2020), Current conditions**: score, then share of readings ≥ 1,050 µS/cm
+**Drinking water, Dry Year (water year 2020), Current conditions**: score, then share of readings ≥ 1,050 µS/cm
 
 | Class         | Business as Usual | Eco Machine | New Green Watershed | Bolster & Fortify | Calling on Reserves | A Tunnel |
 | ------------- | ----------------- | ----------- | ------------------- | ----------------- | ------------------- | -------- |
@@ -343,13 +349,13 @@ SCHISM runs 15 (Historic Baseline), 16 (+30%) and 17 (−10%), Oct 2020 – Jan 
 against the Historic Baseline, never Business as Usual. So they are a separate set
 and do not join the adaptation ranking.
 
-| Team                  | +30%           | −10%        | Note                                                                         |
-| --------------------- | -------------- | ----------- | ---------------------------------------------------------------------------- |
-| Ecology               | forthcoming    | forthcoming | Suitable days by region reported; no scores. Landscape and Food webs are N/A |
-| Recreation            | +1             | forthcoming | Salinity +4.5, temperature 0; restoration and economy are N/A                |
-| Environmental Justice | +4 provisional | −2          | Drinking water only; the report states −2 although its table averages −1.5   |
-| Economy               | forthcoming    | forthcoming | Not run                                                                      |
-| Eco-cultural          | +3             | −2          | One overall score; restoration is N/A                                        |
+| Team                  | +30%        | −10%        | Note                                                                         |
+| --------------------- | ----------- | ----------- | ---------------------------------------------------------------------------- |
+| Ecology               | forthcoming | forthcoming | Suitable days by region reported; no scores. Landscape and Food webs are N/A |
+| Recreation            | +1          | forthcoming | Salinity +4.5, temperature 0; restoration and economy are N/A                |
+| Environmental Justice | +4          | −2          | Drinking water only; the report states −2 although its table averages −1.5   |
+| Economy               | forthcoming | forthcoming | Not run                                                                      |
+| Eco-cultural          | +3          | −2          | One overall score; restoration is N/A                                        |
 
 ## Open items
 
@@ -386,20 +392,21 @@ and do not join the adaptation ranking.
 
 ### Environmental Justice
 
-1. **No final scores.** Criterion blank, water-age re-run pending, old slide values still showing;
-   placeholders drive the overall ranking.
-2. **Season labels.** The tabs say wet and dry season; the numbers are water years.
+1. **Water-age re-run.** The days at each area and the sea-level-rise water-age and criterion scores
+   are pending.
+2. **Copy outside the ranking.** `evaluationReports.ts` and `adaptationScenarios.ts` still describe the
+   older EJ scores and wet and dry seasons.
 3. **Takeaways against the data.** Bolster & Fortify has wet and dry reversed; Eco Machine and New Green
    Watershed are "most in both years" although Calling on Reserves is +2 in the dry year; Bolster &
    Fortify is "the only scenario to decrease water age"; the Calling on Reserves and A Tunnel takeaways
    leave out water age.
 4. **No caveats published.** Caveat 1 is a note to Yun-Hsin asking for a text document.
-5. **Baseline side effect.** With the CalSim baseline at 0, those scenarios' share rows show values like
-   +11% beside a score of 0, which reads as an increase.
-6. **Inferred shares.** Business as Usual's current-climate shares come from the scores.
-7. **Outflow.** Seasonal values are kept though the sheet says N/A under water years. Sea level rise shows
-   "not run with SLR" where the sheet says N/A. The −10% run is not in the sheet.
-8. **Our wording.** "Change in flood risk" is our row name, and arrows replace their written descriptions.
+5. **Shares as published.** The adaptation table's share row shows the sheet's numbers, not differences,
+   because the team has not reported Calling on Reserves' and A Tunnel's CalSim baseline shares.
+6. **Inferred shares.** Business as Usual's shares come from the scores and are not shown.
+7. **Outflow.** The adaptation table reads N/A under water years, as the sheet does. The tiered outflow tab
+   keeps the report's seasons, which the sheet does not cover, along with the −10% run.
+8. **Our wording.** Arrows replace the written flood-risk descriptions.
 
 ### Across the site
 

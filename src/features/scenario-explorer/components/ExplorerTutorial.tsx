@@ -71,7 +71,7 @@ const STEPS: TutorialStep[] = [
     paragraphs: [
       'The green line averages the stations in the selected spread for the selected scenario. The shaded band shows that same station spread, and the value at the top reports the current average deviation for those stations.',
       'The labeled bands below the axis identify the water-year periods represented in the comparison.',
-      'In the adaptation scenario comparison, shaded windows mark when Bolster & Fortify’s gates are closed or when Calling on Reserves releases more than Business as Usual at Keswick. Hover a window for its dates.',
+      'In the adaptation scenario comparison, shaded windows mark when Bolster & Fortify’s gates are closed or when Calling on Reserves releases more than Business as Usual at Shasta Dam. Hover a window for its dates.',
     ],
     interactions: [
       'Change All stations, Central 90%, or Central 50% to choose which stations the average line, shaded band, and station distribution use.',

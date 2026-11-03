@@ -77,14 +77,19 @@ export const currentSections: Record<string, UISection[]> = {
     },
   ],
   '/scenarios/modeling': [
-    { label: 'Hero', detail: 'Jump to how scenarios are modeled or the results' },
+    { label: 'Hero' },
     {
       label: 'How are scenarios modeled?',
       children: [
-        { label: 'Two baselines for comparison' },
-        { label: 'Where and when' },
-        { label: 'What is modeled' },
-        { label: 'How each future is built' },
+        { label: 'Three baselines for Business as Usual' },
+        {
+          label: 'Outflow variations',
+          detail: 'Stations, simulation time, what is modeled, how each future is built',
+        },
+        {
+          label: 'Adaptation scenarios',
+          detail: 'Stations, simulation time, what is modeled, how each future is built',
+        },
       ],
     },
     {

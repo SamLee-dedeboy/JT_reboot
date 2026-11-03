@@ -62,6 +62,10 @@ const scenarioKeyBySlug: Record<string, string> = {
   'alternative-delta-outflows': 'schism_run16_plus30pct_outflow',
 }
 
+/** Rule-selected patterns awaiting review live apart from the approved set. */
+export const isProvisionalScenarioKey = (scenarioKey?: string) =>
+  Boolean(scenarioKey?.startsWith('provisional_'))
+
 export function useRegionalPlaces(scenarioSlug: string, scenarioKeyOverride?: string) {
   const [result, setResult] = useState<{
     scenarioSlug: string | null
@@ -72,7 +76,10 @@ export function useRegionalPlaces(scenarioSlug: string, scenarioKeyOverride?: st
   useEffect(() => {
     const controller = new AbortController()
 
-    fetch(assetUrl('/data/patterns/pattern-list.json'), {
+    const dataFile = isProvisionalScenarioKey(scenarioKeyOverride)
+      ? 'pattern-list-provisional.json'
+      : 'pattern-list.json'
+    fetch(assetUrl(`/data/patterns/${dataFile}`), {
       signal: controller.signal,
     })
       .then((response) => {

@@ -10,7 +10,7 @@ import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIOS } from '../../../internal/rank-visualization/data'
 import { BreakoutTable } from './breakout/BreakoutPage'
 import { OverallRankingChart, WeightedRankingChart } from './RankingVisualizations'
-import { RANK_LABEL } from './styles'
+import { choiceCardSx, RANK_LABEL } from './styles'
 
 type RankingView = 'by-scenario' | 'by-criterion'
 
@@ -215,13 +215,7 @@ function ViewCard({
         gap: jtSpacing.gap.sm,
         px: jtSpacing.component.lg,
         py: jtSpacing.component.md,
-        border: 1,
-        borderColor: active ? 'primary.main' : 'border.strong',
-        bgcolor: active ? 'primary.main' : 'translucent.darkSurface',
-        color: active ? 'common.black' : 'common.white',
-        '&:hover, &:focus-visible': active
-          ? { outline: 'none' }
-          : { bgcolor: 'translucent.primaryGreen', borderColor: 'primary.main', outline: 'none' },
+        ...choiceCardSx(active),
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.xs }}>

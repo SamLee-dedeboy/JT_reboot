@@ -17,6 +17,7 @@ SCHISM_DIR = DATA_DIR / "baseline_schism" / "ec_full_extent_all_stations"
 CROSSWALK = DATA_DIR / "baseline_schism" / "shared_station_crosswalk.csv"
 OUTPUT_DIR = Path(os.environ.get("SCENARIO_EXPLORER_OUTPUT_DIR", PROJECT_DIR / "public" / "data" / "salinity" / "scenario-explorer"))
 OUT = OUTPUT_DIR / "tiered_outflows_dashboard.json"
+RESULTS_START = "2020-10-01"
 
 RUNS = [
     {"key": "run15", "label": "Run 15 · Reference Outflow", "run": "15"},
@@ -89,7 +90,7 @@ def main() -> None:
         values_by_run[config["key"]] = values
         date_sets.append(dates)
 
-    dates = sorted(set.intersection(*date_sets))
+    dates = sorted(day for day in set.intersection(*date_sets) if day >= RESULTS_START)
     reference = values_by_run["run15"]
     valid_station_ids = set()
     for station in stations:

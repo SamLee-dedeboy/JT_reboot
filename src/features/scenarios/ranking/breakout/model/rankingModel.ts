@@ -252,7 +252,7 @@ function ecologyTree(): CriterionNode {
       {
         values: speciesValues(key, base.values),
         ranks: speciesRanks(key),
-        note: `${base.note.replace(/; A Tunnel was run only[^.]*\./, '.')} Calling on Reserves and A Tunnel are Ecology’s 27 Oct 2026 rerun, Delta-wide only and read against its own New CalSIM Base, not the Business as Usual column.`,
+        note: `${base.note.replace(/; A Tunnel was run only[^.]*\./, '.')} Calling on Reserves and A Tunnel are Ecology’s 27 Oct 2026 rerun, Delta-wide only and read against its own CalSim Baseline, not the Business as Usual column.`,
         sources: [...sourcesFor(base.id), SLIDES, ECOLOGY_RERUN_SOURCE],
         // For an invasive species, less suitable habitat is the better outcome.
         betterHigher: !INVASIVE.has(key),
@@ -271,7 +271,7 @@ function ecologyTree(): CriterionNode {
     edge: 'beside',
     provenance: 'reported',
     entityNoun: 'species',
-    note: 'This score is the Ecology team’s own, reported Delta-wide for the whole period, so it reads the same on each period tab. Open the row to see each species’ value and rank: the slides rank each species on its proportion of suitable days (+1 per percentage point against Business as Usual, reversed for largemouth bass, overbite clam and Brazilian waterweed). The species ranks are Delta-wide; regions carry values only. Calling on Reserves and A Tunnel come from Ecology’s 27 Oct 2026 rerun against its own New CalSIM Base; their species ranks are ours, the same rule applied to that table.',
+    note: 'This score is the Ecology team’s own, reported Delta-wide for the whole period, so it reads the same on each period tab. Open the row to see each species’ value and rank: the slides rank each species on its proportion of suitable days (+1 per percentage point against Business as Usual, reversed for largemouth bass, overbite clam and Brazilian waterweed). The species ranks are Delta-wide; regions carry values only. Calling on Reserves and A Tunnel come from Ecology’s 27 Oct 2026 rerun against its own CalSim Baseline; their species ranks are ours, the same rule applied to that table.',
     values: speciesScore({ bau: 0, em: 0.34, ngw: -0.08, bf: 0.08, cor: -1.57, tunnel: 1.1 }, [
       '2019',
       '2020',
@@ -510,6 +510,19 @@ const EJ_CLASSES: Facet[] = [
   { key: 'highest', label: 'Highest vulnerability · 3' },
 ]
 
+/** EJ reports water years, not the wet and dry seasons its base tree still carries. */
+const EJ_PERIODS: Facet[] = relabel(
+  [
+    { key: 'run', label: '' },
+    { key: '2019', label: '' },
+    { key: '2020', label: '' },
+  ],
+  {},
+)
+
+/** The +30% outflow run covers a different span, so it has no value for these water years. */
+const EJ_OUTFLOW_NO_WATER_YEARS = { more: ['2019', '2020'] }
+
 /** The Env Justice tab of the ranking table workbook the team filled in, Nov 2026. */
 const EJ_WORKBOOK_SOURCE: Source = {
   doc: 'data',
@@ -524,13 +537,17 @@ function ejTree(): CriterionNode {
     id: 'bk-ej-drinking-pct',
     label: 'Readings over 1,050 µS/cm',
     edge: 'derives',
+    // Business as Usual's shares are not in the team's sheet, so the row shows the sheet's.
+    asPublished: true,
     places: EJ_CLASSES,
+    periods: EJ_PERIODS,
+    notApplicableIn: EJ_OUTFLOW_NO_WATER_YEARS,
     values: byPlacePeriod(EJ_DRINKING_SHARES),
     sources: [EJ_WORKBOOK_SOURCE, ...(classNode('all').sources ?? [])],
     note: 'The share of daily readings at or above 1,050 µS/cm, the drinking-water threshold, at the 49 SAFER drinking-water points: all together or by Delta Vulnerability Index class. The highest-vulnerability class never exceeds it in any scenario.',
     slr: {
       places: EJ_CLASSES,
-      periods: relabel(adapt(classNode('all')).periods, {}),
+      periods: EJ_PERIODS,
       values: byPlacePeriod(EJ_DRINKING_SHARES_SLR),
       note: 'With sea level rise, against its own Business as Usual.',
       sources: [EJ_WORKBOOK_SOURCE],
@@ -539,12 +556,14 @@ function ejTree(): CriterionNode {
   const drinking: CriterionNode = {
     ...adapt(node('ej-drinking')),
     places: EJ_CLASSES,
+    periods: EJ_PERIODS,
+    notApplicableIn: EJ_OUTFLOW_NO_WATER_YEARS,
     values: byPlacePeriod(EJ_DRINKING_SCORES),
     sources: [EJ_WORKBOOK_SOURCE, ...(adapt(node('ej-drinking')).sources ?? [])],
     note: 'One point per percentage point of readings over 1,050 µS/cm against Business as Usual (CalSim’s, for Calling on Reserves and A Tunnel), ±5 at five or more. Scored for all 49 points and for each class; the highest class is always 0%, so it scores 0.',
     slr: {
       places: EJ_CLASSES,
-      periods: relabel(adapt(node('ej-drinking')).periods, {}),
+      periods: EJ_PERIODS,
       values: byPlacePeriod(EJ_DRINKING_SCORES_SLR),
       note: 'With sea level rise, against its own Business as Usual.',
       sources: [EJ_WORKBOOK_SOURCE],
@@ -553,27 +572,25 @@ function ejTree(): CriterionNode {
   }
   const waterAge = node('ej-waterage')
   const days = node('ej-waterage-days')
-  const areas: CriterionNode[] = days.places.map((place) => {
-    const values: Partial<Record<ScenarioKey, SliceValues>> = {}
-    for (const [scenario, series] of Object.entries(days.values))
-      values[scenario as ScenarioKey] = {
-        [sliceKey(ANY, ANY)]: series?.[sliceKey(place.key, ANY)] ?? null,
-      }
-    return {
-      ...adapt(days),
-      id: `bk-ej-waterage-${place.key}`,
-      label: place.label,
-      level: 'entity',
-      places: [{ key: ANY, label: 'Not broken out' }],
-      values,
-      note: 'Change in average water age (days) against Business as Usual during the months with water at or above 19 °C: Oct 2018, May – Oct 2019 and May – Oct 2020. Older water favours algal blooms.',
-    }
-  })
-  const flood = node('ej-flood')
-  return adapt(node('environmentalJustice'), {
-    // The team cleared its criterion scores while water age is re-run (Nov 2026).
+  // The team is re-running the days at each area, so the sheet leaves them empty (Nov 2026).
+  const areas: CriterionNode[] = days.places.map((place) => ({
+    ...adapt(days),
+    id: `bk-ej-waterage-${place.key}`,
+    label: place.label,
+    level: 'entity',
+    places: [{ key: ANY, label: 'Not broken out' }],
     values: {},
     forthcoming: true,
+    sources: [EJ_WORKBOOK_SOURCE],
+    note: 'Change in average water age (days) against Business as Usual during the months with water at or above 19 °C: Oct 2018, May – Oct 2019 and May – Oct 2020. Older water favours algal blooms. The team is re-running these values.',
+  }))
+  const flood = node('ej-flood')
+  return adapt(node('environmentalJustice'), {
+    values: flat({ bau: 0, em: 0, ngw: 1, bf: 0, cor: 0, tunnel: 0 }),
+    // Sea level rise waits on the water-age re-run.
+    forthcoming: true,
+    note: 'The unweighted mean of three metric scores, rounded to a whole point: drinking water (whole period), flood risk, and water age.',
+    sources: [EJ_WORKBOOK_SOURCE],
     children: [
       drinking,
       adapt(flood, {
@@ -593,7 +610,11 @@ function ejTree(): CriterionNode {
       {
         ...adapt(waterAge),
         entityNoun: undefined,
-        note: `${waterAge.note} Open the row for the change in water age at each of the five hotspot areas.`,
+        values: flat({ bau: 0, em: -2, ngw: -3, bf: -1, cor: 0, tunnel: 0 }),
+        // Sea level rise waits on the water-age re-run.
+        forthcoming: true,
+        note: 'Water at or above 19 °C and older than 14 days is a harmful-algal-bloom proxy across five hotspot areas. These are the team’s scores; the days at each area are being re-run.',
+        sources: [EJ_WORKBOOK_SOURCE],
         children: areas,
       },
     ],

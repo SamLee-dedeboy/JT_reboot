@@ -806,38 +806,28 @@ const recreation: CriterionStory = {
         ],
         tables: [
           {
-            caption: 'Salinity thresholds by activity',
-            columns: ['Activity', 'Threshold', 'Why it matters'],
+            caption: 'Salinity thresholds and seasons by activity',
+            columns: ['Activity', 'Threshold', 'Season', 'Why it matters'],
             rows: [
-              ['Day use', 'Above 1,000 µS/cm', ''],
-              ['Boating', 'Above 1,000 µS/cm', ''],
-              ['Birding', 'Above 2,640 µS/cm', 'Avian botulism risk in wetlands'],
+              ['Day use', 'Above 1,000 µS/cm', 'May–September', ''],
+              ['Boating', 'Above 1,000 µS/cm', 'May–September', ''],
+              [
+                'Birding',
+                'Above 2,640 µS/cm',
+                'Spring migration April–June; fall migration August–October; winter October–April',
+                'Avian botulism risk in wetlands',
+              ],
               [
                 'Waterfowl hunting',
                 'Above 3,600 µS/cm, with graded effects to 19,200',
+                'Hunting October–February; brooding April–July (model data only)',
                 'Duckling growth, feathering, and survival',
               ],
               [
                 'Angling',
                 '9,130 µS/cm; 17,000 upper shared range; 19,000 water-quality objective',
+                'May–September',
                 'Habitat shared by white sturgeon and striped bass',
-              ],
-            ],
-          },
-          {
-            caption: 'Seasons used for each activity',
-            columns: ['Activity', 'Season'],
-            rows: [
-              ['Angling', 'May–September'],
-              [
-                'Birding',
-                'Spring migration April–June; fall migration August–October; winter October–April',
-              ],
-              ['Day use', 'May–September'],
-              ['Boating', 'May–September'],
-              [
-                'Waterfowl hunting',
-                'Hunting October–February; brooding April–July (model data only)',
               ],
             ],
           },

@@ -13,6 +13,8 @@ interface LayersProps {
   showAdaptationLayers?: boolean
   selectedHabitatType?: string | null
   visibilityScope?: MapScope
+  /** Leaves out these assets, for a map that draws only part of a scenario. */
+  hiddenSelectionKeys?: string[]
 }
 
 function withoutSourceLayer(layer: LayerProps): LayerProps {
@@ -26,12 +28,14 @@ export default function Layers({
   showAdaptationLayers = false,
   selectedHabitatType,
   visibilityScope = 'delta',
+  hiddenSelectionKeys,
 }: LayersProps) {
   const { current: mapRef } = useMap()
   const [patternsReady, setPatternsReady] = useState(false)
   const offline = isOfflineMapEnabled()
   const sources = (layersBySlug[scenarioSlug] ?? []).filter((source) => {
     if (offline && source.url?.startsWith('mapbox://') && !source.offlineData) return false
+    if (source.selectionKey && hiddenSelectionKeys?.includes(source.selectionKey)) return false
     const sourceScope = source.visibilityScope ?? 'delta'
     if (visibilityScope === 'statewide-ecocultural') {
       return sourceScope === 'statewide-ecocultural'

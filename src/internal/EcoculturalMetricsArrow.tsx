@@ -122,7 +122,7 @@ const SCENARIOS: ScenarioMeasurement[] = [
   },
   {
     id: 'historic',
-    label: 'Historic Baseline',
+    label: 'Historical Baseline',
     group: 'Tiered outflow scenarios',
     overallScore: 0,
     restoration: { ...noRestoration, flow: noFlowChange },

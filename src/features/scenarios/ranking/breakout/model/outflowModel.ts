@@ -309,7 +309,7 @@ function recActivity(
     provenance: 'reported',
     unit: 'share',
     betterHigher: false,
-    note: `Proportion of days over the activity’s ${metric} threshold at 19 points in 4 regions, with Recreation’s own score beside it: one point per percentage point against the Historic Baseline, ±5 at five or more.`,
+    note: `Proportion of days over the activity’s ${metric} threshold at 19 points in 4 regions, with Recreation’s own score beside it: one point per percentage point against the Historical Baseline, ±5 at five or more.`,
     places: REC_PLACES,
     periods: SEASONS,
     values: recValues(days, activity),
@@ -407,7 +407,7 @@ function recreationTree(): CriterionNode {
           'salinity',
           REC_OUTFLOW_SALINITY_SCORES,
           REC_OUTFLOW_SALINITY_DAYS,
-          'Each activity scored on its days over its salinity threshold against the Historic Baseline; the row is their mean, the rule Recreation uses for the adaptation scenarios (the team has not combined them for the outflow runs). Delta-wide, +30% outflow scores +4 to +5 on every activity and −10% scores −1 to −5. Open the row for each activity’s days and score.',
+          'Each activity scored on its days over its salinity threshold against the Historical Baseline; the row is their mean, the rule Recreation uses for the adaptation scenarios (the team has not combined them for the outflow runs). Delta-wide, +30% outflow scores +4 to +5 on every activity and −10% scores −1 to −5. Open the row for each activity’s days and score.',
         ),
         recThresholds(
           'temperature',
@@ -446,9 +446,9 @@ const S = (run: number, wet: number, dry: number) => ({ run, wet, dry })
 
 /** Report Tables 5–8 and the seasonal rankings that follow them. */
 const EJ_SCORES = byPlacePeriod({
-  hist: { all: S(0, 0, 0), moderate: S(0, 0, 0), high: S(0, 0, 0) },
-  more: { all: S(4, 4, 4), moderate: S(5, 5, 5), high: S(4, 5, 4) },
-  less: { all: S(-1, -1, -1), moderate: S(-2, -2, -2), high: S(-1, -1, -1) },
+  hist: { all: S(0, 0, 0), moderate: S(0, 0, 0), high: S(0, 0, 0), highest: S(0, 0, 0) },
+  more: { all: S(4, 4, 4), moderate: S(5, 5, 5), high: S(4, 5, 4), highest: S(0, 0, 0) },
+  less: { all: S(-1, -1, -1), moderate: S(-2, -2, -2), high: S(-1, -1, -1), highest: S(0, 0, 0) },
 })
 
 /** Report Tables 1 and 2: share of the run at or above 1,050 µS/cm. */
@@ -491,9 +491,8 @@ function ejTree(): CriterionNode {
     note: 'Only drinking water is assessed on the outflow runs, so it is the whole EJ score: +30% outflow +4, −10% outflow −2. The report’s table gives −1 for the whole run and both seasons, then an average of −1.5 rounded to −2; −2 is the score it states.',
     places: NO_FACET,
     periods: NO_FACET,
-    values: flat({ hist: 0, less: -2 }),
-    // The team cleared its +30% criterion score in the ranking table workbook (Nov 2026).
-    forthcomingFor: ['more'],
+    // +30% is the team's own, from the ranking table workbook (Nov 2026).
+    values: flat({ hist: 0, more: 4, less: -2 }),
     sources: [EJ_SOURCE],
     children: [
       {
@@ -505,7 +504,7 @@ function ejTree(): CriterionNode {
         provenance: 'reported',
         unit: 'score',
         betterHigher: true,
-        note: 'One point per percentage point of readings over 1,050 µS/cm against the Historic Baseline, ±5 at 21 points or more, scored for all 46 points and for the moderate and high classes; the highest class never exceeds the threshold.',
+        note: 'One point per percentage point of readings over 1,050 µS/cm against the Historical Baseline, ±5 at 21 points or more, scored for all 46 points and for each class; the highest class never exceeds the threshold, so it scores 0.',
         places: EJ_CLASSES,
         periods: SEASONS,
         values: EJ_SCORES,

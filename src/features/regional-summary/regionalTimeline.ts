@@ -17,7 +17,6 @@ const defaultQuarterTicks = [
 ] as const
 
 const outflowQuarterTicks = [
-  ['2020-08-01', 'Aug 2020'],
   ['2020-10-01', 'Oct 2020'],
   ['2021-01-01', 'Jan 2021'],
   ['2021-04-01', 'Apr 2021'],
@@ -36,7 +35,7 @@ export interface TimelineDomain {
 export function timelineDomain(scenarioSlug: string): TimelineDomain {
   const isOutflowComparison = scenarioSlug === 'alternative-delta-outflows'
   return {
-    start: Date.parse(isOutflowComparison ? '2020-08-01T00:00:00Z' : '2018-10-01T00:00:00Z'),
+    start: Date.parse(isOutflowComparison ? '2020-10-01T00:00:00Z' : '2018-10-01T00:00:00Z'),
     end: Date.parse(isOutflowComparison ? '2022-01-01T00:00:00Z' : '2020-11-29T00:00:00Z'),
     ticks: isOutflowComparison ? outflowQuarterTicks : defaultQuarterTicks,
     isOutflowComparison,

@@ -1,10 +1,9 @@
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { Box, Stack, Tooltip, Typography } from '@mui/material'
-import type { SystemStyleObject } from '@mui/system'
+import { Box, Tooltip, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import gateSchedule from '../../../../public/data/operations/bolster-and-fortify-gate-schedule.json'
 import releaseSchedule from '../../../../public/data/operations/calling-on-reserves-release-schedule.json'
-import { jtSpacing } from '../../../theme'
+import { waterYearColor } from './styles'
 
 const DAY_MS = 86_400_000
 
@@ -33,18 +32,26 @@ const tickMonthYear = new Intl.DateTimeFormat('en-US', {
 })
 const dayCount = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
 const signedCfs = new Intl.NumberFormat('en-US', { signDisplay: 'always' })
-const valueList = new Intl.ListFormat('en-US', { style: 'long', type: 'conjunction' })
 
 const parseDate = (date: string) => new Date(`${date}T00:00:00Z`)
-const formatDate = (date: string) => scheduleDate.format(parseDate(date))
 const formatDateRange = (start: string, end: string) =>
   scheduleDate.formatRange(parseDate(start), parseDate(end))
 const formatCfs = (cfs: number) => signedCfs.format(cfs).replace('-', '−')
 
 const waterYears = [
-  { label: 'Wet · Water year 2019', start: '2018-10-01', end: '2019-10-01', tone: 'base.400' },
-  { label: 'Dry · Water year 2020', start: '2019-10-01', end: '2020-10-01', tone: 'base.500' },
-  { label: 'Critical dry', start: '2020-10-01', end: '2020-11-30', tone: 'surfaceStrong' },
+  {
+    label: 'Wet water year 2019',
+    start: '2018-10-01',
+    end: '2019-10-01',
+    tone: waterYearColor.wet,
+  },
+  {
+    label: 'Dry water year 2020',
+    start: '2019-10-01',
+    end: '2020-10-01',
+    tone: waterYearColor.dry,
+  },
+  { label: 'Critical', start: '2020-10-01', end: '2020-11-30', tone: waterYearColor.critical },
 ] as const
 
 const waterYearColumns = waterYears
@@ -63,7 +70,7 @@ const axisTicks = [
   '2020-10-01',
 ].map((date) => {
   const parsed = parseDate(date)
-  const showYear = parsed.getUTCMonth() === 0 || parsed.getUTCMonth() === 9
+  const showYear = parsed.getUTCMonth() === 9
   return {
     date,
     left: position(parsed.getTime()),
@@ -82,11 +89,10 @@ const openSpans = closures.slice(1).map((closure, index) => ({
   center: (position(closures[index].end) + position(closure.start)) / 2,
 }))
 
-/** A closure's label stays inside the chart: the outer two align to its edges. */
-const closureLabelSx = (index: number, left: number, right: number): SystemStyleObject => {
-  if (index === 0) return { left: `${left}%` }
-  if (index === closures.length - 1) return { right: `${100 - right}%`, textAlign: 'right' }
-  return { left: `${(left + right) / 2}%`, transform: 'translateX(-50%)', textAlign: 'center' }
+/** The labels share a row: the outer two align to the chart's edges and the rest center. */
+const closureLabelAlign = (index: number) => {
+  if (index === 0) return 'left'
+  return index === closures.length - 1 ? 'right' : 'center'
 }
 
 interface ReleasePeriod {
@@ -126,12 +132,12 @@ const valueLabelPlacement = (start: number, end: number, cfs: number) =>
     ? { left: `${position(end)}%`, transform: 'translateX(-100%)' }
     : { left: `${(position(start) + position(end)) / 2}%`, transform: 'translateX(-50%)' }
 
-// Headroom above the tallest bar (+4,700) keeps its label clear of the water-year bands.
+// Just enough headroom and footroom for the labels on the tallest bars (+4,700 and −2,000).
 const CFS_MAX = 5600
-const CFS_MIN = -2500
+const CFS_MIN = -2800
 const LABELED_CFS = 600
-const cfsTicks = [4000, 2000, -2000]
-const RELEASE_PLOT_HEIGHT = 300
+const RELEASE_PLOT_HEIGHT = 240
+const RELEASE_GUTTER = 96
 
 const cfsPosition = (cfs: number) => ((CFS_MAX - cfs) / (CFS_MAX - CFS_MIN)) * 100
 
@@ -150,63 +156,64 @@ const releaseMonthName = new Intl.DateTimeFormat('en-US', {
   timeZone: 'UTC',
 })
 
-function LegendKey({ swatch, label }: { swatch: ReactNode; label: string }) {
-  return (
-    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-      {swatch}
-      <Typography variant="meta" sx={{ color: 'base.50' }}>
-        {label}
-      </Typography>
-    </Stack>
-  )
-}
-
-const swatchSx = { width: 16, height: 16, flexShrink: 0 }
-
 /** The results period: water-year bands above and month ticks below the plot, on one time axis. */
 function ScheduleTimeline({
   ariaLabel,
   gutter = 0,
+  compact = false,
+  monthGridlines = true,
   children,
 }: {
   ariaLabel: string
   gutter?: number
+  /** For a narrow column: fewer month ticks, and the shortest water year goes unlabeled. */
+  compact?: boolean
+  monthGridlines?: boolean
   children: ReactNode
 }) {
+  const ticks = compact ? axisTicks.filter(({ date }) => /-(04|10)-01$/.test(date)) : axisTicks
+
   return (
     <Box sx={{ overflowX: 'auto', overflowY: 'hidden' }}>
-      <Box role="img" aria-label={ariaLabel} sx={{ minWidth: 900, pl: `${gutter}px` }}>
+      <Box
+        role="img"
+        aria-label={ariaLabel}
+        sx={{ minWidth: compact ? 360 : 760, pl: `${gutter}px` }}
+      >
         <Box sx={{ display: 'grid', gridTemplateColumns: waterYearColumns, columnGap: '2px' }}>
           {waterYears.map(({ label, tone }) => (
             <Box
               key={label}
               sx={{ py: 1, px: 0.5, bgcolor: tone, textAlign: 'center', whiteSpace: 'nowrap' }}
             >
-              <Typography variant="meta" sx={{ color: 'common.white' }}>
-                {label}
-              </Typography>
+              {!(compact && label === 'Critical') && (
+                <Typography variant="meta" sx={{ color: 'common.white' }}>
+                  {label}
+                </Typography>
+              )}
             </Box>
           ))}
         </Box>
         <Box sx={{ position: 'relative' }}>
-          {axisTicks.map(({ date, left }) => (
-            <Box
-              key={date}
-              aria-hidden="true"
-              sx={{
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: `${left}%`,
-                borderLeft: 1,
-                borderColor: 'border.subtle',
-              }}
-            />
-          ))}
+          {monthGridlines &&
+            ticks.map(({ date, left }) => (
+              <Box
+                key={date}
+                aria-hidden="true"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  bottom: 0,
+                  left: `${left}%`,
+                  borderLeft: 1,
+                  borderColor: 'border.subtle',
+                }}
+              />
+            ))}
           {children}
         </Box>
         <Box aria-hidden="true" sx={{ position: 'relative', height: 28, mt: 0.75 }}>
-          {axisTicks.map(({ date, left, label }, index) => (
+          {ticks.map(({ date, left, label }, index) => (
             <Typography
               key={date}
               variant="meta"
@@ -227,26 +234,33 @@ function ScheduleTimeline({
   )
 }
 
-/** Each closure as a block on the time axis, with its dates and length labeled directly. */
+/** Each closure as a block on the time axis, numbered and labeled directly with its dates and length, all on one row. */
 export function GateTimeline() {
   const description = closures
-    .map(({ startDate, endDate, days }) => `${formatDateRange(startDate, endDate)}, ${days} days`)
+    .map(
+      ({ startDate, endDate, days }, index) =>
+        `closure ${index + 1}, ${formatDateRange(startDate, endDate)}, ${days} days`,
+    )
     .join('; ')
 
   return (
-    <ScheduleTimeline ariaLabel={`Gates closed: ${description}. Gates are open otherwise.`}>
-      <Box sx={{ position: 'relative', height: 76 }}>
-        {closures.map(({ id, start, end, startDate, endDate, days }, index) => (
-          <Box
-            key={id}
-            sx={{
-              position: 'absolute',
-              bottom: 8,
-              whiteSpace: 'nowrap',
-              ...closureLabelSx(index, position(start), position(end)),
-            }}
-          >
-            <Typography variant="cardTitle" component="p">
+    <ScheduleTimeline compact ariaLabel={`Gates closed: ${description}. Gates are open otherwise.`}>
+      <Box
+        sx={{
+          position: 'relative',
+          display: 'grid',
+          gridTemplateColumns: `repeat(${closures.length}, minmax(0, 1fr))`,
+          columnGap: 1,
+          pt: 1.5,
+          pb: 1,
+        }}
+      >
+        {closures.map(({ id, startDate, endDate, days }, index) => (
+          <Box key={id} sx={{ textAlign: closureLabelAlign(index) }}>
+            <Typography variant="columnHead" component="p" sx={{ color: 'primary.main' }}>
+              Closure {index + 1}
+            </Typography>
+            <Typography variant="meta" component="p" sx={{ color: 'common.white' }}>
               {formatDateRange(startDate, endDate)}
             </Typography>
             <Typography variant="meta" component="p" sx={{ color: 'base.100' }}>
@@ -318,245 +332,132 @@ export function GateTimeline() {
   )
 }
 
-const tableHeadSx = { typography: 'columnHead', pb: jtSpacing.gap.sm, textAlign: 'left' }
-const tableCellSx = { py: jtSpacing.gap.sm, pr: jtSpacing.gap.md, typography: 'body2' }
-
-const withTimeOfDay = (date: string, time: string) => {
-  if (time === '12:00') return `${formatDate(date)}, noon`
-  if (time === '24:00') return `${formatDate(date)}, end of day`
-  return formatDate(date)
-}
-
-/** The closures with their times of day, which the timeline leaves out. */
-export function GateScheduleTable() {
-  return (
-    <Box sx={{ overflowX: 'auto' }}>
-      <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <Box component="th" scope="col" sx={tableHeadSx}>
-              Closed from
-            </Box>
-            <Box component="th" scope="col" sx={tableHeadSx}>
-              Reopens
-            </Box>
-            <Box component="th" scope="col" sx={{ ...tableHeadSx, textAlign: 'right' }}>
-              Days
-            </Box>
-          </tr>
-        </thead>
-        <tbody>
-          {closures.map(({ id, startDate, startTime, endDate, endTime, reopens, days }) => (
-            <Box component="tr" key={id} sx={{ borderTop: 1, borderColor: 'border.default' }}>
-              <Box component="td" sx={tableCellSx}>
-                {withTimeOfDay(startDate, startTime)}
-              </Box>
-              <Box component="td" sx={tableCellSx}>
-                {reopens ? withTimeOfDay(endDate, endTime) : 'Still closed'}
-              </Box>
-              <Box component="td" sx={{ ...tableCellSx, pr: 0, textAlign: 'right' }}>
-                {days}
-              </Box>
-            </Box>
-          ))}
-        </tbody>
-      </Box>
-    </Box>
-  )
-}
-
-/** One bar per month: above the line is more than CalSim Base, below is less. */
+/** One bar per month against CalSim Baseline, with each period shaded on the side of the zero line it moves toward. */
 export function ReleaseTimeline() {
   const zero = cfsPosition(0)
 
   return (
-    <Stack spacing={jtSpacing.gap.sm}>
-      <Stack direction="row" useFlexGap spacing={jtSpacing.gap.md} sx={{ flexWrap: 'wrap' }}>
-        <LegendKey
-          swatch={<Box sx={{ ...swatchSx, bgcolor: 'accent.blue' }} />}
-          label="More than CalSim Base"
-        />
-        <LegendKey
-          swatch={<Box sx={{ ...swatchSx, bgcolor: 'accent.orange' }} />}
-          label="Less than CalSim Base"
-        />
-        <LegendKey
-          swatch={<Box sx={{ width: 16, borderTop: 2, borderColor: 'base.200' }} />}
-          label="No change"
-        />
-      </Stack>
-      <ScheduleTimeline
-        gutter={72}
-        ariaLabel="Monthly difference in Keswick release from CalSim Base, October 2018 to November 2020. The exact periods and values are listed below the chart."
-      >
-        <Box sx={{ position: 'relative', height: RELEASE_PLOT_HEIGHT }}>
-          {cfsTicks.map((cfs) => (
+    <ScheduleTimeline
+      monthGridlines={false}
+      gutter={RELEASE_GUTTER}
+      ariaLabel="Monthly difference in Shasta Dam release from CalSim Baseline, October 2018 to November 2020, with periods of higher flow shaded above the zero line and periods of lower flow shaded below it."
+    >
+      <Box sx={{ position: 'relative', height: RELEASE_PLOT_HEIGHT }}>
+        {releasePeriods.map(({ id, startDate, endDate, direction }) => {
+          const left = position(toTime(startDate))
+          const right = position(Math.min(toTime(endDate, '24:00'), periodEnd))
+          return (
             <Box
-              key={cfs}
+              key={id}
               aria-hidden="true"
               sx={{
                 position: 'absolute',
-                top: `${cfsPosition(cfs)}%`,
-                left: 0,
-                right: 0,
-                borderTop: 1,
-                borderColor: 'border.subtle',
+                left: `${left}%`,
+                width: `${right - left}%`,
+                ...(direction === 'more'
+                  ? { top: 0, bottom: `${100 - zero}%` }
+                  : { top: `${zero}%`, bottom: 0 }),
+                bgcolor: 'translucent.100',
               }}
             />
-          ))}
-          {[...cfsTicks, 0].map((cfs) => (
-            <Typography
-              key={cfs}
-              variant="meta"
-              aria-hidden="true"
+          )
+        })}
+        <Typography
+          variant="meta"
+          aria-hidden="true"
+          sx={{
+            position: 'absolute',
+            top: `${zero / 2}%`,
+            right: '100%',
+            transform: 'translateY(-50%)',
+            pr: 1.5,
+            color: 'primary.main',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Higher flow
+        </Typography>
+        <Typography
+          variant="meta"
+          aria-hidden="true"
+          sx={{
+            position: 'absolute',
+            top: `${(zero + 100) / 2}%`,
+            right: '100%',
+            transform: 'translateY(-50%)',
+            pr: 1.5,
+            color: 'primary.main',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Lower flow
+        </Typography>
+        {releaseMonths.map(({ start, end, cfs, note }) => (
+          <Tooltip
+            key={start}
+            placement="top"
+            title={`${releaseMonthName.format(new Date(start))}: ${formatCfs(cfs)} cfs${note ? `. ${note}` : ''}`}
+          >
+            <Box
               sx={{
                 position: 'absolute',
-                top: `${cfsPosition(cfs)}%`,
-                right: '100%',
-                transform: 'translateY(-50%)',
-                pr: 1,
-                color: 'base.100',
-                whiteSpace: 'nowrap',
+                left: `calc(${position(start)}% + 1px)`,
+                width: `calc(${position(end) - position(start)}% - 2px)`,
+                top: `${cfsPosition(Math.max(cfs, 0))}%`,
+                height: `${(Math.abs(cfs) / (CFS_MAX - CFS_MIN)) * 100}%`,
+                bgcolor: 'visualization.neutral',
               }}
-            >
-              {cfs === 0 ? '0' : formatCfs(cfs)}
-              {cfs === cfsTicks[0] ? ' cfs' : ''}
-            </Typography>
-          ))}
-          {releaseMonths.map(({ start, end, cfs, note }) => (
-            <Tooltip
+            />
+          </Tooltip>
+        ))}
+        {releaseMonths
+          .filter(({ cfs }) => Math.abs(cfs) >= LABELED_CFS)
+          .map(({ start, end, cfs }) => (
+            <Typography
               key={start}
-              placement="top"
-              title={`${releaseMonthName.format(new Date(start))}: ${formatCfs(cfs)} cfs${note ? `. ${note}` : ''}`}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  left: `calc(${position(start)}% + 1px)`,
-                  width: `calc(${position(end) - position(start)}% - 2px)`,
-                  top: `${cfsPosition(Math.max(cfs, 0))}%`,
-                  height: `${(Math.abs(cfs) / (CFS_MAX - CFS_MIN)) * 100}%`,
-                  bgcolor: cfs > 0 ? 'accent.blue' : 'accent.orange',
-                }}
-              />
-            </Tooltip>
-          ))}
-          {releaseMonths
-            .filter(({ cfs }) => Math.abs(cfs) >= LABELED_CFS)
-            .map(({ start, end, cfs }) => (
-              <Typography
-                key={start}
-                variant="meta"
-                component="strong"
-                sx={[
-                  {
-                    position: 'absolute',
-                    whiteSpace: 'nowrap',
-                    ...valueLabelPlacement(start, end, cfs),
-                  },
-                  cfs > 0
-                    ? { bottom: `${100 - cfsPosition(cfs)}%` }
-                    : { top: `${cfsPosition(cfs)}%` },
-                ]}
-              >
-                {formatCfs(cfs)}
-              </Typography>
-            ))}
-          {labeledNoChange.map(({ id, start, end }) => (
-            <Typography
-              key={id}
               variant="meta"
-              sx={{
-                position: 'absolute',
-                bottom: `${100 - zero}%`,
-                left: `${(position(start) + position(end)) / 2}%`,
-                transform: 'translateX(-50%)',
-                color: 'base.100',
-                whiteSpace: 'nowrap',
-              }}
+              component="strong"
+              sx={[
+                {
+                  position: 'absolute',
+                  whiteSpace: 'nowrap',
+                  ...valueLabelPlacement(start, end, cfs),
+                },
+                cfs > 0
+                  ? { bottom: `${100 - cfsPosition(cfs)}%` }
+                  : { top: `${cfsPosition(cfs)}%` },
+              ]}
             >
-              No change
+              {formatCfs(cfs)}
             </Typography>
           ))}
-          <Box
+        {labeledNoChange.map(({ id, start, end }) => (
+          <Typography
+            key={id}
+            variant="meta"
             sx={{
               position: 'absolute',
-              top: `${zero}%`,
-              left: 0,
-              right: 0,
-              borderTop: 2,
-              borderColor: 'base.200',
+              bottom: `${100 - zero}%`,
+              left: `${(position(start) + position(end)) / 2}%`,
+              transform: 'translateX(-50%)',
+              color: 'base.100',
+              whiteSpace: 'nowrap',
             }}
-          />
-        </Box>
-      </ScheduleTimeline>
-    </Stack>
-  )
-}
-
-function ReleasePeriodList({ direction }: { direction: 'more' | 'less' }) {
-  const periods = releasePeriods.filter((period) => period.direction === direction)
-
-  return (
-    <Box>
-      <Stack
-        direction="row"
-        spacing={1}
-        sx={{
-          alignItems: 'center',
-          pb: jtSpacing.gap.xs,
-          borderBottom: 1,
-          borderColor: 'border.strong',
-        }}
-      >
+          >
+            No change
+          </Typography>
+        ))}
         <Box
           sx={{
-            ...swatchSx,
-            bgcolor: direction === 'more' ? 'accent.blue' : 'accent.orange',
+            position: 'absolute',
+            top: `${zero}%`,
+            left: 0,
+            right: 0,
+            borderTop: 2,
+            borderColor: 'base.200',
           }}
         />
-        <Typography variant="columnHead">
-          {direction === 'more' ? 'More than CalSim Base' : 'Less than CalSim Base'}
-        </Typography>
-      </Stack>
-      {periods.map(({ id, startDate, endDate, monthlyDifferenceCfs, note }) => {
-        const clipped = endDate > analysisPeriod.endDate
-        const values = valueList.format(
-          monthlyDifferenceCfs
-            .filter((_, index) => monthStart(startDate, index) < periodEnd)
-            .map(formatCfs),
-        )
-        return (
-          <Box
-            key={id}
-            sx={{ py: jtSpacing.gap.sm, borderBottom: 1, borderColor: 'border.default' }}
-          >
-            <Typography variant="cardTitle" component="p">
-              {formatDateRange(startDate, clipped ? analysisPeriod.endDate : endDate)}
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 0.25 }}>
-              {values} cfs.{note ? ` ${note}` : ''}
-              {clipped ? ` Continues to ${formatDate(endDate)}, after the simulation ends.` : ''}
-            </Typography>
-          </Box>
-        )
-      })}
-    </Box>
-  )
-}
-
-/** The dates and values behind the release chart. */
-export function ReleasePeriods() {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', sm: 'repeat(2, minmax(0, 1fr))' },
-        gap: jtSpacing.gap.lg,
-      }}
-    >
-      <ReleasePeriodList direction="more" />
-      <ReleasePeriodList direction="less" />
-    </Box>
+      </Box>
+    </ScheduleTimeline>
   )
 }

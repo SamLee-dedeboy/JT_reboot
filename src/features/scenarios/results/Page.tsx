@@ -1,7 +1,7 @@
 import { Box, Container } from '@mui/material'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
-import ModelingOverview, { OverviewParts } from './ModelingOverview'
+import ModelingOverview from './ModelingOverview'
 import ResultsHero from './ResultsHero'
 
 export default function Page() {
@@ -13,9 +13,7 @@ export default function Page() {
           title="Scenario Modeling"
           summary="See how the hydrodynamic model represents each future, then open the modeled results for the outflow variations and adaptation scenarios."
           image="/images/scenarios/web/cover.webp"
-        >
-          <OverviewParts />
-        </ResultsHero>
+        />
 
         <Container
           maxWidth={false}
