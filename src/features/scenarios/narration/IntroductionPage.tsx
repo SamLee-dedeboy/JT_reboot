@@ -38,6 +38,37 @@ const paragraphHighlights = [
   'its much larger watershed',
 ] as const
 
+const primaryBlueBoldHighlights = [
+  'Eco Machine adds tens of thousands of acres of tidal wetland in Suisun Marsh and Franks Tract',
+  'New Green Watershed delivers the largest gains of any scenario for the Delta’s ecosystem',
+  'Those benefits depend on converting farmland.',
+  "The shape of the Delta's landscapes and waterways",
+  'tidal wetlands within the Delta',
+  'Eco Machine explores restoration on Suisun Marsh and Franks Tract',
+  'tidal energy',
+  'this large open-water area is a primary source of salinity intrusion',
+  'Transitional areas vary from subtidal to supratidal elevations.',
+  'more room to move',
+  'New Green Watershed does not envision one land use covering the entire Delta.',
+  'a moderate cut in flood risk',
+  'drinking-water conditions for vulnerable communities hold steady',
+  'little changes for habitat, species, recreation, or eco-cultural values',
+  'water in Franks Tract at times grows much older',
+  'targeted infrastructure improvements',
+  'During drought, these gates could limit saltwater movement',
+  'These improvements could reduce the risk of levee failure and help maintain a reliable connection',
+  'existing reservoirs are operated',
+  'whether more flexible releases can keep the long-term reliability that reservoirs provide',
+  'the timing and amount',
+  'a specific reservoir as an example',
+  'some Sacramento River water would be diverted into an underground tunnel',
+  'A roughly 45-mile underground tunnel would transport diverted water south',
+] as const
+
+const primaryBlueHighlights = [
+  'By building a set of landforms within the Tract, salty water would be mostly blocked from entering further into the Delta.',
+] as const
+
 const tieredOutflowsEmphasis = [
   'Sacramento',
   'San Joaquin Rivers',
@@ -54,16 +85,38 @@ const tieredOutflowsAccents = ['A Tunnel', 'Calling on Reserves'] as const
 function HighlightedParagraph({
   text,
   tieredOutflows = false,
+  boldPrimaryBlue = false,
 }: {
   text: string
   tieredOutflows?: boolean
+  boldPrimaryBlue?: boolean
 }) {
   const parts: ReactNode[] = []
   let cursor = 0
+  const contextualPrimaryBlueBoldHighlights = text.startsWith(
+    'Calling on Reserves changes how existing reservoirs are operated',
+  )
+    ? ['Calling on Reserves']
+    : []
 
   while (cursor < text.length) {
     const nextHighlight = [
-      ...paragraphHighlights.map((phrase) => ({ phrase, treatment: 'secondary' as const })),
+      ...contextualPrimaryBlueBoldHighlights.map((phrase) => ({
+        phrase,
+        treatment: 'primaryBlueBold' as const,
+      })),
+      ...primaryBlueBoldHighlights.map((phrase) => ({
+        phrase,
+        treatment: 'primaryBlueBold' as const,
+      })),
+      ...primaryBlueHighlights.map((phrase) => ({
+        phrase,
+        treatment: 'primaryBlue' as const,
+      })),
+      ...paragraphHighlights.map((phrase) => ({
+        phrase,
+        treatment: boldPrimaryBlue ? ('primaryBlueBold' as const) : ('secondary' as const),
+      })),
       ...(tieredOutflows
         ? tieredOutflowsEmphasis.map((phrase) => ({ phrase, treatment: 'emphasis' as const }))
         : []),
@@ -87,7 +140,7 @@ function HighlightedParagraph({
       parts.push(text.slice(cursor, nextHighlight.index))
     }
 
-    if (nextHighlight.treatment === 'emphasis') {
+    if (nextHighlight.treatment === 'emphasis' || nextHighlight.treatment === 'primaryBlueBold') {
       parts.push(
         <Box
           component="strong"
@@ -116,13 +169,23 @@ function HighlightedParagraph({
   return <>{parts}</>
 }
 
+const renderNarrationText = (text: string) => <HighlightedParagraph text={text} />
+const renderBoldNarrationText = (text: string) => (
+  <HighlightedParagraph text={text} boldPrimaryBlue />
+)
+
 export default function IntroductionPage() {
   const { scenarioSlug = '' } = useParams()
   const scenario = scenarioBySlug[scenarioSlug]
   const isTieredOutflows = scenarioSlug === 'tiered-outflows'
+  const boldPrimaryBlue = scenarioSlug === 'new-green-watershed'
   const [selectedHabitatType, setSelectedHabitatType] = useState<string | null>(null)
   const mapConfig = getConfig(scenarioSlug)
   const mapState = useMapState(mapConfig)
+  const showAdaptationLayers =
+    mapConfig.legendActivation === 'always' ||
+    mapState.showAdaptationLayers ||
+    selectedHabitatType != null
   const cameraBounds =
     (selectedHabitatType ? mapConfig.selectionBounds?.[selectedHabitatType] : undefined) ??
     mapConfig.bounds[mapState.scope] ??
@@ -272,18 +335,18 @@ export default function IntroductionPage() {
                   >
                     {chapter.paragraphs.map((paragraph) => (
                       <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
-                        <HighlightedParagraph text={paragraph} tieredOutflows={isTieredOutflows} />
+                        <HighlightedParagraph
+                          text={paragraph}
+                          tieredOutflows={isTieredOutflows}
+                          boldPrimaryBlue={boldPrimaryBlue}
+                        />
                       </Typography>
                     ))}
                     {chapter.mapKey && (
                       <Box
                         aria-label={`${chapter.title} map key`}
                         role="group"
-                        sx={{
-                          mt: jtSpacing.component.md,
-                          borderBottom: 1,
-                          borderColor: 'border.subtle',
-                        }}
+                        sx={{ mt: jtSpacing.component.md }}
                       >
                         {chapter.mapKey.map((selectionKey) => {
                           const symbol = getLegendItem(scenario.slug, selectionKey)
@@ -299,11 +362,7 @@ export default function IntroductionPage() {
                       <Box
                         component="aside"
                         aria-label={`${chapter.title} interactive map layers`}
-                        sx={{
-                          mt: jtSpacing.component.md,
-                          borderBottom: 1,
-                          borderColor: 'border.subtle',
-                        }}
+                        sx={{ mt: jtSpacing.component.md }}
                       >
                         {chapter.highlights.map((highlight) => {
                           const habitatType = highlight.mapSelectionKey ?? highlight.mapHabitatType
@@ -317,6 +376,9 @@ export default function IntroductionPage() {
                               title={highlight.title}
                               summary={highlight.summary}
                               paragraphs={highlight.paragraphs}
+                              renderText={
+                                boldPrimaryBlue ? renderBoldNarrationText : renderNarrationText
+                              }
                               symbol={symbol}
                               selected={symbol != null && selectedHabitatType === habitatType}
                               dimmed={
@@ -363,6 +425,7 @@ export default function IntroductionPage() {
                               <HighlightedParagraph
                                 text={paragraph}
                                 tieredOutflows={isTieredOutflows}
+                                boldPrimaryBlue={boldPrimaryBlue}
                               />
                             </Typography>
                           ))}
@@ -392,14 +455,18 @@ export default function IntroductionPage() {
                     ))}
                     {chapter.endingParagraphs?.map((paragraph) => (
                       <Typography variant="body1" key={paragraph} sx={{ color: 'base.100' }}>
-                        <HighlightedParagraph text={paragraph} tieredOutflows={isTieredOutflows} />
+                        <HighlightedParagraph
+                          text={paragraph}
+                          tieredOutflows={isTieredOutflows}
+                          boldPrimaryBlue={boldPrimaryBlue}
+                        />
                       </Typography>
                     ))}
                     {chapter.primaryAction && (
                       <Button
                         component={Link}
                         to={chapter.primaryAction.href}
-                        variant="contained"
+                        variant="outlined"
                         endIcon={<ArrowForwardIcon />}
                         sx={{ alignSelf: 'flex-start', mt: jtSpacing.component.lg }}
                       >
@@ -474,9 +541,7 @@ export default function IntroductionPage() {
                   )}
                   <Layers
                     scenarioSlug={scenario.slug}
-                    showAdaptationLayers={
-                      mapState.showAdaptationLayers || selectedHabitatType != null
-                    }
+                    showAdaptationLayers={showAdaptationLayers}
                     selectedHabitatType={selectedHabitatType}
                     visibilityScope={mapState.scope}
                   />
@@ -488,11 +553,7 @@ export default function IntroductionPage() {
                 <Legend
                   scenarioSlug={scenario.slug}
                   visibilityScope={mapState.scope}
-                  visible={
-                    mapConfig.legendActivation !== 'adaptation' ||
-                    mapState.showAdaptationLayers ||
-                    selectedHabitatType != null
-                  }
+                  visible={showAdaptationLayers}
                   selectedHabitatType={selectedHabitatType}
                 />
               </Box>
@@ -500,6 +561,14 @@ export default function IntroductionPage() {
           </Box>
 
           <Stack sx={{ mt: jtSpacing.section.xl, alignItems: 'center' }}>
+            {scenario.closingParagraph && (
+              <Typography variant="body1" sx={{ mb: jtSpacing.component.lg, color: 'base.100' }}>
+                <HighlightedParagraph
+                  text={scenario.closingParagraph}
+                  boldPrimaryBlue={boldPrimaryBlue}
+                />
+              </Typography>
+            )}
             <Button
               component={Link}
               to="/scenarios/modeling"

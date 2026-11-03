@@ -13,7 +13,7 @@ export const ECOLOGY_REGIONS = [
   { key: 'southBay', label: 'South Bay' },
   { key: 'centralBay', label: 'Central Bay' },
   { key: 'sanPabloBay', label: 'San Pablo Bay' },
-  { key: 'suisunBay', label: 'Suisun Bay' },
+  { key: 'suisunBay', label: 'Suisun Marsh' },
   { key: 'confluence', label: 'Confluence' },
   { key: 'northDelta', label: 'North Delta' },
   { key: 'centralDelta', label: 'Central Delta' },

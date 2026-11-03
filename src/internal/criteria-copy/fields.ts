@@ -234,11 +234,35 @@ export function buildCriteriaFields(): CopyCriterion[] {
             },
             {
               key: key(`components.${index}.summary`),
-              label: `${n} · Summary (also on the evaluation page)`,
+              label: component.overviewSummary
+                ? `${n} · Summary`
+                : `${n} · Summary (also on the evaluation page)`,
               kind: 'paragraph' as const,
               live: component.summary,
               source: at(`${path}.summary`),
             },
+            ...(component.overviewSummary
+              ? [
+                  {
+                    key: key(`components.${index}.overviewSummary`),
+                    label: `${n} · Summary on the evaluation page`,
+                    kind: 'paragraph' as const,
+                    live: component.overviewSummary,
+                    source: at(`${path}.overviewSummary`),
+                  },
+                ]
+              : []),
+            ...(component.link
+              ? [
+                  {
+                    key: key(`components.${index}.link`),
+                    label: `${n} · Button`,
+                    kind: 'line' as const,
+                    live: component.link.label,
+                    source: at(`${path}.link.label`),
+                  },
+                ]
+              : []),
             ...component.spec.map((row, specIndex) => ({
               key: key(`components.${index}.spec.${specIndex}`),
               label: `${n} · ${row.label}`,
@@ -269,7 +293,7 @@ export function buildCriteriaFields(): CopyCriterion[] {
       ],
     }
 
-    const { intro, facts, steps } = story.construction
+    const { intro, facts, outcomes, points, paragraphs, steps } = story.construction
     const construction: CopySection = {
       id: 'construction',
       label: 'How was it constructed?',
@@ -297,7 +321,63 @@ export function buildCriteriaFields(): CopyCriterion[] {
             live: fact.label,
             source: at(`construction.facts[${index}].label`),
           },
+          ...(fact.dates
+            ? [
+                {
+                  key: key(`construction.facts.${index}.dates`),
+                  label: `Fact ${index + 1}: dates (one per line)`,
+                  kind: 'list' as const,
+                  live: lines(fact.dates),
+                  source: at(`construction.facts[${index}].dates`),
+                },
+              ]
+            : []),
         ]),
+        ...(outcomes
+          ? [
+              {
+                key: key('construction.outcomes.intro'),
+                label: 'Outcomes: introduction',
+                kind: 'line' as const,
+                live: outcomes.intro,
+                source: at('construction.outcomes.intro'),
+              },
+              ...outcomes.facts.flatMap((fact, index) => [
+                {
+                  key: key(`construction.outcomes.facts.${index}.value`),
+                  label: `Outcome ${index + 1}: number`,
+                  kind: 'line' as const,
+                  live: fact.value,
+                  source: at(`construction.outcomes.facts[${index}].value`),
+                },
+                {
+                  key: key(`construction.outcomes.facts.${index}.label`),
+                  label: `Outcome ${index + 1}: label`,
+                  kind: 'line' as const,
+                  live: fact.label,
+                  source: at(`construction.outcomes.facts[${index}].label`),
+                },
+              ]),
+            ]
+          : []),
+        ...(points
+          ? [
+              {
+                key: key('construction.points'),
+                label: 'Points (one per line)',
+                kind: 'list' as const,
+                live: lines(points),
+                source: at('construction.points'),
+              },
+            ]
+          : []),
+        ...(paragraphs ?? []).map((paragraph, index) => ({
+          key: key(`construction.paragraphs.${index}`),
+          label: `Paragraph ${index + 1}`,
+          kind: 'paragraph' as const,
+          live: paragraph,
+          source: at(`construction.paragraphs[${index}]`),
+        })),
         ...steps.flatMap((step, index) => {
           const n = index + 1
           const path = `construction.steps[${index}]`
@@ -324,7 +404,7 @@ export function buildCriteriaFields(): CopyCriterion[] {
               key: key(`construction.steps.${index}.body`),
               label: `Step ${n} · Body`,
               kind: 'paragraph' as const,
-              live: step.body,
+              live: step.body ?? '',
               source: at(`${path}.body`),
             },
             ...(step.points

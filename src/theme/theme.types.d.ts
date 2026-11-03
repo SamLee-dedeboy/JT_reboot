@@ -31,6 +31,7 @@ declare module '@mui/material/styles' {
     navigationSubLabel: CSSProperties
     navigationShortcut: CSSProperties
     displayNumber: CSSProperties
+    statNumber: CSSProperties
     accentCardTitle: CSSProperties
     scenarioPanelTitle: CSSProperties
     footerLogo: CSSProperties
@@ -121,6 +122,7 @@ declare module '@mui/material/Typography' {
     navigationSubLabel: true
     navigationShortcut: true
     displayNumber: true
+    statNumber: true
     accentCardTitle: true
     scenarioPanelTitle: true
     footerLogo: true

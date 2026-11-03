@@ -91,6 +91,17 @@
               "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Definitions\n“This criterion addresses the state of the Delta ecosystem through evaluating species fundamental niches, pelagic food webs, and habitat availability. Species fundamental niches are defined as the zone in which the minimum environmental conditions for species…”",
               "yours": "",
               "note": ""
+            },
+            {
+              "key": "ecology.what.2",
+              "label": "Paragraph 3",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecology.what[2]",
+              "claude": "This criterion examines how each scenario affects three primary ecological factors: where species can survive, how much food is available in the Delta’s waterways, and how much tidal wetland habitat aquatic species can access.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
             }
           ]
         },
@@ -185,7 +196,7 @@
             },
             {
               "key": "ecology.regions.0.note",
-              "label": "South Bay: note (the name matches the map and stays fixed)",
+              "label": "San Pablo Bay: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[0].note",
               "claude": "30 points.",
@@ -207,7 +218,7 @@
             },
             {
               "key": "ecology.regions.2.note",
-              "label": "San Pablo Bay: note (the name matches the map and stays fixed)",
+              "label": "South Bay: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[2].note",
               "claude": "11 points.",
@@ -218,7 +229,7 @@
             },
             {
               "key": "ecology.regions.3.note",
-              "label": "North Delta: note (the name matches the map and stays fixed)",
+              "label": "Suisun Marsh: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[3].note",
               "claude": "16 points.",
@@ -229,7 +240,7 @@
             },
             {
               "key": "ecology.regions.4.note",
-              "label": "Central: note (the name matches the map and stays fixed)",
+              "label": "Confluence: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[4].note",
               "claude": "25 points, reported together with Suisun Marsh.",
@@ -240,7 +251,7 @@
             },
             {
               "key": "ecology.regions.5.note",
-              "label": "South Delta: note (the name matches the map and stays fixed)",
+              "label": "North Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[5].note",
               "claude": "Folded into Suisun Bay in the results.",
@@ -251,7 +262,7 @@
             },
             {
               "key": "ecology.regions.6.note",
-              "label": "Confluence: note (the name matches the map and stays fixed)",
+              "label": "Central: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[6].note",
               "claude": "16 points.",
@@ -262,21 +273,10 @@
             },
             {
               "key": "ecology.regions.7.note",
-              "label": "Suisun Bay: note (the name matches the map and stays fixed)",
+              "label": "South Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[7].note",
               "claude": "25 points, reported together with Suisun Marsh.",
-              "gpt": "",
-              "gptReference": "",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.regions.8.note",
-              "label": "Suisun Marsh: note (the name matches the map and stays fixed)",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[8].note",
-              "claude": "Folded into Suisun Bay in the results.",
               "gpt": "",
               "gptReference": "",
               "yours": "",
@@ -445,12 +445,23 @@
             },
             {
               "key": "ecology.components.2.summary",
-              "label": "3 · Summary (also on the evaluation page)",
+              "label": "3 · Summary",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[2].summary",
               "claude": "How many acres of new tidal wetland fish and other aquatic species can reach.",
               "gpt": "Compares the amount of newly restored wetland habitat that aquatic species could access under each scenario.",
               "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Metric: Accessible Aquatic Habitat\n“This was calculated simply by summing the total additional tidal wetland acres in each of our two restoration scenarios. The major difference between the two scenarios is that New Green Watershed restores a large portion of the Cache-Lindsay Slough Complex in…”",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecology.components.2.overviewSummary",
+              "label": "3 · Summary on the evaluation page",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecology.components.items[2].overviewSummary",
+              "claude": "How many acres of new **tidal wetland** fish and other aquatic species can reach.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
@@ -523,72 +534,6 @@
               "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.intro",
               "claude": "The criterion starts from a conceptual model of how the Delta ecosystem responds to change. Each question is matched to an output the hydrodynamic models can supply, and workshop participants chose the species to follow.",
               "gpt": "The criterion combines hydrodynamic model outputs, habitat acreage in the scenario narratives, published ecological research, and public input about species of interest.",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.facts.0.value",
-              "label": "Fact 1: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[0].value",
-              "claude": "6",
-              "gpt": "6",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.facts.0.label",
-              "label": "Fact 1: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[0].label",
-              "claude": "species, eight life stages",
-              "gpt": "species or life-stage groups assessed",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.facts.1.value",
-              "label": "Fact 2: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[1].value",
-              "claude": "145",
-              "gpt": "145",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.facts.1.label",
-              "label": "Fact 2: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[1].label",
-              "claude": "model points",
-              "gpt": "modeled locations in the adaptation-scenario analysis",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.facts.2.value",
-              "label": "Fact 3: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[2].value",
-              "claude": "8",
-              "gpt": "3",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.facts.2.label",
-              "label": "Fact 3: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[2].label",
-              "claude": "estuary subregions",
-              "gpt": "core ecological measures",
               "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
               "yours": "",
               "note": ""
@@ -732,17 +677,6 @@
               "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.steps[4].body",
               "claude": "Points are grouped into subregions from a published hierarchical clustering of average daily temperature (Pien et al.), extended west of Suisun with known contraction points (Grimaldo et al. 2020). Suisun Bay and Suisun Marsh are combined.",
               "gpt": "Scenario acreage was translated into relative food-web contributions and newly accessible aquatic habitat.",
-              "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "ecology.construction.steps.4.points",
-              "label": "Step 5 · Points (one per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.steps[4].points",
-              "claude": "North Delta 30 · Central Delta 23 · South Delta 11 · Confluence 16\nSuisun 25 · San Pablo Bay 15 · Central Bay 16 · South Bay 9\nPoints outside the legal Delta are kept so range shifts of migratory species show up.",
-              "gpt": "Tidal wetlands were valued for consistent exports.\nManaged wetlands were valued for strong but intermittent pulses.\nWet-soil agriculture was valued for seasonal contributions.",
               "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
               "yours": "",
               "note": ""
@@ -1353,6 +1287,17 @@
               "note": ""
             },
             {
+              "key": "environmental-justice.construction.facts.1.dates",
+              "label": "Fact 2: dates (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[1].dates",
+              "claude": "December 2024",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "environmental-justice.construction.facts.2.value",
               "label": "Fact 3: number",
               "kind": "line",
@@ -1371,6 +1316,17 @@
               "claude": "metrics within project scope",
               "gpt": "final metrics",
               "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Background\n“In order to effectively facilitate just transitions through promotion of EJ concerns and considerations, hearing real feedback to align with core EJ values was imperative. While there is general consensus in the literature about what burdens EJ communities…”",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.facts.2.dates",
+              "label": "Fact 3: dates (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[2].dates",
+              "claude": "November 2024\nJune 2025\nDecember 2025",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
@@ -1397,6 +1353,17 @@
               "note": ""
             },
             {
+              "key": "environmental-justice.construction.facts.3.dates",
+              "label": "Fact 4: dates (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[3].dates",
+              "claude": "June 2024\nJune 2025",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "environmental-justice.construction.facts.4.value",
               "label": "Fact 5: number",
               "kind": "line",
@@ -1419,22 +1386,55 @@
               "note": ""
             },
             {
-              "key": "environmental-justice.construction.facts.5.value",
-              "label": "Fact 6: number",
+              "key": "environmental-justice.construction.outcomes.intro",
+              "label": "Outcomes: introduction",
               "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[5].value",
-              "claude": "14",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.outcomes.intro",
+              "claude": "These engagement activities yielded:",
               "gpt": "",
               "gptReference": "",
               "yours": "",
               "note": ""
             },
             {
-              "key": "environmental-justice.construction.facts.5.label",
-              "label": "Fact 6: label",
+              "key": "environmental-justice.construction.outcomes.facts.0.value",
+              "label": "Outcome 1: number",
               "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[5].label",
-              "claude": "indicators behind each vulnerability rating",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.outcomes.facts[0].value",
+              "claude": "6",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.outcomes.facts.0.label",
+              "label": "Outcome 1: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.outcomes.facts[0].label",
+              "claude": "value areas distilled from feedback",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.outcomes.facts.1.value",
+              "label": "Outcome 2: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.outcomes.facts[1].value",
+              "claude": "3",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.outcomes.facts.1.label",
+              "label": "Outcome 2: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.outcomes.facts[1].label",
+              "claude": "metrics within project scope",
               "gpt": "",
               "gptReference": "",
               "yours": "",
@@ -1573,17 +1573,6 @@
               "note": ""
             },
             {
-              "key": "environmental-justice.construction.steps.4.when",
-              "label": "Step 5 · When",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.steps[4].when",
-              "claude": "Public Workshop 2 · June 2025, and ongoing",
-              "gpt": "Across multiple workshops",
-              "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Background\n“Commitment to this criterion began at the conception of the Just Transitions in the Delta project, with intentional interview invitations to members and advocates of environmental justice and Tribal communities, in order to prioritize less-often heard voices.…”",
-              "yours": "",
-              "note": ""
-            },
-            {
               "key": "environmental-justice.construction.steps.4.body",
               "label": "Step 5 · Body",
               "kind": "paragraph",
@@ -1591,6 +1580,39 @@
               "claude": "The draft criterion was reviewed and revised with workshop participants and checked periodically with the project’s Advisory Committee.",
               "gpt": "Draft metrics were returned to public, Tribal, and advisory participants for critique and revision.",
               "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Background\n“Commitment to this criterion began at the conception of the Just Transitions in the Delta project, with intentional interview invitations to members and advocates of environmental justice and Tribal communities, in order to prioritize less-often heard voices.…”",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.steps.5.title",
+              "label": "Step 6 · Title",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.steps[5].title",
+              "claude": "Review and refine",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.steps.5.when",
+              "label": "Step 6 · When",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.steps[5].when",
+              "claude": "Public Workshop 2 · June 2025, and ongoing",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "environmental-justice.construction.steps.5.body",
+              "label": "Step 6 · Body",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.steps[5].body",
+              "claude": "The draft criterion was reviewed and revised with workshop participants. Feedback on methods and assumptions shaped the final iteration of the criterion, and team members checked in periodically with the project’s Advisory Committee.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             }
@@ -1618,7 +1640,7 @@
     },
     {
       "id": "ecocultural-restoration",
-      "label": "Ecocultural Restoration & Indigenous Sovereignty",
+      "label": "Eco-cultural Restoration & Indigenous Sovereignty",
       "sections": [
         {
           "id": "summary",
@@ -1801,6 +1823,17 @@
               "note": ""
             },
             {
+              "key": "ecocultural-restoration.components.0.link",
+              "label": "1 · Button",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.components.items[0].link.label",
+              "claude": "Read more about upland watershed restoration",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "ecocultural-restoration.components.0.spec.0",
               "label": "1 · Measures",
               "kind": "paragraph",
@@ -1845,6 +1878,17 @@
               "note": ""
             },
             {
+              "key": "ecocultural-restoration.components.0.caveats",
+              "label": "1 · Caveats (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.components.items[0].caveats",
+              "claude": "30,000 acres of already-planned restoration (such as EcoRestore) is included in the Just Transitions baseline, the Business as Usual scenario, which is assumed in all scenarios. Only restoration in addition to this baseline is counted as restoration in the adaptation scenarios.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "ecocultural-restoration.components.1.name",
               "label": "2 · Name",
               "kind": "line",
@@ -1868,7 +1912,7 @@
             },
             {
               "key": "ecocultural-restoration.components.1.spec.0",
-              "label": "2 · Measures",
+              "label": "2 · Methods and techniques for increased land access",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.components.items[1].spec[0].value",
               "claude": "The kinds of agreements that can open land to Tribal communities",
@@ -1911,6 +1955,17 @@
               "note": ""
             },
             {
+              "key": "ecocultural-restoration.components.1.caveats",
+              "label": "2 · Caveats (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.components.items[1].caveats",
+              "claude": "Delta land is a mosaic of private and public ownership, so access cannot be prescribed to specific locations, or quantified in acreage in the scenarios.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "ecocultural-restoration.components.2.name",
               "label": "3 · Name",
               "kind": "line",
@@ -1934,7 +1989,7 @@
             },
             {
               "key": "ecocultural-restoration.components.2.spec.0",
-              "label": "3 · Measures",
+              "label": "3 · Conditions and needs",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.components.items[2].spec[0].value",
               "claude": "Avenues through which TEK can be applied",
@@ -2000,7 +2055,7 @@
             },
             {
               "key": "ecocultural-restoration.components.3.spec.0",
-              "label": "4 · Measures",
+              "label": "4 · Domains and mechanisms",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.components.items[3].spec[0].value",
               "claude": "Instances and mechanisms that recognize and apply sovereignty",
@@ -2105,6 +2160,17 @@
               "note": ""
             },
             {
+              "key": "ecocultural-restoration.construction.facts.1.dates",
+              "label": "Fact 2: dates (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[1].dates",
+              "claude": "November 2024\nJune 2025\nDecember 2025",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
               "key": "ecocultural-restoration.construction.facts.2.value",
               "label": "Fact 3: number",
               "kind": "line",
@@ -2123,6 +2189,17 @@
               "claude": "upland restoration scenarios",
               "gpt": "restored acres included in every scenario baseline",
               "gptReference": "Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“In December of 2025, the social science team attended a Tribal Workshop facilitated by the Collaboratory for Equity in Water Allocation (COEQWAL) research project. The Just Transitions in the Delta team handed out a survey to attendees to ask specific…”",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.facts.2.dates",
+              "label": "Fact 3: dates (one per line)",
+              "kind": "list",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[2].dates",
+              "claude": "June 2024\nJune 2025",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
@@ -2149,10 +2226,87 @@
               "note": ""
             },
             {
-              "key": "ecocultural-restoration.construction.facts.4.value",
-              "label": "Fact 5: number",
+              "key": "ecocultural-restoration.construction.outcomes.intro",
+              "label": "Outcomes: introduction",
               "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[4].value",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.intro",
+              "claude": "These engagement activities yielded:",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.0.value",
+              "label": "Outcome 1: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[0].value",
+              "claude": "14",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.0.label",
+              "label": "Outcome 1: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[0].label",
+              "claude": "reciprocal and interconnected components of Eco-cultural Restoration and Indigenous Sovereignty",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.1.value",
+              "label": "Outcome 2: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[1].value",
+              "claude": "2",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.1.label",
+              "label": "Outcome 2: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[1].label",
+              "claude": "main pillars, Intergenerational Stewardship and Intergenerational Prosperity and Well-being",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.2.value",
+              "label": "Outcome 3: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[2].value",
+              "claude": "1",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.2.label",
+              "label": "Outcome 3: label",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[2].label",
+              "claude": "quantitative metric",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
+            },
+            {
+              "key": "ecocultural-restoration.construction.outcomes.facts.3.value",
+              "label": "Outcome 4: number",
+              "kind": "line",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[3].value",
               "claude": "3",
               "gpt": "",
               "gptReference": "",
@@ -2160,10 +2314,10 @@
               "note": ""
             },
             {
-              "key": "ecocultural-restoration.construction.facts.4.label",
-              "label": "Fact 5: label",
+              "key": "ecocultural-restoration.construction.outcomes.facts.3.label",
+              "label": "Outcome 4: label",
               "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[4].label",
+              "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.outcomes.facts[3].label",
               "claude": "descriptive metrics",
               "gpt": "",
               "gptReference": "",
@@ -2557,7 +2711,7 @@
               "label": "North Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · recreation.regions[0].note",
-              "claude": "",
+              "claude": "6 points",
               "gpt": "Sacramento River corridors and nearby recreation sites",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Subregional Map\n“We selected to split the Delta into regions as we did to closely follow previous regionalizing studies, generating a recreation version of known or modelled regional ecologic tidal and conductivity flows borrowing from Andrews et al., (2017), figure 7; in…”",
               "yours": "Sacramento River corridors and nearby recreation sites",
@@ -2565,10 +2719,10 @@
             },
             {
               "key": "recreation.regions.1.note",
-              "label": "Confluence: note (the name matches the map and stays fixed)",
+              "label": "Central Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · recreation.regions[1].note",
-              "claude": "The report’s Central Delta.",
+              "claude": "9 points",
               "gpt": "The meeting area of the Sacramento and San Joaquin rivers",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Subregional Map\n“We selected to split the Delta into regions as we did to closely follow previous regionalizing studies, generating a recreation version of known or modelled regional ecologic tidal and conductivity flows borrowing from Andrews et al., (2017), figure 7; in…”",
               "yours": "The meeting area of the Sacramento and San Joaquin rivers",
@@ -2579,7 +2733,7 @@
               "label": "South Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · recreation.regions[2].note",
-              "claude": "",
+              "claude": "9 points",
               "gpt": "San Joaquin River corridors, Clifton Court Forebay, and nearby sites",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Measurement Locations\n“Measurement points were selected nearest to where each of our five selected water-dependent activities take place throughout the legal Delta and Suisun Marsh. Points were selected at key water corridors: near Clifton Court Forebay, the Sacramento River, the…”",
               "yours": "San Joaquin River corridors, Clifton Court Forebay, and nearby sites",
@@ -2587,10 +2741,10 @@
             },
             {
               "key": "recreation.regions.3.note",
-              "label": "Suisun Bay: note (the name matches the map and stays fixed)",
+              "label": "Suisun Marsh: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · recreation.regions[3].note",
-              "claude": "The report’s Suisun Marsh region.",
+              "claude": "8 points",
               "gpt": "Suisun, Grizzly, and Honker bays and Suisun Marsh",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Measurement Locations\n“Measurement points were selected nearest to where each of our five selected water-dependent activities take place throughout the legal Delta and Suisun Marsh. Points were selected at key water corridors: near Clifton Court Forebay, the Sacramento River, the…”",
               "yours": "Suisun, Grizzly, and Honker bays and Suisun Marsh",
@@ -2616,7 +2770,7 @@
             },
             {
               "key": "recreation.components.0.summary",
-              "label": "1 · Summary (also on the evaluation page)",
+              "label": "1 · Summary",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[0].summary",
               "claude": "How often salinity crosses the limit that matters to each activity, over the year and in its peak season.",
@@ -2624,6 +2778,17 @@
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → Methods (Overall Use)\n“Initial data cleaning steps before calculating our threshold exceedances begin with converting electrical conductivity (EC) values to (microsiemens per centimeter) from dS/m (desisiemens per meter) either at the activity threshold level or at the tiered…”",
               "yours": "How often **salinity** crosses the limit that matters to each activity, over the year and in its peak season.",
               "note": "bold and color \"salinity\" in team color"
+            },
+            {
+              "key": "recreation.components.0.overviewSummary",
+              "label": "1 · Summary on the evaluation page",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[0].overviewSummary",
+              "claude": "How often **salinity** crosses a threshold that reflects the level at which participation in an activity is no longer accessible or safe.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
             },
             {
               "key": "recreation.components.0.spec.0",
@@ -2682,7 +2847,7 @@
             },
             {
               "key": "recreation.components.1.summary",
-              "label": "2 · Summary (also on the evaluation page)",
+              "label": "2 · Summary",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[1].summary",
               "claude": "How often water temperature crosses the limit that matters to each activity, over the year and in its peak season.",
@@ -2690,6 +2855,17 @@
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → What are the Metrics?\n“Overall use is a metric used to define year-over-year total individual activity day thresholds that may negatively impact activities, regardless of season. Overall use helps us ascertain how many days and what months are the most affected by water-temperature…”",
               "yours": "How often **water temperature** crosses the limit that matters to each activity, over the year and in its peak season.",
               "note": "bold and color \"water temperature\" in team color"
+            },
+            {
+              "key": "recreation.components.1.overviewSummary",
+              "label": "2 · Summary on the evaluation page",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[1].overviewSummary",
+              "claude": "How often **water temperature** crosses a threshold that limits participation in an activity.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
+              "note": ""
             },
             {
               "key": "recreation.components.1.spec.0",
@@ -2748,13 +2924,24 @@
             },
             {
               "key": "recreation.components.2.summary",
-              "label": "3 · Summary (also on the evaluation page)",
+              "label": "3 · Summary",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[2].summary",
               "claude": "Wetland acreage opened to recreation by restoration, ranked first because most Delta islands sit 10 to 30 feet below sea level.",
               "gpt": "Interprets conditions for boating, angling, and day use, where people interact directly with Delta waterways.",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Angling and boating together are major drivers of visitors to the Delta's five county recreation economy, supported by restaurants, harbors, fueling stations, and boat storage (Goldman et al., 1998; Delta Protection Commission, 2012 & 2021). The largest…”",
               "yours": "Wetland acreage opened to recreation by restoration",
+              "note": ""
+            },
+            {
+              "key": "recreation.components.2.overviewSummary",
+              "label": "3 · Summary on the evaluation page",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[2].overviewSummary",
+              "claude": "Restored habitat that provides increased opportunities for recreation activities.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
               "note": ""
             },
             {
@@ -2814,13 +3001,24 @@
             },
             {
               "key": "recreation.components.3.summary",
-              "label": "4 · Summary (also on the evaluation page)",
+              "label": "4 · Summary",
               "kind": "paragraph",
               "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[3].summary",
               "claude": "What restored wetlands could be worth to recreation: fishing, hunting, and amenity and recreation.",
               "gpt": "Interprets conditions for birding and waterfowl hunting through the water and habitat needs of birds and supporting ecosystems.",
               "gptReference": "Copy of Recreation_ The Story Behind the Criterion.docx → What are the components of this criterion?\n“Day use data is aggregated by monthly visitor counts for Brannan Island State Recreation Area and Delta Meadows; and was obtained from California State Parks for the years 2018 to 2020 (California State Parks, 2023). Available amenities vary by site: Brannan…”",
               "yours": "What restored wetlands could be worth to recreation: fishing, hunting, and amenity and recreation.",
+              "note": ""
+            },
+            {
+              "key": "recreation.components.3.overviewSummary",
+              "label": "4 · Summary on the evaluation page",
+              "kind": "paragraph",
+              "source": "src/features/scenarios/content/criterionStories.ts · recreation.components.items[3].overviewSummary",
+              "claude": "What restored wetlands could be worth to recreation: fishing, hunting, and amenity and recreation.",
+              "gpt": "",
+              "gptReference": "",
+              "yours": "",
               "note": ""
             },
             {
@@ -3039,9 +3237,9 @@
             },
             {
               "key": "economy.summary.chips",
-              "label": "Economic sectors chips",
+              "label": "Economic Status Indicators chips",
               "kind": "list",
-              "source": "src/features/scenarios/content/results.ts · evaluationTeams[4].entityGroups “Economic sectors”",
+              "source": "src/features/scenarios/content/results.ts · evaluationTeams[4].entityGroups “Economic Status Indicators”",
               "claude": "Delta farms and crops\nPacking houses\nEquipment dealers\nTrucking and farm-linked businesses",
               "gpt": "Farms\nFarmworkers\nPacking and processing businesses\nEquipment and supply businesses\nTrucking and logistics\nRegional households and governments",
               "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Why does this criterion matter?\n“The Delta supports a working economy: close to 500,000 acres of irrigated farmland, plus the packing houses, equipment dealers, and trucking that depend on it, plus tourism and recreation on the water. Every one of the six futures this study considers touches…”\n“This criterion asks a simple question: when the Delta's water gets saltier, or when land gets converted from farming to something else, what happens to the Delta's economy? We track that in three ways: how much money Delta farms bring in from selling what…”",
@@ -3173,7 +3371,7 @@
               "label": "North Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · economy.regions[0].note",
-              "claude": "North Delta zone",
+              "claude": "63 points",
               "gpt": "Agricultural lands served by the North Delta Water Agency",
               "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Subregional Map\n“We subdivided the Legal delta into four subregions, three of them delimited by water agency (North, Central, and South Delta Water Agencies), and one section west of the Delta. Suisun Marsh lies outside of these four subregions; its land use (from the CDFW…”",
               "yours": "",
@@ -3184,7 +3382,7 @@
               "label": "Central Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · economy.regions[1].note",
-              "claude": "Central Delta zone",
+              "claude": "23 points",
               "gpt": "Agricultural lands served by the Central Delta Water Agency",
               "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Subregional Map\n“We subdivided the Legal delta into four subregions, three of them delimited by water agency (North, Central, and South Delta Water Agencies), and one section west of the Delta. Suisun Marsh lies outside of these four subregions; its land use (from the CDFW…”",
               "yours": "",
@@ -3195,7 +3393,7 @@
               "label": "South Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · economy.regions[2].note",
-              "claude": "South Delta zone",
+              "claude": "40 points",
               "gpt": "Agricultural lands served by the South Delta Water Agency",
               "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Subregional Map\n“We subdivided the Legal delta into four subregions, three of them delimited by water agency (North, Central, and South Delta Water Agencies), and one section west of the Delta. Suisun Marsh lies outside of these four subregions; its land use (from the CDFW…”",
               "yours": "",
@@ -3206,7 +3404,7 @@
               "label": "West Delta: note (the name matches the map and stays fixed)",
               "kind": "line",
               "source": "src/features/scenarios/content/criterionRegions.ts · economy.regions[3].note",
-              "claude": "",
+              "claude": "31 points",
               "gpt": "",
               "gptReference": "",
               "yours": "",
@@ -3447,244 +3645,57 @@
               "note": ""
             },
             {
-              "key": "economy.construction.facts.0.value",
-              "label": "Fact 1: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[0].value",
-              "claude": "$1.1B",
-              "gpt": "3",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.0.label",
-              "label": "Fact 1: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[0].label",
-              "claude": "baseline direct farm revenue a year",
-              "gpt": "economic metrics",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.1.value",
-              "label": "Fact 2: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[1].value",
-              "claude": "~7,650",
-              "gpt": "4",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.1.label",
-              "label": "Fact 2: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[1].label",
-              "claude": "baseline direct farm jobs",
-              "gpt": "agricultural reporting zones",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.2.value",
-              "label": "Fact 3: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[2].value",
-              "claude": "4",
-              "gpt": "2",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.2.label",
-              "label": "Fact 3: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[2].label",
-              "claude": "Delta zones",
-              "gpt": "climate conditions",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.3.value",
-              "label": "Fact 4: number",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[3].value",
-              "claude": "3",
-              "gpt": "2",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.facts.3.label",
-              "label": "Fact 4: label",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[3].label",
-              "claude": "New Green Watershed restoration levels",
-              "gpt": "economic pathways: salinity and land use",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.0.title",
-              "label": "Step 1 · Title",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[0].title",
-              "claude": "Salinity pathway",
-              "gpt": "Model salinity",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.0.body",
-              "label": "Step 1 · Body",
-              "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[0].body",
-              "claude": "Every future changes salinity, so all six run through this chain. Each farm field takes the April–September average of RMA’s modeled salinity at its station; crop salt-tolerance curves turn that into yield loss, which is applied to OpenAg baseline farm revenue by region and crop. IMPLAN ratios by region then convert revenue into jobs and value added.",
-              "gpt": "Hydrodynamic modeling estimated salinity for all six scenarios under current climate and two feet of sea-level rise.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.0.points",
-              "label": "Step 1 · Points (one per line)",
+              "key": "economy.construction.points",
+              "label": "Points (one per line)",
               "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[0].points",
-              "claude": "Yield loss uses the van Genuchten–Hoffman salt-tolerance function with crop-specific coefficients, assuming standard Delta irrigation (root-zone salinity 1.5 times irrigation-water salinity).\nRun for a wet year (2019) and a dry year (2020), under current climate and with 2 feet of sea-level rise.\nCalling on Reserves and A Tunnel are compared with the base run RMA delivered with them; against Business as Usual the results differ by under $1,000 a year.\nA full OpenAg run, which also lets farmers shift land among crops, gives effects about 1.3 to 1.8 times these; no score changes.",
-              "gpt": "Use a wet year and a dry year.\nCompare each scenario with its appropriate baseline.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.points",
+              "claude": "Changes to the salinity field in the Delta affect farmland and irrigation.\nLand use changes affect if agricultural production is viable, and if so, what crops can be harvested.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
             {
-              "key": "economy.construction.steps.1.title",
-              "label": "Step 2 · Title",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[1].title",
-              "claude": "Land-use pathway",
-              "gpt": "Estimate crop yield effects",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.1.body",
-              "label": "Step 2 · Body",
+              "key": "economy.construction.paragraphs.0",
+              "label": "Paragraph 1",
               "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[1].body",
-              "claude": "New Green Watershed converts subsided farmland to managed and floating wetland, rice, or paludiculture, which removes that land’s revenue regardless of salinity.",
-              "gpt": "Modeled salinity was passed through crop-specific salt-tolerance functions to estimate changes in yield.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.paragraphs[0]",
+              "claude": "Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for that salinity effect.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
             {
-              "key": "economy.construction.steps.1.points",
-              "label": "Step 2 · Points (one per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[1].points",
-              "claude": "Three levels: full restoration (all targeted farmland), ~50% wetland and 50% rice, ~25% wetland and 75% rice.\nCrop acreage and revenue from the DAP base case (432,547 acres) are matched island by island to each footprint.\nThe adjusted base case is run through IMPLAN for direct and total effects.",
-              "gpt": "Match salinity to agricultural areas.\nApply crop response functions.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.2.title",
-              "label": "Step 3 · Title",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[2].title",
-              "claude": "Eco Machine’s conversions",
-              "gpt": "Calculate farm revenue",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.2.body",
-              "label": "Step 3 · Body",
+              "key": "economy.construction.paragraphs.1",
+              "label": "Paragraph 2",
               "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[2].body",
-              "claude": "Revenue lost on converted land in Suisun Marsh and Franks Tract is estimated from DWR’s 2024 land use and OpenAg revenue per acre, with New Green Watershed’s job and value-added ratios.",
-              "gpt": "Yield changes were applied to OpenAg acreage and crop values to estimate changes in annual gross revenue.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.paragraphs[1]",
+              "claude": "Resource Management Associates (RMA) simulated salinity for all six scenarios under current climate and with 2 feet of sea-level rise (A Tunnel and Calling on Reserves together with their own base run). That salinity effect was estimated by running the RMA salinity through crop salt-tolerance functions (yield loss), applying the yield loss to OpenAg farm revenue, and then applying IMPLAN regional economic ratios to get jobs and value added.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
             {
-              "key": "economy.construction.steps.2.points",
-              "label": "Step 3 · Points (one per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[2].points",
-              "claude": "Restores 25%, 50%, or 100% of the 52,244 leveed acres in Suisun Marsh, plus about 1,370 acres at Franks Tract; only about 2,000 Suisun acres are farmed.\nCarbon-offset revenue from Delta Island Adaptations greenhouse-gas rates at $15 per tonne CO₂e, less 14% for market and verification risk.\nOne-time construction cost of about $0.85–1.5 billion: about $17,000 per acre to breach Suisun levees and $633 million for the Franks Tract Futures design. It sits outside the three scored metrics.",
-              "gpt": "Report Delta-wide totals.\nAlso report North, Central, West, and South zone results.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.3.title",
-              "label": "Step 4 · Title",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[3].title",
-              "claude": "Score the dominant effect",
-              "gpt": "Estimate jobs and value added",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.3.body",
-              "label": "Step 4 · Body",
+              "key": "economy.construction.paragraphs.2",
+              "label": "Paragraph 3",
               "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[3].body",
-              "claude": "Scenarios are scored from −5 to +5 with Business as Usual at 0. Salinity effects are tiny next to land conversion, so each scenario is scored on whichever effect dominates for it, and one score covers revenue, jobs, and value added.",
-              "gpt": "IMPLAN regional economic relationships translated changes in farm activity into employment and value added.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.paragraphs[2]",
+              "claude": "New Green Watershed goes further: it converts subsided Delta farmland itself to wetland, rice, or paludiculture at three restoration intensities, which removes that land’s revenue outright regardless of salinity. That land-use effect was modeled separately by Cai et al. in a manuscript in preparation — the DAP basecase’s official Delta-wide crop acreage and revenue data, matched island-by-island to each restoration level’s footprint, adjusted into a modified regional economic base case, and then run through IMPLAN directly to get Direct and Total (regional-multiplier) Revenue, Employment, and Value Added effects for all three restoration levels.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             },
             {
-              "key": "economy.construction.steps.3.points",
-              "label": "Step 4 · Points (one per line)",
-              "kind": "list",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[3].points",
-              "claude": "Land use decides New Green Watershed (−3 to −5 by restoration level) and Eco Machine (0).\nSalinity decides Bolster and Fortify (−1), A Tunnel (−1), and Calling on Reserves (0).\nScores are the same with 2 feet of sea-level rise, which lowers every scenario by a similar small amount.",
-              "gpt": "Show direct effects.\nShow total effects including regional multipliers.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.4.title",
-              "label": "Step 5 · Title",
-              "kind": "line",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[4].title",
-              "claude": "Report by zone",
-              "gpt": "Analyze land conversion separately",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
-              "yours": "",
-              "note": ""
-            },
-            {
-              "key": "economy.construction.steps.4.body",
-              "label": "Step 5 · Body",
+              "key": "economy.construction.paragraphs.3",
+              "label": "Paragraph 4",
               "kind": "paragraph",
-              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[4].body",
-              "claude": "A Delta-wide total can hide winners and losers, so results are also split into four zones: North, Central, and South Delta, drawn by water agency, and the West Delta. Suisun Marsh land use comes from CDFW 2021 vegetation and DWR 2024 crop mapping.",
-              "gpt": "For New Green Watershed and Eco Machine, researchers estimated the much larger effects of converting agricultural or managed land, including selected carbon revenue and construction costs where supported by the source data.",
-              "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+              "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.paragraphs[3]",
+              "claude": "Eco Machine’s own land conversion (Suisun Marsh and the Franks Tract Futures’ design) was estimated separately: farm revenue lost on the converted land (from DWR’s 2024 land use and corresponding OpenAg revenue per acre), jobs and value added from the same IMPLAN ratios and multipliers as the New Green Watershed runs, carbon offset revenue from the Delta Island Adaptation greenhouse-gas rates, and one-time construction cost. It was not run through IMPLAN directly, but so little of that land is farmed that a direct run is unlikely to change the scenario score.",
+              "gpt": "",
+              "gptReference": "",
               "yours": "",
               "note": ""
             }
@@ -3712,6 +3723,402 @@
     }
   ],
   "orphans": [
+    {
+      "key": "economy.regions.mapNote",
+      "label": "Map note",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionRegions.ts · economy.mapNote",
+      "claude": "Counts are estimates. Each of the 157 points is placed in the zone it falls within, or the nearest zone if it falls outside all four.",
+      "gpt": "A fourth western zone is included in the economic analysis even though it is not represented by one of these three water-agency labels. Suisun Marsh is analyzed separately for Eco Machine.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Subregional Map\n“We subdivided the Legal delta into four subregions, three of them delimited by water agency (North, Central, and South Delta Water Agencies), and one section west of the Delta. Suisun Marsh lies outside of these four subregions; its land use (from the CDFW…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.facts.0.value",
+      "label": "Fact 1: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[0].value",
+      "claude": "6",
+      "gpt": "6",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.facts.0.label",
+      "label": "Fact 1: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[0].label",
+      "claude": "species, eight life stages",
+      "gpt": "species or life-stage groups assessed",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.facts.1.value",
+      "label": "Fact 2: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[1].value",
+      "claude": "145",
+      "gpt": "145",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.facts.1.label",
+      "label": "Fact 2: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[1].label",
+      "claude": "model points",
+      "gpt": "modeled locations in the adaptation-scenario analysis",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.facts.2.value",
+      "label": "Fact 3: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[2].value",
+      "claude": "8",
+      "gpt": "3",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.facts.2.label",
+      "label": "Fact 3: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.facts[2].label",
+      "claude": "estuary subregions",
+      "gpt": "core ecological measures",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.construction.steps.4.points",
+      "label": "Step 5 · Points (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecology.construction.steps[4].points",
+      "claude": "North Delta 30 · Central Delta 23 · South Delta 11 · Confluence 16\nSuisun 25 · San Pablo Bay 15 · Central Bay 16 · South Bay 9\nPoints outside the legal Delta are kept so range shifts of migratory species show up.",
+      "gpt": "Tidal wetlands were valued for consistent exports.\nManaged wetlands were valued for strong but intermittent pulses.\nWet-soil agriculture was valued for seasonal contributions.",
+      "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → How was this criterion constructed?\n“After the initial distribution of preliminary scenarios to the ecology subteam, we constructed a conceptual model of ecosystem parameters and feedback in order to understand how different aspects of the Delta ecosystem might change in response to various…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "environmental-justice.construction.facts.5.value",
+      "label": "Fact 6: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[5].value",
+      "claude": "14",
+      "gpt": "",
+      "gptReference": "",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "environmental-justice.construction.facts.5.label",
+      "label": "Fact 6: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.facts[5].label",
+      "claude": "indicators behind each vulnerability rating",
+      "gpt": "",
+      "gptReference": "",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "environmental-justice.construction.steps.4.when",
+      "label": "Step 5 · When",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · environmental-justice.construction.steps[4].when",
+      "claude": "Public Workshop 2 · June 2025, and ongoing",
+      "gpt": "Across multiple workshops",
+      "gptReference": "Environmental Justice_ The Story Behind the Criterion.docx → Background\n“Commitment to this criterion began at the conception of the Just Transitions in the Delta project, with intentional interview invitations to members and advocates of environmental justice and Tribal communities, in order to prioritize less-often heard voices.…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecocultural-restoration.construction.facts.4.value",
+      "label": "Fact 5: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[4].value",
+      "claude": "3",
+      "gpt": "",
+      "gptReference": "",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecocultural-restoration.construction.facts.4.label",
+      "label": "Fact 5: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · ecocultural-restoration.construction.facts[4].label",
+      "claude": "descriptive metrics",
+      "gpt": "",
+      "gptReference": "",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.0.value",
+      "label": "Fact 1: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[0].value",
+      "claude": "$1.1B",
+      "gpt": "3",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.0.label",
+      "label": "Fact 1: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[0].label",
+      "claude": "baseline direct farm revenue a year",
+      "gpt": "economic metrics",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.1.value",
+      "label": "Fact 2: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[1].value",
+      "claude": "~7,650",
+      "gpt": "4",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.1.label",
+      "label": "Fact 2: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[1].label",
+      "claude": "baseline direct farm jobs",
+      "gpt": "agricultural reporting zones",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.2.value",
+      "label": "Fact 3: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[2].value",
+      "claude": "4",
+      "gpt": "2",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.2.label",
+      "label": "Fact 3: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[2].label",
+      "claude": "Delta zones",
+      "gpt": "climate conditions",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.3.value",
+      "label": "Fact 4: number",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[3].value",
+      "claude": "3",
+      "gpt": "2",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.facts.3.label",
+      "label": "Fact 4: label",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.facts[3].label",
+      "claude": "New Green Watershed restoration levels",
+      "gpt": "economic pathways: salinity and land use",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.0.title",
+      "label": "Step 1 · Title",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[0].title",
+      "claude": "Salinity pathway",
+      "gpt": "Model salinity",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.0.body",
+      "label": "Step 1 · Body",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[0].body",
+      "claude": "Every future changes salinity, so all six run through this chain. Each farm field takes the April–September average of RMA’s modeled salinity at its station; crop salt-tolerance curves turn that into yield loss, which is applied to OpenAg baseline farm revenue by region and crop. IMPLAN ratios by region then convert revenue into jobs and value added.",
+      "gpt": "Hydrodynamic modeling estimated salinity for all six scenarios under current climate and two feet of sea-level rise.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.0.points",
+      "label": "Step 1 · Points (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[0].points",
+      "claude": "Yield loss uses the van Genuchten–Hoffman salt-tolerance function with crop-specific coefficients, assuming standard Delta irrigation (root-zone salinity 1.5 times irrigation-water salinity).\nRun for a wet year (2019) and a dry year (2020), under current climate and with 2 feet of sea-level rise.\nCalling on Reserves and A Tunnel are compared with the base run RMA delivered with them; against Business as Usual the results differ by under $1,000 a year.\nA full OpenAg run, which also lets farmers shift land among crops, gives effects about 1.3 to 1.8 times these; no score changes.",
+      "gpt": "Use a wet year and a dry year.\nCompare each scenario with its appropriate baseline.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.1.title",
+      "label": "Step 2 · Title",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[1].title",
+      "claude": "Land-use pathway",
+      "gpt": "Estimate crop yield effects",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.1.body",
+      "label": "Step 2 · Body",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[1].body",
+      "claude": "New Green Watershed converts subsided farmland to managed and floating wetland, rice, or paludiculture, which removes that land’s revenue regardless of salinity.",
+      "gpt": "Modeled salinity was passed through crop-specific salt-tolerance functions to estimate changes in yield.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.1.points",
+      "label": "Step 2 · Points (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[1].points",
+      "claude": "Three levels: full restoration (all targeted farmland), ~50% wetland and 50% rice, ~25% wetland and 75% rice.\nCrop acreage and revenue from the DAP base case (432,547 acres) are matched island by island to each footprint.\nThe adjusted base case is run through IMPLAN for direct and total effects.",
+      "gpt": "Match salinity to agricultural areas.\nApply crop response functions.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.2.title",
+      "label": "Step 3 · Title",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[2].title",
+      "claude": "Eco Machine’s conversions",
+      "gpt": "Calculate farm revenue",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.2.body",
+      "label": "Step 3 · Body",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[2].body",
+      "claude": "Revenue lost on converted land in Suisun Marsh and Franks Tract is estimated from DWR’s 2024 land use and OpenAg revenue per acre, with New Green Watershed’s job and value-added ratios.",
+      "gpt": "Yield changes were applied to OpenAg acreage and crop values to estimate changes in annual gross revenue.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.2.points",
+      "label": "Step 3 · Points (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[2].points",
+      "claude": "Restores 25%, 50%, or 100% of the 52,244 leveed acres in Suisun Marsh, plus about 1,370 acres at Franks Tract; only about 2,000 Suisun acres are farmed.\nCarbon-offset revenue from Delta Island Adaptations greenhouse-gas rates at $15 per tonne CO₂e, less 14% for market and verification risk.\nOne-time construction cost of about $0.85–1.5 billion: about $17,000 per acre to breach Suisun levees and $633 million for the Franks Tract Futures design. It sits outside the three scored metrics.",
+      "gpt": "Report Delta-wide totals.\nAlso report North, Central, West, and South zone results.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.3.title",
+      "label": "Step 4 · Title",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[3].title",
+      "claude": "Score the dominant effect",
+      "gpt": "Estimate jobs and value added",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.3.body",
+      "label": "Step 4 · Body",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[3].body",
+      "claude": "Scenarios are scored from −5 to +5 with Business as Usual at 0. Salinity effects are tiny next to land conversion, so each scenario is scored on whichever effect dominates for it, and one score covers revenue, jobs, and value added.",
+      "gpt": "IMPLAN regional economic relationships translated changes in farm activity into employment and value added.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.3.points",
+      "label": "Step 4 · Points (one per line)",
+      "kind": "list",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[3].points",
+      "claude": "Land use decides New Green Watershed (−3 to −5 by restoration level) and Eco Machine (0).\nSalinity decides Bolster and Fortify (−1), A Tunnel (−1), and Calling on Reserves (0).\nScores are the same with 2 feet of sea-level rise, which lowers every scenario by a similar small amount.",
+      "gpt": "Show direct effects.\nShow total effects including regional multipliers.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.4.title",
+      "label": "Step 5 · Title",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[4].title",
+      "claude": "Report by zone",
+      "gpt": "Analyze land conversion separately",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "economy.construction.steps.4.body",
+      "label": "Step 5 · Body",
+      "kind": "paragraph",
+      "source": "src/features/scenarios/content/criterionStories.ts · economy.construction.steps[4].body",
+      "claude": "A Delta-wide total can hide winners and losers, so results are also split into four zones: North, Central, and South Delta, drawn by water agency, and the West Delta. Suisun Marsh land use comes from CDFW 2021 vegetation and DWR 2024 crop mapping.",
+      "gpt": "For New Green Watershed and Eco Machine, researchers estimated the much larger effects of converting agricultural or managed land, including selected carbon revenue and construction costs where supported by the source data.",
+      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → How was this criterion constructed?\n“Two very different modeling chains feed this criterion, because the six scenarios do two very different things to the Delta economy. Every scenario changes water salinity to some degree, which can reduce crop yields, and all six scenarios were assessed for…”",
+      "yours": "",
+      "note": ""
+    },
+    {
+      "key": "ecology.regions.8.note",
+      "label": "Suisun Marsh: note (the name matches the map and stays fixed)",
+      "kind": "line",
+      "source": "src/features/scenarios/content/criterionRegions.ts · ecology.regions[8].note",
+      "claude": "Folded into Suisun Bay in the results.",
+      "gpt": "",
+      "gptReference": "",
+      "yours": "",
+      "note": ""
+    },
     {
       "key": "ecology.components.3.name",
       "label": "4 · Name",
@@ -4028,17 +4435,6 @@
       "claude": "San Pablo Bay, Central Bay, and South Bay are also scored, so range shifts of migratory species show up, but they sit outside this map.",
       "gpt": "Regional groupings follow published temperature-based analysis where available and established geographic transitions farther west. Individual modeled points may still vary within a region.",
       "gptReference": "Copy of ECOLOGY_ The Story Behind the Criterion.docx → Location of Measurement\n“For our region assignments for both the tiered outflow calculations and the adaptive scenario calculations we assigned regions based off of Pien et al. 2024, which was also instrumental in determining suitability thresholds for many of our species. Pien et…”",
-      "yours": "",
-      "note": ""
-    },
-    {
-      "key": "economy.regions.mapNote",
-      "label": "Map note",
-      "kind": "paragraph",
-      "source": "src/features/scenarios/content/criterionRegions.ts · economy.mapNote",
-      "claude": "The West Delta zone has results but no published outline yet, so it is not drawn.",
-      "gpt": "A fourth western zone is included in the economic analysis even though it is not represented by one of these three water-agency labels. Suisun Marsh is analyzed separately for Eco Machine.",
-      "gptReference": "JMA_Economic_Analysis_Story_Behind_Criterion_v16.docx → Subregional Map\n“We subdivided the Legal delta into four subregions, three of them delimited by water agency (North, Central, and South Delta Water Agencies), and one section west of the Delta. Suisun Marsh lies outside of these four subregions; its land use (from the CDFW…”",
       "yours": "",
       "note": ""
     }

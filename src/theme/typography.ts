@@ -157,6 +157,12 @@ export const typography = {
     lineHeight: 0.9,
     letterSpacing: 0,
   },
+  statNumber: {
+    fontFamily: fontHeading,
+    fontSize: 'clamp(2.25rem, 3vw, 3rem)',
+    lineHeight: 0.9,
+    letterSpacing: 0,
+  },
   accentCardTitle: {
     fontFamily: fontBody,
     fontSize: 'clamp(1.15rem, 0.95rem + 0.65vw, 1.35rem)',

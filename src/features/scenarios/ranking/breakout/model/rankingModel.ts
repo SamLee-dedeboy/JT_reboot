@@ -365,22 +365,6 @@ function thresholdRow(id: string, label: string, note: string): CriterionNode {
 
 const NOT_BROKEN_OUT: Facet[] = [{ key: ANY, label: 'Not broken out' }]
 
-/** The scoring email that sets every scenario restoring nothing at 0. */
-const SCORING_EMAIL: Source = {
-  doc: 'ours',
-  where: 'Recreation scoring email, 22 Oct 2026',
-  quote:
-    'BAU, BAF, COR, TUN → all will be scored at 0. Eco Machine and New Green Watershed (the 50-50 regime) are for Recreation to score.',
-}
-
-/** Recreation's restoration table: habitat (C) and economy (D), each kept apart from its score. */
-const RESTORATION_SCORE: Source = {
-  doc: 'data',
-  where: 'Recreation The Score.xlsx (Recreation, 26 Oct 2026) · Recreation Score · table 3',
-  quote:
-    'C — Habitat (restored acres): BAU 0, ECO 5, NGW Lower/Middle/Upper 5. D — Economy ($): BAU 0, ECO 5, NGW 5. C and D treat restoration as added on top of BAU protected areas.',
-}
-
 /** The Recreation tab of the ranking table workbook the team filled in, Nov 2026. */
 const RECREATION_WORKBOOK_SOURCE: Source = {
   doc: 'data',
@@ -389,7 +373,7 @@ const RECREATION_WORKBOOK_SOURCE: Source = {
 }
 
 /** Habitat restoration and recreation economy score alike in the team's sheet. */
-const REC_RESTORATION_SCORES = { bau: 0, em: 3, ngw: 5, bf: 0, cor: -1, tunnel: -3 }
+const REC_RESTORATION_SCORES = { bau: 0, em: 3, ngw: 5 }
 
 /** A row the team reports the same under sea level rise, with its children. */
 function recSameUnderSlr(row: CriterionNode): CriterionNode {
@@ -415,9 +399,9 @@ function addedToBaseline(values: CriterionNode['values']): CriterionNode['values
 }
 
 /**
- * Habitat restoration as a ranking score, with Recreation's acres beneath it: +5 for
- * Eco Machine and New Green Watershed (every bound), 0 for the scenarios that
- * restore nothing.
+ * Habitat restoration as a ranking score, with Recreation's acres beneath it: +3 for
+ * Eco Machine and +5 for New Green Watershed. The scenarios with no acres attached
+ * are N/A here; Infrastructure impact scores them instead.
  */
 function habitatRestoration(): CriterionNode {
   const acres = node('rec-restoration')
@@ -427,14 +411,10 @@ function habitatRestoration(): CriterionNode {
     unit: 'score',
     places: NOT_BROKEN_OUT,
     values: flat(REC_RESTORATION_SCORES),
+    notApplicable: ['bf', 'cor', 'tunnel'],
     ngwLevels: [5, 5, 5],
-    sources: [
-      RECREATION_WORKBOOK_SOURCE,
-      RESTORATION_SCORE,
-      SCORING_EMAIL,
-      ...sourcesFor('rec-restoration'),
-    ],
-    note: 'Recreation scores restored acres added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound (25, 50 and 100%). Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for the acres Recreation reports.',
+    sources: [RECREATION_WORKBOOK_SOURCE, ...sourcesFor('rec-restoration')],
+    note: 'Recreation scores restored acres added on top of Business as Usual’s protected areas: Eco Machine +3 and New Green Watershed +5. Bolster & Fortify, Calling on Reserves and A Tunnel have no acres attached, so they are N/A here and scored under Infrastructure impact. Kept apart from the Recreation score. Open the row for the acres Recreation reports.',
     children: [
       adapt(acres, {
         id: 'bk-rec-restoration-acres',
@@ -450,8 +430,9 @@ function habitatRestoration(): CriterionNode {
 
 /**
  * Recreation economy as a ranking score (Recreation's component D), with each
- * service's dollars and score beneath it: +5 for Eco Machine and New Green
- * Watershed, 0 for the scenarios that restore nothing.
+ * service's dollars and score beneath it: +3 for Eco Machine and +5 for New Green
+ * Watershed. The scenarios with no acres attached are N/A here; Infrastructure impact
+ * scores them instead.
  */
 function recreationEconomy(): CriterionNode {
   const economy = node('rec-economy')
@@ -460,15 +441,11 @@ function recreationEconomy(): CriterionNode {
     unit: 'score',
     places: NOT_BROKEN_OUT,
     values: flat(REC_RESTORATION_SCORES),
+    notApplicable: ['bf', 'cor', 'tunnel'],
     ngwLevels: [5, 5, 5],
     entityNoun: 'service',
-    sources: [
-      RECREATION_WORKBOOK_SOURCE,
-      RESTORATION_SCORE,
-      SCORING_EMAIL,
-      ...sourcesFor('rec-economy'),
-    ],
-    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +5 and New Green Watershed +5 at every bound; every service scores +5 for both. Day use and boating share one amenity/recreation row. Business as Usual, Bolster & Fortify, Calling on Reserves and A Tunnel restore nothing and score 0 (scoring email). Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
+    sources: [RECREATION_WORKBOOK_SOURCE, ...sourcesFor('rec-economy')],
+    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +3 and New Green Watershed +5. Day use and boating share one amenity/recreation row. Bolster & Fortify, Calling on Reserves and A Tunnel have no acres attached, so they are N/A here and scored under Infrastructure impact. Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
     children: [
       ...(economy.children ?? []).map((service) =>
         adapt(service, {
@@ -480,7 +457,7 @@ function recreationEconomy(): CriterionNode {
       ),
       {
         ...qualitativeRow('bk-rec-economy-infrastructure', 'recreation'),
-        steps: { bau: 0, bf: -1, cor: 0, tunnel: -3 },
+        steps: { bau: 0, bf: -1, cor: -1, tunnel: -3 },
         notApplicable: ['em', 'ngw'],
       },
     ],

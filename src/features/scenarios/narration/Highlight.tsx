@@ -1,6 +1,6 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
-import { useId, useState } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 import type { LegendItem } from '../../../map/layers/scenarios/config'
 import { jtSpacing } from '../../../theme'
 import ScenarioChip from './ScenarioChip'
@@ -18,6 +18,7 @@ interface HighlightProps {
   /** Another row is selected. */
   dimmed?: boolean
   onSelect?: () => void
+  renderText?: (text: string) => ReactNode
 }
 
 export default function Highlight({
@@ -28,6 +29,7 @@ export default function Highlight({
   selected = false,
   dimmed = false,
   onSelect,
+  renderText,
 }: HighlightProps) {
   const [expanded, setExpanded] = useState(false)
   const detailsId = useId()
@@ -111,7 +113,7 @@ export default function Highlight({
         </Typography>
         {summary && (
           <Typography variant="body2" sx={{ mt: jtSpacing.component.sm, color: 'base.50' }}>
-            {summary}
+            {renderText ? renderText(summary) : summary}
           </Typography>
         )}
 
@@ -120,7 +122,7 @@ export default function Highlight({
             <Stack id={detailsId} spacing={jtSpacing.gap.md} sx={{ mt: jtSpacing.component.md }}>
               {paragraphs.map((paragraph) => (
                 <Typography variant="body2" key={paragraph} sx={{ color: 'base.100' }}>
-                  {paragraph}
+                  {renderText ? renderText(paragraph) : paragraph}
                 </Typography>
               ))}
             </Stack>

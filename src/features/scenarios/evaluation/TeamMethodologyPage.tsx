@@ -16,9 +16,10 @@ import {
   TableRow,
   Tabs,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
 import { alpha, type Theme } from '@mui/material/styles'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Label } from '../../../internal/rank-visualization/subteams/RegionMap'
 import {
@@ -86,19 +87,15 @@ export default function TeamMethodologyPage() {
         </EvaluationHero>
         <TeamTabs activeTeamId={team.id} hrefFor={methodologyPath} />
 
-        {/* Hybrid-width frame: readable prose and wide map/table sections share one page. */}
+        {/* Same frame and rail as the evaluation overview, so the two pages' text lines up. */}
         <Container
           maxWidth={false}
           sx={{
-            width: jtSpacing.layout.hybrid.width,
+            width: '90dvw',
             px: 0,
             pb: jtSpacing.section.xl,
             display: 'grid',
-            // Keep the rail track stable when the hybrid frame width changes.
-            gridTemplateColumns: {
-              xs: '1fr',
-              lg: '240px minmax(0, 1fr) minmax(360px, .92fr)',
-            },
+            gridTemplateColumns: { xs: '1fr', lg: 'minmax(180px, .3fr) minmax(0, 1.92fr)' },
             gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
             alignItems: 'start',
           }}
@@ -117,8 +114,9 @@ export default function TeamMethodologyPage() {
               spacing={jtSpacing.section.xl}
               sx={{
                 minWidth: 0,
-                gridColumn: { lg: '2 / -1' },
+                gridColumn: { lg: 2 },
                 p: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
+                '& > *': { maxWidth: jtSpacing.layout.data.maxWidth },
               }}
             >
               <WhatSection story={story} accent={color} />
@@ -139,21 +137,15 @@ export default function TeamMethodologyPage() {
                   id="references-title"
                   accent={color}
                 />
-                <Typography
-                  variant="body2"
-                  sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.200' })}
-                >
-                  Sources this summary draws on, from {story.source}
-                </Typography>
                 <Box
                   component="ol"
-                  sx={(theme) => ({
-                    ...methodologyTextColumnSx(theme),
+                  sx={{
+                    ...methodologyTextColumnSx,
                     m: 0,
                     mt: jtSpacing.gap.md,
                     p: 0,
                     listStyle: 'none',
-                  })}
+                  }}
                 >
                   {criterionReferences[team.id].map((reference, index) => (
                     <Typography
@@ -206,11 +198,17 @@ const pageSections = [
 /** Clears the sticky navbar and team tabs when a section is scrolled to. */
 const sectionSx = { scrollMarginTop: 150 } as const
 
-/** The left half of the methodology's hybrid grid, used by standalone prose. */
-const methodologyTextColumnSx = (theme: Theme) => ({
-  width: { md: `calc(50% - ${theme.spacing(jtSpacing.section.md / 2)})` },
-  maxWidth: '100%',
-})
+/** Standalone prose, at the same measure as the evaluation overview's intro. */
+const methodologyTextColumnSx = { maxWidth: '100ch' } as const
+
+/** The Why and Regions sections share one grid: text on the left, its visual on the right. */
+const criterionSplitSx = {
+  display: 'grid',
+  gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 5fr) minmax(0, 7fr)' },
+  columnGap: jtSpacing.section.md,
+  rowGap: jtSpacing.gap.lg,
+  alignItems: 'start',
+} as const
 
 interface SectionProps {
   story: CriterionStory
@@ -226,8 +224,7 @@ function WhatSection({ story, accent }: SectionProps) {
       sx={{
         ...sectionSx,
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
-        columnGap: { xs: 0, md: jtSpacing.section.md },
+        gridTemplateColumns: 'minmax(0, 1fr)',
       }}
     >
       <Box sx={{ gridColumn: 1 }}>
@@ -240,31 +237,40 @@ function WhatSection({ story, accent }: SectionProps) {
       </Box>
       <Stack spacing={jtSpacing.gap.md} sx={{ gridColumn: 1, minWidth: 0 }}>
         {story.what.map((paragraph) => (
-          <Typography key={paragraph} variant="body1" sx={{ color: 'base.100' }}>
+          <Typography
+            key={paragraph}
+            variant="body1"
+            sx={{ ...methodologyTextColumnSx, color: 'base.100' }}
+          >
             <CitedText text={paragraph} />
           </Typography>
         ))}
       </Stack>
-      <Button
-        type="button"
-        variant="outlined"
+      <Stack
+        direction="row"
+        useFlexGap
+        spacing={jtSpacing.gap.sm}
         sx={{
           gridColumn: 1,
           justifySelf: 'start',
           mt: jtSpacing.component.lg,
-          color: accent,
-          borderColor: accent,
-          '&:hover': { borderColor: accent, bgcolor: alpha(accent, 0.12) },
+          alignItems: 'center',
+          flexWrap: 'wrap',
         }}
       >
-        Read full documentation
-      </Button>
+        <Button disabled variant="outlined">
+          Read full documentation
+        </Button>
+        <Typography variant="captionSmall" sx={{ color: 'primary.main', fontStyle: 'italic' }}>
+          Forthcoming
+        </Typography>
+      </Stack>
     </Box>
   )
 }
 
 function WhySection({ story, accent }: SectionProps) {
-  const { stats = [], paragraphs, quote } = story.why
+  const { stats = [], statsInRows, paragraphs, quote } = story.why
   return (
     <Box component="section" id="why" aria-labelledby="why-title" sx={sectionSx}>
       <SectionHeading
@@ -273,29 +279,7 @@ function WhySection({ story, accent }: SectionProps) {
         id="why-title"
         accent={accent}
       />
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            md: stats.length ? 'minmax(0, .8fr) minmax(0, 1fr)' : 'repeat(2, minmax(0, 1fr))',
-          },
-          gap: { xs: jtSpacing.gap.lg, md: jtSpacing.section.md },
-          alignItems: 'start',
-        }}
-      >
-        {stats.length > 0 && (
-          <Stack spacing={jtSpacing.gap.lg}>
-            {stats.map((stat) => (
-              <Stack key={stat.label} spacing={jtSpacing.gap.sm}>
-                <Typography variant="displayNumber" component="p" sx={{ color: accent }}>
-                  {stat.value}
-                </Typography>
-                <Typography variant="body1">{stat.label}</Typography>
-              </Stack>
-            ))}
-          </Stack>
-        )}
+      <Box sx={criterionSplitSx}>
         <Stack spacing={jtSpacing.gap.md}>
           {paragraphs.map((paragraph) => (
             <Typography key={paragraph} variant="body1" sx={{ color: 'base.100' }}>
@@ -316,13 +300,192 @@ function WhySection({ story, accent }: SectionProps) {
             </Box>
           )}
         </Stack>
+        {stats.length > 0 && (
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: statsInRows
+                ? 'minmax(0, 1fr)'
+                : 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: statsInRows ? jtSpacing.gap.sm : jtSpacing.gap.lg,
+              pt: jtSpacing.gap.sm,
+              borderTop: 1,
+              borderColor: 'border.subtle',
+            }}
+          >
+            {stats.map((stat, index) => (
+              <Stack
+                key={stat.label}
+                spacing={jtSpacing.gap.xs}
+                sx={
+                  statsInRows && index
+                    ? { pt: jtSpacing.gap.sm, borderTop: 1, borderColor: 'border.subtle' }
+                    : undefined
+                }
+              >
+                <Typography
+                  variant="statNumber"
+                  component="p"
+                  sx={{
+                    color: accent,
+                    ...(statsInRows && {
+                      fontSize: 'clamp(2rem, 2.4vw, 2.5rem)',
+                      lineHeight: 1.15,
+                    }),
+                  }}
+                >
+                  {stat.value}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'base.100' }}>
+                  <CitedText text={stat.label} />
+                </Typography>
+              </Stack>
+            ))}
+          </Box>
+        )}
       </Box>
     </Box>
   )
 }
 
+/** A row of key numbers under a hairline, each with its label beneath. */
+function FactRow({
+  facts,
+  accent,
+}: {
+  facts: Array<{ value: string; label: string; dates?: string[] }>
+  accent: string
+}) {
+  return (
+    <Box
+      component="dl"
+      sx={{
+        m: 0,
+        mt: jtSpacing.gap.md,
+        pt: jtSpacing.gap.md,
+        display: 'grid',
+        gridTemplateColumns: {
+          xs: 'repeat(2, minmax(0, 1fr))',
+          md: `repeat(${facts.length}, minmax(0, 1fr))`,
+        },
+        gap: jtSpacing.gap.md,
+        borderTop: 1,
+        borderColor: 'border.subtle',
+      }}
+    >
+      {facts.map((fact) => (
+        <Box key={fact.label}>
+          <Typography
+            component="dd"
+            variant="h4"
+            sx={{ m: 0, color: accent, textTransform: 'none' }}
+          >
+            {fact.value}
+          </Typography>
+          <Typography component="dt" variant="body2" sx={{ color: 'base.100', mt: 0.5 }}>
+            {fact.label}
+          </Typography>
+          {fact.dates?.map((date, index) => (
+            <Typography
+              key={date}
+              component="dd"
+              variant="navigationSubLabel"
+              sx={{ m: 0, mt: index ? 0 : 1, color: accent, fontWeight: 400, lineHeight: 1.5 }}
+            >
+              {date}
+            </Typography>
+          ))}
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
+/** What the engagement yielded, told as one sentence with its numbers picked out. */
+function OutcomesSentence({
+  outcomes,
+  accent,
+}: {
+  outcomes: NonNullable<CriterionStory['construction']['outcomes']>
+  accent: string
+}) {
+  const last = outcomes.facts.length - 1
+  return (
+    <Typography
+      variant="body1"
+      sx={{ ...methodologyTextColumnSx, color: 'base.50', mt: jtSpacing.gap.lg }}
+    >
+      {outcomes.intro}{' '}
+      {outcomes.facts.map((fact, index) => (
+        <Fragment key={fact.label}>
+          {index > 0 && (last > 1 ? (index === last ? ', and ' : ', ') : ' and ')}
+          <Typography
+            component="span"
+            variant="h4"
+            sx={{ color: accent, textTransform: 'none', lineHeight: 1 }}
+          >
+            {fact.value}
+          </Typography>{' '}
+          {fact.label}
+        </Fragment>
+      ))}
+      .
+    </Typography>
+  )
+}
+
+/** The team-colored diamond that marks a bullet, centred on its first line. */
+function Diamond({ accent }: { accent: string }) {
+  return (
+    <Box
+      aria-hidden="true"
+      sx={{ width: 6, height: 6, mt: 0.875, bgcolor: accent, transform: 'rotate(45deg)' }}
+    />
+  )
+}
+
+/** Bullets in a tinted box, each with a team-colored diamond. */
+function PointList({ points, accent }: { points: string[]; accent: string }) {
+  return (
+    <Box
+      component="ul"
+      sx={{
+        m: 0,
+        mt: jtSpacing.gap.xs,
+        p: 0,
+        listStyle: 'none',
+        border: 1,
+        borderColor: 'border.subtle',
+        borderRadius: 1,
+        bgcolor: 'translucent.100',
+      }}
+    >
+      {points.map((point, pointIndex) => (
+        <Box
+          component="li"
+          key={point}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: '8px minmax(0, 1fr)',
+            columnGap: jtSpacing.gap.sm,
+            px: jtSpacing.component.md,
+            py: jtSpacing.component.sm,
+            borderTop: pointIndex ? 1 : 0,
+            borderColor: 'border.subtle',
+          }}
+        >
+          <Diamond accent={accent} />
+          <Typography variant="body2" sx={{ color: 'base.100' }}>
+            <CitedText text={point} />
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
 function ConstructionSection({ story, accent }: SectionProps) {
-  const { intro, facts, steps } = story.construction
+  const { intro, facts, outcomes, points, paragraphs, steps } = story.construction
   return (
     <Box component="section" id="construction" aria-labelledby="construction-title" sx={sectionSx}>
       <SectionHeading
@@ -331,58 +494,38 @@ function ConstructionSection({ story, accent }: SectionProps) {
         id="construction-title"
         accent={accent}
       />
-      <Typography
-        variant="body1"
-        sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.50' })}
-      >
+      <Typography variant="body1" sx={{ ...methodologyTextColumnSx, color: 'base.50' }}>
         <CitedText text={intro} />
       </Typography>
 
       {/* Key numbers behind the criterion, read before the step-by-step */}
-      {facts.length > 0 && (
-        <Box
-          component="dl"
-          sx={{
-            m: 0,
-            mt: jtSpacing.section.sm,
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, minmax(0, 1fr))',
-              md: `repeat(${facts.length}, minmax(0, 1fr))`,
-            },
-            borderTop: 1,
-            borderBottom: 1,
-            borderColor: 'border.subtle',
-          }}
-        >
-          {facts.map((fact, index) => (
-            <Box
-              key={fact.label}
-              sx={{
-                py: jtSpacing.component.md,
-                px: {
-                  xs: index % 2 ? jtSpacing.component.md : 0,
-                  md: index ? jtSpacing.component.md : 0,
-                },
-                // Width only, so the responsive values don't reset the divider color
-                borderLeftStyle: 'solid',
-                borderLeftWidth: { xs: index % 2 ? '1px' : 0, md: index ? '1px' : 0 },
-                borderLeftColor: 'border.subtle',
-              }}
-            >
-              <Typography component="dd" variant="numberTimeline" sx={{ m: 0, color: accent }}>
-                {fact.value}
-              </Typography>
-              <Typography component="dt" variant="body2" sx={{ color: 'base.100', mt: 0.5 }}>
-                {fact.label}
-              </Typography>
-            </Box>
-          ))}
+      {facts.length > 0 && <FactRow facts={facts} accent={accent} />}
+      {outcomes && <OutcomesSentence outcomes={outcomes} accent={accent} />}
+      {points && (
+        <Box sx={{ ...methodologyTextColumnSx, mt: jtSpacing.gap.md }}>
+          <PointList points={points} accent={accent} />
         </Box>
+      )}
+      {paragraphs && (
+        <Stack spacing={jtSpacing.gap.md} sx={{ ...methodologyTextColumnSx, mt: jtSpacing.gap.md }}>
+          {paragraphs.map((paragraph) => (
+            <Typography key={paragraph} variant="body1" sx={{ color: 'base.100' }}>
+              <CitedText text={paragraph} />
+            </Typography>
+          ))}
+        </Stack>
       )}
 
       {/* Steps in order along a rail; each node carries the step number */}
-      <Box component="ol" sx={{ m: 0, p: 0, mt: jtSpacing.section.sm, listStyle: 'none' }}>
+      <Box
+        component="ol"
+        sx={{
+          m: 0,
+          p: 0,
+          mt: steps.length ? jtSpacing.section.sm : 0,
+          listStyle: 'none',
+        }}
+      >
         {steps.map((step, index) => (
           <Box
             component="li"
@@ -424,13 +567,7 @@ function ConstructionSection({ story, accent }: SectionProps) {
                 {String(index + 1).padStart(2, '0')}
               </Typography>
             </Box>
-            <Stack
-              spacing={jtSpacing.gap.xs}
-              sx={(theme) => ({
-                ...methodologyTextColumnSx(theme),
-                pt: 0.75,
-              })}
-            >
+            <Stack spacing={jtSpacing.gap.xs} sx={{ ...methodologyTextColumnSx, pt: 0.75 }}>
               {step.when && (
                 <Typography variant="navigationSubLabel" component="p" sx={{ color: accent }}>
                   {step.when}
@@ -439,55 +576,12 @@ function ConstructionSection({ story, accent }: SectionProps) {
               <Typography variant="h4" component="h3">
                 {step.title}
               </Typography>
-              <Typography variant="body1" sx={{ color: 'base.100' }}>
-                <CitedText text={step.body} />
-              </Typography>
-              {step.points && (
-                <Box
-                  component="ul"
-                  sx={{
-                    m: 0,
-                    mt: jtSpacing.gap.xs,
-                    p: 0,
-                    listStyle: 'none',
-                    border: 1,
-                    borderColor: 'border.subtle',
-                    borderRadius: 1,
-                    bgcolor: 'translucent.100',
-                  }}
-                >
-                  {step.points.map((point, pointIndex) => (
-                    <Box
-                      component="li"
-                      key={point}
-                      sx={{
-                        display: 'grid',
-                        gridTemplateColumns: '8px minmax(0, 1fr)',
-                        columnGap: jtSpacing.gap.sm,
-                        px: jtSpacing.component.md,
-                        py: jtSpacing.component.sm,
-                        borderTop: pointIndex ? 1 : 0,
-                        borderColor: 'border.subtle',
-                      }}
-                    >
-                      {/* Team-colored diamond, centred on the first line */}
-                      <Box
-                        aria-hidden="true"
-                        sx={{
-                          width: 6,
-                          height: 6,
-                          mt: 0.875,
-                          bgcolor: accent,
-                          transform: 'rotate(45deg)',
-                        }}
-                      />
-                      <Typography variant="body2" sx={{ color: 'base.100' }}>
-                        <CitedText text={point} />
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
+              {step.body && (
+                <Typography variant="body1" sx={{ color: 'base.100' }}>
+                  <CitedText text={step.body} />
+                </Typography>
               )}
+              {step.points && <PointList points={step.points} accent={accent} />}
             </Stack>
           </Box>
         ))}
@@ -500,89 +594,85 @@ function ConstructionSection({ story, accent }: SectionProps) {
 function RegionsSection({ regions, accent }: { regions: CriterionRegions; accent: string }) {
   const shapes = REGION_SHAPES.filter((shape) => shape.team === regions.mapTeam)
   const teamViewBox = REGION_TEAM_VIEWBOX[regions.mapTeam]
+  const compactMap = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'))
+  // Ecology's outlines span the widest area. From md up, every team's map shares its
+  // scale, so the Delta is the same size on each page; on a phone each fills the width.
+  const widestMap = REGION_TEAM_VIEWBOX.ecology.width
+  const labelSize = compactMap ? teamViewBox.width / 26 : widestMap / 45
   return (
-    <Box
-      component="section"
-      id="regions"
-      aria-labelledby="regions-title"
-      sx={{
-        ...sectionSx,
-        display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'repeat(2, minmax(0, 1fr))' },
-        gridTemplateAreas: { xs: '"heading" "copy" "map"', md: '"heading heading" "copy map"' },
-        columnGap: { xs: 0, md: jtSpacing.section.md },
-        rowGap: jtSpacing.gap.lg,
-        alignItems: 'start',
-      }}
-    >
-      <Box sx={{ gridArea: 'heading' }}>
-        <SectionHeading
-          variant="h3"
-          title="Which regions does this criterion cover?"
-          id="regions-title"
-          accent={accent}
-        />
-      </Box>
-      <Stack spacing={jtSpacing.gap.md} sx={{ gridArea: 'copy', minWidth: 0 }}>
-        <Typography variant="body1" sx={{ color: 'base.100' }}>
-          <CitedText text={regions.intro} />
-        </Typography>
-        <Box component="dl" sx={{ m: 0, borderTop: 1, borderColor: 'border.subtle' }}>
-          {regions.regions.map((region) => (
-            <Box
-              key={region.name}
-              sx={{
-                display: 'grid',
-                gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) minmax(0, 1.2fr)' },
-                columnGap: jtSpacing.gap.md,
-                py: jtSpacing.component.xs,
-                borderBottom: 1,
-                borderColor: 'border.subtle',
-              }}
-            >
-              <Typography component="dt" variant="body1" sx={{ color: 'common.white' }}>
-                {region.name}
-              </Typography>
-              <Typography component="dd" variant="body2" sx={{ m: 0, color: 'base.200' }}>
-                <CitedText text={region.note ?? ''} />
-              </Typography>
-            </Box>
+    <Box component="section" id="regions" aria-labelledby="regions-title" sx={sectionSx}>
+      <SectionHeading
+        variant="h3"
+        title="Which regions does this criterion cover?"
+        id="regions-title"
+        accent={accent}
+      />
+      <Box sx={criterionSplitSx}>
+        <Stack spacing={jtSpacing.gap.md} sx={{ minWidth: 0 }}>
+          <Typography variant="body1" sx={{ color: 'base.100' }}>
+            <CitedText text={regions.intro} />
+          </Typography>
+          <Box component="dl" sx={{ m: 0, borderTop: 1, borderColor: 'border.subtle' }}>
+            {regions.regions.map((region) => (
+              <Box
+                key={region.name}
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'auto minmax(0, 1fr)',
+                  columnGap: jtSpacing.gap.md,
+                  alignItems: 'baseline',
+                  py: jtSpacing.component.xs,
+                  borderBottom: 1,
+                  borderColor: 'border.subtle',
+                }}
+              >
+                <Typography component="dt" variant="body2" sx={{ color: 'common.white' }}>
+                  {region.name}
+                </Typography>
+                <Typography
+                  component="dd"
+                  variant="body2"
+                  sx={{ m: 0, color: 'base.200', textAlign: 'right' }}
+                >
+                  <CitedText text={region.note ?? ''} />
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+          {regions.mapNote && (
+            <Typography variant="caption" sx={{ color: 'base.200' }}>
+              <CitedText text={regions.mapNote} />
+            </Typography>
+          )}
+        </Stack>
+        <Box
+          component="svg"
+          viewBox={`${teamViewBox.x} ${teamViewBox.y} ${teamViewBox.width} ${teamViewBox.height}`}
+          role="img"
+          aria-label={`Map of the Delta showing ${shapes.map((shape) => shape.name).join(', ')}`}
+          sx={{
+            width: '100%',
+            maxWidth: { md: `${(teamViewBox.width / widestMap) * 100}%` },
+            height: 'auto',
+            display: 'block',
+            justifySelf: 'center',
+          }}
+        >
+          <path d={WATERWAY_PATH} fill="currentColor" opacity={0.12} />
+          {shapes.map((shape) => (
+            <path
+              key={shape.name}
+              d={shape.d}
+              fill={alpha(accent, 0.18)}
+              stroke={accent}
+              strokeWidth={3}
+              strokeLinejoin="round"
+            />
+          ))}
+          {shapes.map((shape) => (
+            <Label key={`label-${shape.name}`} shape={shape} size={labelSize} />
           ))}
         </Box>
-        {regions.mapNote && (
-          <Typography variant="caption" sx={{ color: 'base.200' }}>
-            <CitedText text={regions.mapNote} />
-          </Typography>
-        )}
-      </Stack>
-      <Box
-        component="svg"
-        viewBox={`${teamViewBox.x} ${teamViewBox.y} ${teamViewBox.width} ${teamViewBox.height}`}
-        role="img"
-        aria-label={`Map of the Delta showing ${shapes.map((shape) => shape.name).join(', ')}`}
-        sx={{
-          gridArea: 'map',
-          width: '100%',
-          maxWidth: 520,
-          height: 'auto',
-          display: 'block',
-          justifySelf: 'center',
-        }}
-      >
-        <path d={WATERWAY_PATH} fill="currentColor" opacity={0.12} />
-        {shapes.map((shape) => (
-          <path
-            key={shape.name}
-            d={shape.d}
-            fill={alpha(accent, 0.18)}
-            stroke={accent}
-            strokeWidth={3}
-            strokeLinejoin="round"
-          />
-        ))}
-        {shapes.map((shape) => (
-          <Label key={`label-${shape.name}`} shape={shape} size={32} />
-        ))}
       </Box>
     </Box>
   )
@@ -604,7 +694,7 @@ function ComponentsSection({ story, accent }: SectionProps) {
       {intro && (
         <Typography
           variant="body1"
-          sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.100' })}
+          sx={{ ...methodologyTextColumnSx, color: 'base.100', whiteSpace: 'pre-line' }}
         >
           {intro}
         </Typography>
@@ -639,10 +729,7 @@ function ComponentsSection({ story, accent }: SectionProps) {
         aria-labelledby={`component-tab-${active}`}
         sx={{ pt: jtSpacing.section.sm }}
       >
-        <Typography
-          variant="body1"
-          sx={(theme) => ({ ...methodologyTextColumnSx(theme), color: 'base.50' })}
-        >
+        <Typography variant="body1" sx={{ ...methodologyTextColumnSx, color: 'base.50' }}>
           <CitedText text={item.summary} />
         </Typography>
 
@@ -692,16 +779,13 @@ function ComponentsSection({ story, accent }: SectionProps) {
                     display: 'grid',
                     gridTemplateColumns: '28px minmax(0, 1fr)',
                     columnGap: jtSpacing.gap.sm,
+                    alignItems: 'baseline',
                     py: jtSpacing.component.sm,
                     borderTop: 1,
                     borderColor: 'border.subtle',
                   }}
                 >
-                  <Typography
-                    variant="numberBadge"
-                    component="span"
-                    sx={{ color: accent, pt: 0.25 }}
-                  >
+                  <Typography variant="h4" component="span" sx={{ color: accent }}>
                     {index + 1}
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'base.100' }}>
@@ -717,29 +801,45 @@ function ComponentsSection({ story, accent }: SectionProps) {
           <StoryDataTable key={table.caption} table={table} accent={accent} />
         ))}
 
+        {item.link && (
+          <Button
+            component={Link}
+            to={item.link.to}
+            variant="contained"
+            sx={{ mt: jtSpacing.gap.lg }}
+          >
+            {item.link.label}
+          </Button>
+        )}
+
         {item.caveats && (
           <Box
             sx={{
               mt: jtSpacing.gap.lg,
               p: jtSpacing.component.md,
-              borderLeft: 3,
-              borderColor: accent,
               bgcolor: alpha(accent, 0.06),
             }}
           >
             <Typography variant="navigationSubLabel" component="h3" sx={{ color: accent }}>
               Caveats and Clarifications
             </Typography>
-            <Box component="ul" sx={{ m: 0, mt: jtSpacing.gap.xs, pl: jtSpacing.component.md }}>
-              {item.caveats.map((caveat) => (
-                <Typography
-                  key={caveat}
+            <Box component="ul" sx={{ m: 0, mt: jtSpacing.gap.sm, p: 0, listStyle: 'none' }}>
+              {item.caveats.map((caveat, index) => (
+                <Box
                   component="li"
-                  variant="body2"
-                  sx={{ display: 'list-item', color: 'base.100', mt: 0.5 }}
+                  key={caveat}
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '8px minmax(0, 1fr)',
+                    columnGap: jtSpacing.gap.sm,
+                    mt: index ? jtSpacing.gap.sm : 0,
+                  }}
                 >
-                  <CitedText text={caveat} />
-                </Typography>
+                  <Diamond accent={accent} />
+                  <Typography variant="body2" sx={{ color: 'base.50' }}>
+                    <CitedText text={caveat} />
+                  </Typography>
+                </Box>
               ))}
             </Box>
           </Box>

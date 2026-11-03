@@ -21,17 +21,16 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
   ecology: {
     mapTeam: 'ecology',
     intro:
-      'For this criterion, the Delta is grouped into subregions based on average daily water temperature, such that each region shares similar conditions for fish and the food they eat.',
+      'For this criterion, the Delta is grouped into subregions based on average daily water temperature, such that each region shares similar conditions for fish and the food they eat. The regions follow Pien et al. (Pien et al., 2025), with Suisun Bay and Suisun Marsh combined into one region, shown here as Suisun Marsh. West of Suisun, where Pien et al. ends, they follow known points of contraction (Grimaldo et al., 2020).',
     regions: [
-      { name: 'South Bay', note: '9 points.' },
-      { name: 'Central Bay', note: '16 points.' },
-      { name: 'San Pablo Bay', note: '15 points.' },
-      { name: 'North Delta', note: '30 points.' },
-      { name: 'Central', note: '23 points.' },
-      { name: 'South Delta', note: '11 points.' },
-      { name: 'Confluence', note: '16 points.' },
-      { name: 'Suisun Bay', note: '25 points, reported together with Suisun Marsh.' },
-      { name: 'Suisun Marsh', note: 'Folded into Suisun Bay in the results.' },
+      { name: 'San Pablo Bay', note: '15 points' },
+      { name: 'Central Bay', note: '16 points' },
+      { name: 'South Bay', note: '9 points' },
+      { name: 'Suisun Marsh', note: '25 points' },
+      { name: 'Confluence', note: '16 points' },
+      { name: 'North Delta', note: '30 points' },
+      { name: 'Central', note: '23 points' },
+      { name: 'South Delta', note: '11 points' },
     ],
   },
   'environmental-justice': {
@@ -39,9 +38,9 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
     intro:
       'This criterion explores results by how vulnerable a community is, not by where it sits geographically. Therefore, instead of a regional breakdown of results, results are communicated per vulnerability zone:',
     regions: [
-      { name: 'Moderate', note: '10 drinking-water points.' },
-      { name: 'High', note: '36 drinking-water points (33 in the outflow runs).' },
-      { name: 'Highest', note: '3 drinking-water points.' },
+      { name: 'Moderate', note: '10 drinking-water points' },
+      { name: 'High', note: '36 drinking-water points (33 in the tiered outflow runs)' },
+      { name: 'Highest', note: '3 drinking-water points' },
     ],
   },
   recreation: {
@@ -49,13 +48,10 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
     intro:
       'This criterion splits the Delta into four regions that follow tidal flow and conductivity zones, and the highways people take to reach recreation sites (Andrews et al., 2017; Delta Stewardship Council, 2013).',
     regions: [
-      { name: 'North Delta', note: 'Sacramento River corridors and nearby recreation sites' },
-      { name: 'Confluence', note: 'The meeting area of the Sacramento and San Joaquin rivers' },
-      {
-        name: 'South Delta',
-        note: 'San Joaquin River corridors, Clifton Court Forebay, and nearby sites',
-      },
-      { name: 'Suisun Bay', note: 'Suisun, Grizzly, and Honker bays and Suisun Marsh' },
+      { name: 'North Delta', note: '6 points' },
+      { name: 'Central Delta', note: '9 points' },
+      { name: 'South Delta', note: '9 points' },
+      { name: 'Suisun Marsh', note: '8 points' },
     ],
   },
   economy: {
@@ -63,10 +59,12 @@ export const criterionRegions: Partial<Record<TeamId, CriterionRegions>> = {
     intro:
       'This criterion divides the Delta into subregions of North, Central, and South Delta by water agency; the remaining fourth zone is the West Delta by default (no official agency).',
     regions: [
-      { name: 'North Delta' },
-      { name: 'Central Delta' },
-      { name: 'South Delta' },
-      { name: 'West Delta' },
+      // Estimated, not from the team: its 157 RMA stations placed by location in the zone
+      // they fall within, or the nearest zone for the 30 outside all four outlines.
+      { name: 'North Delta', note: '63 points' },
+      { name: 'Central Delta', note: '23 points' },
+      { name: 'South Delta', note: '40 points' },
+      { name: 'West Delta', note: '31 points' },
     ],
   },
 }

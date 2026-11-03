@@ -65,12 +65,12 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
     places: {
       count: '8 estuarine subregions, 145 points',
       basis:
-        'The team adapted the regions from Pien et al. 2025 and Grimaldo et al. 2020, “grouped by temperature similarities, or by known regional divisions”, and **analysed all eight**, from South Bay in the west to the South Delta in the east. The map draws all eight regions. It also draws Suisun Marsh separately, which the report counts within Suisun Bay.',
+        'The team adapted the regions from Pien et al. 2025 and Grimaldo et al. 2020, “grouped by temperature similarities, or by known regional divisions”, and **analysed all eight**, from South Bay in the west to the South Delta in the east. The map draws all eight regions, with Suisun Bay and Suisun Marsh combined as Suisun Marsh, as the team assigned them.',
       regions: [
         { name: 'South Bay', drawn: true },
         { name: 'Central Bay', drawn: true },
         { name: 'San Pablo Bay', drawn: true },
-        { name: 'Suisun Bay', drawn: true },
+        { name: 'Suisun Marsh', drawn: true },
         { name: 'Confluence', drawn: true },
         { name: 'North Delta', drawn: true },
         { name: 'Central Delta', drawn: true },
@@ -85,11 +85,11 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
     findings: [
       {
         label: 'Where the estuary moves',
-        text: 'The middle of the estuary, the ==Confluence, Suisun Bay and San Pablo Bay==, saw the most variation in species niches. The Delta stayed consistently fresh and the Bay consistently salty under every scenario, so the species that respond are the ones whose tolerance sits in the brackish middle.',
+        text: 'The middle of the estuary, the ==Confluence, Suisun Marsh and San Pablo Bay==, saw the most variation in species niches. The Delta stayed consistently fresh and the Bay consistently salty under every scenario, so the species that respond are the ones whose tolerance sits in the brackish middle.',
       },
       {
         label: 'Wet year against dry year',
-        text: 'In ==2020, the dry year==, overbite clam gained suitable days in every subregion except San Pablo Bay, and adult longfin smelt gained in every subregion. **Chinook salmon lost** suitable days in the South Delta, the Confluence, Suisun Bay and San Pablo Bay. Largemouth bass and Brazilian waterweed lost ground in Suisun as it turned saltier. This happened regardless of scenario.',
+        text: 'In ==2020, the dry year==, overbite clam gained suitable days in every subregion except San Pablo Bay, and adult longfin smelt gained in every subregion. **Chinook salmon lost** suitable days in the South Delta, the Confluence, Suisun Marsh and San Pablo Bay. Largemouth bass and Brazilian waterweed lost ground in Suisun as it turned saltier. This happened regardless of scenario.',
       },
       {
         label: 'Bolster & Fortify',

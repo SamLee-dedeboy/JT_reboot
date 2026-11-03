@@ -7,9 +7,9 @@ import { useContext, type ReactNode } from 'react'
 import { CitationContext, referenceId } from './citationContext'
 import { withEmphasis } from './emphasis'
 
-const YEAR = String.raw`(?:19|20)\d{2}[a-z]?`
-/** One source: "Author, 2015" or "Author, 2012, 2021". */
-const SOURCE = new RegExp(String.raw`^(.+?),\s*(${YEAR}(?:\s*,\s*${YEAR})*)$`)
+const YEAR = String.raw`(?:(?:19|20)\d{2}[a-z]?|n\.d\.|in preparation)`
+/** One source: "Author, 2015", "Author, 2012, 2021", or "Author, 2021, p. xi". */
+const SOURCE = new RegExp(String.raw`^(.+?),\s*(${YEAR}(?:\s*,\s*${YEAR})*)(?:,\s*pp?\.\s*\S+)?$`)
 /** A parenthetical and the space before it; kept only if every part is a source. */
 const PARENTHETICAL = /\s*\(([^()]+)\)/g
 

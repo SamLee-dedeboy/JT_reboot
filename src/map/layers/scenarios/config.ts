@@ -17,6 +17,8 @@ export interface MapAnnotations {
     anchor: 'left' | 'right' | 'top-left'
     /** Solid white, for the labels that should draw the eye first. */
     solid?: boolean
+    /** Pixel offset that keeps the label clear of its point or line feature. */
+    offset?: [number, number]
   }>
 }
 
@@ -53,6 +55,7 @@ export interface LegendItem {
   kind?: 'fill' | 'line' | 'band' | 'point' | 'square'
   dashed?: boolean
   pattern?: ScenarioPattern
+  color?: string
 }
 
 export interface SourceConfig {
@@ -67,6 +70,8 @@ export interface SourceConfig {
   visibilityScope?: MapScope
   selectableProperty?: string
   selectionKey?: string
+  /** Keeps Mapbox dash spacing stable by preserving the configured width when selected. */
+  preserveLineWidthOnSelection?: boolean
   legend?: {
     title: string
     items: LegendItem[]
@@ -399,20 +404,24 @@ const tunnelLegend = {
   ],
 }
 
-const tunnelSources = [
-  createScenarioAsset({
-    id: 'scenario-tunnel-alignment',
-    path: '/data/geospatial-assets/scenarios/tunnel/alignment.geojson',
-    selectionKey: 'tunnel-alignment',
-    geometry: 'line',
-    lineDash: [2, 2],
-    legend: tunnelLegend,
-  }),
+const tunnelSources: SourceConfig[] = [
+  {
+    ...createScenarioAsset({
+      id: 'scenario-tunnel-alignment',
+      path: '/data/geospatial-assets/scenarios/tunnel/alignment.geojson',
+      selectionKey: 'tunnel-alignment',
+      geometry: 'line',
+      lineDash: [2, 2],
+      legend: tunnelLegend,
+    }),
+    preserveLineWidthOnSelection: true,
+  },
   {
     id: 'scenario-tunnel-alignment-connectors',
     type: 'geojson' as const,
     activation: 'adaptation' as const,
     selectionKey: 'tunnel-alignment',
+    preserveLineWidthOnSelection: true,
     data: {
       type: 'FeatureCollection' as const,
       features: [
@@ -794,11 +803,13 @@ const callingOnReservesLegend = {
       label: 'Sacramento River',
       selectionKey: 'cor-rivers',
       kind: 'line' as const,
+      color: map.markers.comparison,
     },
     {
-      label: 'Shasta Dam and Reservoir',
+      label: 'Shasta Dam',
       selectionKey: 'cor-facilities',
       kind: 'point' as const,
+      color: map.markers.comparison,
     },
   ],
 }
@@ -811,7 +822,6 @@ const callingOnReservesSources: SourceConfig[] = [
       '/data/geospatial-assets/scenarios/calling-on-reserves/sacramento-river-mainstem.geojson',
     ),
     activation: 'adaptation',
-    visibilityScope: 'statewide',
     selectionKey: 'cor-rivers',
     legend: callingOnReservesLegend,
     layers: [
@@ -820,9 +830,9 @@ const callingOnReservesSources: SourceConfig[] = [
         type: 'line',
         source: 'scenario-cor-sacramento-river',
         paint: {
-          'line-color': map.scenarios.cartography.feature,
+          'line-color': map.markers.comparison,
           'line-opacity': 0.95,
-          'line-width': 3,
+          'line-width': 5,
         },
       },
     ],
@@ -834,7 +844,6 @@ const callingOnReservesSources: SourceConfig[] = [
       '/data/geospatial-assets/scenarios/calling-on-reserves/shasta-dam-reservoir.geojson',
     ),
     activation: 'adaptation',
-    visibilityScope: 'statewide',
     selectionKey: 'cor-facilities',
     layers: [
       {
@@ -843,7 +852,7 @@ const callingOnReservesSources: SourceConfig[] = [
         source: 'scenario-cor-shasta',
         paint: {
           'circle-radius': 7,
-          'circle-color': map.scenarios.cartography.feature,
+          'circle-color': map.markers.comparison,
           'circle-stroke-color': map.markers.stroke,
           'circle-stroke-width': 2,
         },
@@ -990,6 +999,25 @@ const tieredOutflowsAnnotations: MapAnnotations = {
   ],
 }
 
+const callingOnReservesAnnotations: MapAnnotations = {
+  labels: [
+    {
+      text: 'Sacramento River',
+      coordinates: [-121.86, 39.37],
+      anchor: 'left',
+      solid: true,
+      offset: [12, 0],
+    },
+    {
+      text: 'Shasta Dam',
+      coordinates: [-122.4192, 40.7186],
+      anchor: 'left',
+      solid: true,
+      offset: [12, 0],
+    },
+  ],
+}
+
 export const layersBySlug: Record<string, SourceConfig[]> = {
   'tiered-outflows': tieredOutflowsRivers,
   'eco-machine': [ecoMachineSuisunMarsh, ecoMachineFranksTract],
@@ -1076,18 +1104,14 @@ export const configBySlug: Record<string, Config> = {
     ...defaultConfig,
     interactive: true,
     showNavigationControl: true,
-    legendActivation: 'adaptation',
     bounds: { delta: ecoMachineBounds },
-    triggers: { adaptationLayers: 'design-approach' },
   },
   'bolster-and-fortify': {
     ...defaultConfig,
     interactive: true,
     showNavigationControl: true,
-    legendActivation: 'adaptation',
     bounds: { delta: bolsterBounds },
     legendClearance,
-    triggers: { adaptationLayers: 'design-approach' },
     selectionBounds: {
       'operable-gates': [
         [-121.61, 38.01],
@@ -1103,10 +1127,8 @@ export const configBySlug: Record<string, Config> = {
     ...defaultConfig,
     interactive: true,
     showNavigationControl: true,
-    legendActivation: 'adaptation',
     bounds: { delta: tunnelBounds },
     legendClearance,
-    triggers: { adaptationLayers: 'design-approach' },
   },
   'new-green-watershed': {
     interactive: true,
@@ -1132,10 +1154,9 @@ export const configBySlug: Record<string, Config> = {
     ...defaultConfig,
     interactive: true,
     showNavigationControl: true,
-    legendActivation: 'adaptation',
-    bounds: { delta: callingOnReservesBounds, statewide: callingOnReservesBounds },
+    bounds: { delta: callingOnReservesBounds },
     legendClearance,
-    triggers: { statewide: 'design-approach' },
+    annotations: callingOnReservesAnnotations,
   },
 }
 

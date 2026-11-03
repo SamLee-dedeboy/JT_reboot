@@ -11,20 +11,21 @@ export const REGION_DISPLAY_ORDER = [
   'North Delta',
   'Confluence',
   'Central',
+  'Central Delta',
   'South Delta',
-  'Suisun Bay',
+  'Suisun Marsh',
   'San Pablo Bay',
   'Central Bay',
   'South Bay',
 ] as const
 
-/** All eight Ecology data regions have an outline; "Suisun Marsh" has an
- *  additional outline and no key, because the report folds it into Suisun Bay. */
+/** All eight Ecology data regions have an outline; "Suisun Marsh" is Suisun Bay and
+ *  Suisun Marsh combined, as the team assigned them, and keeps the suisunBay key. */
 const ECOLOGY_REGION_KEY: Record<string, string> = {
   'South Bay': 'southBay',
   'Central Bay': 'centralBay',
   'San Pablo Bay': 'sanPabloBay',
-  'Suisun Bay': 'suisunBay',
+  'Suisun Marsh': 'suisunBay',
   Confluence: 'confluence',
   Central: 'centralDelta',
   'South Delta': 'southDelta',
@@ -41,12 +42,12 @@ const ECONOMY_ZONE_KEY: Record<string, string> = {
 
 /**
  * Recreation's four regions, now with values per region (18 Oct 2026 workbooks).
- * Three names match outright; "Confluence" is taken to be the workbook's Central
- * Delta, whose nine stations run from Pittsburg to Franks Tract. Unconfirmed.
+ * Displayed under the names in the team's report; the shapefile's "Suisun Bay" and
+ * "Confluence" are renamed to its Suisun Marsh and Central Delta.
  */
 const RECREATION_REGION_KEY: Record<string, string> = {
-  'Suisun Bay': 'suisun',
-  Confluence: 'centralDelta',
+  'Suisun Marsh': 'suisun',
+  'Central Delta': 'centralDelta',
   'North Delta': 'northDelta',
   'South Delta': 'southDelta',
 }

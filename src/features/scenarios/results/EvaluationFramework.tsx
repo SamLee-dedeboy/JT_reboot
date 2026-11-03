@@ -1,6 +1,5 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { Box, Button, Stack, Typography } from '@mui/material'
-import { alpha } from '@mui/material/styles'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '../../../theme'
 import TagChip from '../../../ui/TagChip'
@@ -19,25 +18,6 @@ const visibleEntityGroup: Record<(typeof evaluationTeams)[number]['id'], string>
 }
 
 const teamColor = (teamId: EvaluationTeamId) => teamStyle[teamId].color
-
-// A chips note can link text as [label](url); split alternates plain text, label, and url.
-const noteWithLinks = (note: string, color: string) =>
-  note.split(/\[(.+?)\]\((.+?)\)/g).map((part, index, parts) => {
-    if (index % 3 === 2) return null
-    if (index % 3 === 0) return part
-    return (
-      <Box
-        component="a"
-        key={parts[index + 1]}
-        href={parts[index + 1]}
-        target="_blank"
-        rel="noopener noreferrer"
-        sx={{ color, textDecoration: 'underline', textDecorationColor: alpha(color, 0.5) }}
-      >
-        {part}
-      </Box>
-    )
-  })
 
 // "Name · qualifier" renders the name in the chip's weight and the qualifier lighter.
 const entityLabel = (entity: string) => {
@@ -159,7 +139,7 @@ export default function EvaluationFramework({
                       </Typography>
                       {criterionStories[team.id].brief.chipsNote && (
                         <Typography variant="caption" component="p" sx={{ mt: jtSpacing.gap.xs }}>
-                          {noteWithLinks(
+                          {withEmphasis(
                             criterionStories[team.id].brief.chipsNote ?? '',
                             teamColor(team.id),
                           )}
@@ -239,7 +219,10 @@ export default function EvaluationFramework({
                         </Typography>
                       </Stack>
                       <Typography variant="body1" sx={{ mt: jtSpacing.gap.sm, color: 'base.100' }}>
-                        {withEmphasis(component.summary, teamColor(team.id))}
+                        {withEmphasis(
+                          component.overviewSummary ?? component.summary,
+                          teamColor(team.id),
+                        )}
                       </Typography>
                     </Box>
                   ))}

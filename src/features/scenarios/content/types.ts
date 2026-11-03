@@ -53,4 +53,6 @@ export interface ScenarioContent {
   story: ScenarioChapter[]
   mapFeatures: string[]
   comparisonNote?: string
+  /** Closing guidance shown after the scenario's full narrative. */
+  closingParagraph?: string
 }

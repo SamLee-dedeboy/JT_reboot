@@ -34,7 +34,7 @@ export const PIVOT_PRESETS: PivotPreset[] = [
     key: 'ecology-year',
     label: 'Year beats scenario',
     finding:
-      'Overbite clam finds suitable conditions in Suisun Bay on about 5% of days in the wet year under every scenario. That rises to about 50% in the dry year. The water year drives the number, while the scenario barely changes it.',
+      'Overbite clam finds suitable conditions in Suisun Marsh on about 5% of days in the wet year under every scenario. That rises to about 50% in the dry year. The water year drives the number, while the scenario barely changes it.',
     criteria: ['eco-niche-overbiteClam'],
     scenarios: ['ngw', 'em', 'bf', 'cor', 'bau'],
     places: ['suisunBay'],
@@ -45,7 +45,7 @@ export const PIVOT_PRESETS: PivotPreset[] = [
     key: 'ecology-map',
     label: 'The middle estuary moves',
     finding:
-      'In the dry year, Longfin smelt live only in Suisun Bay and the Confluence. The difference reading shows Calling on Reserves pushing them out of Suisun and into the Confluence.',
+      'In the dry year, Longfin smelt live only in Suisun Marsh and the Confluence. The difference reading shows Calling on Reserves pushing them out of Suisun and into the Confluence.',
     criteria: ['eco-niche-longfinJuv'],
     scenarios: ['ngw', 'em', 'bf', 'cor', 'bau'],
     places: ['suisunBay', 'confluence', 'northDelta', 'centralDelta', 'southDelta'],

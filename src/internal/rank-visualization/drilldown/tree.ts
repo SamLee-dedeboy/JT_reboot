@@ -1390,7 +1390,7 @@ function carbonOffset(): CriterionNode {
     provenance: 'reported',
     unit: 'dollars',
     betterHigher: true,
-    note: 'Yearly revenue from selling carbon offsets at $15/tCO2e on converted land: 512% of the direct farm revenue Eco Machine loses, and 7.6–12.1% for New Green Watershed depending on the wetland level.',
+    note: 'Yearly revenue from selling carbon offsets on converted land, at $15 per metric ton of CO2: 512% of the direct farm revenue Eco Machine loses, and 7.6–12.1% for New Green Watershed depending on the wetland level.',
     places: NO_FACET,
     periods: NO_FACET,
     values,

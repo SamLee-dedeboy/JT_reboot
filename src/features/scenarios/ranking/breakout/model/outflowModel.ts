@@ -243,7 +243,7 @@ function ecologyTree(): CriterionNode {
           'of-eco-species',
           'ecology',
           'Species suitability',
-          'Ecology has not ranked the species on the outflow runs. Open the row for each species’ proportion of suitable days by region: more outflow freshens the Confluence and Suisun Bay (more Brazilian waterweed and largemouth bass, fewer overbite clams there), less outflow does the reverse.',
+          'Ecology has not ranked the species on the outflow runs. Open the row for each species’ proportion of suitable days by region: more outflow freshens the Confluence and Suisun Marsh (more Brazilian waterweed and largemouth bass, fewer overbite clams there), less outflow does the reverse.',
           {
             edge: 'beside',
             sources: [ECO_SOURCE],

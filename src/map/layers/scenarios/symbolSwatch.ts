@@ -12,7 +12,7 @@ const patternImage = {
 /** Draws a legend item's map symbol as a background, for the legend and the narrative's chips. */
 export function symbolSwatchSx(item: LegendItem, selected: boolean) {
   const { feature, highlight, mutedFeature, pattern } = map.scenarios.cartography
-  const ink = selected ? highlight : feature
+  const ink = item.color ?? (selected ? highlight : feature)
   const mark = { color: ink, backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }
 
   if (item.pattern) {

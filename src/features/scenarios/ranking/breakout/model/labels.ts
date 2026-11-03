@@ -34,7 +34,7 @@ import type { ScenarioKey } from '../../../../../internal/rank-visualization/dri
  */
 export const TEAM_TAKEAWAYS: Partial<Record<TeamKey, string[]>> = {
   ecology: [
-    'Estuarine subregions, particularly those in the middle of the estuary (the Confluence, Suisun Bay, and San Pablo Bay regions) — **saw the most variation in species fundamental niche.** The Delta remained consistently fresh across adaptation and tiered outflow scenarios, and the Bay consistently salty.',
+    'Estuarine subregions, particularly those in the middle of the estuary (the Confluence, Suisun Marsh, and San Pablo Bay regions) — **saw the most variation in species fundamental niche.** The Delta remained consistently fresh across adaptation and tiered outflow scenarios, and the Bay consistently salty.',
     'In general, the adaptation scenarios have a far more minimal impact on the functional niche of specific species of interest than water year type and region.',
     'In terms of suitability for less desirable species, **some tradeoffs were apparent across scenarios.** Decreases in nuisance freshwater species consistently coincided with increases in overbite clam suitability, and vice versa.',
     'The most impactful way an adaptation scenario, like the ones presented in this exercise, can influence a system likely lies in **landscape-level conversion and habitat creation.**',
@@ -77,7 +77,7 @@ export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
     'Upstream restoration: Our evaluation metrics are primarily based on **conditions within the Delta proper, and its downstream waterways.** However, the ++New Green Watershed++ scenario incorporates restoration throughout the entire watershed, including montane meadows, floodplains, and forests in the Sierra. These upstream alterations would likely increase the flows entering the estuary, and might also extend new habitat to anadromous and migratory species of concern, like salmon. Our models were not able to incorporate these hydrological or land-related effects. Collaborators have assessed the general benefits of expanding upstream habitat, but their evaluations are not reliant on hydrological model outputs.',
   ],
   recreation: [
-    'Deduced scores: Scores for ++Bolster & Fortify++ (0), ++A Tunnel++ (-3), and ++Calling on Reserves++ (-1) are deduced; there are no solid acres attached to these scenarios, unlike ++Eco Machine++, ++New Green Watershed++, and ++Business as Usual++. They are scored this way because changes in water conveyance and years to project completion along Delta towns would affect recreation economies throughout the Delta through the building and restructuring of water resources; even without major acreage changes, they would hinder the recreation economy in different ways. Furthermore, because these scenarios follow future-based impacts, no breakdowns below the "All together" level are provided by region.',
+    'Omitted scores: Scores for ++Bolster & Fortify++, ++A Tunnel++, and ++Calling on Reserves++ are omitted from Habitat Restoration and Recreation Economy and instead are calculated under Infrastructure Impacts. This is partly because these scenarios have no solid acres attached, unlike ++Eco Machine++, ++New Green Watershed++, and ++Business as Usual++. They are scored this way because changes in water conveyance and years to project completion along Delta towns would affect recreation economies throughout the Delta by building and restructuring water resources; even without major acreage changes, they would hinder the recreation economy in different ways. Furthermore, because these scenarios follow future-based impacts, no breakdowns below the "All together" level are provided by region.',
     'Infrastructure impacts: Infrastructure impacts affect only ++Bolster & Fortify++ and ++A Tunnel++ because of their anticipated future changes, expanding on the caveat scores’ reasoning for Habitat Restoration based on infrastructural changes (Caveat 1). Their scores, ++Bolster & Fortify++ (-1) and ++A Tunnel++ (-3), imply that for ++Bolster & Fortify++, the building of salinity gates surrounding Franks Tract would be detrimental to boaters, blocking access to waterways during dry periods to prevent salinity encroachment, while ++A Tunnel++ would impact recreation economies throughout Delta towns that depend on recreation and tourism and would also make certain areas inaccessible for extended periods of time.',
     'Restored acres: Restored acres for ++Eco Machine++ and ++New Green Watershed++ are positive (+) changes relative to ++Business as Usual++’s existing protected areas (current inventory, accessible and non-accessible: 108,301 acres). ++Eco Machine++’s +43,100 acres would bring the total to 151,401 acres; ++New Green Watershed++’s +458,948 acres, without upland restoration, to about 567,249 acres.',
     'Sea level rise columns: The sea level rise columns reuse current-conditions acres and dollars, so restoration and economy weren’t re-modeled for sea level rise.',
@@ -89,7 +89,7 @@ export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
     `Water age + temperature: ${EJ_WATER_AGE_TAKEAWAY}`,
   ],
   economy: [
-    'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue at $15/tCO2e. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
+    'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue: credits sold for the greenhouse gas emissions the converted land avoids, at $15 per metric ton of CO2. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
   ],
   ecoCultural: [
     'Although all four metrics are equally important and interdependent on one another to meet this criterion, only the ecosystem restoration metric can be spatially and quantitatively evaluated across the scenarios. The other three metrics are envisioned and assumed in ++Eco Machine++ and ++New Green Watershed++ scenarios (the two scenarios that restore land and habitats) but cannot be prescribed within the scope of this project (e.g., assigning specific areas for land-back initiatives, or determining where access may be most desired and granted on private land). Thus, the evaluation for Tribal land access, Tribal Sovereignty and Application of Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively, **where the scenarios offer the increased potential to achieve these metrics.**',
@@ -150,7 +150,6 @@ export const PLACE_TRAYS: { heading: string; places: string[] }[] = [
       'North Delta',
       'Suisun Marsh',
       'Confluence',
-      'Suisun Bay',
       'Central Delta',
       'South Delta',
       'West Delta',
@@ -562,9 +561,9 @@ export const METRIC_DEFINITIONS: Record<
     computed:
       'Restored acres added on top of Business as Usual’s protected areas, by Delta region.',
     considered:
-      'Eco Machine 41,720 acres in Suisun Marsh and 1,380 in the Central Delta; New Green Watershed at its 50% bound 41,720, 66,947, 283,904 and 277,681 (Suisun, Central, North, South).',
+      'Eco Machine 41,720 acres in Suisun Marsh and 1,380 in the Central Delta; New Green Watershed at its 50% bound 41,720, 32,692, 186,769 and 197,767 (Suisun, Central, North, South).',
     scored:
-      'Eco Machine +5, New Green Watershed +5 at every bound. Scenarios that restore nothing score 0. Kept apart from the Recreation score.',
+      'Eco Machine +3, New Green Watershed +5. N/A for Bolster & Fortify, Calling on Reserves and A Tunnel, which have no acres attached and are scored under Infrastructure impact. Kept apart from the Recreation score.',
   },
   'bk-rec-economy': {
     takeaway:
@@ -578,7 +577,7 @@ export const METRIC_DEFINITIONS: Record<
       ['Eco Machine', 'Delta-wide'],
     ],
     scored:
-      'Each 1% more value than Business as Usual adds 1. Eco Machine +5, New Green Watershed +5 at every bound; scenarios that restore nothing score 0.',
+      'Eco Machine +3, New Green Watershed +5. N/A for Bolster & Fortify, Calling on Reserves and A Tunnel, which have no acres attached and are scored under Infrastructure impact.',
     scale: { step: '%', axis: 'Value vs Business as Usual' },
   },
 

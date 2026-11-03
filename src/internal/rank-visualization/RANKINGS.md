@@ -160,14 +160,15 @@ The outflow +1 follows Caveat 5: all together averages the regions, (2 + 3 + 0 +
 | Salinity stress, sea level rise     | −0.5        | −0.5                | 0                 | +0.25               | −0.25    |
 | Temperature stress                  | 0           | 0                   | 0                 | 0                   | 0        |
 | Temperature stress, sea level rise  | 0           | 0                   | 0                 | 0                   | 0        |
-| Habitat restoration                 | +3          | +5                  | 0                 | −1                  | −3       |
-| Habitat restoration, sea level rise | +3          | +5                  | 0                 | −1                  | −3       |
-| Recreation economy                  | +3          | +5                  | 0                 | −1                  | −3       |
-| Recreation economy, sea level rise  | +3          | +5                  | 0                 | −1                  | −3       |
-| Infrastructure impact (qualitative) | N/A         | N/A                 | −1                | 0                   | −3       |
+| Habitat restoration                 | +3          | +5                  | N/A               | N/A                 | N/A      |
+| Habitat restoration, sea level rise | +3          | +5                  | N/A               | N/A                 | N/A      |
+| Recreation economy                  | +3          | +5                  | N/A               | N/A                 | N/A      |
+| Recreation economy, sea level rise  | +3          | +5                  | N/A               | N/A                 | N/A      |
+| Infrastructure impact (qualitative) | N/A         | N/A                 | −1                | −1                  | −3       |
 
-Eco Machine +3 is the team's assigned score. Bolster & Fortify 0, Calling on Reserves
-−1 and A Tunnel −3 are deduced, with no acres behind them (Caveat 1). The outflow runs
+Eco Machine +3 is the team's assigned score. Bolster & Fortify, Calling on Reserves and
+A Tunnel have no acres behind them, so the team scores them under Infrastructure impact
+only (Caveat 1, updated 2 Nov 2026). The outflow runs
 score salinity +4.5 and temperature 0; restoration and economy are N/A for them.
 
 ### Share of days past each activity's threshold, whole period, all together, current conditions
@@ -402,8 +403,8 @@ and do not join the adaptation ranking.
 
 ### Across the site
 
-1. Recreation notes and definitions still cite the old +5/0 scores, old acres, 25/50/100% and the
-   scoring email (`labels.ts`, `drilldown/tree.ts`).
+1. Recreation's 25% and 100% wetland levels still repeat +5 until the team confirms them; only the
+   50% level comes from the Nov 2026 workbook (`rankingModel.ts`).
 2. The label `versionOnly: 'NGW only'` still uses an abbreviation (`labels.ts`).
 3. Team scores sit in both `data.ts` and the breakout tree, so both must change together when a team
    updates a score. Recreation's had drifted apart until 2 Nov 2026.

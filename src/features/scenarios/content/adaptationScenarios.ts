@@ -56,11 +56,12 @@ export const adaptationScenarios: ScenarioContent[] = [
         paragraphs: [
           'Eco Machine adds tens of thousands of acres of tidal wetland in Suisun Marsh and Franks Tract that aquatic species can reach, with a small gain for the food web that feeds them. That restoration also opens eco-cultural opportunities, and conditions for recreation improve slightly in the Central Delta. Because almost none of the restored land is farmed, the effect on the agricultural economy is close to neutral.',
           'The trade-offs are concentrated in Suisun Marsh, which becomes saltier and a little less suited to birding, waterfowl hunting, and angling. Conditions for harmful algal blooms are slightly worse than Business as Usual, and the restoration carries a one-time construction cost estimated at $1.34 billion.',
-          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
     mapFeatures: ['Suisun Marsh and Grizzly Island', 'Franks Tract and its tidal connections'],
+    closingParagraph:
+      'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
     slug: 'new-green-watershed',
@@ -90,42 +91,34 @@ export const adaptationScenarios: ScenarioContent[] = [
           {
             title: 'Restoring tidal wetlands',
             summary:
-              'Near sea level, restored tidal wetlands could reshape water and salinity movement while creating habitat and spaces for recreation and cultural practices.',
+              'Near sea level, restored tidal wetlands, such as areas of Suisun Marsh, could reshape water and salinity movement while creating habitat and spaces for recreation and cultural practices.',
             mapHabitatType: 'tidal',
-            paragraphs: [
-              'Near sea level, tidal wetlands are proposed if levees are breached, such as areas of Suisun Marsh.',
-              'Restored tidal wetlands could change how tides and salinity move through the Delta while creating habitat and supporting recreation and cultural uses.',
-            ],
+            paragraphs: [],
           },
           {
             title: 'Keeping peat soils wet',
             summary:
-              'Keeping water in peat soils can stop the ground from sinking while supporting farming, habitat, carbon storage, and cultural uses.',
+              'Keeping water in peat soils can stop the ground from sinking while supporting farming, habitat, carbon storage, and cultural uses. In deeply to moderately subsided Delta areas that remain protected by levees, the central strategy is to keep peat soils wet, so they stop decomposing and sinking.',
             mapHabitatType: 'soil',
             paragraphs: [
-              'In deeply to moderately subsided Delta areas that remain protected by levees, the central strategy is to keep peat soils wet, so they stop decomposing and sinking.',
               'These lands could support a flexible mosaic of wetter uses, including rice farming, paludiculture, floating wetlands, and managed wetlands. Different practices could be designed for different benefits, such as tule production or plankton maximization. These land uses may also store carbon, create habitat, and provide new recreational and eco-cultural opportunities.',
             ],
           },
           {
             title: 'Maximizing habitat diversity in transitional areas',
             summary:
-              'Transitional areas span the elevations between subtidal waters and uplands, creating rare opportunities for diverse, connected habitats.',
+              'Transitional areas vary from subtidal to supratidal elevations. Because many species use the ecotones between these habitats, restoring connections among tidal areas, river channels, floodplains, and higher ground could provide unusually high ecological value.',
             mapHabitatType: 'transitional',
             paragraphs: [
-              'Transitional areas vary from subtidal to supratidal elevations. Because many species use the ecotones between these habitats, restoring connections among tidal areas, river channels, floodplains, and higher ground could provide unusually high ecological value.',
               'These connections would give plants and wildlife more room to move among habitats as water levels rise and could reconnect Delta channels with non-subsided floodplains along the Delta’s edges.',
             ],
           },
           {
             title: 'Restoring fish migration channels',
             summary:
-              'Restored side channels and riverbank habitat can give native fish more places to feed, shelter, and rest along key migration routes.',
-            mapHabitatType: 'riparian',
-            paragraphs: [
               'Restored side channels and native vegetation along riverbanks could give fish places to feed, shelter, and rest along their preferred migration routes.',
-              'Because fish-passage opportunities depend on channel conditions and known migration corridors rather than elevation alone, this strategy is considered separately from transitional habitats.',
-            ],
+            mapHabitatType: 'riparian',
+            paragraphs: [],
           },
         ],
         endingParagraphs: [
@@ -171,7 +164,7 @@ export const adaptationScenarios: ScenarioContent[] = [
           },
         ],
         highlightsAction: {
-          label: "Explore (lead to Maggie's work)",
+          label: 'Explore Habitat Restoration Upstream of the Delta',
           href: '/pages/watershed',
         },
         subsections: [
@@ -204,7 +197,6 @@ export const adaptationScenarios: ScenarioContent[] = [
         paragraphs: [
           'New Green Watershed delivers the largest gains of any scenario for the Delta’s ecosystem: about 80,000 acres of tidal wetland that aquatic species can reach, the biggest boost to the food web, and the most restoration, both in the Delta and in the upper watershed. Keeping peat soils wet helps reverse subsidence, and upstream restoration cuts flood risk more than any other scenario, alongside a small improvement in drinking water for vulnerable communities.',
           'Those benefits depend on converting farmland. Agricultural revenue falls by about $280 million a year in the version scored here, and by $210–500 million a year across the versions considered. Suisun Marsh also becomes saltier for birding, waterfowl hunting, and angling, and conditions for harmful algal blooms are moderately worse. As a long-term vision, it also asks the most of land use and governance.',
-          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -213,6 +205,8 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Tidal, upland, fish-passage, and riparian restoration',
       'Upstream forests, wet meadows, and floodplains',
     ],
+    closingParagraph:
+      'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
     slug: 'calling-on-reserves',
@@ -236,7 +230,6 @@ export const adaptationScenarios: ScenarioContent[] = [
         paragraphs: [
           'Calling on Reserves focuses on modeling a specific reservoir as an example, which is Shasta Dam and Reservoir, the largest reservoir in the Sacramento River watershed with a capacity of 4,552,000 acre-feet.',
         ],
-        mapKey: ['cor-rivers', 'cor-facilities'],
         subsections: [
           {
             title: 'When and how much water is released',
@@ -260,7 +253,6 @@ export const adaptationScenarios: ScenarioContent[] = [
         paragraphs: [
           'Calling on Reserves changes how existing reservoirs are operated rather than building new facilities or altering the Delta’s landscape. Against its own baseline it is close to neutral for the agricultural economy and for recreation, and slightly better for eco-cultural values. In the wet year it adds suitable days for juvenile Chinook salmon, and in the dry year it reduces them for the undesirable largemouth bass and Brazilian waterweed.',
           'Drinking water is where it falls short: threshold exceedances rise for vulnerable communities, most of all in the wet season, and conditions for harmful algal blooms are slightly worse. It adds no habitat. Drawing on stored water also raises the question of whether more flexible releases can keep the long-term reliability that reservoirs provide.',
-          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -269,6 +261,8 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Freshwater inflow to the Delta',
       'Habitats connected to changing flow conditions',
     ],
+    closingParagraph:
+      'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
     slug: 'bolster-and-fortify',
@@ -324,7 +318,6 @@ export const adaptationScenarios: ScenarioContent[] = [
         paragraphs: [
           'Bolster and Fortify gives operators more control over freshwater moving through the Delta. Islands along the fortified corridor see a moderate cut in flood risk, and drinking-water conditions for vulnerable communities hold steady.',
           'Beyond the corridor, little changes for habitat, species, recreation, or eco-cultural values, and the flood benefit reaches only the islands along it. Salinity costs agriculture a small amount in dry years, more with sea-level rise, and water in Franks Tract at times grows much older. Gates can also change circulation beyond the corridor and impede boating, and building and running them requires substantial investment.',
-          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -333,6 +326,8 @@ export const adaptationScenarios: ScenarioContent[] = [
       'The fortified Old River freshwater corridor',
       'Clifton Court Forebay and the southern pumping plants',
     ],
+    closingParagraph:
+      'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
     slug: 'a-tunnel',
@@ -388,7 +383,6 @@ export const adaptationScenarios: ScenarioContent[] = [
           'Many project participants requested that A Tunnel be included because of its scale and importance in California water debates, not necessarily because they support its construction.',
           'A Tunnel creates a conveyance route less exposed to salinity intrusion and levee failures within Delta channels. If its intakes intercept stormwater before it enters the Delta, it slightly cuts flood risk.',
           'Its drawbacks fall inside the Delta. In dry years the tunnel shifts salinity from the western to the central Delta, at a small cost to farms there, and it is slightly worse for recreation. It scores below Business as Usual for eco-cultural values and adds no habitat. The draft environmental justice evaluation found it the worst adaptation scenario for drinking water; those results are being revised.',
-          'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
         ],
       },
     ],
@@ -399,5 +393,7 @@ export const adaptationScenarios: ScenarioContent[] = [
     ],
     comparisonNote:
       'This scenario is included for comparison and evaluation, not because project participants necessarily consider it desirable.',
+    closingParagraph:
+      'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
 ]

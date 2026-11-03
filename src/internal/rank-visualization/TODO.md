@@ -374,8 +374,9 @@ page via `scripts/build-recreation-thresholds.py` → `drilldown/recreationThres
   questions the Suisun Marsh figure (one total across categories, low for its acreage);
   Isaac flags a ~150-acre gap against BDSC slide 56 for Brett to rule on. Hold until
   the thread settles.
-- [ ] Confirm the shapefile's "Confluence" is the workbook's Central Delta (nine stations,
-      Pittsburg to Franks Tract). `subteams/regionKeys.ts` assumes it.
+- [x] The shapefile's "Confluence" is the Central Delta in the report and workbooks (nine
+      stations, Pittsburg to Franks Tract); its "Suisun Bay" is their Suisun Marsh. The
+      outlines now carry the report's names.
 - [ ] `RecreationView` still draws the Oct slides' summer/winter activity table from its
       own hard-coded arrays; move it onto `rec-salinity-*` (whole run / wet / dry).
 - [ ] Rerun the generator when Isaac sends the pending temperature runs or revised data.

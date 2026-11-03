@@ -46,7 +46,10 @@ export const ejMethodologyExample: ProposedPage = {
     },
     {
       label: 'How was it constructed?',
-      children: story.construction.steps.map((step) => ({ label: step.title, detail: step.body })),
+      children: story.construction.steps.map((step) => ({
+        label: step.title,
+        detail: step.body ?? '',
+      })),
     },
     { label: 'References', detail: story.source },
   ],

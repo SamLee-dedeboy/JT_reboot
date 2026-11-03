@@ -146,10 +146,14 @@ export default function Layers({
                     ...activeLayer.paint,
                     'line-color': isSelected
                       ? map.scenarios.cartography.highlight
-                      : map.scenarios.cartography.feature,
+                      : (activeLayer.paint?.['line-color'] ?? map.scenarios.cartography.feature),
                     'line-opacity': showAdaptationLayers ? visibleOpacity : 0,
                     'line-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },
-                    'line-width': isSelected ? 4 : 2,
+                    'line-width': source.preserveLineWidthOnSelection
+                      ? (activeLayer.paint?.['line-width'] ?? 2)
+                      : isSelected
+                        ? 4
+                        : (activeLayer.paint?.['line-width'] ?? 2),
                   }}
                 />
               )
@@ -170,7 +174,7 @@ export default function Layers({
                     ...activeLayer.paint,
                     'circle-color': isSelected
                       ? map.scenarios.cartography.highlight
-                      : map.scenarios.cartography.feature,
+                      : (activeLayer.paint?.['circle-color'] ?? map.scenarios.cartography.feature),
                     'circle-opacity': opacity,
                     'circle-stroke-opacity': opacity,
                     'circle-opacity-transition': { duration: map.scenarios.layerFadeDurationMs },

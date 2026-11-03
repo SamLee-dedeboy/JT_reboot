@@ -6,8 +6,14 @@ export default function Annotations({ labels }: MapAnnotations) {
   return (
     <>
       {/* Names the features directly on the map, in place of a legend. */}
-      {labels.map(({ text, coordinates: [longitude, latitude], anchor, solid }) => (
-        <Marker key={text} longitude={longitude} latitude={latitude} anchor={anchor}>
+      {labels.map(({ text, coordinates: [longitude, latitude], anchor, solid, offset }) => (
+        <Marker
+          key={text}
+          longitude={longitude}
+          latitude={latitude}
+          anchor={anchor}
+          offset={offset}
+        >
           <Typography
             variant="captionSmall"
             component="span"

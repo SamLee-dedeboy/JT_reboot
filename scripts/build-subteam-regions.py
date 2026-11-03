@@ -28,6 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SHP = ROOT / "scripts/data/subteam-regions/subteam_regions"
 WEST_DELTA = ROOT / "scripts/data/subteam-regions/west_delta_merged.gpkg"
 ECO_BAYS = ROOT / "scripts/data/subteam-regions/eco-bay-polygons.geojson"
+ECO_SUISUN = ROOT / "scripts/data/subteam-regions/eco-suisun-marsh.geojson"
 WATER = ROOT / "public/data/internal/kelp-fusion/delta_waterway.geojson"
 OUT = ROOT / "src/internal/rank-visualization/subteams/regionShapes.ts"
 
@@ -42,13 +43,12 @@ PAD = 0.01
 # the app has values the map cannot place.
 MISMATCH = """\
 //   Ecology      all 8 data regions are mapped; "Central" ≈ centralDelta and
-//                "Suisun Marsh" has no data key (the report folds it into
-//                Suisun Bay).
+//                "Suisun Marsh" ≈ suisunBay, the shapefile's Suisun Bay and
+//                Suisun Marsh dissolved by scripts/merge-suisun-outline.mjs.
 //   Economy      the shapefile's 3 water-agency regions are supplemented by
 //                the merged West Delta polygon; all 4 data zones are mapped.
-//   Recreation   shapefile has Suisun Bay / Confluence / North / South Delta;
-//                data has suisunMarsh / centralDelta / northDelta / southDelta,
-//                and the activity values are not stored per place at all.
+//   Recreation   shapefile's Suisun Bay / Confluence are shown under the report's
+//                names, Suisun Marsh / Central Delta; all 4 data regions are mapped.
 //   EJ           shapefile has the 3 vulnerability classes, which match the
 //                drinking-water data exactly; the 5 water-age hotspot regions
 //                are not here.
@@ -204,6 +204,11 @@ def main():
     for region in regions:
         if region["team"] == "economy":
             region["name"] = economy_names.get(region["name"], region["name"])
+    # Recreation's report names these two regions differently from its shapefile.
+    recreation_names = {"Suisun Bay": "Suisun Marsh", "Confluence": "Central Delta"}
+    for region in regions:
+        if region["team"] == "recreation":
+            region["name"] = recreation_names.get(region["name"], region["name"])
     regions.append(
         {
             "team": "economy",
@@ -215,7 +220,15 @@ def main():
             ),
         }
     )
-    bay_features = json.loads(ECO_BAYS.read_text(encoding="utf-8"))["features"]
+    regions = [
+        region
+        for region in regions
+        if not (region["team"] == "ecology" and region["name"] in ("Suisun Bay", "Suisun Marsh"))
+    ]
+    bay_features = (
+        json.loads(ECO_BAYS.read_text(encoding="utf-8"))["features"]
+        + json.loads(ECO_SUISUN.read_text(encoding="utf-8"))["features"]
+    )
     for feature in bay_features:
         geometry = feature["geometry"]
         polygon_rings = (
@@ -314,7 +327,7 @@ def main():
             f"  {{ team: {json.dumps(g['team'])}, name: {json.dumps(g['name'])}, d: {json.dumps(path(svg_rings))}, label: [{label[0]}, {label[1]}] }},"
         )
     lines.append("]")
-    OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    OUT.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
     npts = sum(len(r) for g in regions for r in g["rings"]) + sum(len(r) for r in water)
     print(f"wrote {OUT.relative_to(ROOT)}: {len(regions)} regions, {len(water)} water rings, {npts} points, frame {width}×{int(FRAME_HEIGHT)}")
 

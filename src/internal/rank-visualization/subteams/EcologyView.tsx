@@ -51,11 +51,11 @@ const YEARS = [
 
 /**
  * Shapefile region → the key the niche data stores it under. Five of the eight
- * data regions have an outline; "Suisun Marsh" has an outline and no data key,
- * because the report folds it into Suisun Bay.
+ * data regions have an outline; "Suisun Marsh" is Suisun Bay and Suisun Marsh
+ * combined, as the team assigned them, and keeps the suisunBay key.
  */
 const REGION_KEY: Record<string, string> = {
-  'Suisun Bay': 'suisunBay',
+  'Suisun Marsh': 'suisunBay',
   Confluence: 'confluence',
   Central: 'centralDelta',
   'South Delta': 'southDelta',
