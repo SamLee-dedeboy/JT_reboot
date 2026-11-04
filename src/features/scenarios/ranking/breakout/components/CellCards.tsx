@@ -2,7 +2,7 @@
 // (an explainer, beside its row's name).
 import { Box, Popover, Stack, Typography, useTheme } from '@mui/material'
 import type { ReactNode } from 'react'
-import { jtSpacing } from '../../../../../theme'
+import { jtSpacing, ranking } from '../../../../../theme'
 import { TEAMS, cellFill, roundScore } from '../../../../../internal/rank-visualization/data'
 import { TeamMark } from '../../../../../internal/rank-visualization/drilldown/DrillBits'
 import type { Coords } from '../../../../../internal/rank-visualization/drilldown/cellValue'
@@ -13,19 +13,22 @@ import type { CellPoint } from '../model/cells'
 import {
   CRITERION_DEFINITIONS,
   METRIC_DEFINITIONS,
+  NGW_LEVEL_TAKEAWAYS,
   SCENARIO_TAKEAWAYS,
   UI,
   placeName,
   scenarioName,
 } from '../model/labels'
-import { popoverPaperSx } from '../styles'
-import { Explainer, Pairs, Prose, ScoreScale, Section } from './Explainer'
+import { popoverPaperSx, popoverWidth } from '../styles'
+import { Explainer, Pairs, Prose, ScoreRows, ScoreScale, Section } from './Explainer'
 
 /** A clicked cell: where it sits on screen, what it is, and its numbers. */
 export interface Inspect {
   anchor: HTMLElement
   node: CriterionNode
   point: CellPoint
+  /** Which of New Green Watershed's restoration levels, for a cell of the opened column. */
+  level?: number
   /** Whether the table is showing differences, so the card leads with one. */
   diff: boolean
   /** The tiered-outflow tab, where Historic Baseline is a run of its own. */
@@ -56,14 +59,16 @@ function Chip({ label, color }: { label: string; color?: string }) {
 /**
  * A cell's card, opened beside it. It names the measure and scenario and repeats the
  * place, time period and conditions it is read under. A score then shows the score;
- * the team's criterion score also shows its scenario takeaway. A measure shows its
+ * the team's criterion score also shows its scenario takeaway, or the takeaway for one
+ * restoration level when the cell is that level's and the team wrote one. A measure shows its
  * value, Business as Usual's (with the model run when it is CalSim's or SCHISM's),
  * and the difference.
  */
 export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClose: () => void }) {
   const theme = useTheme()
   if (!inspect) return null
-  const { anchor, node, point, coords, outflowSet } = inspect
+  const { anchor, node, point, level, coords, outflowSet } = inspect
+  const levelTakeaway = level === undefined ? undefined : NGW_LEVEL_TAKEAWAYS[node.team]?.[level]
   const team = TEAMS.find((t) => t.key === node.team)
   const unit = node.unit
   const score = unit === 'score'
@@ -122,7 +127,11 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       transformOrigin={{ vertical: 'top', horizontal: 'center' }}
       slotProps={{
-        paper: { role: 'dialog', 'aria-label': node.label, sx: { ...popoverPaperSx, width: 360 } },
+        paper: {
+          role: 'dialog',
+          'aria-label': node.label,
+          sx: { ...popoverPaperSx, maxWidth: 'none', width: popoverWidth(ranking.explainer.cell) },
+        },
       }}
     >
       <Stack spacing={jtSpacing.gap.sm}>
@@ -138,6 +147,7 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+          {level !== undefined && <Chip label={UI.ngwLevels[level]} />}
           <Chip label={place} />
           <Chip label={period} />
           <Chip label={conditions} />
@@ -188,7 +198,9 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
         {score && node.level === 'team' && (
           <Section label={UI.takeaway}>
             <Typography variant="body2" sx={{ color: 'base.50' }}>
-              {SCENARIO_TAKEAWAYS[node.team]?.[point.scenario] ?? UI.takeawayForthcoming}
+              {levelTakeaway ??
+                SCENARIO_TAKEAWAYS[node.team]?.[point.scenario] ??
+                UI.takeawayForthcoming}
             </Typography>
           </Section>
         )}
@@ -272,6 +284,7 @@ export function ScoreInfo({ node }: { node: CriterionNode }) {
       </Section>
       <Section label={UI.howScored}>
         {metric.scale && <ScoreScale {...metric.scale} />}
+        {metric.scoreRows && <ScoreRows {...metric.scoreRows} />}
         <Prose text={metric.scored} team={node.team} />
       </Section>
     </Explainer>

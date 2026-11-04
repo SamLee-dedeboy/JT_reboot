@@ -9,7 +9,7 @@ the data the site uses, so these numbers are the site's numbers.
 | Ecology               | `Ranking Table (5).xlsx`, Ecology tab; same as (2) and (4)                                 |
 | Recreation            | `Ranking Table (6).xlsx`, Recreation tab, and `Restoration Scenarios NGW and ECO (2).xlsx` |
 | Environmental Justice | Workbook saved 2 Nov 2026, 20:02, Env Justice tab (not the older (3) named below)          |
-| Economy               | `Ranking Table (5).xlsx`, Economy tab, and the v19 workbook (1 Nov 2026)                   |
+| Economy               | `Ranking Table (5).xlsx`, Economy tab, and the v20 workbook (3 Nov 2026)                   |
 | Eco-cultural          | `Ranking Table (5).xlsx`, Eco-cultural tab                                                 |
 
 Tabs in other copies of the workbook are out of date: the Recreation tab in (5) is
@@ -32,8 +32,8 @@ The by-scenario page averages the five team scores (`data.ts`). A `*` is our pla
 | 2    | Eco Machine         | +1.33   | 0          | 0            | 0       | +2           | +0.67   |
 | 3    | Calling on Reserves | −0.33   | 0          | 0            | 0       | +1           | +0.13   |
 | 4    | Business as Usual   | 0       | 0          | 0            | 0       | 0            | +0.00   |
-| 5    | Bolster & Fortify   | 0       | 0          | 0            | −1      | 0            | −0.20   |
-| 6    | A Tunnel            | +0.33   | 0          | 0            | −1      | −2           | −0.53   |
+| 5    | Bolster & Fortify   | 0       | 0          | 0            | 0       | 0            | +0.00   |
+| 6    | A Tunnel            | +0.33   | 0          | 0            | 0       | −2           | −0.33   |
 
 Environmental Justice's column is the team's own: the mean of drinking water, flood risk
 and water age, in whole points as the ranking table workbook displays it (Nov 2026).
@@ -297,11 +297,13 @@ its criterion score of −2.
 
 ## Economy
 
-One published score shared by gross revenue, jobs and value added, the same under sea level rise. New Green Watershed uses its 50/50 version (−3 / −4 / −5 across 25%, 50%, 100% wetland).
+Each metric is scored on its net percent change from Business as Usual: land use plus dry-year salinity (under 1% = 0; 1–5% = ±1; 5–15% = ±2; 15–25% = ±3; 25–35% = ±4; 35% or more = ±5), the same under sea level rise. Carbon-offset revenue is reported but not counted. The team gives no combined score: New Green Watershed's −4 is our rounded mean of its metrics at 50% wetland. On a tied score the baseline is listed first.
 
 | Score       | Eco Machine | New Green Watershed | Bolster & Fortify | Calling on Reserves | A Tunnel |
 | ----------- | ----------- | ------------------- | ----------------- | ------------------- | -------- |
-| **Economy** | 0           | −4                  | −1                | 0                   | −1       |
+| **Economy** | 0           | −4                  | 0                 | 0                   | 0        |
+
+New Green Watershed by metric, at 25%, 50% and 100% wetland: revenue −3, −4, −5; jobs −4, −4, −5; value added −3, −3, −5.
 
 Salinity effect across the Delta, $/yr, against the same reference in the same climate:
 
@@ -316,7 +318,7 @@ Salinity effect across the Delta, $/yr, against the same reference in the same c
 | Value added, dry                   | +4,236      | +1,911              | −8,056            | +2,665              | −23,990  |
 | Value added, dry, sea level rise   | +26,196     | +19,052             | −20,933           | +5,361              | −15,870  |
 
-Land conversion (v19 LandUse sheet), New Green Watershed 50/50 including Eco Machine's
+Land conversion (v20 LandUse sheet), New Green Watershed 50/50 including Eco Machine's
 footprint: −$281.3M a year in gross revenue, −3,995 total jobs and −$230.9M in total value
 added. Eco Machine: −$0.92M, −9.7 jobs and −$0.83M (N/A elsewhere). The workbook's salinity figures
 are first-order, not a new OpenAg run; a full run gives 1.3–1.8 times these, which
@@ -325,7 +327,7 @@ changes no score. Calling on Reserves and A Tunnel are compared with their base 
 +$25.46M, +$28.59M and +$38.18M at 25%, 50% and 100% wetland (N/A elsewhere). The public table
 follows Place and Time period on the salinity rows, using the ByZone sheet rebased to the same
 climate; land conversion and carbon are Delta-wide only, so they read N/A under a single zone.
-Economy has no results for outflow yet.
+Outflow (v20 takeaways workbook, SCHISM water year 2021, against the Historical Baseline): +30% scores 0, with revenue +$19,939, value added +$18,772 and +0.27 total jobs, shown as whole jobs. −10% has figures but no requested score, so it stays forthcoming.
 
 ## Eco-cultural
 
@@ -354,7 +356,7 @@ and do not join the adaptation ranking.
 | Ecology               | forthcoming | forthcoming | Suitable days by region reported; no scores. Landscape and Food webs are N/A |
 | Recreation            | +1          | forthcoming | Salinity +4.5, temperature 0; restoration and economy are N/A                |
 | Environmental Justice | +4          | −2          | Drinking water only; the report states −2 although its table averages −1.5   |
-| Economy               | forthcoming | forthcoming | Not run                                                                      |
+| Economy               | 0           | forthcoming | +30% scored in v20; different model and year, Delta-wide only                |
 | Eco-cultural          | +3          | −2          | One overall score; restoration is N/A                                        |
 
 ## Open items
@@ -427,4 +429,4 @@ From reading the reports; none changes a score above.
 5. Eco-cultural report: score table (Eco Machine +2, Calling on Reserves +1) and rank grid (+1, 0) disagree; slide 62 confirms the score table.
 6. Environmental Justice water age: report −2 / −1 / 0 (New Green Watershed / Eco Machine / Bolster & Fortify); slides −3 / −2 / −1. The site follows the slides.
 7. Environmental Justice outflow, wet season, high vulnerability: 16 points less maps to +4, but the report assigns +5. The site uses +5.
-8. Economy: v19's baselines are 7,526 direct / 11,679 total jobs, $1,105.1M direct revenue and $670M / $997M value added, after removing a double-counted Webb Tract pasture.
+8. Economy: v20's baselines are 7,526 direct / 11,679 total jobs, $1,105.1M direct revenue and $670M / $997M value added, after removing a double-counted Webb Tract pasture.

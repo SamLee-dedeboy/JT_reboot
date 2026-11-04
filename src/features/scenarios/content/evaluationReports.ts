@@ -339,20 +339,20 @@ const recreation: TeamReport = {
 
 const economyMetric = 'Gross revenue, jobs, and value added'
 const economyBaseline =
-  'Against Business as Usual: $1.105B direct revenue, about 7,500 jobs, and $670M value added.'
+  'Against Business as Usual: $1.105B direct revenue, 11,679 total jobs, and $997M total value added.'
 const economySeaLevelRise = 'The score is the same with 2 feet of sea-level rise.'
 
 const economy: TeamReport = {
   status: 'final',
   source:
-    'Published ranking scores from the Economy team’s results workbook. One score covers revenue, jobs, and value added, and is the same under current climate and with 2 feet of sea-level rise.',
+    'Published ranking scores from the Economy team’s results workbook. Each metric is scored on its net percent change from Business as Usual, land use plus salinity in the dry year; under 1% scores 0. The scores are the same under current climate and with 2 feet of sea-level rise.',
   findings: {
     'eco-machine': {
       headline: 'A small loss from converting farmland',
       metrics: [
         {
           name: economyMetric,
-          finding: `Almost none of the restored Suisun Marsh land is farmed, so land conversion lowers direct revenue by only about $0.92M a year; one-time construction of about $1.34B falls outside the score. ${economyBaseline}`,
+          finding: `Almost none of the restored Suisun Marsh land is farmed, so land conversion lowers direct revenue by only about $0.92M a year. Fresher irrigation water adds about $3,500 in the dry year (about $24,000 with 2 feet of sea-level rise), offsetting at most about 3% of that loss. The net change is about −0.08%; one-time construction of about $1.34B falls outside the score. ${economyBaseline}`,
           score: 0,
         },
       ],
@@ -362,9 +362,21 @@ const economy: TeamReport = {
       headline: 'The largest agricultural losses',
       metrics: [
         {
-          name: economyMetric,
-          finding: `Converting farmland lowers direct revenue by $281.3M a year in the 50% wetland version ($211.2M at 25%, scored −3; $503.2M at 100%, scored −5). ${economyBaseline}`,
+          name: 'Gross revenue',
+          finding: `Converting farmland lowers direct revenue by $281.3M a year (−25.5%) in the 50% wetland version ($211.2M at 25%, scored −3; $503.2M at 100%, scored −5). ${economyBaseline}`,
           score: -4,
+        },
+        {
+          name: 'Jobs',
+          finding:
+            'Total jobs fall by 3,995 (−34.2%) in the 50% wetland version (3,657 at 25%, scored −4; 4,999 at 100%, scored −5).',
+          score: -4,
+        },
+        {
+          name: 'Value added',
+          finding:
+            'Total value added falls by $230.9M a year (−23.2%) in the 50% wetland version ($160.3M at 25%, scored −3; $456.2M at 100%, scored −5).',
+          score: -3,
         },
       ],
       overall: { score: -4, summary: '50% wetland version; −3 to −5 across versions' },
@@ -375,12 +387,12 @@ const economy: TeamReport = {
         {
           name: economyMetric,
           finding: `Salinity costs about $10k in the dry year (2020), mostly in the Central Delta, and about $27k with 2 feet of sea-level rise. ${economyBaseline}`,
-          score: -1,
+          score: 0,
         },
       ],
       overall: {
-        score: -1,
-        summary: `Slightly worse than Business as Usual. ${economySeaLevelRise}`,
+        score: 0,
+        summary: `Under 0.003% of Delta farm revenue, too small to change the score. ${economySeaLevelRise}`,
       },
     },
     'calling-on-reserves': {
@@ -400,12 +412,12 @@ const economy: TeamReport = {
         {
           name: economyMetric,
           finding: `In the dry year (2020) the tunnel shifts salinity from the western to the central Delta and costs about $27k against its own base run, about 80% of it in the Central Delta; about $19k with 2 feet of sea-level rise. ${economyBaseline}`,
-          score: -1,
+          score: 0,
         },
       ],
       overall: {
-        score: -1,
-        summary: `Slightly worse than Business as Usual. ${economySeaLevelRise}`,
+        score: 0,
+        summary: `Under 0.003% of Delta farm revenue, too small to change the score. ${economySeaLevelRise}`,
       },
     },
   },

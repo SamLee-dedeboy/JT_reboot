@@ -20,7 +20,7 @@ import { RegionMap } from './RegionMap'
 
 const BASE = 1_105_100_000
 
-/** The salinity pathway's dry-year (2020) farm revenue change, current climate (v19 workbook). */
+/** The salinity pathway's dry-year (2020) farm revenue change, current climate (v20 workbook). */
 const SALINITY = [
   { label: 'A Tunnel, dry year', value: -26_953 },
   { label: 'Bolster & Fortify, dry year', value: -10_167 },
@@ -168,7 +168,7 @@ export default function EconomyView() {
 
       <Panel
         title="The salinity pathway on the map, dry year"
-        intro="Each map colours the four zones by the **change in value added** from Business as Usual in 2020, for the **salinity pathway only**. The score beneath each map is the criterion score, and ==it does not come from this map==: Economy scores each scenario on its dominant effect, and for New Green Watershed that is land conversion. Three of the sixteen zone values could not be verified from the slide image."
+        intro="Each map colours the four zones by the **change in value added** from Business as Usual in 2020, for the **salinity pathway only**. The score beneath each map is the criterion score, and ==it does not come from this map==: Economy scores each scenario on its net change, and for New Green Watershed land conversion drives that. Three of the sixteen zone values could not be verified from the slide image."
       >
         <RegionValues
           team="economy"

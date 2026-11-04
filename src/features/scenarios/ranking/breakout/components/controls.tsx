@@ -163,7 +163,6 @@ export function Segmented<T extends string>({
   onChange,
   columns = options.length,
   dense,
-  tone = 'primary',
   accent,
   nowrap: nowrapLabels,
   wrap,
@@ -175,9 +174,7 @@ export function Segmented<T extends string>({
   columns?: number
   /** A shorter tray, for a switch that sits in a header row. */
   dense?: boolean
-  /** The chosen option's fill: the page's green, or the brand blue for the sea level. */
-  tone?: 'primary' | 'secondary'
-  /** A color that replaces the tone's fill: the host team's color, for its own facets. */
+  /** A color that replaces the green fill: the host team's color, for its own facets. */
   accent?: string
   /** Keep each label on one line: the tray then sizes to its labels. */
   nowrap?: boolean
@@ -185,12 +182,8 @@ export function Segmented<T extends string>({
   wrap?: boolean
 }) {
   const nowrap = nowrapLabels || wrap
-  const fill = accent ?? `${tone}.main`
-  const hover = accent
-    ? alpha(accent, 0.24)
-    : tone === 'secondary'
-      ? 'translucent.primaryBlue'
-      : 'translucent.primaryGreen'
+  const fill = accent ?? 'primary.main'
+  const hover = accent ? alpha(accent, 0.24) : 'translucent.primaryGreen'
   return (
     <Box
       role="radiogroup"

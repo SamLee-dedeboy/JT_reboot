@@ -24,6 +24,7 @@ Everything the table says is in **`model/labels.ts`**, in this order:
 | `PERIOD_WHY`, `PERIOD_MONTHS` | The TIME PERIOD info card: why, and each period's months                    |
 | `PLACE_WHY`                   | The PLACE info card, above the map                                          |
 | `SCENARIO_TAKEAWAYS`          | A team's takeaway in a score cell's card                                    |
+| `NGW_LEVEL_TAKEAWAYS`         | The same, for each of New Green Watershed's restoration levels              |
 
 Criterion names on the tabs (Ecology, Recreation, …) are shared with the whole site: `TEAMS` in
 `src/internal/rank-visualization/data.ts`.

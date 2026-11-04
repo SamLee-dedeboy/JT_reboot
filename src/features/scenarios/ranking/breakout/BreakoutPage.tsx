@@ -17,10 +17,11 @@
 // details beneath them.
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
-import { Box, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useId, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { methodologyPath } from '../../evaluation/paths'
 import { evaluationCardSx } from '../../evaluation/styles'
 import { jtSpacing, navigation, ranking } from '../../../../theme'
 import { TEAMS } from '../../../../internal/rank-visualization/data'
@@ -42,6 +43,15 @@ import { useBreakout } from './useBreakout'
 import type { ScenarioSetId, View } from './useBreakout'
 
 const TEAM_KEYS = TEAMS.map((team) => team.key)
+
+/** Each table's criterion page, whose route ids differ from the ranking's team keys. */
+const CRITERION_IDS: Record<TeamKey, string> = {
+  ecology: 'ecology',
+  recreation: 'recreation',
+  environmentalJustice: 'environmental-justice',
+  economy: 'economy',
+  ecoCultural: 'ecocultural-restoration',
+}
 
 /**
  * The pin bar (note, pin, export) is hidden for now so the table fits one screen.
@@ -146,6 +156,14 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
                   {UI.takeaway}
                 </Typography>
                 <HostIntro team={team} />
+                <Button
+                  component={Link}
+                  to={methodologyPath(CRITERION_IDS[team])}
+                  variant="outlined"
+                  sx={{ alignSelf: 'flex-start', borderColor: 'primary.main' }}
+                >
+                  {UI.learnMoreCriterion}
+                </Button>
               </Stack>
               <Caveats team={team} />
             </Box>

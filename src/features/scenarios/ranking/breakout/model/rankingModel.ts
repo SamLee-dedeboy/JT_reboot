@@ -624,9 +624,9 @@ function ejTree(): CriterionNode {
 // ---------- Economy ----------
 
 /**
- * One score shared by the three metrics, the same in both water years and both
- * climates (v19). The scores carry the water years anyway so the When control
- * reaches the salinity rows beneath them.
+ * The team scores each metric on its dry-year net change, the same in both climates
+ * (v20). The scores carry the water years anyway so the When control reaches the
+ * salinity rows beneath them.
  */
 const WATER_YEARS: Facet[] = relabel(
   [
@@ -636,8 +636,17 @@ const WATER_YEARS: Facet[] = relabel(
   {},
 )
 
-/** Economy's score for New Green Watershed at 25%, 50% and 100% wetland (v19). */
-const ECONOMY_NGW_LEVELS: [number, number, number] = [-3, -4, -5]
+type NgwLevels = [number, number, number]
+
+/** Each metric's score for New Green Watershed at 25%, 50% and 100% wetland (v20). */
+const ECONOMY_METRIC_NGW_LEVELS: Record<string, NgwLevels> = {
+  'econ-revenue': [-3, -4, -5],
+  'econ-jobs': [-4, -4, -5],
+  'econ-value': [-3, -3, -5],
+}
+
+/** The team gives no combined score, so the criterion row is the metrics' rounded mean. */
+const ECONOMY_NGW_LEVELS: NgwLevels = [-3, -4, -5]
 
 /** Land conversion and carbon are reported Delta-wide only, so a zone has no value for them. */
 const ECONOMY_ZONE_KEYS = ['north', 'central', 'south', 'west']
@@ -704,11 +713,18 @@ function economyTree(): CriterionNode {
     const base = node(id)
     return adapt(base, {
       periods: WATER_YEARS,
-      ngwLevels: ECONOMY_NGW_LEVELS,
+      ngwLevels: ECONOMY_METRIC_NGW_LEVELS[id],
       children: [
         ...(base.children ?? [])
           .filter((child) => child.id === `${id}-salinity`)
-          .map((child) => adapt(wholeJobs(child))),
+          .map((child) =>
+            // The +30% outflow run is one dry year (2021), reported Delta-wide only.
+            adapt(wholeJobs(child), {
+              notApplicableAt: { more: ECONOMY_ZONE_KEYS },
+              // With no period picked the salinity rows read the wet year, so it reads N/A there too.
+              notApplicableIn: { more: [ANY, '2019'] },
+            }),
+          ),
         wholeJobs(landConversion(id)),
         ...(base.children ?? [])
           .filter((child) => child.id === `${id}-carbon`)
@@ -724,7 +740,7 @@ function economyTree(): CriterionNode {
   return adapt(node('economy'), {
     periods: WATER_YEARS,
     ngwLevels: ECONOMY_NGW_LEVELS,
-    note: `${node('economy').note} New Green Watershed uses 50% wetland restoration (−4; −3 at 25%, −5 at 100%).`,
+    note: `${node('economy').note} New Green Watershed uses 50% wetland restoration (−4; −3 at 25%, −5 at 100%, each the rounded mean of its metrics).`,
     children: [metric('econ-revenue'), metric('econ-jobs'), metric('econ-value')],
   })
 }

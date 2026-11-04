@@ -8,7 +8,7 @@ import type { ReactNode } from 'react'
 import { jtSpacing, ranking } from '../../../../../theme'
 import { TEAMS, cellFill } from '../../../../../internal/rank-visualization/data'
 import type { TeamKey } from '../../../../../internal/rank-visualization/data'
-import { popoverPaperSx } from '../styles'
+import { popoverPaperSx, popoverWidth } from '../styles'
 
 /** An info button in the team's colour, and the explainer card it opens. */
 export function Explainer({
@@ -49,7 +49,7 @@ export function Explainer({
             'aria-label': title,
             sx: {
               ...popoverPaperSx,
-              maxWidth: wide ? ranking.explainer.wide : ranking.explainer.width,
+              maxWidth: popoverWidth(wide ? ranking.explainer.wide : ranking.explainer.width),
             },
           },
         }}
@@ -134,29 +134,42 @@ export function Pairs({ rows }: { rows: [string, string][] }) {
   )
 }
 
+const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0')
+
 /**
  * The −5…+5 scale for a score set one point per `step` against Business as Usual:
  * each swatch over the difference that earns it. `axis` names that difference for
  * screen readers; the sentence after the scale says it on screen. Where more of the measure is worse,
- * the scale runs from +5 points' more at −5 to 5 points' fewer at +5.
+ * the scale runs from +5 points' more at −5 to 5 points' fewer at +5. A score set by
+ * uneven bands names each swatch's band in `bands` instead, with `ends` saying which
+ * way each side of the scale runs. `scores` shortens the scale for a score that only
+ * rises from Business as Usual.
  */
 export function ScoreScale({
-  step,
+  step = '',
   axis,
   lowerBetter,
+  bands,
+  ends,
+  scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
 }: {
-  step: string
+  step?: string
   axis: string
   lowerBetter?: boolean
+  bands?: string[]
+  ends?: string[]
+  scores?: number[]
 }) {
-  const scores = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
-  const signed = (n: number) => (n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0')
   const tick = (score: number) => {
     const difference = lowerBetter ? -score : score
     const edge = Math.abs(score) === 5 ? (difference > 0 ? '≥' : '≤') : ''
     return `${edge}${signed(difference)}${step}`
   }
-  const row = { display: 'grid', gridTemplateColumns: 'repeat(11, minmax(0, 1fr))', gap: '2px' }
+  const row = {
+    display: 'grid',
+    gridTemplateColumns: `repeat(${scores.length}, minmax(0, 1fr))`,
+    gap: '2px',
+  }
   return (
     <Stack spacing={0.75} role="img" aria-label={axis}>
       <Box sx={row}>
@@ -171,16 +184,69 @@ export function ScoreScale({
         ))}
       </Box>
       <Box sx={row}>
-        {scores.map((score) => (
+        {scores.map((score, index) => (
           <Typography
             key={score}
             variant="captionSmall"
-            sx={{ textAlign: 'center', color: 'base.200', whiteSpace: 'nowrap' }}
+            sx={{ textAlign: 'center', color: 'base.200', whiteSpace: bands ? 'normal' : 'nowrap' }}
           >
-            {tick(score)}
+            {bands?.[index] ?? tick(score)}
           </Typography>
         ))}
       </Box>
+      {ends && (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+          {ends.map((end) => (
+            <Typography key={end} variant="captionSmall" sx={{ color: 'base.200' }}>
+              {end}
+            </Typography>
+          ))}
+        </Box>
+      )}
     </Stack>
+  )
+}
+
+/** Where results land on the scale: each one's score, beside the amount that earns it. */
+export function ScoreRows({
+  heading,
+  rows,
+}: {
+  heading: string
+  rows: [string, string, number][]
+}) {
+  return (
+    <Box sx={{ pt: 1 }}>
+      <Typography variant="captionSmall" component="h5" sx={{ color: 'base.200' }}>
+        {heading}
+      </Typography>
+      {rows.map(([label, amount, score], index) => (
+        <Box
+          key={label}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) auto 36px',
+            alignItems: 'center',
+            columnGap: 2,
+            py: 0.5,
+            borderTop: index ? 1 : 0,
+            borderColor: 'border.subtle',
+          }}
+        >
+          <Typography variant="body2" sx={{ color: 'base.50' }}>
+            {label}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'base.100' }}>
+            {amount}
+          </Typography>
+          <Typography
+            variant="captionSmall"
+            sx={{ py: 0.25, textAlign: 'center', bgcolor: cellFill(score), color: 'common.white' }}
+          >
+            {signed(score)}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
   )
 }

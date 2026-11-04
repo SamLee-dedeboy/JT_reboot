@@ -1,5 +1,5 @@
-// Shared site footer with funding copy, contact link, and wordmark.
-import { Box, Container, Link, Typography, useTheme } from '@mui/material'
+// Shared site footer with funding copy and wordmark.
+import { Box, Container, Typography, useTheme } from '@mui/material'
 import { LogoWordmark } from './Logo'
 
 export default function Footer() {
@@ -50,7 +50,6 @@ export default function Footer() {
               research of significance to the State of California.
             </Box>
           </Box>
-
         </Box>
 
         <Box
@@ -98,20 +97,6 @@ export default function Footer() {
               alignItems: 'center',
             }}
           >
-            <Link
-              href="mailto:just.transitions@ucdavis.edu"
-              color="primary.main"
-              underline="hover"
-              sx={{
-                typography: 'body2',
-                transition: 'color 180ms ease, opacity 180ms ease',
-                '&:hover': {
-                  color: 'primary.light',
-                },
-              }}
-            >
-              just.transitions@ucdavis.edu
-            </Link>
             <Typography variant="body2" component="p" sx={{ color: 'inherit' }}>
               UC Multicampus Research Program Initiative
             </Typography>

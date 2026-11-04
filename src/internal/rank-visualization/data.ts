@@ -83,13 +83,14 @@ export const SCENARIOS: Scenario[] = [
   {
     // Recreation: 0 on every activity, Delta-wide.
     // EJ: the team's own score (ranking table workbook, Nov 2026).
+    // Economy: 0 (v20, 3 Nov 2026): every effect is under 0.003% of farm revenue.
     name: 'Bolster & Fortify',
     color: voting.scenario.bolsterAndFortify,
-    scores: [0, 0, 0, -1, 0],
+    scores: [0, 0, 0, 0, 0],
     provisional: [false, false, false, false, false],
   },
   {
-    // Economy: 0 in both water years and with sea level rise (v19, 1 Nov 2026),
+    // Economy: 0 in both water years and with sea level rise (v20, 3 Nov 2026),
     // against RMA's own base run for this scenario.
     // Recreation: 0 (ranking table workbook, Nov 2026).
     // EJ: the team's own score, with water age 0 (ranking table workbook, Nov 2026).
@@ -102,11 +103,11 @@ export const SCENARIOS: Scenario[] = [
     // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
     // withdrew the drinking-water numbers the Sept report published for it.
     // Recreation: 0 and EJ: the team's own score, with water age 0 (ranking table workbook, Nov 2026).
-    // Economy: −1 (v19, 1 Nov 2026), from a dry-year salinity
-    // loss of about $27,000, mostly in the Central Delta; −1 with sea level rise too.
+    // Economy: 0 (v20, 3 Nov 2026): a dry-year salinity loss of about $27,000, mostly in
+    // the Central Delta, is under 0.003% of farm revenue; 0 with sea level rise too.
     name: 'A Tunnel',
     color: voting.scenario.deltaTunnel,
-    scores: [0.33, 0, 0, -1, -2],
+    scores: [0.33, 0, 0, 0, -2],
     provisional: [false, false, false, false, false],
   },
   {
@@ -122,10 +123,10 @@ const NOT_INFERRED = [false, false, false, false, false]
 /**
  * The tiered outflow runs (SCHISM runs 16 and 17) beside their own Historic
  * Baseline (run 15), which every team scores them against; Business as Usual is
- * the adaptation runs' baseline, not theirs. Only EJ and Eco-cultural publish an
- * outflow criterion score (Oct 2026 reports). Ecology, Recreation and Economy are
- * null, forthcoming: Recreation scores each activity (breakout table) but not the
- * criterion, Ecology reports suitable days but no rank, and Economy has not run them.
+ * the adaptation runs' baseline, not theirs. EJ and Eco-cultural publish an outflow
+ * criterion score (Oct 2026 reports), and Economy scores +30% alone (v20). The rest
+ * are null, forthcoming: Recreation scores each activity (breakout table) but not the
+ * criterion, and Ecology reports suitable days but no rank.
  */
 export const OUTFLOW_SCENARIOS: Scenario[] = [
   {
@@ -134,7 +135,8 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     color: voting.scenario.moreOutflow,
     // Recreation: +1, the average of its regions (ranking table workbook, Nov 2026).
     // EJ: +4, the team's own score in that workbook.
-    scores: [null, 1, 4, null, 3],
+    // Economy: 0 (v20, 3 Nov 2026): a gain of about $20,000 a year, about 0.002%.
+    scores: [null, 1, 4, 0, 3],
     provisional: [false, false, false, false, false],
   },
   {
@@ -238,9 +240,16 @@ function withStats(scenario: Scenario): ScenarioStats {
 
 const SCENARIO_STATS: ScenarioStats[] = SCENARIOS.map(withStats)
 
+/** The runs every other scenario is read against. */
+export const BASELINES = new Set(['Business as Usual', 'Historical Baseline'])
+
+/** On a tied score the baseline comes first: matching it is not beating it. */
+const baselineFirst = (a: Scenario, b: Scenario) =>
+  Number(BASELINES.has(b.name)) - Number(BASELINES.has(a.name))
+
 /** Scenarios ranked by equal-weight total (highest first). */
 export const RANKED: (ScenarioStats & { rank: number })[] = [...SCENARIO_STATS]
-  .sort((a, b) => b.total - a.total)
+  .sort((a, b) => b.total - a.total || baselineFirst(a, b))
   .map((scenario, i) => ({ ...scenario, rank: i + 1 }))
 
 /** Weighted mean over the scored criteria only, renormalized to their weights. */
@@ -268,7 +277,9 @@ export interface WeightedScenario extends ScenarioStats {
 function byWeightedAverage(stats: ScenarioStats[], weights: Weights) {
   return stats
     .map((s) => ({ ...s, wAvg: weightedAverage(s.scores, weights) }))
-    .sort((a, b) => Number(b.hasScores) - Number(a.hasScores) || b.wAvg - a.wAvg)
+    .sort(
+      (a, b) => Number(b.hasScores) - Number(a.hasScores) || b.wAvg - a.wAvg || baselineFirst(a, b),
+    )
 }
 
 /**

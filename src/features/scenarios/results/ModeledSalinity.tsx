@@ -83,7 +83,6 @@ export default function ModeledSalinity({
             },
           ]}
           onChange={setChosenSeaLevel}
-          tone="secondary"
           dense
           nowrap
         />

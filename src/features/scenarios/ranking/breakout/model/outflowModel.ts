@@ -10,7 +10,7 @@
 //                no criterion score. Each stress row is the mean of its
 //                activities, as the team scores the adaptations (ours, marked)
 //   EJ           drinking-water scores and exceedances; the criterion score
-//   Economy      nothing yet ("not shown in the present analysis")
+//   Economy      the +30% run only (v20): one score and its Delta-wide salinity effects
 //   Eco-cultural one overall score
 // Anything not yet published is `forthcoming`; a metric the runs cannot move
 // (they change no landscape) is not applicable.
@@ -558,16 +558,70 @@ function ejTree(): CriterionNode {
 // ---------- Economy ----------
 
 const ECONOMY_NOTE =
-  'Economy lists the tiered outflow runs (modeled in SCHISM) as “not shown in the present analysis”.'
+  'The +30% Sacramento River flow run (SCHISM run 16) against its Historical Baseline (run 15), water year 2021: a dry year, in a different model and year from the other scenarios, with no sea level rise run. Under 1% of the baseline scores 0, the same rule as every scenario. The team has not scored −10% outflow.'
+
+const ECONOMY_SOURCE: Source = {
+  doc: 'data',
+  where: 'JT_Economy_takeaways_and_outflow__v20.xlsx (3 Nov 2026) · Increased_Delta_outflow',
+  quote: 'A gain of about $20,000/yr is about 0.002% of Delta farm revenue, so the score is 0.',
+}
+
+const ECONOMY_SALINITY_LABEL = 'Salinity effects across the Delta'
+const ECONOMY_LAND_LABEL = 'Change from converting farmland to wetland'
+const ECONOMY_NO_LAND = 'The tiered outflow runs change flow, not the landscape.'
+
+/** A row scored or measured for the +30% run alone; the team has not scored −10%. */
+const economyMore = (
+  id: string,
+  label: string,
+  more: number,
+  over: Partial<CriterionNode> = {},
+): CriterionNode =>
+  forthcoming(id, 'economy', label, ECONOMY_NOTE, {
+    forthcoming: false,
+    forthcomingFor: ['less'],
+    values: flat({ hist: 0, more }),
+    sources: [ECONOMY_SOURCE],
+    ...over,
+  })
+
+/** Its salinity effect, in the unit of the row it fills; land conversion cannot apply. */
+function economyMetric(
+  id: string,
+  label: string,
+  unit: 'usd' | 'jobs',
+  salinity: number,
+  extra: CriterionNode[] = [],
+): CriterionNode {
+  return economyMore(id, label, 0, {
+    children: [
+      economyMore(`${id}-salinity`, ECONOMY_SALINITY_LABEL, salinity, {
+        level: 'entity',
+        edge: 'measures',
+        unit,
+      }),
+      notApplicable(`${id}-land`, 'economy', ECONOMY_LAND_LABEL, ECONOMY_NO_LAND),
+      ...extra,
+    ],
+  })
+}
 
 function economyTree(): CriterionNode {
-  return forthcoming('of-economy', 'economy', 'Economy', ECONOMY_NOTE, {
+  return economyMore('of-economy', 'Economy', 0, {
     level: 'team',
     edge: undefined,
     children: [
-      forthcoming('of-econ-revenue', 'economy', 'Gross revenues', ECONOMY_NOTE),
-      forthcoming('of-econ-jobs', 'economy', 'Jobs', ECONOMY_NOTE),
-      forthcoming('of-econ-value', 'economy', 'Value added', ECONOMY_NOTE),
+      economyMetric('of-econ-revenue', 'Gross revenues', 'usd', 19939, [
+        notApplicable(
+          'of-econ-revenue-carbon',
+          'economy',
+          'Carbon-offset revenue',
+          ECONOMY_NO_LAND,
+        ),
+      ]),
+      // +0.27 total jobs, shown as whole jobs like the team's other salinity effects.
+      economyMetric('of-econ-jobs', 'Jobs', 'jobs', 0),
+      economyMetric('of-econ-value', 'Value added', 'usd', 18772),
     ],
   })
 }

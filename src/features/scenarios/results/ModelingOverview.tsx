@@ -117,7 +117,7 @@ const baselineRows = [
     baseline: 'Historical Baseline',
     description: 'Current conditions modeled in SCHISM.',
     model: 'SCHISM',
-    changes: 'Amount of Delta outflow',
+    changes: ['Amount of Delta outflow', 'through changes in exports'],
     group: 'outflow',
     scenarios: '2 outflow variations',
   },
@@ -126,7 +126,7 @@ const baselineRows = [
     description:
       'Current conditions modeled in RMA, including planned restoration at sites such as Little Egbert Tract and Prospect Island.',
     model: 'RMA',
-    changes: 'Landscape',
+    changes: ['Landscape'],
     group: 'landscape',
     scenarios: '3 adaptation scenarios',
   },
@@ -135,7 +135,7 @@ const baselineRows = [
     description:
       'Current conditions modeled in RMA on the same landscape as Baseline, driven by CalSim flows.',
     model: 'RMA',
-    changes: 'Water flow',
+    changes: ['Water flow'],
     group: 'flow',
     scenarios: '2 adaptation scenarios',
   },
@@ -327,6 +327,15 @@ type ImplementationId = Implementation['id']
 type Future = (typeof outflowVariations)[number] | Implementation
 type StationModel = keyof typeof simulationTimelines
 
+/** A key phrase picked out of running text, in bold primary blue. */
+function KeyPhrase({ children }: { children: ReactNode }) {
+  return (
+    <Box component="strong" sx={{ color: 'secondary.main' }}>
+      {children}
+    </Box>
+  )
+}
+
 function SubsectionHeading({
   id,
   title,
@@ -372,13 +381,13 @@ function BaselineTable({ onSelectFuture }: { onSelectFuture: (future: Future) =>
       >
         <thead>
           <tr>
-            <Box component="th" scope="col" sx={{ ...headSx, width: '38%' }}>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '32%' }}>
               Compared with
             </Box>
             <Box component="th" scope="col" sx={{ ...headSx, width: '10%' }}>
               Model
             </Box>
-            <Box component="th" scope="col" sx={{ ...headSx, width: '16%' }}>
+            <Box component="th" scope="col" sx={{ ...headSx, width: '22%' }}>
               Changes
             </Box>
             <Box component="th" scope="col" sx={headSx}>
@@ -407,12 +416,23 @@ function BaselineTable({ onSelectFuture }: { onSelectFuture: (future: Future) =>
                 </Typography>
               </Box>
               <Box component="td" sx={cellSx}>
-                <Typography variant="cardTitle" component="span">
-                  {row.changes}
-                </Typography>
+                {row.changes.map((line) => (
+                  <Typography
+                    key={line}
+                    variant="cardTitle"
+                    component="span"
+                    sx={{ display: 'block' }}
+                  >
+                    {line}
+                  </Typography>
+                ))}
               </Box>
               <Box component="td" sx={{ ...cellSx, pr: 0 }}>
-                <Typography variant="columnHead" component="p" sx={{ mb: jtSpacing.gap.xs }}>
+                <Typography
+                  variant="columnHead"
+                  component="p"
+                  sx={{ mb: jtSpacing.gap.xs, color: 'primary.main' }}
+                >
                   {row.scenarios}
                 </Typography>
                 <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: 'wrap' }}>
@@ -450,7 +470,7 @@ function GroupBlock({ id, title, children }: { id?: string; title: string; child
   )
 }
 
-/** The outputs one model reports. Water age comes from RMA alone, so it is picked out in green. */
+/** The outputs one model reports. */
 function ModeledOutputs({ model }: { model: StationModel }) {
   return (
     <Stack spacing={jtSpacing.gap.sm}>
@@ -458,11 +478,7 @@ function ModeledOutputs({ model }: { model: StationModel }) {
         .filter((output) => model === 'rma' || !('adaptationOnly' in output))
         .map((output) => (
           <Box key={output.title}>
-            <Typography
-              variant="cardTitle"
-              component="p"
-              sx={{ color: 'adaptationOnly' in output ? 'primary.main' : 'common.white' }}
-            >
+            <Typography variant="cardTitle" component="p" sx={{ color: 'primary.main' }}>
               {output.title}
             </Typography>
             <Typography variant="body2">
@@ -1121,10 +1137,10 @@ export default function ModelingOverview() {
               </>
             }
           >
-            All three baselines represent the same thing: current conditions, with no outflow
-            variation or adaptation scenario applied. Only the modeling differs. Each scenario is
-            read against the baseline modeled the same way, so the difference reflects the one thing
-            that scenario changes. Results from different rows are not directly comparable.
+            <KeyPhrase>All three baselines represent the same thing: current conditions</KeyPhrase>,
+            with no outflow variation or adaptation scenario applied. Only the modeling differs.
+            Each scenario is read against the baseline modeled the same way, so{' '}
+            <KeyPhrase>the difference reflects the one thing that scenario changes</KeyPhrase>.
           </SubsectionHeading>
           <BaselineTable onSelectFuture={showFuture} />
           <Box
@@ -1158,7 +1174,8 @@ export default function ModelingOverview() {
           sx={sectionSx}
         >
           <SubsectionHeading id="outflow-variations-title" title="Outflow variations">
-            2 variations, modeled in SCHISM, compared with Historical Baseline.
+            2 variations, modeled in SCHISM, compared with{' '}
+            <KeyPhrase>Historical Baseline</KeyPhrase>.
           </SubsectionHeading>
           <ModelOverview
             model="schism"
@@ -1167,10 +1184,14 @@ export default function ModelingOverview() {
           <Box sx={{ mt: jtSpacing.component.lg }}>
             <GroupBlock title="How each future is built">
               <Typography variant="body1" sx={{ color: 'base.50', maxWidth: textMaxWidth }}>
-                These runs apply a statistical change to the amount of Delta outflow. A 30% increase
-                generally pushes saltwater farther toward the ocean, potentially reducing salinity
-                in the Delta. A 10% decrease allows saltwater to move farther inland, potentially
-                intensifying existing challenges for Delta communities, ecosystems, and water users.
+                <KeyPhrase>
+                  These runs apply a statistical change to the amount of Delta outflow through
+                  changes in exports.
+                </KeyPhrase>{' '}
+                A 30% increase generally pushes saltwater farther toward the ocean, potentially
+                reducing salinity in the Delta. A 10% decrease allows saltwater to move farther
+                inland, potentially intensifying existing challenges for Delta communities,
+                ecosystems, and water users.
               </Typography>
             </GroupBlock>
           </Box>
@@ -1187,7 +1208,8 @@ export default function ModelingOverview() {
             title="Adaptation scenarios"
             color="primary.main"
           >
-            5 scenarios, modeled in RMA, compared with the Baseline or CalSim Baseline.
+            5 scenarios, modeled in RMA, compared with the <KeyPhrase>Baseline</KeyPhrase> or{' '}
+            <KeyPhrase>CalSim Baseline</KeyPhrase>.
           </SubsectionHeading>
           <ModelOverview
             model="rma"

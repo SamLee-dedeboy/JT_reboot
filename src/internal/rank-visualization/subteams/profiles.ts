@@ -278,7 +278,7 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       'The team measured ==3 metrics==, gross revenue, jobs and value added, across **5 geographies**, the Delta as a whole and four zones, in **2 water years** and **2 climates** (today and 2 ft of sea level rise); for New Green Watershed it also studied three restoration intensities. Every result is a **difference from today**: the Delta’s farm economy earns about **$1.105 billion a year** under Business as Usual, and each number says how far a scenario moves it, in dollars or jobs.',
     reaches: 'one number',
     reachesNote:
-      '==One number per scenario==: its revenue change on **whichever of the two pathways dominates** that scenario. The other pathway and the other metrics do not enter it.',
+      '==One score per metric==: its net percent change from Business as Usual, land use plus dry-year salinity. New Green Watershed is the only scenario whose three metrics differ.',
     places: {
       count: '4 zones, plus Delta-wide',
       basis:
@@ -291,9 +291,9 @@ export const SUBTEAM_PROFILES: Record<TeamKey, SubteamProfile> = {
       ],
       order: 'West to south',
     },
-    rule: 'The team scored each scenario on **the pathway that decides it**, not on one percent-based scale. The Scores sheet names that pathway for each scenario: **salinity** for Bolster & Fortify, Calling on Reserves and A Tunnel, and **land conversion** for Eco Machine and New Green Watershed. The scores are the same with 2 ft of sea level rise.',
-    ruleWhere: 'v19 workbook (1 Nov 2026), Scores',
-    verdict: { ngw: -4, em: 0, bf: -1, cor: 0, tunnel: -1, bau: 0 },
+    rule: 'The team scores each metric on **one percent-based scale**: land use plus dry-year salinity, as a percent of Business as Usual. Under 1% scores 0; 1–5% is ±1, 5–15% ±2, 15–25% ±3, 25–35% ±4, and 35% or more ±5. The scores are the same with 2 ft of sea level rise.',
+    ruleWhere: 'v20 workbook (3 Nov 2026), Scores',
+    verdict: { ngw: -4, em: 0, bf: 0, cor: 0, tunnel: 0, bau: 0 },
     finding:
       'Salinity changes gross revenue by ==less than 0.01%== of a $1.105B farm economy in every scenario modelled, so **land conversion determines the criterion**.',
     findings: [

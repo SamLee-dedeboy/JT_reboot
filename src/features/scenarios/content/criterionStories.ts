@@ -934,7 +934,7 @@ const recreation: CriterionStory = {
 
 const economy: CriterionStory = {
   source:
-    'Economy criterion results for data visualization, v19. WSM Lab, UC Merced, 1 November 2026.',
+    'Economy criterion results for data visualization, v20. WSM Lab, UC Merced, 3 November 2026.',
   brief: {
     rationale:
       'Agriculture is currently the primary land use and primary economic sector in the Delta and thus is important to consider in any future transition. Increased salinity in the Delta can reduce agricultural production (since crops require fresh water). Changes in land use (such as wetland restoration) can also affect the Delta’s economy. This criterion assesses impacts of these potential changes across all scenarios.',
@@ -991,7 +991,8 @@ const economy: CriterionStory = {
         ],
         caveats: [
           'Carbon-offset revenue is a possibility: its rates come from four deeply subsided central-Delta islands and assume peat soils across the whole footprint.',
-          'The Economy scores for Eco Machine and New Green Watershed measure only the losses in farm revenue, jobs and value added from land conversion, offset in part by carbon-offset revenue: credits sold for the greenhouse gas emissions the converted land avoids, at $15 per metric ton of CO2. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
+          'Carbon-offset revenue is reported but not counted in the score: it is not farm revenue and its price is uncertain.',
+          'The Economy scores for Eco Machine and New Green Watershed measure changes in farm revenue, jobs and value added. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
           'Seasonal salinity averages hide short peaks, which could matter more for salt-sensitive crops such as stone fruit, almonds, and strawberries.',
         ],
       },

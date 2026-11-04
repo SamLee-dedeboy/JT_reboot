@@ -19,6 +19,7 @@ import type {
 } from '../../../../../internal/rank-visualization/drilldown/model'
 import { StageChip } from './controls'
 import { ScoreInfo } from './CellCards'
+import type { CellPoint } from '../model/cells'
 import type { Inspect } from './CellCards'
 import {
   PLACEHOLDER,
@@ -133,6 +134,28 @@ export function Matrix({
   // header pill opens the column into 25%, 50% and 100% wetland.
   const [levelsOpen, setLevelsOpen] = useState(false)
   const hasLevels = state.columns.includes(NGW) && rows.some((row) => row.node.ngwLevels)
+  const inspectCell = (
+    event: MouseEvent<HTMLElement>,
+    node: CriterionNode,
+    point: CellPoint,
+    diff: boolean,
+    level?: number,
+  ) =>
+    onInspect({
+      anchor: event.currentTarget,
+      node,
+      point,
+      level,
+      diff,
+      outflowSet: state.setId === 'outflow',
+      coords: {
+        criterion: node.id,
+        scenario: point.scenario,
+        place: state.place,
+        period: state.period,
+        climate: state.climate,
+      },
+    })
   const split = levelsOpen && hasLevels
   // Open, the 50% level keeps a full column and 25% and 100% take about half one
   // each, never so little that a value like −$212M is cut off.
@@ -615,6 +638,7 @@ export function Matrix({
                   signedText={diff}
                   fallback={cell}
                   whole={state.place === ANY}
+                  onInspect={(event, point, level) => inspectCell(event, node, point, diff, level)}
                 />
               ) : (
                 <MotionBox
@@ -634,21 +658,7 @@ export function Matrix({
                     signedText={diff && !node.asPublished}
                     onClick={
                       cell.raw !== null
-                        ? (event) =>
-                            onInspect({
-                              anchor: event.currentTarget,
-                              node,
-                              point: cell,
-                              diff,
-                              outflowSet: state.setId === 'outflow',
-                              coords: {
-                                criterion: node.id,
-                                scenario: cell.scenario,
-                                place: state.place,
-                                period: state.period,
-                                climate: state.climate,
-                              },
-                            })
+                        ? (event) => inspectCell(event, node, cell, diff)
                         : undefined
                     }
                   />
@@ -714,7 +724,8 @@ function LevelsPill({ open, onToggle }: { open: boolean; onToggle: () => void })
 /**
  * New Green Watershed's cells with its levels open: three values where the team
  * reports three, one wide value with a note where all three are the same, and the
- * 50% value alone where the row has no levels at all.
+ * 50% value alone where the row has no levels at all. Each opens its card like any
+ * other cell; a level's own value opens the card for that level.
  */
 function LevelCells({
   node,
@@ -725,6 +736,7 @@ function LevelCells({
   signedText,
   fallback,
   whole,
+  onInspect,
 }: {
   node: CriterionNode
   depth: 0 | 1
@@ -733,10 +745,15 @@ function LevelCells({
   score: boolean
   signedText: boolean
   /** The column's own cell, for a row with no levels. */
-  fallback: { value: number | null; why: string }
+  fallback: CellPoint
   /** Every place together: the only slice the levels are reported for. */
   whole: boolean
+  onInspect: (event: MouseEvent<HTMLElement>, point: CellPoint, level?: number) => void
 }) {
+  const inspectColumn =
+    fallback.raw === null
+      ? undefined
+      : (event: MouseEvent<HTMLElement>) => onInspect(event, fallback)
   const box = (key: string, columns: number, children: ReactNode) => (
     <MotionBox
       key={key}
@@ -751,7 +768,12 @@ function LevelCells({
       {children}
     </MotionBox>
   )
-  const cell = (value: number | null, note?: string, why: string = UI.forthcoming) => (
+  const cell = (
+    value: number | null,
+    onClick: ((event: MouseEvent<HTMLElement>) => void) | undefined,
+    note?: string,
+    why: string = UI.forthcoming,
+  ) => (
     <Cell
       value={value}
       why={value === null ? why : ''}
@@ -760,6 +782,7 @@ function LevelCells({
       lowerBetter={lowerIsBetter(node.id)}
       signedText={signedText}
       note={note}
+      onClick={onClick}
     />
   )
   // Levels are reported Delta-wide only; at one place, the row shows its own value.
@@ -770,6 +793,7 @@ function LevelCells({
       3,
       cell(
         fallback.value ?? null,
+        inspectColumn,
         fallback.value === null ? undefined : UI.sameAtAllLevels,
         fallback.why,
       ),
@@ -788,14 +812,29 @@ function LevelCells({
     return (
       <>
         {box('level-0', 1, blank)}
-        {box('level-1', 1, cell(fallback.value ?? null))}
+        {box('level-1', 1, cell(fallback.value ?? null, inspectColumn))}
         {box('level-2', 1, blank)}
       </>
     )
   const shown = levels.map((value) => (value === null ? null : value + shift))
   if (shown.every((value) => value === shown[0]))
-    return box('levels', 3, cell(shown[0], UI.sameAtAllLevels))
-  return <>{shown.map((value, index) => box(`level-${index}`, 1, cell(value)))}</>
+    return box('levels', 3, cell(shown[0], inspectColumn, UI.sameAtAllLevels))
+  return (
+    <>
+      {shown.map((value, index) =>
+        box(
+          `level-${index}`,
+          1,
+          cell(
+            value,
+            value === null
+              ? undefined
+              : (event) => onInspect(event, { ...fallback, raw: levels[index] }, index),
+          ),
+        ),
+      )}
+    </>
+  )
 }
 
 /** A small outlined tag after a row or group name. */

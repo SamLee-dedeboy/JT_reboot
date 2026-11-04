@@ -21,3 +21,6 @@ export const popoverPaperSx = {
   borderColor: 'border.default',
   borderRadius: 1,
 } as const
+
+/** A card's width, kept inside a phone's screen. */
+export const popoverWidth = (width: number) => `min(${width}px, calc(100vw - 32px))`

@@ -108,7 +108,7 @@ export const ranking = {
   /** The map view's row of maps, when the region table sits beneath it. */
   mapMinHeight: 300,
   /** The info cards (explainers): a text card, and one led by a map. */
-  explainer: { width: 440, wide: 720, mapHeight: 460 },
+  explainer: { width: 600, cell: 520, wide: 720, mapHeight: 460 },
   gridLine: { width: 1, style: 'solid', color: 'border.subtle' },
   gridLineMinor: { width: 1, style: 'dotted', color: 'translucent.100' },
   teamIconSize: 18,

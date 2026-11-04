@@ -22,6 +22,7 @@ import {
   regionalOverviewMaxZoom,
   regionalPreviewPopupSx,
   regionalReleaseViewOptions,
+  regionalTrendLabel,
   registerRegionalMapPatterns,
   scenarioOverviewBounds,
   useCuratedRegionalPlaces,
@@ -368,6 +369,65 @@ function FindingSummary({ places }: { places: RegionalPlace[] }) {
   )
 }
 
+const mapLegendEntries = [
+  { trend: 'saltier', label: 'Saltier' },
+  { trend: 'fresher', label: 'Fresher' },
+  { trend: 'flipping', label: regionalTrendLabel.flipping },
+] as const
+
+/**
+ * The key to the map's regions, for the trends this scenario has. Stripes match the map's.
+ * Over the map's corner on wider screens; below it on phones, where it would cover the map.
+ */
+function MapLegend({ places }: { places: RegionalPlace[] }) {
+  const { pink, teal } = useTheme().palette.salinity
+  const swatches = {
+    saltier: pink,
+    fresher: teal,
+    flipping: `repeating-linear-gradient(135deg, ${pink} 0 4px, ${teal} 4px 8px)`,
+  }
+  const entries = mapLegendEntries.filter(({ trend }) =>
+    places.some((place) => place.trend === trend),
+  )
+  if (entries.length === 0) return null
+
+  return (
+    <Box
+      sx={{
+        position: { xs: 'static', md: 'absolute' },
+        right: (theme) => theme.spacing(jtSpacing.gap.sm),
+        bottom: (theme) => theme.spacing(jtSpacing.gap.sm),
+        zIndex: 1,
+        display: 'flex',
+        flexWrap: 'wrap',
+        columnGap: jtSpacing.gap.md,
+        rowGap: jtSpacing.gap.xs,
+        mt: { xs: jtSpacing.gap.sm, md: 0 },
+        px: { md: jtSpacing.gap.sm },
+        py: { md: jtSpacing.gap.xs },
+        bgcolor: { md: 'translucent.darkSurface' },
+        pointerEvents: 'none',
+      }}
+    >
+      {entries.map(({ trend, label }) => (
+        <Box key={trend} sx={{ display: 'flex', alignItems: 'center', gap: jtSpacing.gap.xs }}>
+          <Box
+            sx={{
+              flex: 'none',
+              width: ranking.legend.swatchWidth,
+              height: 12,
+              background: swatches[trend],
+            }}
+          />
+          <Typography variant="meta" sx={{ color: 'common.white' }}>
+            {label}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
 /**
  * The scenario results page's salinity section: a written summary, the scenario's
  * strategies, a static version of the kiosk's regional map, and every region's events
@@ -668,6 +728,7 @@ export default function RegionalSalinitySummary({
                   ) : null}
                 </BaseMap>
               </Box>
+              <MapLegend places={mapPlaces} />
             </Box>
           </Box>
 
