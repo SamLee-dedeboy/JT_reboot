@@ -8,6 +8,7 @@ import type { ReactNode } from 'react'
 import { jtSpacing, ranking } from '../../../../../theme'
 import { TEAMS, cellFill } from '../../../../../internal/rank-visualization/data'
 import type { TeamKey } from '../../../../../internal/rank-visualization/data'
+import type { MetricTakeaway } from '../model/labels'
 import { popoverPaperSx, popoverWidth } from '../styles'
 
 /** An info button in the team's colour, and the explainer card it opens. */
@@ -15,12 +16,15 @@ export function Explainer({
   team,
   title,
   wide,
+  roomy,
   children,
 }: {
   team: TeamKey
   title: string
   /** For a card led by a map. */
   wide?: boolean
+  /** For a metric's card: the full width whatever its text, so every metric's card matches. */
+  roomy?: boolean
   children: ReactNode
 }) {
   const [anchor, setAnchor] = useState<HTMLElement | null>(null)
@@ -50,6 +54,7 @@ export function Explainer({
             sx: {
               ...popoverPaperSx,
               maxWidth: popoverWidth(wide ? ranking.explainer.wide : ranking.explainer.width),
+              ...(roomy && { width: popoverWidth(ranking.explainer.width), p: { xs: 2, sm: 3 } }),
             },
           },
         }}
@@ -82,14 +87,16 @@ export function Prose({
   text,
   team,
   variant = 'body2',
+  textColor = 'base.50',
 }: {
   text: string
   team: TeamKey
-  variant?: 'body1' | 'body2'
+  variant?: 'body1' | 'body2' | 'takeawayLead' | 'takeawayBody'
+  textColor?: string
 }) {
   const color = TEAMS.find((t) => t.key === team)?.color
   return (
-    <Typography variant={variant} sx={{ color: 'base.50' }}>
+    <Typography variant={variant} sx={{ color: textColor }}>
       {text.split(/(\*\*.*?\*\*|\+\+.*?\+\+)/g).map((part, index) =>
         part.startsWith('**') && part.endsWith('**') ? (
           <Box key={index} component="strong" sx={{ color }}>
@@ -104,6 +111,90 @@ export function Prose({
         ),
       )}
     </Typography>
+  )
+}
+
+/** Text under ruled labels: beside them on a wide card, beneath them on a phone. */
+export function LabelledRows({
+  rows,
+  team,
+}: {
+  rows: { label: string; text: string }[]
+  team: TeamKey
+}) {
+  return (
+    <Box>
+      {rows.map((row, index) => (
+        <Box
+          key={row.label}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: 'minmax(0, 1fr)',
+              sm: `${ranking.explainer.takeawayLabel}px minmax(0, 1fr)`,
+            },
+            alignItems: 'baseline',
+            columnGap: 2,
+            rowGap: 0.5,
+            pt: 1.5,
+            pb: index === rows.length - 1 ? 0 : 1.5,
+            borderTop: 1,
+            borderColor: 'border.subtle',
+          }}
+        >
+          <Typography variant="takeawayLabel" component="h4">
+            {row.label}
+          </Typography>
+          <Prose text={row.text} team={team} variant="takeawayBody" />
+        </Box>
+      ))}
+    </Box>
+  )
+}
+
+/** A takeaway's table: each row a heading, set apart from its value. */
+function TakeawayTable({ rows }: { rows: [string, string][] }) {
+  const cellSx = { verticalAlign: 'baseline', py: 0.75, pr: 0, textAlign: 'left' }
+  return (
+    <Box component="table" sx={{ width: '100%', borderCollapse: 'collapse' }}>
+      <tbody>
+        {rows.map(([heading, value]) => (
+          <Box key={heading} component="tr" sx={{ borderTop: 1, borderColor: 'border.subtle' }}>
+            <Typography
+              variant="takeawayBodyStrong"
+              component="th"
+              scope="row"
+              sx={{ ...cellSx, pl: 0, color: 'common.white' }}
+            >
+              {heading}
+            </Typography>
+            <Typography
+              variant="takeawayBody"
+              component="td"
+              sx={{ ...cellSx, pl: 1.5, color: 'base.100' }}
+            >
+              {value}
+            </Typography>
+          </Box>
+        ))}
+      </tbody>
+    </Box>
+  )
+}
+
+/** A metric's takeaway, set apart from the reference sections beneath it. */
+export function TakeawayPanel({ takeaway, team }: { takeaway: MetricTakeaway; team: TeamKey }) {
+  return (
+    <Stack
+      spacing={1.25}
+      sx={{ p: { xs: 1.5, sm: 2 }, borderRadius: 0.75, bgcolor: 'translucent.50' }}
+    >
+      <Prose text={takeaway.lead} team={team} variant="takeawayLead" textColor="common.white" />
+      {takeaway.details?.map((detail) => (
+        <Prose key={detail} text={detail} team={team} variant="takeawayBody" />
+      ))}
+      {takeaway.rows && <TakeawayTable rows={takeaway.rows} />}
+    </Stack>
   )
 }
 
@@ -188,7 +279,25 @@ export function ScoreScale({
           <Typography
             key={score}
             variant="captionSmall"
-            sx={{ textAlign: 'center', color: 'base.200', whiteSpace: bands ? 'normal' : 'nowrap' }}
+            sx={{
+              textAlign: 'center',
+              color: 'base.200',
+              whiteSpace: bands ? 'normal' : 'nowrap',
+              // Too narrow on a phone for every tick: keep the two ends and the middle.
+              ...(!bands && {
+                justifySelf: {
+                  xs: index === 0 ? 'start' : index === scores.length - 1 ? 'end' : 'center',
+                  sm: 'stretch',
+                },
+                visibility: {
+                  xs:
+                    score === 0 || index === 0 || index === scores.length - 1
+                      ? 'visible'
+                      : 'hidden',
+                  sm: 'visible',
+                },
+              }),
+            }}
           >
             {bands?.[index] ?? tick(score)}
           </Typography>

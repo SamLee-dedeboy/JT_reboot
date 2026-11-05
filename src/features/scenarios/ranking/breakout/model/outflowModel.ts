@@ -19,10 +19,9 @@ import {
   ECOLOGY_REGIONS,
   ECOLOGY_SPECIES,
 } from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
-import type {
-  EcologyRegionKey,
-  EcologySpeciesKey,
-} from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
+import type { EcologySpeciesKey } from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
+import { applyOutflowScores } from './applyScores'
+import { ECOLOGY_OUTFLOW } from '../../../../../internal/rank-visualization/drilldown/ecologyWorkbook'
 import {
   ANY,
   OUTFLOW_KEYS,
@@ -35,18 +34,25 @@ import type {
   SliceValues,
   Source,
 } from '../../../../../internal/rank-visualization/drilldown/model'
+import type { OutflowRun } from '../../../../../internal/rank-visualization/drilldown/recreationOutflow'
 import {
   REC_OUTFLOW_SALINITY_DAYS,
   REC_OUTFLOW_SALINITY_SCORES,
   REC_OUTFLOW_TEMPERATURE_DAYS,
   REC_OUTFLOW_TEMPERATURE_SCORES,
-} from '../../../../../internal/rank-visualization/drilldown/recreationOutflow'
-import type { OutflowRun } from '../../../../../internal/rank-visualization/drilldown/recreationOutflow'
-import type { RecActivityKey } from '../../../../../internal/rank-visualization/drilldown/recreationThresholds'
+} from '../../../../../internal/rank-visualization/drilldown/recreationWorkbook'
+import type {
+  RecActivityKey,
+  RecTable as RecreationTable,
+} from '../../../../../internal/rank-visualization/drilldown/recreationWorkbook'
 import { NODE_INDEX } from '../../../../../internal/rank-visualization/drilldown/tree'
 
 const NO_FACET: Facet[] = [{ key: ANY, label: 'Not broken out' }]
 const RUNS = [...OUTFLOW_KEYS] as ScenarioKey[]
+const outflowFlat = (hist: number, more: number) => ({
+  hist: { [sliceKey(ANY, ANY)]: hist },
+  more: { [sliceKey(ANY, ANY)]: more },
+})
 
 const SEASONS: Facet[] = [
   { key: 'run', label: 'Whole run · Oct 2020 – Jan 2022' },
@@ -129,60 +135,19 @@ const report = (team: string, where: string, quote: string): Source => ({
 
 // ---------- Ecology ----------
 
-/** The five species Ecology ran on the outflow runs, in its own table order. */
-const ECO_OUTFLOW_SPECIES: EcologySpeciesKey[] = [
-  'overbiteClam',
-  'longfinJuv',
-  'longfinAdult',
-  'egeria',
-  'largemouthBass',
-]
-/** The regions of Ecology's outflow tables, in their order; Central Bay was omitted. */
-const ECO_OUTFLOW_REGIONS: EcologyRegionKey[] = [
-  'northDelta',
-  'centralDelta',
-  'southDelta',
-  'confluence',
-  'suisunBay',
-  'sanPabloBay',
-  'southBay',
-]
-
-/** Report Tables 2–6: proportion of suitable days per run, by region. */
-const ECO_OUTFLOW: Record<string, Record<OutflowRun, number[]>> = {
-  overbiteClam: {
-    hist: [0, 0, 0, 0.056, 0.817, 0.332, 0.002],
-    more: [0, 0, 0, 0.009, 0.523, 0.489, 0.006],
-    less: [0, 0, 0, 0.062, 0.843, 0.378, 0],
-  },
-  longfinJuv: {
-    hist: [0.029, 0.272, 0.467, 0.224, 0.439, 0, 0],
-    more: [0.029, 0.076, 0.448, 0.277, 0.455, 0, 0],
-    less: [0.029, 0.386, 0.471, 0.277, 0.422, 0, 0],
-  },
-  longfinAdult: {
-    hist: [0, 0, 0, 0, 0.112, 0.708, 0.181],
-    more: [0, 0, 0, 0, 0.075, 0.497, 0.609],
-    less: [0, 0, 0, 0, 0.105, 0.546, 0.098],
-  },
-  egeria: {
-    hist: [1, 1, 1, 0.943, 0.182, 0, 0],
-    more: [1, 1, 1, 0.999, 0.476, 0, 0],
-    less: [1, 1, 1, 0.938, 0.156, 0, 0],
-  },
-  largemouthBass: {
-    hist: [1, 1, 1, 0.922, 0.09, 0, 0],
-    more: [1, 1, 1, 0.978, 0.323, 0, 0],
-    less: [1, 1, 1, 0.912, 0.068, 0, 0],
-  },
-}
+const ECO_OUTFLOW_SPECIES = ECOLOGY_SPECIES.map((species) => species.key)
 
 const INVASIVE = new Set(['largemouthBass', 'overbiteClam', 'egeria'])
 
-const ECO_PLACES: Facet[] = ECO_OUTFLOW_REGIONS.map((key) => ({
-  key,
-  label: ECOLOGY_REGIONS.find((region) => region.key === key)?.label ?? key,
-}))
+const ECO_PLACES: Facet[] = [
+  { key: ANY, label: 'All together' },
+  ...ECOLOGY_REGIONS.map((region) => ({ key: region.key, label: region.label })),
+]
+const ECO_PERIODS: Facet[] = [
+  { key: ANY, label: 'Whole period' },
+  { key: '2019', label: 'Wet Year' },
+  { key: '2020', label: 'Dry Year' },
+]
 
 const ECO_SOURCE = report(
   'Ecology',
@@ -191,14 +156,6 @@ const ECO_SOURCE = report(
 )
 
 function ecoSpecies(key: EcologySpeciesKey): CriterionNode {
-  const values: Partial<Record<ScenarioKey, SliceValues>> = {}
-  for (const run of OUTFLOW_KEYS) {
-    const series: SliceValues = {}
-    ECO_OUTFLOW_REGIONS.forEach((region, i) => {
-      series[sliceKey(region, ANY)] = ECO_OUTFLOW[key][run][i]
-    })
-    values[run] = series
-  }
   return {
     id: `of-eco-${key}`,
     label: ECOLOGY_SPECIES.find((species) => species.key === key)?.label ?? key,
@@ -208,51 +165,59 @@ function ecoSpecies(key: EcologySpeciesKey): CriterionNode {
     provenance: 'reported',
     unit: 'share',
     betterHigher: !INVASIVE.has(key),
-    note: 'Proportion of days within the species’ salinity and temperature thresholds, by region, for each outflow run. Ecology reports no Delta-wide value and no rank for the outflow runs; Central Bay was left out.',
+    note: 'Proportion of days within the species’ salinity and temperature thresholds, as reported in the Ecology tab.',
     places: ECO_PLACES,
-    periods: NO_FACET,
-    values,
+    periods: ECO_PERIODS,
+    values: ECOLOGY_OUTFLOW[`bk-eco-niche-${key}`] ?? {},
     sources: [ECO_SOURCE],
   }
 }
 
 function ecologyTree(): CriterionNode {
-  return forthcoming(
-    'of-ecology',
-    'ecology',
-    'Ecology',
-    'Ecology has not scored the outflow runs. Its report gives the proportion of suitable days for five species by region, and lists the overall ranking as a step still to do.',
-    {
-      level: 'team',
-      edge: undefined,
-      sources: [ECO_SOURCE],
-      children: [
-        notApplicable(
-          'of-eco-habitat',
-          'ecology',
-          'Habitat availability',
-          'The outflow runs change Delta outflow only, not the landscape, so they add no habitat acres.',
-        ),
-        notApplicable(
-          'of-eco-foodweb',
-          'ecology',
-          'Food webs',
-          'The food-web proxy is weighted acres of wetland and wet-soil agriculture, which the outflow runs do not change.',
-        ),
-        forthcoming(
-          'of-eco-species',
-          'ecology',
-          'Species suitability',
-          'Ecology has not ranked the species on the outflow runs. Open the row for each species’ proportion of suitable days by region: more outflow freshens the Confluence and Suisun Marsh (more Brazilian waterweed and largemouth bass, fewer overbite clams there), less outflow does the reverse.',
-          {
-            edge: 'beside',
-            sources: [ECO_SOURCE],
-            children: ECO_OUTFLOW_SPECIES.map(ecoSpecies),
-          },
-        ),
-      ],
-    },
-  )
+  return {
+    id: 'of-ecology',
+    label: 'Ecology',
+    level: 'team',
+    team: 'ecology',
+    provenance: 'reported',
+    unit: 'score',
+    betterHigher: true,
+    note: 'Ecology scores reported in the Ecology tab of the ranking workbook.',
+    places: NO_FACET,
+    periods: NO_FACET,
+    values: {}, // ranking/scores.ts
+    sources: [ECO_SOURCE],
+    children: [
+      notApplicable(
+        'of-eco-habitat',
+        'ecology',
+        'Habitat availability',
+        'The outflow runs change Delta outflow only, not the landscape, so they add no habitat acres.',
+      ),
+      notApplicable(
+        'of-eco-foodweb',
+        'ecology',
+        'Food webs',
+        'The food-web proxy is weighted acres of wetland and wet-soil agriculture, which the outflow runs do not change.',
+      ),
+      {
+        id: 'of-eco-species',
+        label: 'Species suitability',
+        level: 'metric',
+        team: 'ecology',
+        edge: 'beside',
+        provenance: 'reported',
+        unit: 'score',
+        betterHigher: true,
+        note: 'The aggregate species-suitability score reported in the Ecology tab. Species rows beneath it show measures only, without individual scores.',
+        places: NO_FACET,
+        periods: NO_FACET,
+        values: ECOLOGY_OUTFLOW['bk-eco-species'] ?? {},
+        sources: [ECO_SOURCE],
+        children: ECO_OUTFLOW_SPECIES.map(ecoSpecies),
+      },
+    ],
+  }
 }
 
 // ---------- Recreation ----------
@@ -273,7 +238,7 @@ const REC_ACTIVITY_LABEL: Record<RecActivityKey, string> = {
   dayUseCold: 'Day use, cold water',
 }
 
-type RecTable = typeof REC_OUTFLOW_SALINITY_SCORES
+type RecTable = RecreationTable<number | null>
 
 const recValues = (table: RecTable, activity: RecActivityKey) =>
   byPlacePeriod(
@@ -297,7 +262,6 @@ function recSource(metric: 'salinity' | 'temperature'): Source {
 function recActivity(
   metric: 'salinity' | 'temperature',
   activity: RecActivityKey,
-  scores: RecTable,
   days: RecTable,
 ): CriterionNode {
   return {
@@ -313,7 +277,6 @@ function recActivity(
     places: REC_PLACES,
     periods: SEASONS,
     values: recValues(days, activity),
-    ranks: recValues(scores, activity),
     sources: [recSource(metric)],
   }
 }
@@ -367,9 +330,16 @@ function recThresholds(
     values: recMean(scores),
     entityNoun: 'activity',
     sources: [recSource(metric), REC_MEAN_SOURCE],
-    children: (Object.keys(scores) as RecActivityKey[]).map((activity) =>
-      recActivity(metric, activity, scores, days),
-    ),
+    children: (Object.keys(scores) as RecActivityKey[]).flatMap((activity) => {
+      const row = recActivity(metric, activity, days)
+      if (activity !== 'dayUseBoating') return [row]
+      const copyAs = (key: 'dayUse' | 'boating', label: string): CriterionNode => ({
+        ...row,
+        id: row.id.replace(/dayUseBoating$/, key),
+        label,
+      })
+      return [copyAs('dayUse', 'Day use'), copyAs('boating', 'Boating')]
+    }),
   }
 }
 
@@ -378,54 +348,49 @@ function recreationTree(): CriterionNode {
     'of-recreation',
     'recreation',
     'Recreation',
-    'Recreation’s score for +30% outflow, from the ranking table workbook: each region’s value, rounded by the team, and all together the average of the regions. The team has not scored −10% outflow. Its report’s summary: more outflow helps, cutting salinity risk for birds and waterfowl by as much as 90% in a month, while less outflow barely moves the baseline.',
+    'Recreation’s overall score for +30% outflow is 0. The team has not scored −10% outflow. The workbook supplies the background proportions against the Historical Baseline.',
     {
       level: 'team',
       edge: undefined,
       provenance: 'reported',
       forthcoming: false,
       forthcomingFor: ['less'],
-      places: REC_PLACES,
-      values: byPlacePeriod({
-        hist: {
-          delta: { [ANY]: 0 },
-          suisun: { [ANY]: 0 },
-          centralDelta: { [ANY]: 0 },
-          northDelta: { [ANY]: 0 },
-          southDelta: { [ANY]: 0 },
-        },
-        more: {
-          delta: { [ANY]: 1 },
-          suisun: { [ANY]: 2 },
-          centralDelta: { [ANY]: 3 },
-          northDelta: { [ANY]: 0 },
-          southDelta: { [ANY]: 0 },
-        },
-      }),
+      places: NO_FACET,
+      values: {}, // ranking/scores.ts
       children: [
-        recThresholds(
-          'salinity',
-          REC_OUTFLOW_SALINITY_SCORES,
-          REC_OUTFLOW_SALINITY_DAYS,
-          'Each activity scored on its days over its salinity threshold against the Historical Baseline; the row is their mean, the rule Recreation uses for the adaptation scenarios (the team has not combined them for the outflow runs). Delta-wide, +30% outflow scores +4 to +5 on every activity and −10% scores −1 to −5. Open the row for each activity’s days and score.',
-        ),
-        recThresholds(
-          'temperature',
-          REC_OUTFLOW_TEMPERATURE_SCORES,
-          REC_OUTFLOW_TEMPERATURE_DAYS,
-          'The same construction against water temperature, the row again the mean of the activities. Outflow barely changes temperature: Delta-wide, every activity scores 0 for the whole run under both runs.',
-        ),
+        {
+          ...recThresholds(
+            'salinity',
+            REC_OUTFLOW_SALINITY_SCORES,
+            REC_OUTFLOW_SALINITY_DAYS,
+            'The Recreation team scores +30% outflow +1 for Salinity stress. Open the row for the workbook’s activity-level proportions and changes from Historical Baseline.',
+          ),
+          places: NO_FACET,
+          periods: NO_FACET,
+          values: outflowFlat(0, 1),
+        },
+        {
+          ...recThresholds(
+            'temperature',
+            REC_OUTFLOW_TEMPERATURE_SCORES,
+            REC_OUTFLOW_TEMPERATURE_DAYS,
+            'The Recreation team scores +30% outflow 0 for Temperature stress. Open the row for the workbook’s activity-level proportions and changes from Historical Baseline.',
+          ),
+          places: NO_FACET,
+          periods: NO_FACET,
+          values: outflowFlat(0, 0),
+        },
         notApplicable(
           'of-rec-restoration',
           'recreation',
           'Habitat Restoration',
-          'Scores restored acres; the outflow runs restore none.',
+          'The outflow run restores no habitat.',
         ),
         notApplicable(
           'of-rec-economy',
           'recreation',
           'Recreation economy',
-          'Values recreation services on restored land; the outflow runs restore none.',
+          'The outflow run creates no recreation economy on restored land.',
         ),
       ],
     },
@@ -491,8 +456,7 @@ function ejTree(): CriterionNode {
     note: 'Only drinking water is assessed on the outflow runs, so it is the whole EJ score: +30% outflow +4, −10% outflow −2. The report’s table gives −1 for the whole run and both seasons, then an average of −1.5 rounded to −2; −2 is the score it states.',
     places: NO_FACET,
     periods: NO_FACET,
-    // +30% is the team's own, from the ranking table workbook (Nov 2026).
-    values: flat({ hist: 0, more: 4, less: -2 }),
+    values: {}, // ranking/scores.ts; +30% is the team's own, from the Nov 2026 workbook.
     sources: [EJ_SOURCE],
     children: [
       {
@@ -595,18 +559,19 @@ function economyMetric(
 ): CriterionNode {
   return economyMore(id, label, 0, {
     children: [
+      notApplicable(`${id}-land`, 'economy', ECONOMY_LAND_LABEL, ECONOMY_NO_LAND),
       economyMore(`${id}-salinity`, ECONOMY_SALINITY_LABEL, salinity, {
         level: 'entity',
         edge: 'measures',
         unit,
       }),
-      notApplicable(`${id}-land`, 'economy', ECONOMY_LAND_LABEL, ECONOMY_NO_LAND),
       ...extra,
     ],
   })
 }
 
 function economyTree(): CriterionNode {
+  // The 0 here is replaced by ranking/scores.ts.
   return economyMore('of-economy', 'Economy', 0, {
     level: 'team',
     edge: undefined,
@@ -629,6 +594,33 @@ function economyTree(): CriterionNode {
 // ---------- Eco-cultural ----------
 
 function ecoCulturalTree(): CriterionNode {
+  const ecoCulturalMore = (
+    id: string,
+    label: string,
+    more: number,
+    over: Partial<CriterionNode> = {},
+  ): CriterionNode =>
+    forthcoming(id, 'ecoCultural', label, 'Eco-cultural tiered-outflow ranking table.', {
+      forthcoming: false,
+      values: flat({ hist: 0, more, less: 0 }),
+      ...over,
+    })
+
+  const restorationHabitats = [
+    'tidal',
+    'managed',
+    'rice',
+    'uplandWetland',
+    'meadow',
+    'floodplain',
+  ].map((habitat) =>
+    ecoCulturalMore(`of-ec-restoration-${habitat}`, '', 0, {
+      level: 'entity',
+      edge: 'measures',
+      unit: 'acres',
+    }),
+  )
+
   return {
     id: 'of-ecoCultural',
     label: 'Eco-cultural',
@@ -637,10 +629,10 @@ function ecoCulturalTree(): CriterionNode {
     provenance: 'reported',
     unit: 'score',
     betterHigher: true,
-    note: 'One overall score: +30% outflow +3, −10% outflow −2. Flow matters to the Tribes the team heard from, and the 30% increase clearly outperforms the other two runs. The runs change no landscape, so restoration does not apply.',
+    note: 'One overall score: +30% outflow +3, −10% outflow −2. Flow matters to the Tribes the team heard from, and the 30% increase clearly outperforms the other two runs.',
     places: NO_FACET,
     periods: NO_FACET,
-    values: flat({ hist: 0, more: 3, less: -2 }),
+    values: {}, // ranking/scores.ts
     sources: [
       report(
         'Eco-cultural',
@@ -649,24 +641,57 @@ function ecoCulturalTree(): CriterionNode {
       ),
     ],
     children: [
-      notApplicable(
-        'of-ec-restoration',
-        'ecoCultural',
-        'Restoration',
-        'The report: the tiered outflow scenarios include no landscape-level interventions, so they have no score for Ecosystem Restoration.',
-      ),
+      ecoCulturalMore('of-ec-restoration', 'Restoration', 0, {
+        children: [
+          ...restorationHabitats,
+          {
+            ...ecoCulturalMore(
+              'of-ec-restoration-functional-flow',
+              'Potential for functional flow',
+              3,
+              { provenance: 'unscored', edge: 'measures' },
+            ),
+            steps: { hist: 0, more: 3, less: -2 },
+          },
+        ],
+      }),
+      {
+        ...ecoCulturalMore('of-ec-access', 'Increased Land Access', 0, {
+          provenance: 'unscored',
+        }),
+        steps: { hist: 0, more: 0, less: 0 },
+      },
+      {
+        ...ecoCulturalMore(
+          'of-ec-tek',
+          'Implementation and Application of Indigenous Science & Traditional Ecological Knowledge (TEK)',
+          0,
+          { provenance: 'unscored' },
+        ),
+        steps: { hist: 0, more: 0, less: 0 },
+      },
+      {
+        ...ecoCulturalMore(
+          'of-ec-sovereignty',
+          'Recognition and Application of Tribal Sovereignty',
+          2,
+          { provenance: 'unscored' },
+        ),
+        steps: { hist: 0, more: 2, less: 0 },
+      },
     ],
   }
 }
 
 /** The five teams' outflow trees, in the tab bar's order. */
+/** ranking/scores.ts sets each team's score and metric-row scores last, replacing any above. */
 export const OUTFLOW_TREE: CriterionNode[] = [
   ecologyTree(),
   recreationTree(),
   ejTree(),
   economyTree(),
   ecoCulturalTree(),
-]
+].map(applyOutflowScores)
 
 function register(n: CriterionNode) {
   NODE_INDEX.set(n.id, n)

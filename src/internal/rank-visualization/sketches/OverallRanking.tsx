@@ -18,7 +18,7 @@ import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, COLUMN_GAP, ROW_GAP, TRACK_HEIGHT, trackColumns } from '../components/layout'
 import { BallotPip, RankNumber, ScaleLabels } from '../components/ChartBits'
 import TeamIcon from '../../../ui/TeamIcon'
-import { SCENARIOS, TEAMS, fmtScore, scored, toPct } from '../data'
+import { ADAPTATION_SCENARIOS, TEAMS, fmtScore, scored, toPct } from '../data'
 import type { Score } from '../data'
 import { SCENARIO_KEYS } from '../drilldown/model'
 import type { ScenarioKey } from '../drilldown/model'
@@ -38,7 +38,7 @@ interface RankedScenario {
 
 /** Every scenario with the breakout table's scores, in the table's column order. */
 const SCENARIO_ROWS: RankedScenario[] = (() => {
-  const rows = SCENARIOS.map((scenario, i) => {
+  const rows = ADAPTATION_SCENARIOS.map((scenario, i) => {
     const key = SCENARIO_KEYS[i]
     const scores = TEAMS.map((team) => publishedTeamScore(team.key, key))
     const values = scored(scores)

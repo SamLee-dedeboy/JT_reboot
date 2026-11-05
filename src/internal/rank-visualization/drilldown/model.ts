@@ -5,10 +5,10 @@
 // The four drill-down intents the design has to support — scenario-, subteam-,
 // metric- and entity-driven — are not four flows. They are which dimension is
 // pinned while the others vary, which is why one selection state serves them all.
-import { OUTFLOW_SCENARIOS, SCENARIOS, TEAMS } from '../data'
+import { ADAPTATION_SCENARIOS, OUTFLOW_SCENARIOS, TEAMS } from '../data'
 import type { Score, TeamKey } from '../data'
 
-/** Adaptation scenario ids, in the order SCENARIOS is declared in ../data.ts. */
+/** Adaptation scenario ids, in the order ADAPTATION_SCENARIOS is declared in ../data.ts. */
 export const SCENARIO_KEYS = ['ngw', 'em', 'bf', 'cor', 'tunnel', 'bau'] as const
 /**
  * Tiered outflow run ids, in the order OUTFLOW_SCENARIOS is declared: +30% (run 16),
@@ -25,7 +25,7 @@ export type ScenarioKey =
   (typeof SCENARIO_KEYS)[number] | (typeof OUTFLOW_KEYS)[number] | typeof CALSIM_BAU
 
 /** The six scenarios with the names and colors ../data.ts already defines for them. */
-export const DRILL_SCENARIOS = SCENARIOS.map((scenario, i) => ({
+export const DRILL_SCENARIOS = ADAPTATION_SCENARIOS.map((scenario, i) => ({
   key: SCENARIO_KEYS[i],
   name: scenario.name,
   color: scenario.color,
@@ -186,12 +186,6 @@ export interface CriterionNode {
    * where the team reports each. `values.ngw` holds the 50% level, the default.
    */
   ngwLevels?: [number | null, number | null, number | null]
-  /**
-   * The row has one New Green Watershed value that holds at every restoration level
-   * (its model run has a single New Green Watershed), so opening the levels shows
-   * that value once across all three.
-   */
-  levelsSame?: boolean
   /**
    * A qualitative row: the team's judgement in steps per scenario, +n better, −n
    * worse, 0 no change. A scenario left out is not yet assessed.
@@ -394,8 +388,12 @@ export function fmtValue(value: number, unit: Unit): string {
       return `${value < 0 ? '−' : ''}$${Math.abs(Math.round(value)).toLocaleString('en-US')}M`
     case 'usd':
       return `${value < 0 ? '−' : '+'}$${Math.abs(Math.round(value)).toLocaleString('en-US')}`
-    case 'usdValue':
-      return `${value < 0 ? '−' : ''}$${Math.abs(Math.round(value)).toLocaleString('en-US')}`
+    case 'usdValue': {
+      const millions = Math.abs(value) / 1_000_000
+      return `${value < 0 ? '−' : ''}$${millions.toLocaleString('en-US', {
+        maximumFractionDigits: 3,
+      })}M`
+    }
     case 'days': {
       const days = Math.round(value * 10) / 10
       if (days === 0) return 'no change'

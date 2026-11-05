@@ -261,11 +261,9 @@ const environmentalJustice: CriterionStory = {
     ],
     stats: [
       {
-        value: '82.6%',
+        value: '83%',
         label: 'of interviewees think Delta decision-making is not equitable and fair',
       },
-      { value: '8.7%', label: 'of interviewees said Delta decision-making is equitable and fair' },
-      { value: '8.7%', label: 'of interviewees were unsure' },
     ],
   },
   construction: {

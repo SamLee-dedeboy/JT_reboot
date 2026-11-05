@@ -28,8 +28,8 @@ import {
   REC_SLR_TEMPERATURE_SCORES,
   REC_TEMPERATURE_DAYS,
   REC_TEMPERATURE_SCORES,
-} from './recreationThresholds'
-import type { RecActivityKey, RecTable } from './recreationThresholds'
+} from './recreationWorkbook'
+import type { RecActivityKey, RecTable } from './recreationWorkbook'
 import { ECOLOGY_SLR_DELTA, ECOLOGY_SLR_REGION, EJ_SLR_DRINKING } from './seaLevelRise'
 import { ANY, sliceKey } from './model'
 import type { ClimateRun, CriterionNode, Facet, ScenarioKey, SliceValues, Source } from './model'
@@ -82,6 +82,7 @@ export const SLR_STATUS: Partial<Record<TeamKey, 'loaded' | 'pending'>> = {
   environmentalJustice: 'loaded',
   recreation: 'loaded',
   economy: 'loaded',
+  ecoCultural: 'loaded',
 }
 
 /** Ecology pools its sea-level-rise regions over both years; the period says so. */
@@ -541,12 +542,12 @@ function byRecRegion(by: Partial<Record<ScenarioKey, (number | null)[]>>) {
  * service value by scenario" table.
  */
 const REC_AMENITY_ECONOMY_VALUES = {
-  ngw: [15612588, 15746642, 20864682, 23127159],
-  quarter: [15612588, 10938914, 20864682, 10541095],
-  full: [15612588, 15746642, 22766589, 54681904],
-  bau: [6756577, 8874896, 20864682, 3844774],
+  ngw: [15613000, 15747000, 20865000, 23127000],
+  quarter: [15613000, 15747000, 20865000, 23127000],
+  full: [15613000, 15747000, 20865000, 23127000],
+  bau: [0, 0, 0, 0],
   score: [5, 5, 5, 0, 5],
-  em: [15612588, 514036, null, null],
+  em: [15613000, 514000, 0, 0],
 }
 
 const REC_ECONOMY_SERVICES: {
@@ -567,32 +568,32 @@ const REC_ECONOMY_SERVICES: {
   {
     key: 'biodiversity',
     label: 'Birding',
-    ngw: [6790924, 6849233, 9075400, 10059498],
-    quarter: [6790924, 4758041, 9075400, 4585004],
-    full: [6790924, 6849233, 9902662, 23784698],
-    bau: [2938872, 3860266, 9075400, 1672341],
+    ngw: [6791000, 6849000, 9075000, 10059000],
+    quarter: [6791000, 6849000, 9075000, 10059000],
+    full: [6791000, 6849000, 9075000, 10059000],
+    bau: [0, 0, 0, 0],
     score: [5, 5, 5, 0, 5],
-    em: [6790924, 223588, null, null],
+    em: [6139000, 224000, 0, 0],
   },
   {
     key: 'hunting',
     label: 'Waterfowl hunting',
-    ngw: [3903042, 3936555, 5216031, 5781635],
-    quarter: [3903042, 2734655, 5216031, 2635203],
-    full: [3903042, 3936555, 5691494, 13670109],
-    bau: [1689099, 2218664, 5216031, 961168],
+    ngw: [3903000, 3937000, 5216000, 5782000],
+    quarter: [3903000, 3937000, 5216000, 5782000],
+    full: [3903000, 3937000, 5216000, 5782000],
+    bau: [0, 0, 0, 0],
     score: [5, 5, 5, 0, 5],
-    em: [3903042, 128506, null, null],
+    em: [3903000, 948000, 0, 0],
   },
   {
     key: 'fishing',
     label: 'Angling',
-    ngw: [11867981, 11969883, 15860385, 17580217],
-    quarter: [11867981, 8315266, 15860385, 8012862],
-    full: [11867981, 11969883, 17306128, 41566703],
-    bau: [5136043, 6746293, 15860385, 2922622],
+    ngw: [11868000, 11970000, 15860000, 17580000],
+    quarter: [11868000, 11970000, 15860000, 17580000],
+    full: [11868000, 11970000, 15860000, 17580000],
+    bau: [0, 0, 0, 0],
     score: [5, 5, 5, 0, 5],
-    em: [11867981, 390747, null, null],
+    em: [11868000, 391000, 0, 0],
   },
 ]
 
@@ -711,13 +712,13 @@ const RECREATION: CriterionNode = {
       provenance: 'reported',
       unit: 'acres',
       betterHigher: true,
-      note: 'Acres as Recreation’s “Overall Restoration (Acres)” sheet gives them (26 Oct 2026): New Green Watershed at its middle (50%) bound; Eco Machine (NA in the North and South Delta); Business as Usual as existing protected areas. Delta-wide is the sum of the four regions; the sheet’s own totals add an upland band outside the Delta, which is left out. Bolster & Fortify, Calling on Reserves and A Tunnel are not in the sheet. Every New Green Watershed version exceeds the CVJV 2020 deficits of 21,454 shorebird and 21,336 waterfowl acres, which is why Recreation favours it.',
+      note: 'Acres as the Recreation tab of Ranking Table Final_V2 gives them: New Green Watershed at its middle (50%) bound; Eco Machine (NA in the North and South Delta); Business as Usual as existing protected areas. The workbook’s All together values are retained as published rather than recalculated from its rounded regional rows. Every New Green Watershed version exceeds the CVJV 2020 deficits of 21,454 shorebird and 21,336 waterfowl acres, which is why Recreation favours it.',
       places: REC_PLACES,
       periods: NO_FACET,
-      values: byRecRegion({
-        ngw: [41720, 32691.5082, 186769.0523, 197766.9751],
-        em: [41720, 1380, null, null],
-        bau: [18138.948, 23825.864, 56014.074, 10321.817],
+      values: byRecPlace({
+        ngw: [458948, 41720, 32692, 186769, 197767],
+        em: [43100, 41720, 1380, null, null],
+        bau: [108301, 18139, 23826, 56826, 10322],
       }),
       notApplicableAt: { em: ['northDelta', 'southDelta'] },
     },
@@ -1311,7 +1312,7 @@ function salinityPathway(
  */
 function restorationLevels(
   metric: string,
-  unit: 'dollars' | 'jobs',
+  unit: 'usd' | 'jobs',
   full: number,
   half: number,
   quarter: number,
@@ -1347,7 +1348,7 @@ function restorationLevels(
 }
 
 /** Eco Machine's land conversion, from the LandUse sheet. It holds that one scenario. */
-function ecoMachineLand(metric: string, unit: 'dollars' | 'jobs', value: number): CriterionNode {
+function ecoMachineLand(metric: string, unit: 'usd' | 'jobs', value: number): CriterionNode {
   const values = { em: { [sliceKey(ANY, ANY)]: value } }
   return {
     id: `${metric}-em`,
@@ -1377,8 +1378,8 @@ function ecoMachineLand(metric: string, unit: 'dollars' | 'jobs', value: number)
  */
 function carbonOffset(): CriterionNode {
   const values = {
-    em: { [sliceKey(ANY, ANY)]: 4.72 },
-    ngw: { [sliceKey(ANY, ANY)]: 28.59 },
+    em: { [sliceKey(ANY, ANY)]: 4_724_540 },
+    ngw: { [sliceKey(ANY, ANY)]: 28_591_277 },
     bau: { [sliceKey(ANY, ANY)]: 0 },
   }
   return {
@@ -1388,13 +1389,13 @@ function carbonOffset(): CriterionNode {
     team: 'economy',
     edge: 'measures',
     provenance: 'reported',
-    unit: 'dollars',
+    unit: 'usd',
     betterHigher: true,
     note: 'Yearly revenue from selling carbon offsets on converted land, at $15 per metric ton of CO2: 512% of the direct farm revenue Eco Machine loses, and 7.6–12.1% for New Green Watershed depending on the wetland level. Reported but not counted in the score: it is not farm revenue and its price is uncertain.',
     places: NO_FACET,
     periods: NO_FACET,
     values,
-    ngwLevels: [25.46, 28.59, 38.18],
+    ngwLevels: [25_463_214, 28_591_277, 38_180_334],
     sources: [ECONOMY_LAND_USE_SOURCE],
     slr: {
       values,
@@ -1494,8 +1495,8 @@ const ECONOMY: CriterionNode = {
           },
           `Change in farm gross revenue from salinity alone, against a $1,105.1M base. In the dry year A Tunnel loses about $27,000 (mostly Central Delta: Rindge Tract, Lower Roberts Island, McDonald Island, Jones Tract) and Bolster & Fortify about $10,000; Eco Machine, New Green Watershed and Calling on Reserves gain a few thousand. Wet-year effects are under $1,000. Every one is under 0.003% of the base. ${ECONOMY_REFERENCE} A full OpenAg run, which also shifts land among crops, gives effects 1.3–1.8 times these, which changes no score.`,
         ),
-        ...restorationLevels('econ-revenue', 'dollars', -503.2, -281.3, -211.2),
-        ecoMachineLand('econ-revenue', 'dollars', -0.92),
+        ...restorationLevels('econ-revenue', 'usd', -503_210_966, -281_295_055, -211_201_749),
+        ecoMachineLand('econ-revenue', 'usd', -922_132),
         carbonOffset(),
       ],
     },
@@ -1577,8 +1578,8 @@ const ECONOMY: CriterionNode = {
           },
           `Change in total value added (with IMPLAN multipliers) from salinity alone, against $997M of regional value added. ${ECONOMY_REFERENCE}`,
         ),
-        ...restorationLevels('econ-value', 'dollars', -456.2, -230.9, -160.3),
-        ecoMachineLand('econ-value', 'dollars', -0.83),
+        ...restorationLevels('econ-value', 'usd', -456_217_849, -230_917_849, -160_317_849),
+        ecoMachineLand('econ-value', 'usd', -833_472),
         {
           id: 'econ-value-zones',
           label: 'By Delta zone, dry year',

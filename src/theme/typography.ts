@@ -293,6 +293,41 @@ export const typography = {
     letterSpacing: '0.02em',
     fontWeight: 400,
   },
+  // A score card's takeaway: the scenario it titles, the lead sentence, and the
+  // labelled points under it, with a looser leading than body2 for longer reading.
+  takeawayScenario: {
+    fontFamily: fontHeading,
+    fontSize: 'clamp(1.625rem, 1.2rem + 0.8vw, 2rem)',
+    lineHeight: 1.05,
+    letterSpacing: '0.01em',
+    fontWeight: 400,
+  },
+  takeawayLead: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.1875rem, 1rem + 0.3vw, 1.3125rem)',
+    lineHeight: 1.3,
+    fontWeight: 600,
+  },
+  takeawayBody: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.0625rem, 0.95rem + 0.2vw, 1.125rem)',
+    lineHeight: 1.42,
+    fontWeight: 400,
+  },
+  // A row's heading in a takeaway's table, set apart from its value.
+  takeawayBodyStrong: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.0625rem, 0.95rem + 0.2vw, 1.125rem)',
+    lineHeight: 1.42,
+    fontWeight: 600,
+  },
+  takeawayLabel: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+    lineHeight: 1.25,
+    fontWeight: 700,
+    color: palette.base[100],
+  },
   numberTimeline: {
     fontFamily: fontHeading,
     fontSize: 'clamp(2.2rem, 4vw, 3rem)',

@@ -14,6 +14,7 @@ import {
 import PresetButtons from '../components/PresetButtons'
 import { DeltaBadge, RowLabel, ScaleLabels } from '../components/ChartBits'
 import { fmtScore, toPct, weightedRanking } from '../data'
+import { SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 /** Wider value column: it shows both scores ("equal → weighted"). */
@@ -53,7 +54,7 @@ function WeightedBar({ height = MARKER_HEIGHT }: { height?: number }) {
 
 export default function ScoreShift() {
   const { weights, setWeights } = useWeights()
-  const ranked = weightedRanking(weights)
+  const ranked = weightedRanking(weights, SCENARIOS)
 
   return (
     <SketchCard id="3b" width={CARD_WIDTH}>

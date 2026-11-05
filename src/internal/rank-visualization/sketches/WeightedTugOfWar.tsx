@@ -11,6 +11,7 @@ import { CARD_WIDTH, COLUMN_GAP, ROW_GAP, trackColumns } from '../components/lay
 import TugTrack from '../components/TugTrack'
 import { DeltaBadge, RowLabel, ScaleLabels } from '../components/ChartBits'
 import { WEIGHT_CHIPS, fmtScore, fmtWeight, toPct, weightDotSize, weightedRanking } from '../data'
+import { SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 const rowColumns = trackColumns()
@@ -20,7 +21,7 @@ export default function WeightedTugOfWar() {
   const { weights, setWeight, setWeights } = useWeights()
   const [mode, setMode] = useState<WeightMode>('custom')
   const weightSum = weights.reduce((a, b) => a + b, 0) || 1
-  const ranked = weightedRanking(weights)
+  const ranked = weightedRanking(weights, SCENARIOS)
 
   return (
     <SketchCard id="2b" width={CARD_WIDTH}>

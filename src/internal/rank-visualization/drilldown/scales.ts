@@ -47,7 +47,7 @@ export function unitHeading(unit: Unit) {
     case 'dollars':
       return 'Change, $M/yr'
     case 'usd':
-      return 'Change in value added, $'
+      return 'Change, $/yr'
     case 'usdValue':
       return 'Value, $/yr'
     case 'jobs':

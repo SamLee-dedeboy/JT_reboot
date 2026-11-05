@@ -74,7 +74,6 @@ const ECOCULTURAL_RESTORATION_GROUP_ROWS = new Set([
   'bk-ec-restoration-tidal',
   'bk-ec-restoration-managed',
   'bk-ec-restoration-rice',
-  'bk-ec-restoration-transitional',
   'bk-ec-restoration-uplandWetland',
   'bk-ec-restoration-meadow',
   'bk-ec-restoration-floodplain',
@@ -159,9 +158,19 @@ export function Matrix({
   const split = levelsOpen && hasLevels
   // Open, the 50% level keeps a full column and 25% and 100% take about half one
   // each, never so little that a value like −$212M is cut off.
-  const side = `minmax(${ranking.levelColumnMin}px, 0.6fr)`
+  // Economy's land conversion and carbon rows print whole dollars (−$281,295,055) in
+  // the Eco Machine and New Green Watershed columns, so those columns keep room for them.
+  const wholeDollars = rows.some(({ node }) => node.unit === 'usd' && node.ngwLevels)
+  const moneyMin = wholeDollars ? ranking.wholeDollarColumns.money : 0
+  const otherMin = wholeDollars ? ranking.wholeDollarColumns.other : 0
+  const side = `minmax(${Math.max(moneyMin, ranking.levelColumnMin)}px, 0.6fr)`
+  const main = `minmax(${moneyMin}px, 1fr)`
   const track = (scenario: ScenarioKey) =>
-    split && scenario === NGW ? `${side} minmax(0, 1fr) ${side}` : 'minmax(0, 1fr)'
+    split && scenario === NGW
+      ? `${side} ${main} ${side}`
+      : scenario === NGW || scenario === 'em'
+        ? main
+        : `minmax(${otherMin}px, 1fr)`
   const scenarioColumns = state.groups
     .map((group) => group.map(track).join(' '))
     .join(` ${GROUP_GAP} `)
@@ -225,9 +234,10 @@ export function Matrix({
     const size = row.depth === 1 ? ENTITY_ROW : 1
     const share = Math.round((size / weight) * 10000) / 10000
     const height = row.depth === 1 ? ranking.breakoutRow.entity : ranking.breakoutRow.score
-    const floor = `min(${height}px, max(0px, calc((100% - ${heads}px) * ${share})))`
-    // The team's own row has a second line to keep, however short the table is.
-    return row.node.level === 'team' ? `max(${ranking.breakoutRow.entity}px, ${floor})` : floor
+    // The team's own row keeps its name and hint whole, however short the table is.
+    return row.node.level === 'team'
+      ? 'min-content'
+      : `min(${height}px, max(0px, calc((100% - ${heads}px) * ${share})))`
   }
   // At that density a row is too short for a two-line label.
   const lines = fit && Math.max(rows.length, DENSEST_TABLE_ROWS) > 9 ? 1 : fit ? 2 : 3
@@ -522,12 +532,13 @@ export function Matrix({
                         component="p"
                         title={node.label}
                         sx={{
-                          ...labelLines(lines),
+                          ...labelLines(node.level === 'team' ? 2 : lines),
                           color: node.level === 'team' ? teamColor : undefined,
                         }}
                       >
                         {node.level === 'team' ? UI.teamScore(node.label) : node.label}
                       </Typography>
+                      {node.id === 'bk-ej-waterage' && <PreliminaryTag />}
                       {node.steps && <QualitativeTag />}
                       {/* How the score is built, on demand; in the name's line, so it
                           stays beside a name that wraps. */}
@@ -578,6 +589,7 @@ export function Matrix({
                       {lifeStage(node.label).stage && (
                         <StageChip label={capitalise(lifeStage(node.label).stage!)} plain />
                       )}
+                      {node.id === 'bk-ej-waterage' && <PreliminaryTag />}
                       {node.steps && <QualitativeTag />}
                       {/* How the score is built, on demand; in the name's line, so it
                           stays beside a name that wraps. */}
@@ -787,7 +799,7 @@ function LevelCells({
   )
   // Levels are reported Delta-wide only; at one place, the row shows its own value.
   const levels = whole ? node.ngwLevels : undefined
-  if (node.levelsSame || (node.ngwLevels && !levels))
+  if (node.ngwLevels && !levels)
     return box(
       'levels',
       3,
@@ -838,7 +850,7 @@ function LevelCells({
 }
 
 /** A small outlined tag after a row or group name. */
-function OutlinedTag({ label }: { label: string }) {
+function OutlinedTag({ label, primary = false }: { label: string; primary?: boolean }) {
   return (
     <Typography
       component="span"
@@ -847,9 +859,10 @@ function OutlinedTag({ label }: { label: string }) {
         flex: 'none',
         px: 1,
         border: 1,
-        borderColor: 'border.strong',
+        borderColor: primary ? 'primary.main' : 'border.strong',
         borderRadius: ranking.setToggle.radius,
-        color: 'base.200',
+        color: primary ? 'primary.main' : 'base.200',
+        bgcolor: primary ? 'translucent.primaryGreenSubtle' : 'transparent',
         whiteSpace: 'nowrap',
       }}
     >
@@ -860,6 +873,10 @@ function OutlinedTag({ label }: { label: string }) {
 
 function QualitativeTag() {
   return <OutlinedTag label={UI.qualitativeTag} />
+}
+
+function PreliminaryTag() {
+  return <OutlinedTag label={UI.preliminaryTag} primary />
 }
 
 /**
@@ -1096,7 +1113,7 @@ function Cell({
         }}
       >
         <Typography
-          variant={score && !empty ? 'chartValueLarge' : 'body2'}
+          variant={score && !empty ? 'chartValueLarge' : unit === 'usd' ? 'captionSmall' : 'body2'}
           noWrap
           sx={{ position: 'relative', color: 'inherit' }}
         >

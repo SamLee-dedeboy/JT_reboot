@@ -4,6 +4,7 @@ import { Box, Popover, Stack, Typography, useTheme } from '@mui/material'
 import type { ReactNode } from 'react'
 import { jtSpacing, ranking } from '../../../../../theme'
 import { TEAMS, cellFill, roundScore } from '../../../../../internal/rank-visualization/data'
+import type { TeamKey } from '../../../../../internal/rank-visualization/data'
 import { TeamMark } from '../../../../../internal/rank-visualization/drilldown/DrillBits'
 import type { Coords } from '../../../../../internal/rank-visualization/drilldown/cellValue'
 import { ANY, fmtValue } from '../../../../../internal/rank-visualization/drilldown/model'
@@ -19,8 +20,17 @@ import {
   placeName,
   scenarioName,
 } from '../model/labels'
+import type { ScenarioTakeaway } from '../model/labels'
 import { popoverPaperSx, popoverWidth } from '../styles'
-import { Explainer, Pairs, Prose, ScoreRows, ScoreScale, Section } from './Explainer'
+import {
+  Explainer,
+  LabelledRows,
+  Prose,
+  ScoreRows,
+  ScoreScale,
+  Section,
+  TakeawayPanel,
+} from './Explainer'
 
 /** A clicked cell: where it sits on screen, what it is, and its numbers. */
 export interface Inspect {
@@ -36,7 +46,56 @@ export interface Inspect {
   coords: Coords
 }
 
-/** A small outlined chip: the selection a cell is read under, or a baseline's model. */
+/** The score, large and in the table's colours; a dashed outline until it is published. */
+function ScoreBlock({ raw, text }: { raw: number | null; text: string }) {
+  const { scoreBlock } = ranking.explainer
+  return (
+    <Box
+      sx={{
+        gridArea: 'score',
+        alignSelf: { xs: 'center', sm: 'start' },
+        minWidth: scoreBlock,
+        minHeight: scoreBlock,
+        px: 1,
+        boxSizing: 'border-box',
+        borderRadius: 0.75,
+        border: raw === null ? '1px dashed' : 0,
+        borderColor: 'border.strong',
+        bgcolor: raw === null ? 'transparent' : cellFill(roundScore(raw)),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 0.625,
+      }}
+    >
+      <Typography variant="chartLabel" sx={{ color: raw === null ? 'base.100' : 'common.white' }}>
+        {UI.score}
+      </Typography>
+      <Typography
+        variant={raw === null ? 'captionSmall' : 'statNumber'}
+        component="span"
+        sx={{ color: raw === null ? 'base.100' : 'common.white' }}
+      >
+        {text}
+      </Typography>
+    </Box>
+  )
+}
+
+/** A takeaway's lead sentence, then its points, each beside its label. */
+function Takeaway({ takeaway, team }: { takeaway: ScenarioTakeaway; team: TeamKey }) {
+  return (
+    <>
+      <Box sx={{ pt: 2.5, borderTop: 1, borderColor: 'border.subtle' }}>
+        <Prose text={takeaway.lead} team={team} variant="takeawayLead" textColor="common.white" />
+      </Box>
+      {takeaway.points && <LabelledRows rows={takeaway.points} team={team} />}
+    </>
+  )
+}
+
+/** A small outlined chip: a baseline's model. */
 function Chip({ label, color }: { label: string; color?: string }) {
   return (
     <Typography
@@ -57,10 +116,11 @@ function Chip({ label, color }: { label: string; color?: string }) {
 }
 
 /**
- * A cell's card, opened beside it. It names the measure and scenario and repeats the
- * place, time period and conditions it is read under. A score then shows the score;
- * the team's criterion score also shows its scenario takeaway, or the takeaway for one
- * restoration level when the cell is that level's and the team wrote one. A measure shows its
+ * A cell's card, opened beside it. The scenario titles it, under the measure, with the
+ * place, time period and conditions it is read under in one quiet line. A score sits
+ * large beside the title; the team's criterion score also shows its scenario takeaway,
+ * or the takeaway for one restoration level when the cell is that level's and the team
+ * wrote one, and takes the wider card so the text runs to fewer lines. A measure shows its
  * value, Business as Usual's (with the model run when it is CalSim's or SCHISM's),
  * and the difference.
  */
@@ -99,6 +159,15 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
   const run =
     base && !(outflowSet && base.scenario === 'hist') ? UI.baselineRun[base.scenario] : undefined
   const isBau = base && (base.scenario === 'bau' || run)
+  const hasTakeaway = score && node.level === 'team'
+  const takeaway =
+    levelTakeaway ?? (hasTakeaway ? SCENARIO_TAKEAWAYS[node.team]?.[point.scenario] : undefined)
+  const context = [
+    ...(level !== undefined ? [UI.ngwLevels[level]] : []),
+    place,
+    period,
+    conditions,
+  ].join(' · ')
 
   const row = (label: ReactNode, v: string, lead = false, color?: string) => (
     <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 2 }}>
@@ -130,80 +199,92 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
         paper: {
           role: 'dialog',
           'aria-label': node.label,
-          sx: { ...popoverPaperSx, maxWidth: 'none', width: popoverWidth(ranking.explainer.cell) },
+          sx: {
+            ...popoverPaperSx,
+            p: { xs: 2, sm: 3 },
+            maxWidth: 'none',
+            width: popoverWidth(hasTakeaway ? ranking.explainer.width : ranking.explainer.cell),
+          },
         },
       }}
     >
       <Stack spacing={jtSpacing.gap.sm}>
-        <Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        {/* Title block: on a phone the score stays beside the name and the context runs full width. */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(0, 1fr) auto',
+            gridTemplateAreas: {
+              xs: '"measure measure" "title score" "context context"',
+              sm: '"measure score" "title score" "context score"',
+            },
+            columnGap: { xs: 1.5, sm: 2.5 },
+            rowGap: 0.75,
+            alignItems: 'center',
+          }}
+        >
+          <Box sx={{ gridArea: 'measure', display: 'flex', alignItems: 'center', gap: 1 }}>
             <TeamMark team={node.team} size={16} />
-            <Typography variant="chartTitle" component="h3" sx={{ color: team?.color }}>
-              {node.level === 'team' ? UI.teamScore(node.label) : node.label}
+            <Typography variant="chartTitle" component="p" sx={{ color: team?.color }}>
+              {node.label}
             </Typography>
           </Box>
-          <Typography variant="body2" component="p" sx={{ color: 'base.50', mt: 0.5 }}>
+          <Typography
+            variant="takeawayScenario"
+            component="h3"
+            sx={{ gridArea: 'title', minWidth: 0, color: 'common.white' }}
+          >
             {scenarioName(point.scenario)}
           </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-          {level !== undefined && <Chip label={UI.ngwLevels[level]} />}
-          <Chip label={place} />
-          <Chip label={period} />
-          <Chip label={conditions} />
-        </Box>
-        <Stack spacing={0.75} sx={{ pt: 1, borderTop: 1, borderColor: 'border.subtle' }}>
-          {score ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="body2" sx={{ color: 'base.50' }}>
-                {UI.score}
-              </Typography>
-              <Typography
-                variant="chartValueLarge"
-                component="span"
-                sx={{
-                  px: 1.25,
-                  py: 0.5,
-                  borderRadius: 0.6,
-                  bgcolor: point.raw === null ? 'transparent' : cellFill(roundScore(point.raw)),
-                  color: point.raw === null ? 'base.300' : 'common.white',
-                }}
-              >
-                {value(point.raw)}
-              </Typography>
-            </Box>
-          ) : (
-            <>
-              {row(scenarioName(point.scenario), value(point.raw), true)}
-              {base &&
-                row(
-                  isBau ? (
-                    <>
-                      {UI.businessAsUsual}
-                      {run && <Chip label={run} color={theme.palette.primary.light} />}
-                    </>
-                  ) : (
-                    scenarioName(base.scenario)
-                  ),
-                  value(base.value),
-                )}
-              {change !== null && (
-                <Box sx={{ pt: 0.75, borderTop: 1, borderColor: 'border.subtle' }}>
-                  {row(UI.difference, signed(change, unit), false, tone)}
-                </Box>
-              )}
-            </>
-          )}
-        </Stack>
-        {score && node.level === 'team' && (
-          <Section label={UI.takeaway}>
-            <Typography variant="body2" sx={{ color: 'base.50' }}>
-              {levelTakeaway ??
-                SCENARIO_TAKEAWAYS[node.team]?.[point.scenario] ??
-                UI.takeawayForthcoming}
+          <Box sx={{ gridArea: 'context' }}>
+            <Typography variant="captionSmall" component="p">
+              {context}
             </Typography>
-          </Section>
+            {score && (
+              <Typography variant="captionSmall" component="p" sx={{ mt: 0.25 }}>
+                {UI.scoredAgainst(
+                  base && !isBau ? scenarioName(base.scenario) : UI.businessAsUsual,
+                )}
+              </Typography>
+            )}
+          </Box>
+          {score && <ScoreBlock raw={point.raw} text={value(point.raw)} />}
+        </Box>
+        {!score && (
+          <Stack spacing={0.75} sx={{ pt: 1, borderTop: 1, borderColor: 'border.subtle' }}>
+            {row(scenarioName(point.scenario), value(point.raw), true)}
+            {base &&
+              row(
+                isBau ? (
+                  <>
+                    {UI.businessAsUsual}
+                    {run && <Chip label={run} color={theme.palette.primary.light} />}
+                  </>
+                ) : (
+                  scenarioName(base.scenario)
+                ),
+                value(base.value),
+              )}
+            {change !== null && (
+              <Box sx={{ pt: 0.75, borderTop: 1, borderColor: 'border.subtle' }}>
+                {row(UI.difference, signed(change, unit), false, tone)}
+              </Box>
+            )}
+          </Stack>
         )}
+        {/* The takeaway leads the card's reading; nothing written yet says so in its place. */}
+        {hasTakeaway &&
+          (takeaway ? (
+            <Takeaway takeaway={takeaway} team={node.team} />
+          ) : (
+            <Typography
+              variant="placeholderNote"
+              component="p"
+              sx={{ pt: 2.5, borderTop: 1, borderColor: 'border.subtle' }}
+            >
+              {UI.takeawayForthcoming}
+            </Typography>
+          ))}
       </Stack>
     </Popover>
   )
@@ -261,12 +342,8 @@ export function ScoreInfo({ node }: { node: CriterionNode }) {
   const metric = METRIC_DEFINITIONS[node.id]
   if (!metric) return null
   return (
-    <Explainer team={node.team} title={title}>
-      {metric.takeaway && (
-        <Section label={UI.takeaway}>
-          <Prose text={metric.takeaway} team={node.team} />
-        </Section>
-      )}
+    <Explainer team={node.team} title={title} roomy>
+      {metric.takeaway && <TakeawayPanel takeaway={metric.takeaway} team={node.team} />}
       {metric.measures && (
         <Section label={UI.measures}>
           <Prose text={metric.measures} team={node.team} />
@@ -274,13 +351,6 @@ export function ScoreInfo({ node }: { node: CriterionNode }) {
       )}
       <Section label={UI.computed}>
         <Prose text={metric.computed} team={node.team} />
-      </Section>
-      <Section label={UI.considered}>
-        {typeof metric.considered === 'string' ? (
-          <Prose text={metric.considered} team={node.team} />
-        ) : (
-          <Pairs rows={metric.considered} />
-        )}
       </Section>
       <Section label={UI.howScored}>
         {metric.scale && <ScoreScale {...metric.scale} />}

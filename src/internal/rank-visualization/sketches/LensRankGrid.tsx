@@ -7,7 +7,7 @@ import { useState } from 'react'
 import SketchCard from '../components/SketchCard'
 import { CARD_WIDTH, LABEL_COLUMN } from '../components/layout'
 import { RowLabel } from '../components/ChartBits'
-import { PRESET_RANKS, RANKED } from '../data'
+import { PRESET_RANKS, RANKED } from '../../../features/scenarios/ranking/breakout/model/teamScores'
 
 const EQUAL = PRESET_RANKS[0]
 const LENSES = PRESET_RANKS.slice(1)

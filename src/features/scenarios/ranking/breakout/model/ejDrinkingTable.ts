@@ -2,9 +2,10 @@
 // and shares of readings over 1,050 µS/cm by vulnerability class, for the whole period
 // and water years 2019 and 2020 (the team moved from wet and dry seasons to water years).
 //
-// Business as Usual's shares are not in the sheet, and the table does not show them.
-// They follow from the scores (one point per percentage point; with sea level rise
-// they are "SLR COMM.xlsx", rounded to two places like the sheet).
+// The sheet publishes changes rather than its three comparison runs. The absolute
+// scenario values below are retained for cell details and maps; `bau` is Base for
+// Eco Machine, Bolster & Fortify and New Green Watershed, while `csbau` is the
+// CalSim base for Calling on Reserves and A Tunnel. The outflow model owns `hist`.
 type ByClass = Record<string, Record<string, number>>
 
 export const EJ_DRINKING_SCORES: Record<string, ByClass> = {
@@ -92,6 +93,12 @@ export const EJ_DRINKING_SHARES: Record<string, ByClass> = {
     high: { run: 0.1, '2019': 0.07, '2020': 0.1 },
     highest: { run: 0, '2019': 0, '2020': 0 },
   },
+  csbau: {
+    all: { run: 0.11, '2019': 0.1, '2020': 0.09 },
+    moderate: { run: 0.11, '2019': 0.14, '2020': 0.03 },
+    high: { run: 0.12, '2019': 0.1, '2020': 0.11 },
+    highest: { run: 0, '2019': 0, '2020': 0 },
+  },
   em: {
     all: { run: 0.07, '2019': 0.05, '2020': 0.07 },
     moderate: { run: 0.04, '2019': 0.03, '2020': 0.02 },
@@ -118,7 +125,7 @@ export const EJ_DRINKING_SHARES: Record<string, ByClass> = {
   },
   tunnel: {
     all: { run: 0.11, '2019': 0.1, '2020': 0.09 },
-    moderate: { run: 0.1, '2019': 0.11, '2020': 0.04 },
+    moderate: { run: 0.11, '2019': 0.11, '2020': 0.04 },
     high: { run: 0.13, '2019': 0.11, '2020': 0.11 },
     highest: { run: 0, '2019': 0, '2020': 0 },
   },
@@ -129,6 +136,12 @@ export const EJ_DRINKING_SHARES_SLR: Record<string, ByClass> = {
     all: { run: 0.13, '2019': 0.11, '2020': 0.11 },
     moderate: { run: 0.15, '2019': 0.15, '2020': 0.08 },
     high: { run: 0.13, '2019': 0.1, '2020': 0.13 },
+    highest: { run: 0, '2019': 0, '2020': 0 },
+  },
+  csbau: {
+    all: { run: 0.15, '2019': 0.12, '2020': 0.15 },
+    moderate: { run: 0.18, '2019': 0.17, '2020': 0.13 },
+    high: { run: 0.15, '2019': 0.12, '2020': 0.16 },
     highest: { run: 0, '2019': 0, '2020': 0 },
   },
   em: {

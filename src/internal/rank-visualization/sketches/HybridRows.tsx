@@ -7,6 +7,7 @@ import TugTrack from '../components/TugTrack'
 import PresetButtons from '../components/PresetButtons'
 import { DeltaBadge, RowLabel, ScoreCell, TeamKey } from '../components/ChartBits'
 import { TEAMS, WEIGHT_PRESETS, fmtScore, toPct, weightOpacity, weightedRanking } from '../data'
+import { SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 const rowPaddingX = 1.25
@@ -27,7 +28,7 @@ const teamColumnsSx = { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', 
 
 export default function HybridRows() {
   const { weights, setWeights } = useWeights()
-  const ranked = weightedRanking(weights)
+  const ranked = weightedRanking(weights, SCENARIOS)
 
   return (
     <SketchCard id="2c" width={CARD_WIDTH}>

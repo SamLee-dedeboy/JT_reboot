@@ -41,12 +41,15 @@ const scoreColor = (score: number, theme: Theme) =>
       ? theme.chart.voting.below
       : theme.chart.voting.baseline
 
+/** What a score of zero means by default; a chart on another baseline names its own. */
+const TODAY = 'today'
+
 const LEGEND = [
-  { label: 'Better than today', color: (theme: Theme) => theme.chart.voting.above },
-  { label: 'Worse than today', color: (theme: Theme) => theme.chart.voting.below },
+  { label: 'Better than', color: (theme: Theme) => theme.chart.voting.above },
+  { label: 'Worse than', color: (theme: Theme) => theme.chart.voting.below },
 ]
 
-function Legend() {
+function Legend({ zeroWord = TODAY }: { zeroWord?: string }) {
   return (
     <Stack direction="row" spacing={jtSpacing.gap.md} sx={{ color: 'base.100', flexWrap: 'wrap' }}>
       {LEGEND.map(({ label, color }) => (
@@ -59,7 +62,7 @@ function Legend() {
             })}
           />
           <Typography variant="body2" sx={{ whiteSpace: 'nowrap' }}>
-            {label}
+            {label} {zeroWord}
           </Typography>
         </Stack>
       ))}
@@ -72,7 +75,6 @@ function Legend() {
 /** Words beside the number at the ends and at zero; every other point is just its number. */
 const SCALE_WORDS: Record<number, string> = {
   [SCORE_MIN]: 'worse',
-  0: 'today',
   [SCORE_MAX]: 'better',
 }
 
@@ -82,7 +84,7 @@ const SCALE_WORDS: Record<number, string> = {
  * worded labels (the ends, and zero), so they drop out first when the track narrows,
  * then ±2…3 below that.
  */
-function Scale() {
+function Scale({ zeroWord = TODAY }: { zeroWord?: string }) {
   return (
     <Box
       sx={{
@@ -93,7 +95,7 @@ function Scale() {
       }}
     >
       {TICKS.map((tick) => {
-        const word = SCALE_WORDS[tick]
+        const word = tick === 0 ? zeroWord : SCALE_WORDS[tick]
         const hideBelow =
           Math.abs(tick) === SCORE_MAX - 1 ? 1000 : Math.abs(tick) === 1 ? 640 : word ? null : 450
         return (
@@ -308,7 +310,7 @@ const OVERALL_GAP = { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md }
 /** The run every other scenario is scored against: 0 on every criterion. */
 
 /** Beside the baseline's zero line: which side is better and which worse than today. */
-function BaselineSides() {
+function BaselineSides({ zeroWord }: { zeroWord: string }) {
   const side = {
     position: 'absolute',
     top: '50%',
@@ -318,33 +320,37 @@ function BaselineSides() {
   return (
     <Box sx={{ position: 'relative', height: ranking.trackHeight }}>
       <Typography variant="captionSmall" sx={{ ...side, right: 'calc(50% + 10px)' }}>
-        Above: better than today
+        Above: better than {zeroWord}
       </Typography>
       <Typography variant="captionSmall" sx={{ ...side, left: 'calc(50% + 10px)' }}>
-        Below: worse than today
+        Below: worse than {zeroWord}
       </Typography>
     </Box>
   )
 }
 
 /**
- * Equal-weight ranking of one scenario set; remount it (`key`) when the set changes.
- * `heading` opens the toolbar, ahead of the legend and the expand button.
+ * Equal-weight ranking of one scenario set. Rows are keyed by scenario name, so what is
+ * open carries over when the set swaps for another run of the same scenarios.
+ * `heading` opens the toolbar, ahead of the legend and the expand button. `zeroWord` and
+ * `baselineNote` say what a score of zero is read against.
  */
 export function OverallRankingChart({
   scenarios,
   heading,
+  zeroWord = TODAY,
+  baselineNote = 'Today’s Delta: the baseline',
 }: {
   scenarios: Scenario[]
   heading?: ReactNode
+  zeroWord?: string
+  baselineNote?: string
 }) {
   const expandableScenarios = useMemo(
     () => scenarios.filter(({ name }) => !BASELINES.has(name)),
     [scenarios],
   )
-  const [expanded, setExpanded] = useState(
-    () => new Set(scenarios.filter(({ name }) => !BASELINES.has(name)).map(({ name }) => name)),
-  )
+  const [expanded, setExpanded] = useState(() => new Set<string>())
   const allExpanded = expanded.size === expandableScenarios.length
   const ranked = useMemo(() => weightedRanking(EQUAL_WEIGHTS, scenarios), [scenarios])
 
@@ -367,7 +373,7 @@ export function OverallRankingChart({
             ml: { lg: heading ? 0 : 'auto' },
           }}
         >
-          <Legend />
+          <Legend zeroWord={zeroWord} />
           <Button
             variant="outlined"
             onClick={() =>
@@ -396,7 +402,7 @@ export function OverallRankingChart({
           <Typography variant="columnHead">Rank</Typography>
           <Typography variant="columnHead">Scenario</Typography>
           <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Scale />
+            <Scale zeroWord={zeroWord} />
           </Box>
           <Typography variant="columnHead" sx={{ textAlign: 'right' }}>
             Score
@@ -488,7 +494,7 @@ export function OverallRankingChart({
                           component="p"
                           sx={{ color: 'primary.main' }}
                         >
-                          Today’s Delta: the baseline
+                          {baselineNote}
                         </Typography>
                       )}
                     </Box>
@@ -503,7 +509,11 @@ export function OverallRankingChart({
                     )}
                   </Stack>
                   <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                    {baseline ? <BaselineSides /> : <ScoreBar score={scenario.wAvg} />}
+                    {baseline ? (
+                      <BaselineSides zeroWord={zeroWord} />
+                    ) : (
+                      <ScoreBar score={scenario.wAvg} />
+                    )}
                   </Box>
                   <ScoreValue scenario={scenario} />
                 </ButtonBase>

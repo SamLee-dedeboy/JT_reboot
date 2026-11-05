@@ -96,6 +96,8 @@ export const ranking = {
   levelsPill: { height: 24 },
   /** The 25% and 100% wetland columns: never so narrow that −$212M is cut off (px). */
   levelColumnMin: 96,
+  /** While Economy's whole-dollar rows are open: the columns that hold them, and the rest (px). */
+  wholeDollarColumns: { money: 116, other: 88 },
   /**
    * Vertical guides at every whole point: zero strongest, the ±5 edges plain, and the
    * points between dotted and faint, so the row dividers still read as the structure.
@@ -107,8 +109,18 @@ export const ranking = {
   mapRegionLabel: 190,
   /** The map view's row of maps, when the region table sits beneath it. */
   mapMinHeight: 300,
-  /** The info cards (explainers): a text card, and one led by a map. */
-  explainer: { width: 600, cell: 520, wide: 720, mapHeight: 460 },
+  /**
+   * The info cards (explainers): a text card, and one led by a map. A score's card has
+   * its score block, and its takeaway's label column, sized here too.
+   */
+  explainer: {
+    width: 600,
+    cell: 520,
+    wide: 720,
+    mapHeight: 460,
+    scoreBlock: { xs: 68, sm: 88 },
+    takeawayLabel: 112,
+  },
   gridLine: { width: 1, style: 'solid', color: 'border.subtle' },
   gridLineMinor: { width: 1, style: 'dotted', color: 'translucent.100' },
   teamIconSize: 18,

@@ -20,7 +20,8 @@ import type { WeightMode } from '../components/WeightModeToggle'
 import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, LABEL_COLUMN, VALUE_COLUMN } from '../components/layout'
 import { RankNumber, RowLabel, ScoreCell, TotalCell } from '../components/ChartBits'
-import { RANKED, WEIGHT_MAX, WEIGHT_STEP, weightOpacity, weightedRanking } from '../data'
+import { WEIGHT_MAX, WEIGHT_STEP, weightOpacity, weightedRanking } from '../data'
+import { RANKED, SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 /** Every scenario row, matrix and list alike, so the bump lines land on the rows. */
@@ -38,7 +39,7 @@ export default function WeightedBeforeAfter() {
   const teams = useTeams()
   const { weights, setWeight, setWeights } = useWeights()
   const [mode, setMode] = useState<WeightMode>('custom')
-  const ranked = weightedRanking(weights)
+  const ranked = weightedRanking(weights, SCENARIOS)
   const columns = `${EQUAL_COLUMN}px ${BUMP_WIDTH}px ${LABEL_COLUMN}px repeat(${teams.length}, ${TEAM_COLUMN}px) ${VALUE_COLUMN}px`
 
   // One line per scenario: from its equal-weight slot to the row it holds now.

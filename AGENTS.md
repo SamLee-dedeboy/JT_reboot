@@ -48,7 +48,7 @@ The `src` directory is organized by application role and feature:
 
 - `src/app/`: providers, shared application shell, and route configuration.
 - `src/features/home/`: public home page, its section components, and home content.
-- `src/features/scenarios/`: scenario landing composition and shared navigation helpers. Baseline pages live in `baseline/`, adaptation and tiered-outflow introductions in `narration/`, modeling and criteria pages in `results/`, public performance views in `ranking/` (including the shared breakout table under `ranking/breakout/`), text/data in `content/`, and retired implementations in `archived/`.
+- `src/features/scenarios/`: scenario landing composition and shared navigation helpers. Baseline pages live in `baseline/`, adaptation and tiered-outflow introductions in `narration/`, modeling and criteria pages in `results/`, public performance views in `ranking/` (including the shared breakout table under `ranking/breakout/`, and every team's criterion and metric-row scores, with Economy's wetland levels, in the one file `ranking/scores.ts`, which By criterion and By scenario both read), text/data in `content/`, and retired implementations in `archived/`.
 - Scenario copy is split by domain under `src/features/scenarios/content/`: baseline, tiered outflows, adaptation scenarios, results/evaluation, and shared types. Consumers should import from the folder index instead of reaching into a domain file directly.
 - `src/features/repository/`: repository routes, shared repository layout, cards, tabs, timelines, and data.
 - `src/features/scenario-explorer/`: scenario explorer page, charts, controls, types, and feature-local utilities.

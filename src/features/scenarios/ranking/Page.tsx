@@ -2,13 +2,17 @@ import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
 import { Box, Button, Container, Stack, Typography } from '@mui/material'
 import type { Theme } from '@mui/material/styles'
+import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { jtSpacing, navigation, ranking } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import { assetUrl } from '../../../utils/baseUrl'
-import { SCENARIOS } from '../../../internal/rank-visualization/data'
+import type { Climate } from '../../../internal/rank-visualization/drilldown/model'
 import { BreakoutTable } from './breakout/BreakoutPage'
+import { Segmented } from './breakout/components/controls'
+import { SCENARIOS, SLR_SCENARIOS } from './breakout/model/teamScores'
 import { OverallRankingChart, WeightedRankingChart } from './RankingVisualizations'
 import { choiceCardSx, RANK_LABEL } from './styles'
 
@@ -51,6 +55,11 @@ const heroSx = {
   },
 }
 
+const CLIMATE_OPTIONS: { value: Climate; label: string }[] = [
+  { value: 'current', label: 'Current' },
+  { value: 'slr', label: 'Sea level rise' },
+]
+
 /** One left edge for the hero and every section on the By scenario view. */
 const railSx = {
   width: jtSpacing.layout.data.width,
@@ -83,6 +92,9 @@ export default function Page() {
 }
 
 function ByScenario() {
+  const [climate, setClimate] = useState<Climate>('current')
+  const slr = climate === 'slr'
+
   return (
     <>
       <RankingSection sectionId="start" title="What you’re looking at" background="base.800">
@@ -131,11 +143,36 @@ function ByScenario() {
       <RankingSection
         sectionId="overall-ranking"
         eyebrow="Equal weights"
-        title="The overall ranking"
+        singleLineTitle
+        title={
+          <>
+            The overall ranking
+            {slr && (
+              <Box component="span" sx={{ color: 'primary.main' }}>
+                {' '}
+                with sea level rise
+              </Box>
+            )}
+          </>
+        }
         introduction="Every criterion counts equally here. Scores above zero beat today’s baseline; scores below zero fall short of it. Open a future to see the five scores behind its rank."
         background="base.700"
       >
-        <OverallRankingChart scenarios={scenarioSet.scenarios} />
+        <OverallRankingChart
+          scenarios={slr ? SLR_SCENARIOS : scenarioSet.scenarios}
+          zeroWord={slr ? 'baseline' : undefined}
+          baselineNote={slr ? 'With sea-level rise: the baseline' : undefined}
+          heading={
+            <Segmented
+              label="Sea level"
+              value={climate}
+              options={CLIMATE_OPTIONS}
+              onChange={setClimate}
+              dense
+              nowrap
+            />
+          }
+        />
       </RankingSection>
 
       <HeadsUp />
@@ -323,14 +360,16 @@ function RankingSection({
   title,
   introduction,
   background,
+  singleLineTitle = false,
   children,
 }: {
   sectionId: string
   eyebrow?: string
-  title: string
+  title: ReactNode
   introduction?: string
   background: 'base.700' | 'base.800'
-  children: React.ReactNode
+  singleLineTitle?: boolean
+  children: ReactNode
 }) {
   return (
     <Box
@@ -349,9 +388,16 @@ function RankingSection({
         sx={{ ...railSx, py: { xs: jtSpacing.section.lg, md: jtSpacing.section.xl } }}
       >
         <Stack spacing={{ xs: jtSpacing.section.sm, md: jtSpacing.section.md }}>
-          <Stack spacing={jtSpacing.gap.lg} sx={{ maxWidth: jtSpacing.layout.reading.width }}>
+          <Stack
+            spacing={jtSpacing.gap.lg}
+            sx={{ maxWidth: singleLineTitle ? 'none' : jtSpacing.layout.reading.width }}
+          >
             {eyebrow && <Typography variant="eyebrow">{eyebrow}</Typography>}
-            <Typography id={`${sectionId}-title`} variant="h2">
+            <Typography
+              id={`${sectionId}-title`}
+              variant="h2"
+              sx={{ whiteSpace: { md: singleLineTitle ? 'nowrap' : 'normal' } }}
+            >
               {title}
             </Typography>
             {introduction && (

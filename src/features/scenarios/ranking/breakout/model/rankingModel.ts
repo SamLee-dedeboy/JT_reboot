@@ -9,6 +9,10 @@
 // `bk-` id, so this page can relabel periods, regroup rows and add ranks without
 // changing the pivot or the by-subteam pages.
 import type { EcologySpeciesKey } from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
+import {
+  ECOLOGY_CURRENT,
+  ECOLOGY_SLR,
+} from '../../../../../internal/rank-visualization/drilldown/ecologyWorkbook'
 import { ECOLOGY_RERUN_DELTA } from '../../../../../internal/rank-visualization/drilldown/ecologyRerun'
 import type { RerunScenario } from '../../../../../internal/rank-visualization/drilldown/ecologyRerun'
 import {
@@ -30,6 +34,8 @@ import {
   EJ_DRINKING_SHARES,
   EJ_DRINKING_SHARES_SLR,
 } from './ejDrinkingTable'
+import { applyAdaptationScores } from './applyScores'
+import { EJ_WATER_AGE_DAYS, EJ_WATER_AGE_DAYS_SLR } from './ejWaterAgeTable'
 import { MEASURE_LABELS } from './labels'
 
 const node = (id: string): CriterionNode => {
@@ -222,6 +228,50 @@ function sameUnderSlr(row: CriterionNode): CriterionNode {
   }
 }
 
+/** Replace every Ecology value with the keyed rows in the current ranking workbook. */
+function fromEcologyWorkbook(row: CriterionNode): CriterionNode {
+  const values = ECOLOGY_CURRENT[row.id] ?? {}
+  const slrValues = ECOLOGY_SLR[row.id]
+  const sliceIds = [
+    ...Object.values(values).flatMap((series) => Object.keys(series ?? {})),
+    ...Object.values(slrValues ?? {}).flatMap((series) => Object.keys(series ?? {})),
+  ]
+  const places = new Set(sliceIds.map((slice) => slice.split('|')[0]))
+  const periods = new Set(sliceIds.map((slice) => slice.split('|')[1]))
+  const facet = (key: string, axis: 'place' | 'period'): Facet => ({
+    key,
+    label:
+      key === ANY
+        ? axis === 'place'
+          ? 'All together'
+          : 'Whole period'
+        : (row[axis === 'place' ? 'places' : 'periods'].find((item) => item.key === key)?.label ??
+          PERIOD_LABEL[key] ??
+          key),
+  })
+
+  return {
+    ...row,
+    values,
+    ranks: undefined,
+    places: places.size ? [...places].map((key) => facet(key, 'place')) : row.places,
+    periods: periods.size ? [...periods].map((key) => facet(key, 'period')) : row.periods,
+    slr: slrValues
+      ? {
+          values: slrValues,
+          note: 'Values reported in the Ecology tab under sea level rise.',
+          sources: [ECOLOGY_WORKBOOK_SOURCE],
+        }
+      : undefined,
+    notApplicable: undefined,
+    notApplicableAt: undefined,
+    notApplicableIn: undefined,
+    forthcoming: undefined,
+    forthcomingFor: undefined,
+    children: row.children?.map(fromEcologyWorkbook),
+  }
+}
+
 /** A Delta-wide, whole-period score on every period tab; the regions have none. */
 function speciesScore(by: Partial<Record<ScenarioKey, number>>, periods: string[]) {
   const out: Partial<Record<ScenarioKey, SliceValues>> = {}
@@ -296,24 +346,25 @@ function ecologyTree(): CriterionNode {
     children: species,
   }
   const root = node('ecology')
-  return adapt(root, {
-    provenance: 'reported',
-    note: 'The Ecology team’s own criterion score, from the ranking table workbook. How Landscape, Food webs and Species suitability combine is still to be published.',
-    sources: [ECOLOGY_WORKBOOK_SOURCE],
-    values: flat({ bau: 0, em: 1.33, ngw: 3.1, bf: 0, cor: -0.33, tunnel: 0.33 }),
-    slr: {
-      values: flat({ bau: 0, em: 1.7, ngw: 3.8, bf: 0, cor: -0.7, tunnel: -0.3 }),
-      note: 'The Ecology team’s own criterion score under sea level rise, from the ranking table workbook.',
+  return fromEcologyWorkbook(
+    adapt(root, {
+      provenance: 'reported',
+      note: 'The Ecology team’s own criterion score, from the ranking table workbook. How Landscape, Food webs and Species suitability combine is still to be published.',
       sources: [ECOLOGY_WORKBOOK_SOURCE],
-    },
-    children: [
-      sameUnderSlr(adapt(node('eco-habitat'))),
-      // The team's sheet now gives these zeros itself, so none of them is ours.
-      sameUnderSlr(foodWebs()),
-      suitability,
-      adapt(node('eco-conceptual')),
-    ],
-  })
+      slr: {
+        values: {}, // ranking/scores.ts
+        note: 'The Ecology team’s own criterion score under sea level rise, from the ranking table workbook.',
+        sources: [ECOLOGY_WORKBOOK_SOURCE],
+      },
+      children: [
+        sameUnderSlr(adapt(node('eco-habitat'))),
+        // The team's sheet now gives these zeros itself, so none of them is ours.
+        sameUnderSlr(foodWebs()),
+        suitability,
+        adapt(node('eco-conceptual')),
+      ],
+    }),
+  )
 }
 
 // ---------- Recreation ----------
@@ -324,12 +375,12 @@ function activity(activityNode: CriterionNode): CriterionNode {
   return adapt(days, {
     id: `bk-${activityNode.id}`,
     label: activityNode.label,
-    ranks: activityNode.values,
+    ranks: undefined,
     sources: sourcesFor(activityNode.id),
     slr: days.slr && {
       ...days.slr,
       periods: days.slr.periods && relabel(days.slr.periods, {}),
-      ranks: activityNode.slr?.values,
+      ranks: undefined,
     },
   })
 }
@@ -353,11 +404,24 @@ function splitDayUseAndBoating(rows: CriterionNode[]): CriterionNode[] {
   })
 }
 
-function thresholdRow(id: string, label: string, note: string): CriterionNode {
+function thresholdRow(
+  id: string,
+  label: string,
+  note: string,
+  scores: Partial<Record<ScenarioKey, number>>,
+): CriterionNode {
   const base = node(id)
   return adapt(base, {
     label,
     note,
+    places: NOT_BROKEN_OUT,
+    periods: NOT_BROKEN_OUT,
+    values: flat(scores),
+    slr: {
+      values: flat(scores),
+      note: 'The Recreation team reports the same component score under sea level rise.',
+      sources: [RECREATION_WORKBOOK_SOURCE],
+    },
     entityNoun: 'activity',
     children: splitDayUseAndBoating((base.children ?? []).map(activity)),
   })
@@ -398,6 +462,17 @@ function addedToBaseline(values: CriterionNode['values']): CriterionNode['values
   return { ...values, bau: Object.fromEntries(bau) }
 }
 
+/** Scenarios with no restoration carry measured zeroes at every place, not missing runs. */
+function withZeroScenarios(node: CriterionNode): CriterionNode['values'] {
+  const zeroes = Object.fromEntries(node.places.map((place) => [sliceKey(place.key, ANY), 0]))
+  return {
+    ...addedToBaseline(node.values),
+    bf: { ...zeroes },
+    cor: { ...zeroes },
+    tunnel: { ...zeroes },
+  }
+}
+
 /**
  * Habitat restoration as a ranking score, with Recreation's acres beneath it: +3 for
  * Eco Machine and +5 for New Green Watershed. The scenarios with no acres attached
@@ -410,19 +485,16 @@ function habitatRestoration(): CriterionNode {
     edge: 'beside',
     unit: 'score',
     places: NOT_BROKEN_OUT,
-    values: flat(REC_RESTORATION_SCORES),
-    notApplicable: ['bf', 'cor', 'tunnel'],
-    ngwLevels: [5, 5, 5],
+    values: flat({ ...REC_RESTORATION_SCORES, bf: 0, cor: 0, tunnel: 0 }),
     sources: [RECREATION_WORKBOOK_SOURCE, ...sourcesFor('rec-restoration')],
-    note: 'Recreation scores restored acres added on top of Business as Usual’s protected areas: Eco Machine +3 and New Green Watershed +5. Bolster & Fortify, Calling on Reserves and A Tunnel have no acres attached, so they are N/A here and scored under Infrastructure impact. Kept apart from the Recreation score. Open the row for the acres Recreation reports.',
+    note: 'Recreation scores restored acres added on top of Business as Usual’s protected areas: Eco Machine +3 and New Green Watershed +5, with every other scenario at 0. Habitat Restoration receives twice the weight of the other components in the overall Recreation score. Open the row for the acres Recreation reports.',
     children: [
       adapt(acres, {
         id: 'bk-rec-restoration-acres',
         label: 'Restored acres',
         level: 'entity',
         edge: 'measures',
-        values: addedToBaseline(acres.values),
-        notApplicable: ['bf', 'cor', 'tunnel'],
+        values: withZeroScenarios(acres),
       }),
     ],
   })
@@ -440,59 +512,53 @@ function recreationEconomy(): CriterionNode {
     edge: 'beside',
     unit: 'score',
     places: NOT_BROKEN_OUT,
-    values: flat(REC_RESTORATION_SCORES),
-    notApplicable: ['bf', 'cor', 'tunnel'],
-    ngwLevels: [5, 5, 5],
+    values: flat({ ...REC_RESTORATION_SCORES, bf: 0, cor: 0, tunnel: 0 }),
     entityNoun: 'service',
     sources: [RECREATION_WORKBOOK_SOURCE, ...sourcesFor('rec-economy')],
-    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +3 and New Green Watershed +5. Day use and boating share one amenity/recreation row. Bolster & Fortify, Calling on Reserves and A Tunnel have no acres attached, so they are N/A here and scored under Infrastructure impact. Kept apart from the Recreation score. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
+    note: 'The yearly value of four recreation services on restored land, added on top of Business as Usual’s protected areas: Eco Machine +3 and New Green Watershed +5, with every other scenario at 0. Day use and boating share one amenity/recreation row. Open the row for each service’s dollars, by region for New Green Watershed and Delta-wide for Eco Machine.',
     children: [
       ...(economy.children ?? []).map((service) =>
         adapt(service, {
           edge: 'refines',
-          values: addedToBaseline(service.values),
-          notApplicable: ['bf', 'cor', 'tunnel'],
+          values: withZeroScenarios(service),
+          ranks: undefined,
+          // Every service's value repeats at 25%, 50% and 100%, so Recreation has no level control.
+          ngwLevels: undefined,
           notApplicableAt: { em: ['northDelta', 'southDelta'] },
         }),
       ),
       {
         ...qualitativeRow('bk-rec-economy-infrastructure', 'recreation'),
-        steps: { bau: 0, bf: -1, cor: -1, tunnel: -3 },
-        notApplicable: ['em', 'ngw'],
+        steps: { bau: 0, em: 0, ngw: 0, bf: -1, cor: -1, tunnel: -3, more: 0 },
+        notApplicable: ['em', 'ngw', 'more'],
       },
     ],
   })
 }
 
-/**
- * Recreation reports restoration levels only for restoration and its recreation
- * economy; every other row comes from the one New Green Watershed water run, so its
- * value is the same at 25%, 50% and 100% wetland.
- */
-function sameAtAllLevels(row: CriterionNode): CriterionNode {
-  return {
-    ...row,
-    levelsSame: row.ngwLevels ? undefined : true,
-    children: row.children?.map(sameAtAllLevels),
-  }
-}
-
 function recreationTree(): CriterionNode {
-  return sameAtAllLevels(recreationRoot())
-}
-
-function recreationRoot(): CriterionNode {
   return adapt(node('recreation'), {
+    places: NOT_BROKEN_OUT,
+    values: {}, // ranking/scores.ts
+    slr: {
+      values: {}, // ranking/scores.ts
+      note: 'The Recreation team reports the same overall score under sea level rise.',
+      sources: [RECREATION_WORKBOOK_SOURCE],
+    },
+    note: 'The rounded mean of Salinity stress, Temperature stress, Habitat Restoration counted twice, Recreation Economy, and Infrastructure Impact. Habitat Restoration is the only double-weighted component. The same scores apply under sea level rise.',
+    sources: [RECREATION_WORKBOOK_SOURCE],
     children: [
       thresholdRow(
         'rec-salinity',
-        'Salinity thresholds',
-        'Each activity is scored on its proportion of days over its salinity threshold: day use and boating share the same 1,000 µS/cm source values, birding 2,640, waterfowl hunting 3,600, and angling 9,130. Day use and boating are shown as separate rows with their shared values repeated. One point per percentage point against Business as Usual (CalSim’s, for Calling on Reserves and A Tunnel), ±5 at five or more. The reported mean still treats the shared day-use/boating result as one of four inputs; today and with sea level rise, it is half of the Recreation score. Open the row for each activity’s days over the threshold with its score beside it.',
+        'Salinity stress',
+        'The Recreation team scores Salinity stress 0 for every adaptation scenario. Increased Delta outflow scores +1. Open the row for the workbook’s background proportions and activity-level changes from Base, CalSim Base, or Historical Baseline.',
+        { bau: 0, em: 0, ngw: 0, bf: 0, cor: 0, tunnel: 0 },
       ),
       thresholdRow(
         'rec-temperature',
-        'Temperature thresholds',
-        'The same construction against water temperature: day use and boating share the same 19 °C source values and are shown as separate repeated rows, > 20 °C birding, 23 °C waterfowl, 18.4 / 22.3 °C angling, and < 18 °C cold-water day use. The reported mean still treats the shared day-use/boating result as one of five inputs; today and with sea level rise, it is the other half of the Recreation score.',
+        'Temperature stress',
+        'The Recreation team scores Temperature stress 0 for every scenario. Open the row for the workbook’s background proportions and activity-level changes from Base, CalSim Base, or Historical Baseline.',
+        { bau: 0, em: 0, ngw: 0, bf: 0, cor: 0, tunnel: 0 },
       ),
       recSameUnderSlr(habitatRestoration()),
       recSameUnderSlr(recreationEconomy()),
@@ -537,14 +603,12 @@ function ejTree(): CriterionNode {
     id: 'bk-ej-drinking-pct',
     label: 'Readings over 1,050 µS/cm',
     edge: 'derives',
-    // Business as Usual's shares are not in the team's sheet, so the row shows the sheet's.
-    asPublished: true,
     places: EJ_CLASSES,
     periods: EJ_PERIODS,
     notApplicableIn: EJ_OUTFLOW_NO_WATER_YEARS,
     values: byPlacePeriod(EJ_DRINKING_SHARES),
     sources: [EJ_WORKBOOK_SOURCE, ...(classNode('all').sources ?? [])],
-    note: 'The share of daily readings at or above 1,050 µS/cm, the drinking-water threshold, at the 49 SAFER drinking-water points: all together or by Delta Vulnerability Index class. The highest-vulnerability class never exceeds it in any scenario.',
+    note: 'The share of daily readings at or above 1,050 µS/cm, the drinking-water threshold, at the 49 SAFER drinking-water points: all together or by Delta Vulnerability Index class. The table shows change from Base for Eco Machine, Bolster & Fortify and New Green Watershed; from CalSim base for Calling on Reserves and A Tunnel; and from Historical Baseline for Increased Delta outflow. The highest-vulnerability class never exceeds it in any scenario.',
     slr: {
       places: EJ_CLASSES,
       periods: EJ_PERIODS,
@@ -572,23 +636,40 @@ function ejTree(): CriterionNode {
   }
   const waterAge = node('ej-waterage')
   const days = node('ej-waterage-days')
-  // The team is re-running the days at each area, so the sheet leaves them empty (Nov 2026).
+  const waterAgeAreaValues = (region: string, table: Record<string, Record<string, number>>) =>
+    flat({
+      bau: 0,
+      em: table.em[region],
+      bf: table.bf[region],
+      ngw: table.ngw[region],
+      cor: table.cor[region],
+      tunnel: table.tunnel[region],
+    })
   const areas: CriterionNode[] = days.places.map((place) => ({
     ...adapt(days),
     id: `bk-ej-waterage-${place.key}`,
     label: place.label,
     level: 'entity',
     places: [{ key: ANY, label: 'Not broken out' }],
-    values: {},
-    forthcoming: true,
+    values: waterAgeAreaValues(place.key, EJ_WATER_AGE_DAYS),
+    forthcoming: false,
     sources: [EJ_WORKBOOK_SOURCE],
-    note: 'Change in average water age (days) against Business as Usual during the months with water at or above 19 °C: Oct 2018, May – Oct 2019 and May – Oct 2020. Older water favours algal blooms. The team is re-running these values.',
+    note: 'Change in average water age (days) from each scenario’s baseline, averaged over months reported by both runs. Eco Machine, Bolster & Fortify, and New Green Watershed use Base; Calling on Reserves and A Tunnel use CalSim base.',
+    slr: {
+      places: [{ key: ANY, label: 'Not broken out' }],
+      periods: days.periods,
+      values: waterAgeAreaValues(place.key, EJ_WATER_AGE_DAYS_SLR),
+      note: 'The same calculation with sea level rise, against each scenario’s sea-level-rise baseline.',
+      sources: [EJ_WORKBOOK_SOURCE],
+    },
   }))
   const flood = node('ej-flood')
   return adapt(node('environmentalJustice'), {
-    values: flat({ bau: 0, em: 0, ngw: 1, bf: 0, cor: 0, tunnel: 0 }),
-    // Sea level rise waits on the water-age re-run.
-    forthcoming: true,
+    slr: {
+      values: {}, // ranking/scores.ts
+      note: '',
+      sources: [EJ_WORKBOOK_SOURCE],
+    },
     note: 'The unweighted mean of three metric scores, rounded to a whole point: drinking water (whole period), flood risk, and water age.',
     sources: [EJ_WORKBOOK_SOURCE],
     children: [
@@ -611,9 +692,12 @@ function ejTree(): CriterionNode {
         ...adapt(waterAge),
         entityNoun: undefined,
         values: flat({ bau: 0, em: -2, ngw: -3, bf: -1, cor: 0, tunnel: 0 }),
-        // Sea level rise waits on the water-age re-run.
-        forthcoming: true,
-        note: 'Water at or above 19 °C and older than 14 days is a harmful-algal-bloom proxy across five hotspot areas. These are the team’s scores; the days at each area are being re-run.',
+        slr: {
+          values: flat({ bau: 0, em: -3, ngw: -4, bf: -1, cor: 0, tunnel: 0 }),
+          note: '',
+          sources: [EJ_WORKBOOK_SOURCE],
+        },
+        note: 'Water at or above 19 °C and older than 14 days is a harmful-algal-bloom proxy across five hotspot areas. These are the team’s scores; open the row for each area’s change in average water age.',
         sources: [EJ_WORKBOOK_SOURCE],
         children: areas,
       },
@@ -636,17 +720,7 @@ const WATER_YEARS: Facet[] = relabel(
   {},
 )
 
-type NgwLevels = [number, number, number]
-
-/** Each metric's score for New Green Watershed at 25%, 50% and 100% wetland (v20). */
-const ECONOMY_METRIC_NGW_LEVELS: Record<string, NgwLevels> = {
-  'econ-revenue': [-3, -4, -5],
-  'econ-jobs': [-4, -4, -5],
-  'econ-value': [-3, -3, -5],
-}
-
 /** The team gives no combined score, so the criterion row is the metrics' rounded mean. */
-const ECONOMY_NGW_LEVELS: NgwLevels = [-3, -4, -5]
 
 /** Land conversion and carbon are reported Delta-wide only, so a zone has no value for them. */
 const ECONOMY_ZONE_KEYS = ['north', 'central', 'south', 'west']
@@ -713,8 +787,8 @@ function economyTree(): CriterionNode {
     const base = node(id)
     return adapt(base, {
       periods: WATER_YEARS,
-      ngwLevels: ECONOMY_METRIC_NGW_LEVELS[id],
       children: [
+        wholeJobs(landConversion(id)),
         ...(base.children ?? [])
           .filter((child) => child.id === `${id}-salinity`)
           .map((child) =>
@@ -725,7 +799,6 @@ function economyTree(): CriterionNode {
               notApplicableIn: { more: [ANY, '2019'] },
             }),
           ),
-        wholeJobs(landConversion(id)),
         ...(base.children ?? [])
           .filter((child) => child.id === `${id}-carbon`)
           .map((child) =>
@@ -739,7 +812,6 @@ function economyTree(): CriterionNode {
   }
   return adapt(node('economy'), {
     periods: WATER_YEARS,
-    ngwLevels: ECONOMY_NGW_LEVELS,
     note: `${node('economy').note} New Green Watershed uses 50% wetland restoration (−4; −3 at 25%, −5 at 100%, each the rounded mean of its metrics).`,
     children: [metric('econ-revenue'), metric('econ-jobs'), metric('econ-value')],
   })
@@ -776,9 +848,9 @@ function qualitativeRow(id: string, team: CriterionNode['team']): CriterionNode 
  * itself, so confirm them with the team before publishing. Names are in labels.ts.
  */
 const EC_STEPS: Record<string, Partial<Record<ScenarioKey, number>>> = {
-  access: { em: 1, ngw: 4, bf: 0, cor: 0, tunnel: 0 },
-  tek: { em: 1, ngw: 4, bf: 0, cor: 0, tunnel: 0 },
-  sovereignty: { em: 1, ngw: 4, bf: 0, cor: 2, tunnel: 0 },
+  access: { em: 1, ngw: 4, bf: 0, cor: 0, tunnel: 0, more: 0 },
+  tek: { em: 1, ngw: 4, bf: 0, cor: 0, tunnel: 0, more: 0 },
+  sovereignty: { em: 1, ngw: 4, bf: 0, cor: 2, tunnel: 0, more: 2 },
 }
 
 const EC_CONDITIONS: Record<string, { key: string; metBy: ScenarioKey[] }[]> = {
@@ -800,7 +872,7 @@ const EC_CONDITIONS: Record<string, { key: string; metBy: ScenarioKey[] }[]> = {
     { key: 'dataSovereignty', metBy: [] },
     { key: 'education', metBy: [] },
     { key: 'foodSovereignty', metBy: [] },
-    { key: 'waterRights', metBy: ['em', 'ngw', 'cor'] },
+    { key: 'waterRights', metBy: ['em', 'ngw', 'cor', 'more'] },
   ],
 }
 
@@ -834,15 +906,6 @@ function ecoCulturalTree(): CriterionNode {
     if (!found) throw new Error(`rankingModel: no eco-cultural restoration habitat ${id}`)
     return found
   }
-  // A New Green Watershed habitat with no acreage yet; no other scenario restores it.
-  const transitional = adapt(habitat('managed'), {
-    id: 'bk-ec-restoration-transitional',
-    label: 'Transitional habitats',
-    values: { ...habitat('managed').values, ngw: { [sliceKey('inDelta', ANY)]: null } },
-    forthcomingFor: ['ngw'],
-    sources: undefined,
-    note: 'The habitat type is confirmed, but its acreage and source are still to be provided.',
-  })
   return adapt(node('ecoCultural'), {
     children: [
       adapt(restoration, {
@@ -854,14 +917,21 @@ function ecoCulturalTree(): CriterionNode {
         sources: [SLIDES, ...sourcesFor('ec-restoration')],
         note: 'Slide 55 ranks restored acres: Eco Machine +2, New Green Watershed +5, every other scenario 0. Open the row for the habitat types and the qualitative functional-flow outcome.',
         children: [
-          adapt(habitat('tidal')),
+          adapt(habitat('tidal'), {
+            values: {
+              ...habitat('tidal').values,
+              ngw: { [sliceKey('inDelta', ANY)]: 67000 },
+            },
+          }),
           adapt(habitat('managed')),
           adapt(habitat('rice')),
-          transitional,
           adapt(habitat('uplandWetland')),
           adapt(habitat('meadow')),
           adapt(habitat('floodplain')),
-          qualitativeRow('bk-ec-restoration-functional-flow', 'ecoCultural'),
+          {
+            ...qualitativeRow('bk-ec-restoration-functional-flow', 'ecoCultural'),
+            steps: { em: 0, ngw: 0, bf: 0, cor: 2, tunnel: -2, more: 3 },
+          },
         ],
       }),
       ...(node('ecoCultural').children ?? []).slice(1).map(describedMetric),
@@ -869,14 +939,17 @@ function ecoCulturalTree(): CriterionNode {
   })
 }
 
-/** The five teams, in the order the tab bar shows them. */
+/**
+ * The five teams, in the order the tab bar shows them. ranking/scores.ts sets each team's
+ * score and metric-row scores last, so a score written earlier in this file is replaced.
+ */
 export const BREAKOUT_TREE: CriterionNode[] = [
   ecologyTree(),
   recreationTree(),
   ejTree(),
   economyTree(),
   ecoCulturalTree(),
-]
+].map(applyAdaptationScores)
 
 // Register every row so the shared value lookup, the cell detail and the maps can
 // find them by id like any pivot node.

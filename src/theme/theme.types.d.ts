@@ -50,6 +50,11 @@ declare module '@mui/material/styles' {
     numberArticle: CSSProperties
     numberRank: CSSProperties
     numberScore: CSSProperties
+    takeawayScenario: CSSProperties
+    takeawayLead: CSSProperties
+    takeawayBody: CSSProperties
+    takeawayBodyStrong: CSSProperties
+    takeawayLabel: CSSProperties
     numberTimeline: CSSProperties
     numberBadge: CSSProperties
   }
@@ -143,6 +148,11 @@ declare module '@mui/material/Typography' {
     numberArticle: true
     numberRank: true
     numberScore: true
+    takeawayScenario: true
+    takeawayLead: true
+    takeawayBody: true
+    takeawayBodyStrong: true
+    takeawayLabel: true
     numberTimeline: true
     numberBadge: true
   }

@@ -10,7 +10,7 @@
 //   MEASURE_LABELS    the score and measure row names
 //   UI                headings, buttons, legend, notes, and the words for empty cells
 //   CRITERION_DEFINITIONS  a criterion score's info card: its metrics and how they combine
-//   METRIC_DEFINITIONS     a metric's info card: criterion takeaway, what, how computed, what is considered, how scored
+//   METRIC_DEFINITIONS     a metric's info card: criterion takeaway, what, how computed, how scored
 //   PERIOD_WHY, PERIOD_MONTHS, TEAM_PERIOD_MONTHS  the TIME PERIOD info card
 //   PLACE_WHY              the PLACE info card, above the map
 //   SCENARIO_TAKEAWAYS     a team's takeaway in a score cell's card
@@ -51,22 +51,51 @@ export const TEAM_TAKEAWAYS: Partial<Record<TeamKey, string[]>> = {
   ],
   economy: [
     'The Economy score measures how each scenario changes the Delta’s farm economy: annual farm sales (gross revenue), farm-supported jobs, and value added (wages, business income and taxes). Scenarios can affect farming in two ways: **by changing the salinity of irrigation water,** which lowers crop yields, and **by converting farmland to wetland or rice.** Farm revenue is reported as direct on-farm sales; jobs and value added are reported as totals, which include spending in the regional economy (IMPLAN multipliers).',
-    'Scores run from −5 (worst) to +5 (best), with ++Business as Usual++ at 0. **Every scenario is scored with the same rule:** the net percent change from ++Business as Usual++ (land use plus salinity, dry year). A change of less than 1% scores 0; each further band of about 10 percentage points adds one point (1–5% = 1, 5–15% = 2, 15–25% = 3, 25–35% = 4, 35% or more = 5).',
     'Salinity changes in every scenario are very small compared with the Delta’s $1.1 billion farm economy; **converting farmland to wetland is what moves the score.** The score counts costs to the farm economy only. It does not count carbon-credit income or other benefits of restoration, such as subsidence reversal, lower flood risk, better water quality, habitat and recreation.',
   ],
   ecoCultural: [
-    'At the beginning, the team set out to **spotlight historically underrepresented or intentionally excluded communities.** The research team intentionally set out to invite people and groups who have typically not been as involved in Delta decision-making processes. This included reviewing public comments and meeting attendees from previous Delta decision-making processes, such as the 2019 WaterFix Hearing and the 2023 Temporary Urgency Change Petitions. Additionally, the team held **specific meetings with Indigenous communities** to build trust and create a more welcoming listening environment.',
+    'At the beginning, the team set out to **spotlight historically underrepresented or intentionally excluded communities and people.** The research team intentionally set out to invite people and groups who have typically not been as involved in Delta decision-making processes. This included reviewing public comments and meeting attendees from previous Delta decision-making processes, such as the 2019 WaterFix Hearing and the 2023 Temporary Urgency Change Petitions. Additionally, the team held **specific meetings with Indigenous communities and nations** to build trust and create a more welcoming listening environment.',
     'In a round of semi-structured interviews, the Just Transitions in the Delta team specifically invited members of Indigenous communities to participate to ensure **Indigenous perspectives and Traditional Ecological Knowledge (TEK)** were incorporated into the research from the beginning. The team used interview findings to inform preliminary scenario narratives.',
   ],
 }
 
+/**
+ * A metric's takeaway as its info card lays it out: a lead sentence, the sentences that
+ * follow, and any list those introduce. Text between ** ** is drawn in the team's colour.
+ */
+export interface MetricTakeaway {
+  lead: string
+  details?: string[]
+  rows?: [string, string][]
+}
+
+/** A takeaway as one run of text, for the notes that quote it whole. */
+const takeawayText = ({ lead, details = [] }: MetricTakeaway) =>
+  [lead, ...details].join(' ').replace(/\*\*/g, '')
+
 // Environmental Justice's metric takeaways: its caveats, and each metric's info card.
-const EJ_DRINKING_TAKEAWAY =
-  'An increase in Delta outflow, by far, reduces drinking water salinity threshold exceedances the most. Across adaptation scenarios, ++Eco Machine++ and ++New Green Watershed++ perform the best, and decrease threshold exceedances overall.'
-const EJ_FLOOD_TAKEAWAY =
-  'Scenarios that produce Delta-wide effects, rather than localized benefits, performed the best for this metric. ++New Green Watershed++ was the leading scenario, attributed to the flood risk benefits associated with upland restoration. ++Bolster & Fortify++ performed second-best; while fortification of levees definitely reduces flood risk, these benefits are only observed along the freshwater corridor pathway, not the entire Delta. Lastly, ++A Tunnel++ was expected to slightly decrease flood risk, on the assumption that the two northern intakes would intercept water in high storm events prior to inundation into the Delta. ++Eco Machine++ and ++Calling on Reserves++ did not deviate from baseline.'
-const EJ_WATER_AGE_TAKEAWAY =
-  'The only scenario that decreased water age in months where water temperature was consistently above 19°C was ++Bolster & Fortify++. ++New Green Watershed++ increased water age the most, followed by ++Eco Machine++, in the regions in which restoration was incorporated. It is important to remember that an increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.'
+const EJ_DRINKING_TAKEAWAY: MetricTakeaway = {
+  lead: 'An increase in Delta outflow, by far, **reduces drinking water salinity threshold exceedances the most.**',
+  details: [
+    'Across adaptation scenarios, ++Eco Machine++ and ++New Green Watershed++ perform the best, and decrease threshold exceedances overall.',
+  ],
+}
+const EJ_FLOOD_TAKEAWAY: MetricTakeaway = {
+  lead: 'Scenarios that produce **Delta-wide effects,** rather than localized benefits, performed the best for this metric.',
+  details: [
+    '++New Green Watershed++ was the leading scenario, attributed to the flood risk benefits associated with upland restoration.',
+    '++Bolster & Fortify++ performed second-best; while fortification of levees definitely reduces flood risk, these benefits are only observed along the freshwater corridor pathway, not the entire Delta.',
+    'Lastly, ++A Tunnel++ was expected to slightly decrease flood risk, on the assumption that the two northern intakes would intercept water in high storm events prior to inundation into the Delta.',
+    '++Eco Machine++ and ++Calling on Reserves++ did not deviate from baseline.',
+  ],
+}
+const EJ_WATER_AGE_TAKEAWAY: MetricTakeaway = {
+  lead: '**The only scenario that decreased water age** in months where water temperature was consistently above 19°C was ++Bolster & Fortify++.',
+  details: [
+    '++New Green Watershed++ increased water age the most, followed by ++Eco Machine++, in the regions in which restoration was incorporated.',
+    'It is important to remember that an increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.',
+  ],
+}
 
 /**
  * What to keep in mind across a whole criterion, shown under UI.caveatsHeading beside
@@ -82,21 +111,19 @@ export const TEAM_CAVEATS: Partial<Record<TeamKey, string[]>> = {
     'Upstream restoration: Our evaluation metrics are primarily based on **conditions within the Delta proper, and its downstream waterways.** However, the ++New Green Watershed++ scenario incorporates restoration throughout the entire watershed, including montane meadows, floodplains, and forests in the Sierra. These upstream alterations would likely increase the flows entering the estuary, and might also extend new habitat to anadromous and migratory species of concern, like salmon. Our models were not able to incorporate these hydrological or land-related effects. Collaborators have assessed the general benefits of expanding upstream habitat, but their evaluations are not reliant on hydrological model outputs.',
   ],
   recreation: [
-    'Omitted scores: Scores for ++Bolster & Fortify++, ++A Tunnel++, and ++Calling on Reserves++ are omitted from Habitat Restoration and Recreation Economy and instead are calculated under Infrastructure Impacts. This is partly because these scenarios have no solid acres attached, unlike ++Eco Machine++, ++New Green Watershed++, and ++Business as Usual++. They are scored this way because changes in water conveyance and years to project completion along Delta towns would affect recreation economies throughout the Delta by building and restructuring water resources; even without major acreage changes, they would hinder the recreation economy in different ways. Furthermore, because these scenarios follow future-based impacts, no breakdowns below the "All together" level are provided by region.',
-    'Infrastructure impacts: Infrastructure impacts affect only ++Bolster & Fortify++ and ++A Tunnel++ because of their anticipated future changes, expanding on the caveat scores’ reasoning for Habitat Restoration based on infrastructural changes (Caveat 1). Their scores, ++Bolster & Fortify++ (-1) and ++A Tunnel++ (-3), imply that for ++Bolster & Fortify++, the building of salinity gates surrounding Franks Tract would be detrimental to boaters, blocking access to waterways during dry periods to prevent salinity encroachment, while ++A Tunnel++ would impact recreation economies throughout Delta towns that depend on recreation and tourism and would also make certain areas inaccessible for extended periods of time.',
+    'Component scores: Salinity stress and Temperature stress score 0 for every adaptation scenario. Increased Delta outflow scores +1 for Salinity stress and 0 for Temperature stress. Habitat Restoration and Recreation Economy score +3 for ++Eco Machine++, +5 for ++New Green Watershed++, and 0 otherwise.',
+    'Infrastructure impacts: Infrastructure impacts affect only ++Bolster & Fortify++ and ++A Tunnel++ because of their anticipated future changes, expanding on the caveat scores’ reasoning for Habitat Restoration based on infrastructural changes. Their scores, ++Bolster & Fortify++ (-1) and ++A Tunnel++ (-3), imply that for ++Bolster & Fortify++, the building of salinity gates surrounding Franks Tract would be detrimental to boaters, blocking access to waterways during dry periods to prevent salinity encroachment, while ++A Tunnel++ would impact recreation economies throughout Delta towns that depend on recreation and tourism and would also make certain areas inaccessible for extended periods of time.',
     'Restored acres: Restored acres for ++Eco Machine++ and ++New Green Watershed++ are positive (+) changes relative to ++Business as Usual++’s existing protected areas (current inventory, accessible and non-accessible: 108,301 acres). ++Eco Machine++’s +43,100 acres would bring the total to 151,401 acres; ++New Green Watershed++’s +458,948 acres, without upland restoration, to about 567,249 acres.',
     'Sea level rise columns: The sea level rise columns reuse current-conditions acres and dollars, so restoration and economy weren’t re-modeled for sea level rise.',
-    'The "All together" score: The "All together" score averages regions, which can hide offsetting regional changes.',
   ],
   environmentalJustice: [
-    `Salinity impacts to in-Delta drinking water: ${EJ_DRINKING_TAKEAWAY}`,
-    `Flood risk attenuation: ${EJ_FLOOD_TAKEAWAY}`,
-    `Water age + temperature: ${EJ_WATER_AGE_TAKEAWAY}`,
+    `Salinity impacts to in-Delta drinking water: ${takeawayText(EJ_DRINKING_TAKEAWAY)}`,
+    `Flood risk attenuation: ${takeawayText(EJ_FLOOD_TAKEAWAY)}`,
+    `Water age + temperature: ${takeawayText(EJ_WATER_AGE_TAKEAWAY)}`,
   ],
   economy: [
     'Carbon-offset revenue is reported but not counted in the score: it is not farm revenue, it has no IMPLAN estimate, and its price is uncertain ($15 per metric ton of CO2 in these results). If it were counted, one score would change: ++New Green Watershed++’s 50% wetland revenue would move from −4 to −3.',
     'The Economy scores for ++Eco Machine++ and ++New Green Watershed++ measure changes in farm revenue, jobs and value added. They do not include the other benefits of restoration (subsidence reversal, lower flood risk and levee costs, water-supply and water-quality gains from Franks Tract, habitat, and recreation), so these scores show the cost side of the two scenarios, not their net economic effect.',
-    '++Increased Delta Outflow++ comes from a different model (SCHISM) and year (water year 2021) than the other scenarios (RMA, 2019–2020), so it is less directly comparable. It increases Sacramento River flow by 30%; it is not a direct 30% increase in Delta outflow.',
   ],
   ecoCultural: [
     'Although all four metrics are equally important and interdependent on one another to meet this criterion, only the ecosystem restoration metric can be spatially and quantitatively evaluated across the scenarios. The other three metrics are envisioned and assumed in ++Eco Machine++ and ++New Green Watershed++ scenarios (the two scenarios that restore land and habitats) but cannot be prescribed within the scope of this project (e.g., assigning specific areas for land-back initiatives, or determining where access may be most desired and granted on private land). Thus, the evaluation for Tribal land access, Tribal Sovereignty and Application of Indigenous Science and Traditional Ecological Knowledge are expressed qualitatively, **where the scenarios offer the increased potential to achieve these metrics.**',
@@ -234,11 +261,10 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-ec-restoration-managed': 'Managed wetlands',
   'bk-ec-restoration-rice': 'Wet-soil agriculture',
   'bk-ec-restoration-tidal': 'Tidal wetlands',
-  'bk-ec-restoration-transitional': 'Transitional habitats',
   'bk-ec-restoration-uplandWetland': 'Forests',
   'bk-ec-restoration-meadow': 'Meadows',
   'bk-ec-restoration-floodplain': 'Floodplains',
-  'bk-ec-restoration-functional-flow': 'Potential for functional flows',
+  'bk-ec-restoration-functional-flow': 'Potential for functional flow',
   'bk-ec-access': 'Increased Land Access',
   'bk-ec-tek':
     'Implementation and Application of Indigenous Science & Traditional Ecological Knowledge (TEK)',
@@ -364,6 +390,7 @@ export const UI = {
   qualitative: 'Qualitative · described in the team’s report, not scored',
   /** The tag beside a qualitative row's name, and what its cells say. */
   qualitativeTag: 'Qualitative',
+  preliminaryTag: 'Preliminary',
   noChange: 'No change',
   inPlace: 'In place',
   notInPlace: 'Not in place',
@@ -388,7 +415,6 @@ export const UI = {
   notInScore: 'Not in this score',
   measures: 'What it measures',
   computed: 'How it is computed',
-  considered: 'What is considered',
   howScored: 'How it is scored',
   whyPeriods: 'Why these periods',
   monthRanges: 'Month ranges',
@@ -398,6 +424,8 @@ export const UI = {
   difference: 'Difference',
   takeaway: 'Criterion takeaway',
   takeawayForthcoming: 'The criterion takeaway for this scenario: forthcoming.',
+  /** Under the scenario's name in a score's card, so a 0 reads as a comparison. */
+  scoredAgainst: (baseline: string) => `Scored −5 to +5, with ${baseline} at 0`,
   currentConditions: 'Current conditions',
   businessAsUsual: 'Business as Usual',
   /** The chip beside Business as Usual when it is another model's run, by baseline key. */
@@ -457,13 +485,14 @@ export const CRITERION_DEFINITIONS: Record<
   },
   recreation: {
     metrics: [
-      '% of days under salinity stress',
-      '% of days under salinity stress, with sea level rise',
-      '% of days under temperature stress',
-      '% of days under temperature stress, with sea level rise',
+      'Salinity stress',
+      'Temperature stress',
+      'Habitat Restoration ×2',
+      'Recreation Economy',
+      'Infrastructure Impact',
     ],
-    combine: 'The **unweighted mean** of the four metric scores, not rounded.',
-    outside: 'Habitat restoration and recreation economy, scored separately.',
+    combine:
+      'The mean of the five listed terms, with **Habitat Restoration counted twice**, rounded to a whole point. The same scores apply with sea level rise.',
   },
   environmentalJustice: {
     metrics: [
@@ -496,8 +525,7 @@ export const CRITERION_DEFINITIONS: Record<
 
 /**
  * What a metric is, behind the info button on its row: what it measures, how it is
- * computed, what it considers, and how it is scored. `considered` is a sentence or
- * a list of [item, detail] rows. `scale` draws the −5…+5 scale for a score set one
+ * computed, and how it is scored. `scale` draws the −5…+5 scale for a score set one
  * point per `step` against Business as Usual (`lowerBetter`: more of it scores lower).
  * `takeaway` is the team's own word on the metric, shown first; where it already says
  * what the metric measures (Ecology), `measures` is left out.
@@ -507,7 +535,6 @@ export const METRIC_DEFINITIONS: Record<
   {
     measures?: string
     computed: string
-    considered: string | [string, string][]
     scored: string
     scale?: {
       step?: string
@@ -519,17 +546,13 @@ export const METRIC_DEFINITIONS: Record<
     }
     /** Where results land on the scale: [name, the amount that earns it, its score]. */
     scoreRows?: { heading: string; rows: [string, string, number][] }
-    takeaway?: string
+    takeaway?: MetricTakeaway
   }
 > = {
   // Ecology
   'bk-eco-habitat': {
-    takeaway: 'The increase in accessible aquatic habitat relative to baseline.',
+    takeaway: { lead: 'The increase in **accessible aquatic habitat** relative to baseline.' },
     computed: 'Acres of added tidal wetland against Business as Usual.',
-    considered: [
-      ['Eco Machine', '53,000 acres'],
-      ['New Green Watershed', '80,000 acres'],
-    ],
     scale: {
       axis: 'Acres added against Business as Usual. About 16,000 acres scores +1, rising to +5 at about 80,000 acres.',
       scores: [0, 1, 2, 3, 4, 5],
@@ -546,11 +569,11 @@ export const METRIC_DEFINITIONS: Record<
     scored: '+1 for about every 16,000 acres added against Business as Usual, up to +5.',
   },
   'bk-eco-foodweb': {
-    takeaway:
-      'The increase in productive habitats (tidal wetlands, managed wetlands, rice fields) that have the capacity to contribute to food webs, relative to baseline.',
+    takeaway: {
+      lead: 'The increase in **productive habitats** (tidal wetlands, managed wetlands, rice fields) that have the capacity to contribute to food webs, relative to baseline.',
+    },
     computed:
       '(managed wetland − 5,100) × 0.2 + added tidal wetland × 0.4 + (wet-soil agriculture − 17,178) × 0.1.',
-    considered: 'Managed wetland, added tidal wetland and wet-soil agriculture.',
     scale: {
       axis: 'Food web index points against Business as Usual. About 16,148 points scores +1, rising to +5 at about 80,740 points.',
       scores: [0, 1, 2, 3, 4, 5],
@@ -567,11 +590,13 @@ export const METRIC_DEFINITIONS: Record<
     scored: '+1 for about every 16,148 index points against Business as Usual, up to +5.',
   },
   'bk-eco-species': {
-    takeaway:
-      'The proportion of time and/or length of consecutive days that conditions remain within a species’ fundamental tolerance limits for water temperature and salinity. This does not necessarily mean species are more abundant at the given location, only that water quality conditions are favorable for their survival.',
+    takeaway: {
+      lead: 'The proportion of time and/or length of consecutive days that conditions remain **within a species’ fundamental tolerance limits** for water temperature and salinity.',
+      details: [
+        'This does not necessarily mean species are more abundant at the given location, only that water quality conditions are favorable for their survival.',
+      ],
+    },
     computed: 'Each species’ proportion of days inside its salinity and temperature range.',
-    considered:
-      'Feb 1 – Jun 1 of WY 2019 (wet) and WY 2020 (dry). Largemouth bass, overbite clam and Brazilian waterweed are scored in reverse: less habitat is better.',
     scored:
       'Each percentage point of days in range above or below Business as Usual moves a species’ score by 1. The team’s Species suitability score is reported for the whole period, Delta-wide. [How the species combine: forthcoming.]',
     scale: { step: '%', axis: 'Days in range vs Business as Usual' },
@@ -579,65 +604,62 @@ export const METRIC_DEFINITIONS: Record<
 
   // Recreation
   'bk-rec-salinity': {
-    takeaway:
-      'Salinity generally affects recreation most in the western regions (Suisun, Central Delta), especially during the winter seasons, for four out of five activities, while angling thresholds are crossed more in summer under baseline and shift to more salinity days in winter under sea-level-rise scenarios.',
+    takeaway: {
+      lead: 'Salinity generally affects recreation most **in the western regions (Suisun, Central Delta),** especially during the winter seasons, for four out of five activities, while angling thresholds are crossed more in summer under baseline and shift to more salinity days in winter under sea-level-rise scenarios.',
+    },
     measures: 'How often the water is too salty for each activity.',
     computed:
       'Each activity’s share of days over its salinity threshold, at 32 points in 4 regions, Oct 2018 – Dec 2020.',
-    considered: [
-      ['Day use', '1,000 µS/cm'],
-      ['Boating', '1,000 µS/cm'],
-      ['Birding', '2,640 µS/cm'],
-      ['Waterfowl hunting', '3,600 µS/cm'],
-      ['Angling', '9,130 µS/cm'],
-    ],
     scored:
-      'Each percentage point of days under stress above or below Business as Usual moves an activity’s score by 1. The metric is the **unweighted mean** of the activities.',
+      'The Salinity stress component scores 0 for every adaptation scenario and +1 for Increased Delta outflow. Activity-level changes remain available as background detail.',
     scale: { step: '%', axis: 'Days under stress vs Business as Usual', lowerBetter: true },
   },
   'bk-rec-temperature': {
-    takeaway:
-      'Warm water is a summer activity problem and affects each activity’s outcomes. While overall temperature differences are minimal across scenarios, New Green Watershed and Eco Machine add about 1 degree to Central and North Delta temperatures. The South Delta is the hottest for waterfowl (with about 41 to 44% threshold days crossed in summer compared to 10% in Suisun), while cold-water days that hinder Day Use are present nearly the whole winter season in the North Delta.',
+    takeaway: {
+      lead: 'Warm water is **a summer activity problem** and affects each activity’s outcomes.',
+      details: [
+        'While overall temperature differences are minimal across scenarios, New Green Watershed and Eco Machine add about 1 degree to Central and North Delta temperatures.',
+        'The South Delta is the hottest for waterfowl (with about 41 to 44% threshold days crossed in summer compared to 10% in Suisun), while cold-water days that hinder Day Use are present nearly the whole winter season in the North Delta.',
+      ],
+    },
     measures:
       'How often the water is too warm (or, for cold-water use, too cold) for each activity.',
     computed:
       'Each activity’s share of days past its temperature threshold, at 32 points in 4 regions, Oct 2018 – Dec 2020.',
-    considered: [
-      ['Day use', 'over 19 °C'],
-      ['Boating', 'over 19 °C'],
-      ['Birding', 'over 20 °C'],
-      ['Waterfowl hunting', 'over 23 °C'],
-      ['Angling', 'over 18.4 / 22.3 °C'],
-      ['Cold-water day use', 'below 18 °C'],
-    ],
     scored:
-      'Each percentage point of days under stress above or below Business as Usual moves an activity’s score by 1. The metric is the **unweighted mean** of the activities.',
+      'The Temperature stress component scores 0 for every scenario. Activity-level changes remain available as background detail.',
     scale: { step: '%', axis: 'Days under stress vs Business as Usual', lowerBetter: true },
   },
   'bk-rec-restoration': {
-    takeaway:
-      'Habitat restoration would create net acreage benefits for currently available Delta land inventories. Increasing current protected area acres (108,301 acres) under Eco Machine (+ 43,100 acres) at Suisun and Franks Tract, and New Green Watershed (+ 458,948 acres) Delta-wide through transitional, managed wetlands and tidal areas.',
+    takeaway: {
+      lead: 'Habitat restoration would create **net acreage benefits** for currently available Delta land inventories.',
+      details: [
+        'Increasing current protected area acres (108,301 acres) under Eco Machine (+ 43,100 acres) at Suisun and Franks Tract, and New Green Watershed (+ 458,948 acres) Delta-wide through transitional, managed wetlands and tidal areas.',
+      ],
+    },
     measures: 'How much land a scenario restores for recreation.',
     computed:
       'Restored acres added on top of Business as Usual’s protected areas, by Delta region.',
-    considered:
-      'Eco Machine 41,720 acres in Suisun Marsh and 1,380 in the Central Delta; New Green Watershed at its 50% bound 41,720, 32,692, 186,769 and 197,767 (Suisun, Central, North, South).',
     scored:
-      'Eco Machine +3, New Green Watershed +5. N/A for Bolster & Fortify, Calling on Reserves and A Tunnel, which have no acres attached and are scored under Infrastructure impact. Kept apart from the Recreation score.',
+      'Eco Machine +3, New Green Watershed +5, and every other scenario 0. This component is counted twice in the overall Recreation score.',
   },
   'bk-rec-economy': {
-    takeaway:
-      'The recreation economy is measured by a conservative valuation of ecosystem services in dollars per acre per year, encompassing the five activities. In short, we calculate four ecosystem service scenarios for restored acres procured from our Ecology team (separate from the Habitat Restoration Metric), assigning monetary values to the following measures: Recreational fishing (angling), Amenity/Recreation (Day Use and Boating combined), Biodiversity (Birding), and Recreational Hunting (Waterfowl Hunting).',
+    takeaway: {
+      lead: 'The recreation economy is measured by **a conservative valuation of ecosystem services in dollars per acre per year,** encompassing the five activities.',
+      details: [
+        'In short, we calculate four ecosystem service scenarios for restored acres procured from our Ecology team (separate from the Habitat Restoration Metric), assigning monetary values to the following measures:',
+      ],
+      rows: [
+        ['Recreational fishing', 'Angling'],
+        ['Amenity/Recreation', 'Day Use and Boating combined'],
+        ['Biodiversity', 'Birding'],
+        ['Recreational Hunting', 'Waterfowl Hunting'],
+      ],
+    },
     measures: 'The yearly value of recreation on restored land.',
     computed:
       'The value of four recreation services on restored land, with day use and boating sharing the amenity/recreation values, added on top of Business as Usual’s existing protected land.',
-    considered: [
-      ['Services', 'Day use and boating, birding, waterfowl hunting, angling'],
-      ['New Green Watershed', 'By Delta region'],
-      ['Eco Machine', 'Delta-wide'],
-    ],
-    scored:
-      'Eco Machine +3, New Green Watershed +5. N/A for Bolster & Fortify, Calling on Reserves and A Tunnel, which have no acres attached and are scored under Infrastructure impact.',
+    scored: 'Eco Machine +3, New Green Watershed +5, and every other scenario 0.',
     scale: { step: '%', axis: 'Value vs Business as Usual' },
   },
 
@@ -647,8 +669,6 @@ export const METRIC_DEFINITIONS: Record<
     measures: 'How often in-Delta drinking water is too salty.',
     computed:
       'The share of salinity readings at or above 1,050 µS/cm at in-Delta drinking-water points, over the whole run.',
-    considered:
-      'All 49 points, and the moderate, high and highest vulnerability classes. The highest class is always 0%, so it scores 0.',
     scored:
       'Each percentage point of readings over the line above or below Business as Usual moves the score by 1, for each place.',
     scale: { step: '%', axis: 'Readings over the line vs Business as Usual', lowerBetter: true },
@@ -657,7 +677,6 @@ export const METRIC_DEFINITIONS: Record<
     takeaway: EJ_FLOOD_TAKEAWAY,
     measures: 'Flood risk across the Delta.',
     computed: 'A Delta-wide qualitative judgement by the team.',
-    considered: '[What the team weighs: forthcoming.]',
     scored: 'Set by the team on the −5 to +5 scale; there is no published formula.',
   },
   'bk-ej-waterage': {
@@ -665,41 +684,49 @@ export const METRIC_DEFINITIONS: Record<
     measures: 'How long water sits in the Delta, and how warm it gets.',
     computed:
       'The change in average water age, in days, against Business as Usual, with water temperature.',
-    considered: 'Five hotspot areas.',
     scored:
       'Each area is placed on a monthly ladder (slight, moderate, significant, major, extreme) and the areas are averaged; older water scores lower.',
   },
 
   // Economy
   'bk-econ-revenue': {
-    takeaway:
-      'Gross revenue is the value of crops sold from Delta farmland, about $1.1 billion per year. Salinity changes it by less than $100,000 per year in every scenario, even with sea level rise. Only ++New Green Watershed++ changes it substantially (19% to 46% lower), because land leaves farming. Readers should keep in mind that gross revenue is sales, not profit: farmers’ net income falls by less than this.',
+    takeaway: {
+      lead: 'Gross revenue is the value of crops sold from Delta farmland, **about $1.1 billion per year.**',
+      details: [
+        'Salinity changes it by less than $100,000 per year in every scenario, even with sea level rise. Only ++New Green Watershed++ changes it substantially (19% to 46% lower), because land leaves farming.',
+        'Readers should keep in mind that gross revenue is sales, not profit: farmers’ net income falls by less than this.',
+      ],
+    },
     measures: 'Farm gross revenue in the Delta.',
     computed: 'Direct gross revenue against Business as Usual ($1.105B a year).',
-    considered:
-      'Salinity effects, by Delta zone and Delta-wide, and the change from converting farmland to wetland. Carbon-offset revenue is shown but not counted.',
     scale: ECONOMY_SCALE,
     scoreRows: ngwLevelRows(['−19.1%', -3], ['−25.5%', -4], ['−45.5%', -5]),
     scored: `${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
   'bk-econ-jobs': {
-    takeaway:
-      'Jobs include farm work and jobs in businesses that serve farms and farm households (about 11,700 in total, including multiplier effects). Through salinity, no scenario differs from ++Business as Usual++ by more than about half a job. ++New Green Watershed++ reduces total jobs by about 3,700 to 5,000 (31% to 43%), so its job scores (−4, −4, −5) are as low as or lower than its revenue scores. Job losses are proportionally larger than revenue losses when land switches to rice, because rice needs fewer workers per dollar of revenue.',
+    takeaway: {
+      lead: 'Jobs include farm work and jobs in businesses that serve farms and farm households (**about 11,700 in total,** including multiplier effects).',
+      details: [
+        'Through salinity, no scenario differs from ++Business as Usual++ by more than about half a job. ++New Green Watershed++ reduces total jobs by about 3,700 to 5,000 (31% to 43%), so its job scores (−4, −4, −5) are as low as or lower than its revenue scores.',
+        'Job losses are proportionally larger than revenue losses when land switches to rice, because rice needs fewer workers per dollar of revenue.',
+      ],
+    },
     measures: 'Farm jobs in the Delta.',
     computed: 'Total jobs against Business as Usual (7,526 direct, 11,679 total).',
-    considered:
-      'Salinity effects, by Delta zone and Delta-wide, and the change from converting farmland to wetland.',
     scale: ECONOMY_SCALE,
     scoreRows: ngwLevelRows(['−31.3%', -4], ['−34.2%', -4], ['−42.8%', -5]),
     scored: `${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
   },
   'bk-econ-value': {
-    takeaway:
-      'Value added is the income that Delta farming generates in the regional economy: wages, business income and taxes, about $1 billion per year in total. It follows the same pattern as revenue: negligible change from salinity, and a 16% to 46% reduction under ++New Green Watershed++. Construction spending and carbon-credit income are not included in value added.',
+    takeaway: {
+      lead: 'Value added is the income that Delta farming generates in the regional economy: wages, business income and taxes, **about $1 billion per year in total.**',
+      details: [
+        'It follows the same pattern as revenue: negligible change from salinity, and a 16% to 46% reduction under ++New Green Watershed++.',
+        'Construction spending and carbon-credit income are not included in value added.',
+      ],
+    },
     measures: 'Value added: wages, business income and taxes from Delta farming.',
     computed: 'Total value added against Business as Usual ($670M direct, $997M total a year).',
-    considered:
-      'Salinity effects, by Delta zone and Delta-wide, and the change from converting farmland to wetland.',
     scale: ECONOMY_SCALE,
     scoreRows: ngwLevelRows(['−16.1%', -3], ['−23.2%', -3], ['−45.8%', -5]),
     scored: `${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
@@ -709,20 +736,11 @@ export const METRIC_DEFINITIONS: Record<
   'bk-ec-restoration': {
     measures: 'How much land a scenario restores.',
     computed: 'Restored acres.',
-    considered:
-      'Eco Machine 41,720 acres in Suisun and 1,380 at Franks Tract; New Green Watershed 248,815 in the Delta, plus upper-watershed ranges.',
     scored: 'Set by the team on the −5 to +5 scale; there is no published rule per acre.',
   },
   'bk-ec-access': {
     measures: 'How far a scenario secures Tribal access to land.',
     computed: '[How the team judges access: forthcoming.]',
-    considered: [
-      ['Tribal ownership', 'strongest'],
-      ['Land trust partnership', ''],
-      ['Conservation easement', ''],
-      ['Cultural conservation easement', ''],
-      ['Memorandum of Understanding (MOU) and Memorandum of Agreement (MOA)', 'weakest'],
-    ],
     scored:
       'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
   },
@@ -730,15 +748,12 @@ export const METRIC_DEFINITIONS: Record<
     measures:
       'How far a scenario supports Indigenous science and traditional ecological knowledge (TEK).',
     computed: '[How the team judges this: forthcoming.]',
-    considered:
-      'Privacy, unrestricted access, site selection, and Tribal stewardship group collaboration.',
     scored:
       'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
   },
   'bk-ec-sovereignty': {
     measures: 'How far a scenario supports Tribal sovereignty.',
     computed: '[How the team judges this: forthcoming.]',
-    considered: 'Data Sovereignty, Education, Food Sovereignty, and Water Rights.',
     scored:
       'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
   },
@@ -787,67 +802,360 @@ export const PLACE_WHY: Partial<Record<TeamKey, string>> = {
     'We look at the farmland of the legal Delta because that is where salinity and land conversion affect the economy. Results are calculated for about 130 farming areas (mostly individual islands and tracts) and summed into four zones (North, Central, South and West Delta) and a Delta-wide total. Each area uses the salinity at the nearest model station. Eco Machine also covers Suisun Marsh, which has very little farmland. Jobs and value added include spending in the surrounding regional economy (IMPLAN multipliers).',
 }
 
+/**
+ * A takeaway as the card lays it out: one lead sentence, then labelled points. Text
+ * between ** ** is drawn in the team's colour, as in the other notes here.
+ */
+export interface ScenarioTakeaway {
+  lead: string
+  points?: { label: string; text: string }[]
+}
+
 const ECONOMY_NGW_LEAD =
-  'New Green Watershed has the largest economic cost of the scenarios because it takes farmland out of production.'
-const ECONOMY_NGW_SHARED =
-  'Converting land to rice instead of wetland keeps more revenue but fewer jobs. Construction would cost about $1.6 to $1.9 billion. Subsidence reversal, lower levee and flood costs, and habitat are not counted, so the score shows the cost side only.'
+  'New Green Watershed has **the largest economic cost of the scenarios** because it takes farmland out of production.'
+const ECONOMY_NGW_CONVERSION =
+  'Converting land to rice instead of wetland keeps more revenue but fewer jobs.'
+const ECONOMY_NGW_NOT_COUNTED =
+  'Subsidence reversal, lower levee and flood costs, and habitat are not counted, so the score shows the cost side only.'
+
+/** New Green Watershed's takeaway at one restoration level, from what differs by level. */
+const economyNgwLevel = (farmEconomy: string, carbonCredits: string): ScenarioTakeaway => ({
+  lead: ECONOMY_NGW_LEAD,
+  points: [
+    { label: 'Farm economy', text: farmEconomy },
+    { label: 'Carbon credits', text: carbonCredits },
+    {
+      label: 'Conversion',
+      text: `${ECONOMY_NGW_CONVERSION} Construction would cost about $1.6 to $1.9 billion.`,
+    },
+    { label: 'Not counted', text: ECONOMY_NGW_NOT_COUNTED },
+  ],
+})
 
 /**
  * New Green Watershed's takeaway at 25%, 50% and 100% wetland, shown when that level's
  * score cell is clicked in the opened column. The closed column, and a team with none
  * here, show the scenario's own takeaway below.
  */
-export const NGW_LEVEL_TAKEAWAYS: Partial<Record<TeamKey, string[]>> = {
+export const NGW_LEVEL_TAKEAWAYS: Partial<Record<TeamKey, ScenarioTakeaway[]>> = {
   economy: [
-    `${ECONOMY_NGW_LEAD} At 25% wetland, direct farm revenue falls 19.1%, total jobs (including multiplier effects) fall 31.3%, and total value added falls 16.1%. Scores: −3 (revenue), −4 (jobs), −3 (value added). Carbon credits would replace about 12% of the lost farm revenue. ${ECONOMY_NGW_SHARED}`,
-    `${ECONOMY_NGW_LEAD} At 50% wetland, direct farm revenue falls 25.5%, total jobs (including multiplier effects) fall 34.2%, and total value added falls 23.2%. Scores: −4 (revenue), −4 (jobs), −3 (value added). Carbon credits would replace about 10% of the lost farm revenue. ${ECONOMY_NGW_SHARED}`,
-    `${ECONOMY_NGW_LEAD} At 100% wetland, direct farm revenue falls 45.5%, total jobs (including multiplier effects) fall 42.8%, and total value added falls 45.8%. Scores: −5 on all three. Carbon credits would replace about 8% of the lost farm revenue. ${ECONOMY_NGW_SHARED}`,
+    economyNgwLevel(
+      'At 25% wetland, direct farm revenue falls 19.1%, total jobs (including multiplier effects) fall 31.3%, and total value added falls 16.1%. Scores: −3 (revenue), −4 (jobs), −3 (value added).',
+      'Carbon credits would replace about 12% of the lost farm revenue.',
+    ),
+    economyNgwLevel(
+      'At 50% wetland, direct farm revenue falls 25.5%, total jobs (including multiplier effects) fall 34.2%, and total value added falls 23.2%. Scores: −4 (revenue), −4 (jobs), −3 (value added).',
+      'Carbon credits would replace about 10% of the lost farm revenue.',
+    ),
+    economyNgwLevel(
+      'At 100% wetland, direct farm revenue falls 45.5%, total jobs (including multiplier effects) fall 42.8%, and total value added falls 45.8%. Scores: −5 on all three.',
+      'Carbon credits would replace about 8% of the lost farm revenue.',
+    ),
   ],
 }
+
+const WATER_AGE_NOTE =
+  'An increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.'
 
 /**
  * A team's takeaway for one scenario, shown when one of its score cells is clicked.
  * A scenario with none shows UI.takeawayForthcoming.
  */
-export const SCENARIO_TAKEAWAYS: Partial<Record<TeamKey, Partial<Record<ScenarioKey, string>>>> = {
+export const SCENARIO_TAKEAWAYS: Partial<
+  Record<TeamKey, Partial<Record<ScenarioKey, ScenarioTakeaway>>>
+> = {
   ecology: {
-    em: 'Eco Machine increased salinity in Franks Tract, reducing suitability for freshwater invasives like Brazilian waterweed and largemouth bass but increasing suitability for overbite clams. Juvenile longfin smelt also saw an increase in proportion of suitable days. It does expand habitat and improve food web contributions relative to baseline, but not as much as New Green Watershed.',
-    ngw: 'The effects on species fundamental niches were the same as Eco Machine, but contributions to food webs were much higher, due to the expansion of managed wetlands and wet soil agriculture within the Delta. It also contributed a larger area of accessible habitat.',
-    bf: 'We detected no differences between Bolster and Fortify and the baseline, Business as Usual.',
-    cor: 'Calling on Reserves only had small differences from the baseline. It decreased the proportion of suitable points for longfin smelt and salmon, two desirable species, in 2019. In 2020, it slightly decreased the suitability for freshwater invasives, and slightly increased suitability for overbite clam.',
-    tunnel:
-      'A Tunnel affected the most number of species of all the adaptation scenarios. It decreased the proportion of suitable points for longfin smelt juveniles and overbite clams, while increasing proportions of suitable points for Brazilian waterweed and largemouth bass in 2020. It had variable effects for Chinook salmon across the two years. We do not have a way to estimate how A Tunnel would affect food webs.',
+    em: {
+      lead: 'Eco Machine increased salinity in Franks Tract, **reducing suitability for freshwater invasives like Brazilian waterweed and largemouth bass** but increasing suitability for overbite clams.',
+      points: [
+        {
+          label: 'Longfin smelt',
+          text: 'Juvenile longfin smelt also saw an increase in proportion of suitable days.',
+        },
+        {
+          label: 'Habitat and food webs',
+          text: 'It does expand habitat and improve food web contributions relative to baseline, but not as much as New Green Watershed.',
+        },
+      ],
+    },
+    ngw: {
+      lead: 'The effects on species fundamental niches were the same as Eco Machine, but **contributions to food webs were much higher,** due to the expansion of managed wetlands and wet soil agriculture within the Delta.',
+      points: [
+        { label: 'Habitat', text: 'It also contributed a larger area of accessible habitat.' },
+      ],
+    },
+    bf: {
+      lead: 'We detected **no differences** between Bolster and Fortify and the baseline, Business as Usual.',
+    },
+    cor: {
+      lead: 'Calling on Reserves **only had small differences from the baseline.**',
+      points: [
+        {
+          label: '2019',
+          text: 'It decreased the proportion of suitable points for longfin smelt and salmon, two desirable species, in 2019.',
+        },
+        {
+          label: '2020',
+          text: 'In 2020, it slightly decreased the suitability for freshwater invasives, and slightly increased suitability for overbite clam.',
+        },
+      ],
+    },
+    tunnel: {
+      lead: 'A Tunnel **affected the most number of species** of all the adaptation scenarios.',
+      points: [
+        {
+          label: 'Species',
+          text: 'It decreased the proportion of suitable points for longfin smelt juveniles and overbite clams, while increasing proportions of suitable points for Brazilian waterweed and largemouth bass in 2020.',
+        },
+        {
+          label: 'Chinook salmon',
+          text: 'It had variable effects for Chinook salmon across the two years.',
+        },
+        {
+          label: 'Food webs',
+          text: 'We do not have a way to estimate how A Tunnel would affect food webs.',
+        },
+      ],
+    },
   },
   economy: {
-    em: 'Eco Machine restores about 43,120 acres of tidal marsh in Suisun Marsh and Franks Tract, but almost none of this land is farmed. Converting that land lowers farm revenue by about $0.9 million per year and affects about 10 jobs (including multiplier effects). The fresher irrigation water it brings to Delta farms adds about $3,500 per year in a dry year ($24,000 with 2 feet of sea level rise), which offsets at most about 3% of that loss. The net change is less than 0.1%, so the score is 0. The main economic cost is construction, about $1.3 billion one time. Carbon credits would bring about $4.7 million per year. Benefits such as better water quality for exports from the Franks Tract redesign and new habitat are not counted in the score.',
-    ngw: 'New Green Watershed has the largest economic cost of the scenarios because it takes farmland out of production. Depending on how much land becomes wetland, direct farm revenue falls 19% to 46%, total jobs (including multiplier effects) fall 31% to 43%, and total value added falls 16% to 46%. Scores: −3 (revenue), −4 (jobs), −3 (value added) at 25% wetland; −4, −4, −3 at 50%; and −5 on all three at 100%. Converting land to rice instead of wetland keeps more revenue but fewer jobs. Carbon credits would replace about 8% to 12% of the lost farm revenue. Construction would cost about $1.6 to $1.9 billion. Subsidence reversal, lower levee and flood costs, and habitat are not counted, so the score shows the cost side only.',
-    bf: 'Bolster & Fortify affects farming only through salinity. In a dry year it makes irrigation water slightly saltier, mostly in the Central Delta, and lowers farm revenue by about $10,000 per year (about $27,000 with 2 feet of sea level rise). This is less than 0.003% of Delta farm revenue, so the score is 0.',
-    cor: 'Calling on Reserves leaves irrigation-water salinity and farm income about where they are. In a dry year it makes water slightly fresher on some western islands, a gain of a few thousand dollars per year. The score is 0.',
-    tunnel:
-      'A Tunnel shifts dry-year salinity from the western to the central Delta: water becomes somewhat saltier on central islands such as Rindge Tract, Roberts Island, McDonald Island and Jones Tract, and fresher on western islands. Farm revenue falls by about $27,000 per year in a dry year (about $19,000 with sea level rise). This is less than 0.003% of Delta farm revenue, so the score is 0.',
-    more: 'Increasing Sacramento River flow by 30% makes Delta irrigation water fresher, especially in the Central Delta and on Sherman Island, and raises farm revenue by about $20,000 per year in a dry year (water year 2021), with about a quarter of a job gained (including multiplier effects). This is less than 0.002% of Delta farm revenue, so the score is 0. These results come from a different model (SCHISM) and year than the other scenarios (RMA, 2019–2020), so they are less directly comparable.',
+    em: {
+      lead: 'Eco Machine restores about 43,120 acres of tidal marsh in Suisun Marsh and Franks Tract, but **almost none of this land is farmed.**',
+      points: [
+        {
+          label: 'Farm economy',
+          text: 'Converting that land lowers farm revenue by about $0.9 million per year and affects about 10 jobs (including multiplier effects).',
+        },
+        {
+          label: 'Salinity',
+          text: 'The fresher irrigation water it brings to Delta farms adds about $3,500 per year in a dry year ($24,000 with 2 feet of sea level rise), which offsets at most about 3% of that loss.',
+        },
+        { label: 'Score', text: 'The net change is less than 0.1%, so the score is 0.' },
+        {
+          label: 'Construction and credits',
+          text: 'The main economic cost is construction, about $1.3 billion one time. Carbon credits would bring about $4.7 million per year.',
+        },
+        {
+          label: 'Not counted',
+          text: 'Benefits such as better water quality for exports from the Franks Tract redesign and new habitat are not counted in the score.',
+        },
+      ],
+    },
+    ngw: {
+      lead: ECONOMY_NGW_LEAD,
+      points: [
+        {
+          label: 'Farm economy',
+          text: 'Depending on how much land becomes wetland, direct farm revenue falls 19% to 46%, total jobs (including multiplier effects) fall 31% to 43%, and total value added falls 16% to 46%.',
+        },
+        {
+          label: 'Scores',
+          text: 'Scores: −3 (revenue), −4 (jobs), −3 (value added) at 25% wetland; −4, −4, −3 at 50%; and −5 on all three at 100%.',
+        },
+        { label: 'Conversion', text: ECONOMY_NGW_CONVERSION },
+        {
+          label: 'Construction and credits',
+          text: 'Carbon credits would replace about 8% to 12% of the lost farm revenue. Construction would cost about $1.6 to $1.9 billion.',
+        },
+        { label: 'Not counted', text: ECONOMY_NGW_NOT_COUNTED },
+      ],
+    },
+    bf: {
+      lead: 'Bolster & Fortify **affects farming only through salinity.**',
+      points: [
+        {
+          label: 'Salinity',
+          text: 'In a dry year it makes irrigation water slightly saltier, mostly in the Central Delta, and lowers farm revenue by about $10,000 per year (about $27,000 with 2 feet of sea level rise).',
+        },
+        {
+          label: 'Score',
+          text: 'This is less than 0.003% of Delta farm revenue, so the score is 0.',
+        },
+      ],
+    },
+    cor: {
+      lead: 'Calling on Reserves **leaves irrigation-water salinity and farm income about where they are.**',
+      points: [
+        {
+          label: 'Salinity',
+          text: 'In a dry year it makes water slightly fresher on some western islands, a gain of a few thousand dollars per year.',
+        },
+        { label: 'Score', text: 'The score is 0.' },
+      ],
+    },
+    tunnel: {
+      lead: 'A Tunnel **shifts dry-year salinity from the western to the central Delta:** water becomes somewhat saltier on central islands such as Rindge Tract, Roberts Island, McDonald Island and Jones Tract, and fresher on western islands.',
+      points: [
+        {
+          label: 'Farm revenue',
+          text: 'Farm revenue falls by about $27,000 per year in a dry year (about $19,000 with sea level rise).',
+        },
+        {
+          label: 'Score',
+          text: 'This is less than 0.003% of Delta farm revenue, so the score is 0.',
+        },
+      ],
+    },
+    more: {
+      lead: 'Increasing Sacramento River flow by 30% **makes Delta irrigation water fresher,** especially in the Central Delta and on Sherman Island, and raises farm revenue by about $20,000 per year in a dry year (water year 2021), with about a quarter of a job gained (including multiplier effects).',
+      points: [
+        {
+          label: 'Score',
+          text: 'This is less than 0.002% of Delta farm revenue, so the score is 0.',
+        },
+        {
+          label: 'Comparison',
+          text: 'These results come from a different model (SCHISM) and year than the other scenarios (RMA, 2019–2020), so they are less directly comparable.',
+        },
+      ],
+    },
   },
   ecoCultural: {
-    em: 'This scenario is ranked as the second best because it has less restoration than New Green Watershed. It would provide all the same benefits for Tribes as listed below',
-    ngw: 'Overall, New Green Watershed performs the best among the adaptation scenarios, due to the magnitude of restoration included. The restoration creates opportunities for Tribes to gather culturally important material and gather as a community',
-    more: 'Our analysis of flow tiers shows that a 30% increase in flows would decrease salinity. In addition to the salinity implications that an increase in flows would result in, people shared with us that flows were the “soul” of the rivers. This indicates a deep cultural meaning beyond a decrease in salinity.',
+    em: {
+      lead: 'This scenario is ranked as **the second best** because it has less restoration than New Green Watershed.',
+      points: [
+        {
+          label: 'Benefits for Tribes',
+          text: 'It would provide all the same benefits for Tribes as listed below',
+        },
+      ],
+    },
+    ngw: {
+      lead: 'Overall, New Green Watershed **performs the best among the adaptation scenarios,** due to the magnitude of restoration included.',
+      points: [
+        {
+          label: 'Benefits for Tribes',
+          text: 'The restoration creates opportunities for Tribes to gather culturally important material and gather as a community',
+        },
+      ],
+    },
+    more: {
+      lead: 'Our analysis of flow tiers shows that a 30% increase in flows **would decrease salinity.**',
+      points: [
+        {
+          label: 'Cultural meaning',
+          text: 'In addition to the salinity implications that an increase in flows would result in, people shared with us that flows were the “soul” of the rivers. This indicates a deep cultural meaning beyond a decrease in salinity.',
+        },
+      ],
+    },
   },
   recreation: {
-    em: 'Eco Machine generally moves salinity away from the Central Delta region (+1 to +3) and into Suisun Marsh (-2 to -5). This interaction raises our highest angling threshold (9,130 µS/cm), making Suisun saltier and affecting all activities in that region. Temperature changes are negligible, while sea-level rise increases the total days above threshold for all of our EC thresholds.',
-    ngw: 'New Green Watershed is practically identical to Eco Machine, with slightly more negative losses for summer-season birding at Suisun (slightly more threshold days crossed). Under Sea-level rise, EC eases in Suisun, and birding conditions are better (fewer threshold days crossed) in the Central Delta. No major discernible differences emerge across temperature scenarios under New Green Watershed.',
-    bf: 'Bolster & Fortify is very similar to Business as Usual, for both salinity EC and temperature, scoring equal to or 0 change from Business as Usual nearly at every score.',
-    cor: 'Calling on Reserves performs better than Business as Usual for EC salinity (0 to +1, with +3 for winter seasons in the Central Delta Day Use). The effects of temperature are negligible alongside sea-level rise.',
-    tunnel:
-      'The Delta Conveyance Project, or A Tunnel, is the only scenario that worsens EC salinity intrusion into both Suisun and the Central Delta (-1 to -3). Warmer summer-season conditions for waterfowl during their brooding season diminish (-1 to -2) at both the baseline and sea-level-rise levels.',
-    more: 'Greater outflows improve recreation conditions, mainly by reducing salinity in the Central Delta and Suisun, where exceedances are otherwise most frequent. North and South Delta regions are otherwise unchanged from baseline, as temperature and salinity do little to change them.',
+    em: {
+      lead: 'Eco Machine generally **moves salinity away from the Central Delta region (+1 to +3) and into Suisun Marsh (-2 to -5).**',
+      points: [
+        {
+          label: 'Angling',
+          text: 'This interaction raises our highest angling threshold (9,130 µS/cm), making Suisun saltier and affecting all activities in that region.',
+        },
+        {
+          label: 'Temperature and sea level',
+          text: 'Temperature changes are negligible, while sea-level rise increases the total days above threshold for all of our EC thresholds.',
+        },
+      ],
+    },
+    ngw: {
+      lead: 'New Green Watershed is **practically identical to Eco Machine,** with slightly more negative losses for summer-season birding at Suisun (slightly more threshold days crossed).',
+      points: [
+        {
+          label: 'Sea level rise',
+          text: 'Under Sea-level rise, EC eases in Suisun, and birding conditions are better (fewer threshold days crossed) in the Central Delta.',
+        },
+        {
+          label: 'Temperature',
+          text: 'No major discernible differences emerge across temperature scenarios under New Green Watershed.',
+        },
+      ],
+    },
+    bf: {
+      lead: 'Bolster & Fortify is **very similar to Business as Usual,** for both salinity EC and temperature, scoring equal to or 0 change from Business as Usual nearly at every score.',
+    },
+    cor: {
+      lead: 'Calling on Reserves **performs better than Business as Usual for EC salinity** (0 to +1, with +3 for winter seasons in the Central Delta Day Use).',
+      points: [
+        {
+          label: 'Temperature',
+          text: 'The effects of temperature are negligible alongside sea-level rise.',
+        },
+      ],
+    },
+    tunnel: {
+      lead: 'The Delta Conveyance Project, or A Tunnel, is **the only scenario that worsens EC salinity intrusion** into both Suisun and the Central Delta (-1 to -3).',
+      points: [
+        {
+          label: 'Temperature',
+          text: 'Warmer summer-season conditions for waterfowl during their brooding season diminish (-1 to -2) at both the baseline and sea-level-rise levels.',
+        },
+      ],
+    },
+    more: {
+      lead: 'Greater outflows **improve recreation conditions,** mainly by reducing salinity in the Central Delta and Suisun, where exceedances are otherwise most frequent.',
+      points: [
+        {
+          label: 'Elsewhere',
+          text: 'North and South Delta regions are otherwise unchanged from baseline, as temperature and salinity do little to change them.',
+        },
+      ],
+    },
   },
   environmentalJustice: {
-    em: 'The in-Delta tidal restoration incorporated in Eco Machine lowers overall drinking water threshold exceedances across the run the most (tied with New Green Watershed) across scenarios, in both wet and dry water years, and the total run. However, water age does increase in these restored regions. An increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation. There is no change from Business as Usual in flood risk for this scenario.',
-    ngw: 'The extensive watershed restoration included in this New Green Watershed lowers overall drinking water threshold exceedances across the run the most (tied with Eco Machine) across scenarios, in both wet and dry water years, and the total run. New Green Watershed also lowers flood risk the most of all the scenarios. However, this restoration slows water down; water age increases in many restored regions. An increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.',
-    bf: 'Bolster & Fortify performs very similarly to Business as Usual for both drinking water threshold exceedances and flood risk. During a wet year, Bolster & Fortify incurs slightly fewer drinking water salinity threshold exceedances than Business as Usual, but slightly more in a dry year. Overall for the total run, there is no change from Business as Usual. Bolster & Fortify does reduce flood risk, but only along the freshwater corridor pathway; this benefit is not felt Delta-wide. Due to this pathway, Bolster & Fortify also slightly decreases water age in the South Delta during certain months, but water age increases in Franks Tract. An increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.',
-    cor: 'Calling on Reserves does not deviate from baseline for drinking water salinity threshold exceedances for total run or the wet year portion of the modeling, but it does perform better than Business as Usual in a dry year. There is no change in flood risk from baseline.',
-    tunnel:
-      'A Tunnel does not differ from baseline for drinking water salinity threshold exceedances at all. There is a slight decrease in flood risk attributed to A Tunnel, on the assumption that the two northern intakes would intercept water in high storm events prior to inundation into the Delta.',
-    more: 'Increased Delta Outflow decreases the drinking water salinity threshold exceedances the most out of all scenarios.',
+    em: {
+      lead: 'The in-Delta tidal restoration incorporated in Eco Machine **lowers overall drinking water threshold exceedances across the run the most** (tied with New Green Watershed) across scenarios, in both wet and dry water years, and the total run.',
+      points: [
+        {
+          label: 'Water age',
+          text: `However, water age does increase in these restored regions. ${WATER_AGE_NOTE}`,
+        },
+        {
+          label: 'Flood risk',
+          text: 'There is no change from Business as Usual in flood risk for this scenario.',
+        },
+      ],
+    },
+    ngw: {
+      lead: 'The extensive watershed restoration included in this New Green Watershed **lowers overall drinking water threshold exceedances across the run the most** (tied with Eco Machine) across scenarios, in both wet and dry water years, and the total run.',
+      points: [
+        {
+          label: 'Flood risk',
+          text: 'New Green Watershed also lowers flood risk the most of all the scenarios.',
+        },
+        {
+          label: 'Water age',
+          text: `However, this restoration slows water down; water age increases in many restored regions. ${WATER_AGE_NOTE}`,
+        },
+      ],
+    },
+    bf: {
+      lead: 'Bolster & Fortify **performs very similarly to Business as Usual** for both drinking water threshold exceedances and flood risk.',
+      points: [
+        {
+          label: 'Drinking water',
+          text: 'During a wet year, Bolster & Fortify incurs slightly fewer drinking water salinity threshold exceedances than Business as Usual, but slightly more in a dry year. Overall for the total run, there is no change from Business as Usual.',
+        },
+        {
+          label: 'Flood risk',
+          text: 'Bolster & Fortify does reduce flood risk, but only along the freshwater corridor pathway; this benefit is not felt Delta-wide.',
+        },
+        {
+          label: 'Water age',
+          text: `Due to this pathway, Bolster & Fortify also slightly decreases water age in the South Delta during certain months, but water age increases in Franks Tract. ${WATER_AGE_NOTE}`,
+        },
+      ],
+    },
+    cor: {
+      lead: 'Calling on Reserves does not deviate from baseline for drinking water salinity threshold exceedances for total run or the wet year portion of the modeling, but it does **perform better than Business as Usual in a dry year.**',
+      points: [{ label: 'Flood risk', text: 'There is no change in flood risk from baseline.' }],
+    },
+    tunnel: {
+      lead: 'A Tunnel **does not differ from baseline** for drinking water salinity threshold exceedances at all.',
+      points: [
+        {
+          label: 'Flood risk',
+          text: 'There is a slight decrease in flood risk attributed to A Tunnel, on the assumption that the two northern intakes would intercept water in high storm events prior to inundation into the Delta.',
+        },
+      ],
+    },
+    more: {
+      lead: 'Increased Delta Outflow **decreases the drinking water salinity threshold exceedances the most** out of all scenarios.',
+    },
   },
 }

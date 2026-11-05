@@ -24,19 +24,30 @@ Business as Usual run, except where noted.
 
 ## Overall ranking
 
-The by-scenario page averages the five team scores (`data.ts`). A `*` is our placeholder, not a team score. Equal weights:
+The team scores on this page are set in one file, `src/features/scenarios/ranking/scores.ts`; By criterion and By scenario both read it. The by-scenario page averages the five. Equal weights:
 
 | Rank | Scenario            | Ecology | Recreation | Env. Justice | Economy | Eco-cultural | Average |
 | ---- | ------------------- | ------- | ---------- | ------------ | ------- | ------------ | ------- |
-| 1    | New Green Watershed | +3.1    | 0          | +1           | −4      | +4           | +0.82   |
-| 2    | Eco Machine         | +1.33   | 0          | 0            | 0       | +2           | +0.67   |
+| 1    | New Green Watershed | +3.1    | +3         | +1           | −4      | +4           | +1.42   |
+| 2    | Eco Machine         | +1.33   | +2         | 0            | 0       | +2           | +1.07   |
 | 3    | Calling on Reserves | −0.33   | 0          | 0            | 0       | +1           | +0.13   |
 | 4    | Business as Usual   | 0       | 0          | 0            | 0       | 0            | +0.00   |
 | 5    | Bolster & Fortify   | 0       | 0          | 0            | 0       | 0            | +0.00   |
-| 6    | A Tunnel            | +0.33   | 0          | 0            | 0       | −2           | −0.33   |
+| 6    | A Tunnel            | +0.33   | −1         | 0            | 0       | −2           | −0.53   |
 
 Environmental Justice's column is the team's own: the mean of drinking water, flood risk
 and water age, in whole points as the ranking table workbook displays it (Nov 2026).
+
+With sea level rise (the switch on the overall ranking), read against the SLR run's own Business as Usual. Environmental Justice's +5 is a temporary number:
+
+| Rank | Scenario            | Ecology | Recreation | Env. Justice | Economy | Eco-cultural | Average |
+| ---- | ------------------- | ------- | ---------- | ------------ | ------- | ------------ | ------- |
+| 1    | New Green Watershed | +3.8    | +3         | +5           | −4      | +4           | +2.36   |
+| 2    | Eco Machine         | +1.7    | +2         | +5           | 0       | +2           | +2.14   |
+| 3    | Calling on Reserves | −0.7    | 0          | +5           | 0       | +1           | +1.06   |
+| 4    | Bolster & Fortify   | 0       | 0          | +5           | 0       | 0            | +1.00   |
+| 5    | A Tunnel            | −0.3    | −1         | +5           | 0       | −2           | +0.34   |
+| 6    | Business as Usual   | 0       | 0          | 0            | 0       | 0            | +0.00   |
 
 ## Ecology
 
@@ -331,7 +342,7 @@ Outflow (v20 takeaways workbook, SCHISM water year 2021, against the Historical 
 
 ## Eco-cultural
 
-One published score. Land access, Indigenous science and sovereignty are qualitative arrows and do not feed a number. Neither period nor sea level rise applies.
+One published score. Land access, Indigenous science and sovereignty are qualitative arrows and do not feed a number. Period does not apply, and every number repeats under sea level rise.
 
 | Score                               | Eco Machine | New Green Watershed | Bolster & Fortify | Calling on Reserves | A Tunnel |
 | ----------------------------------- | ----------- | ------------------- | ----------------- | ------------------- | -------- |
@@ -412,11 +423,10 @@ and do not join the adaptation ranking.
 
 ### Across the site
 
-1. Recreation's 25% and 100% wetland levels still repeat +5 until the team confirms them; only the
-   50% level comes from the Nov 2026 workbook (`rankingModel.ts`).
+1. Recreation has no restoration level control: its only New Green Watershed values are the 50% level
+   from the Nov 2026 workbook. The team has not confirmed separate 25% and 100% values (`rankingModel.ts`).
 2. The label `versionOnly: 'NGW only'` still uses an abbreviation (`labels.ts`).
-3. Team scores sit in both `data.ts` and the breakout tree, so both must change together when a team
-   updates a score. Recreation's had drifted apart until 2 Nov 2026.
+3. Team and metric-row scores, and Economy's wetland levels, are held once, in `src/features/scenarios/ranking/scores.ts`. Change one there and every view follows; measures beneath the metrics and notes that quote a score do not.
 
 ## Source discrepancies
 

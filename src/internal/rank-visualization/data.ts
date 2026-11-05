@@ -1,3 +1,5 @@
+// The team scores themselves live in features/scenarios/ranking/scores.ts; this file holds
+// the scenarios, teams and ranking arithmetic.
 // Criterion scores from the five subteams' two sources in research/criteria-stories/:
 // the "Story Behind the Criterion" reports (Sept 2026 drafts) and the Bay-Delta Science
 // Conference slides (Oct 2026), which supersede them. Provenance, derivations, what the
@@ -58,64 +60,21 @@ export const TEAMS: Team[] = [
   { key: 'ecoCultural', name: 'Eco-cultural', color: voting.team.ecoCultural },
 ]
 
-/** The six adaptation scenarios, in declaration order; drilldown/model.ts keys off it. */
-export const SCENARIOS: Scenario[] = [
-  {
-    // Ecology: the team's own score, from the ranking table workbook (Nov 2026).
-    // EJ: the team's own score (ranking table workbook, Nov 2026), the mean of drinking
-    // water +2, flood risk +3 and water age −3.
-    // Economy: −4 at the 50/50 primary sub-scenario (−3 to −5 across intensities).
-    // Recreation: 0, the team's own score (ranking table workbook, Nov 2026): Suisun
-    // Marsh −2 and Central Delta +1 average out.
-    name: 'New Green Watershed',
-    color: voting.scenario.newGreenWatershed,
-    scores: [3.1, 0, 1, -4, 4],
-    provisional: [false, false, false, false, false],
-  },
-  {
-    // Ecology and EJ: the teams' own scores, from the ranking table workbook (Nov 2026).
-    // Recreation: 0, the same as New Green Watershed in every place.
-    name: 'Eco Machine',
-    color: voting.scenario.ecoMachine,
-    scores: [1.33, 0, 0, 0, 2],
-    provisional: [false, false, false, false, false],
-  },
-  {
-    // Recreation: 0 on every activity, Delta-wide.
-    // EJ: the team's own score (ranking table workbook, Nov 2026).
-    // Economy: 0 (v20, 3 Nov 2026): every effect is under 0.003% of farm revenue.
-    name: 'Bolster & Fortify',
-    color: voting.scenario.bolsterAndFortify,
-    scores: [0, 0, 0, 0, 0],
-    provisional: [false, false, false, false, false],
-  },
-  {
-    // Economy: 0 in both water years and with sea level rise (v20, 3 Nov 2026),
-    // against RMA's own base run for this scenario.
-    // Recreation: 0 (ranking table workbook, Nov 2026).
-    // EJ: the team's own score, with water age 0 (ranking table workbook, Nov 2026).
-    name: 'Calling on Reserves',
-    color: voting.scenario.callingOnReserves,
-    scores: [-0.33, 0, 0, 0, 1],
-    provisional: [false, false, false, false, false],
-  },
-  {
-    // Unscored almost everywhere, and it went backwards: the Oct 2026 slides
-    // withdrew the drinking-water numbers the Sept report published for it.
-    // Recreation: 0 and EJ: the team's own score, with water age 0 (ranking table workbook, Nov 2026).
-    // Economy: 0 (v20, 3 Nov 2026): a dry-year salinity loss of about $27,000, mostly in
-    // the Central Delta, is under 0.003% of farm revenue; 0 with sea level rise too.
-    name: 'A Tunnel',
-    color: voting.scenario.deltaTunnel,
-    scores: [0.33, 0, 0, 0, -2],
-    provisional: [false, false, false, false, false],
-  },
-  {
-    name: 'Business as Usual',
-    color: voting.scenario.businessAsUsual,
-    scores: [0, 0, 0, 0, 0],
-    provisional: [false, false, false, false, false],
-  },
+/** A scenario's name and color, before any scores. */
+export type ScenarioIdentity = Pick<Scenario, 'name' | 'color'>
+
+/**
+ * The six adaptation scenarios, in declaration order; drilldown/model.ts keys off it.
+ * No scores here: they are in features/scenarios/ranking/scores.ts, and
+ * breakout/model/teamScores.ts builds the ranked sets from the table that reads them.
+ */
+export const ADAPTATION_SCENARIOS: ScenarioIdentity[] = [
+  { name: 'New Green Watershed', color: voting.scenario.newGreenWatershed },
+  { name: 'Eco Machine', color: voting.scenario.ecoMachine },
+  { name: 'Bolster & Fortify', color: voting.scenario.bolsterAndFortify },
+  { name: 'Calling on Reserves', color: voting.scenario.callingOnReserves },
+  { name: 'A Tunnel', color: voting.scenario.deltaTunnel },
+  { name: 'Business as Usual', color: voting.scenario.businessAsUsual },
 ]
 
 const NOT_INFERRED = [false, false, false, false, false]
@@ -238,19 +197,12 @@ function withStats(scenario: Scenario): ScenarioStats {
   }
 }
 
-const SCENARIO_STATS: ScenarioStats[] = SCENARIOS.map(withStats)
-
 /** The runs every other scenario is read against. */
 export const BASELINES = new Set(['Business as Usual', 'Historical Baseline'])
 
 /** On a tied score the baseline comes first: matching it is not beating it. */
 const baselineFirst = (a: Scenario, b: Scenario) =>
   Number(BASELINES.has(b.name)) - Number(BASELINES.has(a.name))
-
-/** Scenarios ranked by equal-weight total (highest first). */
-export const RANKED: (ScenarioStats & { rank: number })[] = [...SCENARIO_STATS]
-  .sort((a, b) => b.total - a.total || baselineFirst(a, b))
-  .map((scenario, i) => ({ ...scenario, rank: i + 1 }))
 
 /** Weighted mean over the scored criteria only, renormalized to their weights. */
 function weightedAverage(scores: Score[], weights: Weights): number {
@@ -282,30 +234,13 @@ function byWeightedAverage(stats: ScenarioStats[], weights: Weights) {
     )
 }
 
-/**
- * Scenarios ranked by weighted average, with movement vs. the equal-weight order.
- * Ranks the adaptation scenarios unless another set is given.
- */
-export function weightedRanking(
-  weights: Weights,
-  scenarios: Scenario[] = SCENARIOS,
-): WeightedScenario[] {
-  const stats = scenarios === SCENARIOS ? SCENARIO_STATS : scenarios.map(withStats)
-  const baseOrder =
-    scenarios === SCENARIOS
-      ? RANKED.map((s) => s.name)
-      : byWeightedAverage(stats, EQUAL_WEIGHTS).map((s) => s.name)
+/** One set of scenarios ranked by weighted average, with movement vs. its equal-weight order. */
+export function weightedRanking(weights: Weights, scenarios: Scenario[]): WeightedScenario[] {
+  const stats = scenarios.map(withStats)
+  const baseOrder = byWeightedAverage(stats, EQUAL_WEIGHTS).map((s) => s.name)
   return byWeightedAverage(stats, weights).map((s, i) => ({
     ...s,
     rank: i + 1,
     delta: baseOrder.indexOf(s.name) - i,
   }))
 }
-
-/** Rank (1 = best) of every scenario under each preset lens, keyed by scenario name. */
-export const PRESET_RANKS: { name: string; ranks: Record<string, number> }[] = WEIGHT_PRESETS.map(
-  (preset) => ({
-    name: preset.name,
-    ranks: Object.fromEntries(weightedRanking(preset.weights).map((s) => [s.name, s.rank])),
-  }),
-)
