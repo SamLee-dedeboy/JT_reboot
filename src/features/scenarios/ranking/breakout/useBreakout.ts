@@ -139,8 +139,8 @@ function pooled(nodes: CriterionNode[], axis: 'places' | 'periods'): Facet[] {
  */
 const SHOW_UNSCORED: TeamKey[] = ['ecoCultural']
 
-/** Teams whose table reads one period, with no choice of time period. */
-const NO_TABLE_PERIODS: TeamKey[] = ['ecology']
+/** Criteria whose public table reads one period, with no time-period control. */
+const NO_TABLE_PERIODS: TeamKey[] = ['ecology', 'economy']
 
 /** Scenarios a team's map leaves out. */
 const NOT_MAPPED: Partial<Record<TeamKey, ScenarioKey[]>> = {

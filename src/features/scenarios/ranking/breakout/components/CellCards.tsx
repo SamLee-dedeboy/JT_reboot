@@ -46,6 +46,16 @@ export interface Inspect {
   coords: Coords
 }
 
+/** Exact Economy dollars followed by a quick reading aid for amounts of $1M or more. */
+function annotatedUsd(value: number): string {
+  const exact = fmtValue(value, 'usd')
+  if (Math.abs(value) < 1_000_000) return exact
+  const millions = Math.abs(value) / 1_000_000
+  const rounded = millions < 10 ? Math.round(millions * 10) / 10 : Math.round(millions)
+  const compact = `${value < 0 ? '−' : '+'}$${rounded.toLocaleString('en-US')}M`
+  return `${exact} (${compact})`
+}
+
 /** The score, large and in the table's colours; a dashed outline until it is published. */
 function ScoreBlock({ raw, text }: { raw: number | null; text: string }) {
   const { scoreBlock } = ranking.explainer
@@ -134,7 +144,13 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
   const score = unit === 'score'
   const base = point.base
   const value = (v: number | null) =>
-    v === null ? UI.forthcoming : score ? scoreText(v) : fmtValue(v, unit)
+    v === null
+      ? UI.forthcoming
+      : score
+        ? scoreText(v)
+        : unit === 'usd'
+          ? annotatedUsd(v)
+          : fmtValue(v, unit)
 
   const place =
     coords.place === ANY
@@ -267,7 +283,12 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
               )}
             {change !== null && (
               <Box sx={{ pt: 0.75, borderTop: 1, borderColor: 'border.subtle' }}>
-                {row(UI.difference, signed(change, unit), false, tone)}
+                {row(
+                  UI.difference,
+                  unit === 'usd' ? annotatedUsd(change) : signed(change, unit),
+                  false,
+                  tone,
+                )}
               </Box>
             )}
           </Stack>

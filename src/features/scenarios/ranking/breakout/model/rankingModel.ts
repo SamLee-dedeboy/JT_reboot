@@ -729,8 +729,8 @@ function ejTree(): CriterionNode {
 
 /**
  * The team scores each metric on its dry-year net change, the same in both climates
- * (v20). The scores carry the water years anyway so the When control reaches the
- * salinity rows beneath them.
+ * (v20). The score data retain their water-year slices even though the detailed
+ * salinity rows are not shown in the public breakout table.
  */
 const WATER_YEARS: Facet[] = relabel(
   [
@@ -809,16 +809,6 @@ function economyTree(): CriterionNode {
       periods: WATER_YEARS,
       children: [
         wholeJobs(landConversion(id)),
-        ...(base.children ?? [])
-          .filter((child) => child.id === `${id}-salinity`)
-          .map((child) =>
-            // The +30% outflow run is one dry year (2021), reported Delta-wide only.
-            adapt(wholeJobs(child), {
-              notApplicableAt: { more: ECONOMY_ZONE_KEYS },
-              // With no period picked the salinity rows read the wet year, so it reads N/A there too.
-              notApplicableIn: { more: [ANY, '2019'] },
-            }),
-          ),
         ...(base.children ?? [])
           .filter((child) => child.id === `${id}-carbon`)
           .map((child) =>

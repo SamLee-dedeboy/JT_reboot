@@ -664,6 +664,7 @@ export function Matrix({
                     why={cell.why}
                     rank={cell.rank}
                     unit={node.unit}
+                    percentageBase={economyPercentageBase(node.id)}
                     score={ranked}
                     lowerBetter={lowerIsBetter(node.id)}
                     baseline={diff && cell.scenario === state.baseline}
@@ -790,6 +791,7 @@ function LevelCells({
       value={value}
       why={value === null ? why : ''}
       unit={node.unit}
+      percentageBase={economyPercentageBase(node.id)}
       score={score}
       lowerBetter={lowerIsBetter(node.id)}
       signedText={signedText}
@@ -980,6 +982,23 @@ function compactUsd(value: number): string {
   return `${value < 0 ? '−' : '+'}${text}`
 }
 
+/** Business as Usual totals used to score Economy's net percentage changes. */
+function economyPercentageBase(id: string): number | undefined {
+  if (id.startsWith('bk-econ-revenue')) return 1_105_100_000
+  if (id.startsWith('bk-econ-jobs')) return 11_679
+  if (id.startsWith('bk-econ-value')) return 997_000_000
+  return undefined
+}
+
+/** Keep tiny salinity effects visible without over-precising the large NGW changes. */
+function percentageChange(value: number, baseline: number): string {
+  const percentage = (value / baseline) * 100
+  const amount = Math.abs(percentage)
+  const maximumFractionDigits = amount >= 1 ? 1 : amount >= 0.01 ? 2 : amount >= 0.001 ? 3 : 4
+  const text = amount.toLocaleString('en-US', { maximumFractionDigits })
+  return percentage === 0 ? '0%' : `${percentage > 0 ? '+' : '−'}${text}%`
+}
+
 /**
  * One cell. A score takes the −5…+5 palette at its value, whether that value is the
  * score or its difference from Business as Usual. A detail is plain text, or a bar
@@ -995,6 +1014,7 @@ function Cell({
   rank,
   lowerBetter,
   unit,
+  percentageBase,
   score,
   baseline,
   signedText,
@@ -1009,6 +1029,8 @@ function Cell({
   /** Less is better for this measure, so a fall reads blue and a rise orange. */
   lowerBetter?: boolean
   unit: CriterionNode['unit']
+  /** Economy's Business as Usual total; when present, the matrix shows percent change. */
+  percentageBase?: number
   score: boolean
   /** Business as Usual in deviation view: plain white, never blue or orange. */
   baseline?: boolean
@@ -1026,11 +1048,13 @@ function Cell({
     ? why
     : unit === 'score'
       ? scoreText(value)
-      : unit === 'usd'
-        ? compactUsd(value)
-        : signedText
-          ? signed(value, unit)
-          : fmtValue(value, unit)
+      : percentageBase
+        ? percentageChange(value, percentageBase)
+        : unit === 'usd'
+          ? compactUsd(value)
+          : signedText
+            ? signed(value, unit)
+            : fmtValue(value, unit)
   // A detail that reads as zero (no acres, no change, a −0.001% that prints 0%) is
   // background, so it recedes.
   const quiet =
