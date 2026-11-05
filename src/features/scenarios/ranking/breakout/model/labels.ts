@@ -75,7 +75,7 @@ const takeawayText = ({ lead, details = [] }: MetricTakeaway) =>
 
 // Environmental Justice's metric takeaways: its caveats, and each metric's info card.
 const EJ_DRINKING_TAKEAWAY: MetricTakeaway = {
-  lead: 'An increase in Delta outflow, by far, **reduces drinking water salinity threshold exceedances the most.**',
+  lead: '++Increased Delta Outflow++, by far, **reduces drinking water salinity threshold exceedances the most.**',
   details: [
     'Across adaptation scenarios, ++Eco Machine++ and ++New Green Watershed++ perform the best, and decrease threshold exceedances overall.',
   ],
@@ -90,10 +90,9 @@ const EJ_FLOOD_TAKEAWAY: MetricTakeaway = {
   ],
 }
 const EJ_WATER_AGE_TAKEAWAY: MetricTakeaway = {
-  lead: '**The only scenario that decreased water age** in months where water temperature was consistently above 19°C was ++Bolster & Fortify++.',
+  lead: 'An increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.',
   details: [
-    '++New Green Watershed++ increased water age the most, followed by ++Eco Machine++, in the regions in which restoration was incorporated.',
-    'It is important to remember that an increase in water age itself is not inherently negative, nor does it mean harmful algal blooms will definitely form, but it does indicate suitable conditions for their formation.',
+    "Both ++New Green Watershed++ and ++Eco Machine++ increased water age the most, in the regions in which restoration was incorporated."
   ],
 }
 
@@ -195,10 +194,10 @@ export const MEASURE_LABELS: Record<string, string> = {
   // Ecology
   'bk-ecology': 'Ecology',
   'bk-eco-habitat': 'Habitat availability',
-  'bk-eco-habitat-acres': 'Added wetland',
+  'bk-eco-habitat-acres': 'Tidal wetlands',
   'bk-eco-foodweb': 'Food webs',
   'bk-eco-foodweb-managed': 'Managed wetland',
-  'bk-eco-foodweb-tidal': 'Added wetland',
+  'bk-eco-foodweb-tidal': 'Tidal wetlands',
   'bk-eco-foodweb-wetsoil': 'Wet-soil agriculture',
   'bk-eco-species': 'Species suitability',
   'bk-eco-niche-longfinJuv': 'Longfin smelt, juvenile',
@@ -229,6 +228,7 @@ export const MEASURE_LABELS: Record<string, string> = {
   'bk-rec-restoration': 'Habitat Restoration',
   'bk-rec-restoration-acres': 'Restored acres',
   'bk-rec-economy': 'Recreation economy',
+  'bk-rec-infrastructure': 'Infrastructure impact',
 
   // Environmental justice
   'bk-environmentalJustice': 'Environmental Justice',
@@ -286,7 +286,7 @@ export const MEASURE_LABELS: Record<string, string> = {
 
   // Qualitative rows under a scored metric
   'bk-ej-flood-judgement': 'Flood risk descriptive change from Business as Usual',
-  'bk-rec-economy-infrastructure': 'Infrastructure impact',
+  'bk-rec-infrastructure-descriptive': 'Descriptive change from Business as Usual',
 }
 
 const NUMBER_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight']
@@ -452,7 +452,7 @@ export const placedMeasureLabel = (id: string, place: string) =>
 
 /** Economy's score rule (v20 Scores sheet), the same for all three metrics. */
 const ECONOMY_RULE =
-  'Every scenario is scored on its net change from Business as Usual: the land-use effect plus the dry-year salinity effect, as a percent of the baseline.'
+  'Each scenario’s net percentage change from Business as Usual determines its score: under 1% is 0; 1–5% is ±1, 5–15% is ±2, 15–25% is ±3, 25–35% is ±4, and 35% or more is ±5.'
 /** The same rule drawn: each score's band, narrowest at 0. The label reads it aloud. */
 const ECONOMY_SCALE = {
   axis: 'Net percent change from Business as Usual. Under 1% scores 0; 1–5% is ±1, 5–15% ±2, 15–25% ±3, 25–35% ±4, and 35% or more ±5.',
@@ -468,9 +468,6 @@ const ngwLevelRows = (...levels: [string, number][]) => ({
     score,
   ]),
 })
-const ECONOMY_RULE_NOTE =
-  'Bolster & Fortify, Calling on Reserves, A Tunnel and +30% outflow each change the metric by under 0.003%, and Eco Machine by about 0.08%, so all score 0. The same with 2 ft of sea level rise. Calling on Reserves and A Tunnel are compared with their own RMA base run; +30% outflow with its own Historical Baseline, in water year 2021, with no sea level rise run.'
-
 /**
  * What a criterion score is made of, behind the info button on the team's own row:
  * the metrics it combines and how. Text between ** ** is drawn in the team's colour.
@@ -481,7 +478,7 @@ export const CRITERION_DEFINITIONS: Record<
 > = {
   ecology: {
     metrics: ['Habitat availability', 'Food webs', 'Species suitability'],
-    combine: '[How Landscape, Food webs and Species suitability combine: forthcoming.]',
+    combine: 'The **unweighted mean** of the three, rounded to a whole point.',
   },
   recreation: {
     metrics: [
@@ -492,15 +489,16 @@ export const CRITERION_DEFINITIONS: Record<
       'Infrastructure Impact',
     ],
     combine:
-      'The mean of the five listed terms, with **Habitat Restoration counted twice**, rounded to a whole point. The same scores apply with sea level rise.',
+      'The mean of the five listed metrics, with **Habitat Restoration counted twice**, rounded to a whole point. The same rule applies with sea level rise.',
   },
   environmentalJustice: {
     metrics: [
-      'Salinity impacts to in-Delta drinking water',
+      'Salinity impacts to in-Delta drinking water x2',
       'Flood risk attenuation',
       'Water age + temperature',
     ],
-    combine: 'The **unweighted mean** of the three, rounded to a whole point.',
+    combine:
+      'The mean of the three listed metrics, with **Drinking Water counted twice**, rounded to a whole point. The same rule applies with sea level rise.',
   },
   economy: {
     metrics: [
@@ -509,7 +507,7 @@ export const CRITERION_DEFINITIONS: Record<
       'Economic value added',
     ],
     combine:
-      'The team scores each metric on **the same rule** and publishes no combined score. The three match for every scenario except New Green Watershed, where the table shows their **unweighted mean, rounded to a whole point**: −4 at 50% wetland (−3 at 25%, −5 at 100%). The same with 2 ft of sea level rise.',
+      'Their **unweighted mean, rounded to a whole point**: −4 at 50% wetland (−3 at 25%, −5 at 100%). The same with 2 ft of sea level rise.',
   },
   ecoCultural: {
     metrics: [
@@ -519,23 +517,23 @@ export const CRITERION_DEFINITIONS: Record<
       'Recognition and Application of Tribal Sovereignty',
     ],
     combine:
-      'One overall score, **set by the team** from restoration acres, flow and qualitative judgement.',
+      'One overall score informed by restoration acres, flow and qualitative judgement.',
   },
 }
 
 /**
  * What a metric is, behind the info button on its row: what it measures, how it is
- * computed, and how it is scored. `scale` draws the −5…+5 scale for a score set one
+ * computed, and how it is scored. Each text section can be omitted. `scale` draws the −5…+5 scale for a score set one
  * point per `step` against Business as Usual (`lowerBetter`: more of it scores lower).
- * `takeaway` is the team's own word on the metric, shown first; where it already says
+ * `takeaway` is the criterion's own summary of the metric, shown first; where it already says
  * what the metric measures (Ecology), `measures` is left out.
  */
 export const METRIC_DEFINITIONS: Record<
   string,
   {
     measures?: string
-    computed: string
-    scored: string
+    computed?: string
+    scored?: string
     scale?: {
       step?: string
       axis: string
@@ -551,8 +549,10 @@ export const METRIC_DEFINITIONS: Record<
 > = {
   // Ecology
   'bk-eco-habitat': {
-    takeaway: { lead: 'The increase in **accessible aquatic habitat** relative to baseline.' },
-    computed: 'Acres of added tidal wetland against Business as Usual.',
+    takeaway: {
+      lead: 'The increase in **accessible aquatic habitat**, within the Delta, against ++Business as Usual++.',
+    },
+    computed: 'Acres of added tidal wetland within the Delta against Business as Usual.',
     scale: {
       axis: 'Acres added against Business as Usual. About 16,000 acres scores +1, rising to +5 at about 80,000 acres.',
       scores: [0, 1, 2, 3, 4, 5],
@@ -562,18 +562,17 @@ export const METRIC_DEFINITIONS: Record<
     scoreRows: {
       heading: UI.scenarioScoresHeading,
       rows: [
-        ['Eco Machine', '53,000 acres', 3],
-        ['New Green Watershed', '80,000 acres', 5],
+        ['Eco Machine', '43,100 acres', 3],
+        ['New Green Watershed', '67,000 acres', 4],
       ],
     },
-    scored: '+1 for about every 16,000 acres added against Business as Usual, up to +5.',
+    scored: '+1 for every 16,000 acres added against Business as Usual, up to +5.',
   },
   'bk-eco-foodweb': {
     takeaway: {
-      lead: 'The increase in **productive habitats** (tidal wetlands, managed wetlands, rice fields) that have the capacity to contribute to food webs, relative to baseline.',
+      lead: 'The increase in **productive habitats** (tidal wetlands, managed wetlands, wet-soil agriculture) that have the capacity to contribute to food webs, relative to ++Business as Usual++.',
     },
-    computed:
-      '(managed wetland − 5,100) × 0.2 + added tidal wetland × 0.4 + (wet-soil agriculture − 17,178) × 0.1.',
+    computed: 'managed wetland × 0.2 + tidal wetland × 0.4 + wet-soil agriculture × 0.1.',
     scale: {
       axis: 'Food web index points against Business as Usual. About 16,148 points scores +1, rising to +5 at about 80,740 points.',
       scores: [0, 1, 2, 3, 4, 5],
@@ -583,84 +582,89 @@ export const METRIC_DEFINITIONS: Record<
     scoreRows: {
       heading: UI.scenarioScoresHeading,
       rows: [
-        ['Eco Machine', '21,200 points', 1],
-        ['New Green Watershed', '69,661 points', 4],
+        ['Eco Machine', '17,240 points', 1],
+        ['New Green Watershed', '61,980 points', 3],
       ],
     },
-    scored: '+1 for about every 16,148 index points against Business as Usual, up to +5.',
+    scored: '+1 for about every 16,148 points against Business as Usual, up to +5.',
   },
   'bk-eco-species': {
     takeaway: {
       lead: 'The proportion of time and/or length of consecutive days that conditions remain **within a species’ fundamental tolerance limits** for water temperature and salinity.',
       details: [
-        'This does not necessarily mean species are more abundant at the given location, only that water quality conditions are favorable for their survival.',
+        'This does not necessarily mean species are more abundant at the given location, only that **water quality conditions are favorable for their survival**.',
       ],
     },
     computed: 'Each species’ proportion of days inside its salinity and temperature range.',
     scored:
-      'Each percentage point of days in range above or below Business as Usual moves a species’ score by 1. The team’s Species suitability score is reported for the whole period, Delta-wide. [How the species combine: forthcoming.]',
+      'Each 1-percentage-point change in suitable days from Business as Usual changes the species score by 1, capped at ±5; increases score positively for desired species and negatively for invasive species.',
     scale: { step: '%', axis: 'Days in range vs Business as Usual' },
   },
 
   // Recreation
   'bk-rec-salinity': {
     takeaway: {
-      lead: 'Salinity generally affects recreation most **in the western regions (Suisun, Central Delta),** especially during the winter seasons, for four out of five activities, while angling thresholds are crossed more in summer under baseline and shift to more salinity days in winter under sea-level-rise scenarios.',
+      lead: 'Salinity generally affects recreation most **in the western regions (Suisun, Central Delta),** especially during the winter seasons, for four out of five activities. Angling thresholds are crossed more in summer under ++Business as Usual++ and shift to more salinity days in winter under sea-level-rise scenarios.',
     },
     measures: 'How often the water is too salty for each activity.',
     computed:
-      'Each activity’s share of days over its salinity threshold, at 32 points in 4 regions, Oct 2018 – Dec 2020.',
+      'Each activity’s share of days over its salinity threshold, at 32 points in 4 regions.',
     scored:
-      'The Salinity stress component scores 0 for every adaptation scenario and +1 for Increased Delta outflow. Activity-level changes remain available as background detail.',
+      'Each 1-percentage-point decrease in days over the threshold from Business as Usual changes the score by +1; each 1-percentage-point increase changes it by −1, capped at ±5.',
     scale: { step: '%', axis: 'Days under stress vs Business as Usual', lowerBetter: true },
   },
   'bk-rec-temperature': {
     takeaway: {
-      lead: 'Warm water is **a summer activity problem** and affects each activity’s outcomes.',
+      lead: '**Overall temperature differences are minimal across scenarios.**',
       details: [
-        'While overall temperature differences are minimal across scenarios, New Green Watershed and Eco Machine add about 1 degree to Central and North Delta temperatures.',
         'The South Delta is the hottest for waterfowl (with about 41 to 44% threshold days crossed in summer compared to 10% in Suisun), while cold-water days that hinder Day Use are present nearly the whole winter season in the North Delta.',
       ],
     },
     measures:
       'How often the water is too warm (or, for cold-water use, too cold) for each activity.',
     computed:
-      'Each activity’s share of days past its temperature threshold, at 32 points in 4 regions, Oct 2018 – Dec 2020.',
+      'Each activity’s share of days past its temperature threshold, at 32 points in 4 regions.',
     scored:
-      'The Temperature stress component scores 0 for every scenario. Activity-level changes remain available as background detail.',
+      'Each 1-percentage-point decrease in days past the threshold from Business as Usual changes the score by +1; each 1-percentage-point increase changes it by −1, capped at ±5.',
     scale: { step: '%', axis: 'Days under stress vs Business as Usual', lowerBetter: true },
   },
   'bk-rec-restoration': {
     takeaway: {
       lead: 'Habitat restoration would create **net acreage benefits** for currently available Delta land inventories.',
       details: [
-        'Increasing current protected area acres (108,301 acres) under Eco Machine (+ 43,100 acres) at Suisun and Franks Tract, and New Green Watershed (+ 458,948 acres) Delta-wide through transitional, managed wetlands and tidal areas.',
+        'Increasing current protected area acres (108,301 acres) under ++Eco Machine++ (+43,100 acres) at Suisun and Franks Tract, and ++New Green Watershed++ (+458,948 acres) Delta-wide through transitional, managed wetlands and tidal areas.',
       ],
     },
     measures: 'How much land a scenario restores for recreation.',
-    computed:
-      'Restored acres added on top of Business as Usual’s protected areas, by Delta region.',
     scored:
-      'Eco Machine +3, New Green Watershed +5, and every other scenario 0. This component is counted twice in the overall Recreation score.',
+      'The Recreation criterion assigns a score from restored acres on the −5 to +5 scale. This component is counted twice in the overall Recreation score.',
   },
   'bk-rec-economy': {
     takeaway: {
       lead: 'The recreation economy is measured by **a conservative valuation of ecosystem services in dollars per acre per year,** encompassing the five activities.',
       details: [
-        'In short, we calculate four ecosystem service scenarios for restored acres procured from our Ecology team (separate from the Habitat Restoration Metric), assigning monetary values to the following measures:',
+        'In short, we calculate four ecosystem service scenarios for restored acres from the Ecology criterion (separate from the Habitat Restoration Metric), assigning monetary values to the following measures:',
       ],
       rows: [
         ['Recreational fishing', 'Angling'],
-        ['Amenity/Recreation', 'Day Use and Boating combined'],
+        ['Amenity', 'Day Use and Boating combined'],
         ['Biodiversity', 'Birding'],
         ['Recreational Hunting', 'Waterfowl Hunting'],
       ],
     },
     measures: 'The yearly value of recreation on restored land.',
     computed:
-      'The value of four recreation services on restored land, with day use and boating sharing the amenity/recreation values, added on top of Business as Usual’s existing protected land.',
-    scored: 'Eco Machine +3, New Green Watershed +5, and every other scenario 0.',
+      'The value of four recreation services on restored land, with day use and boating sharing the amenity values, added on top of Business as Usual’s existing protected land.',
+    scored:
+      'Each 1% increase in annual value from Business as Usual changes the score by +1; each 1% decrease changes it by −1, capped at ±5.',
     scale: { step: '%', axis: 'Value vs Business as Usual' },
+  },
+
+  'bk-rec-infrastructure': {
+    measures: 'How a scenario’s built changes would affect recreation.',
+    computed: 'A qualitative judgement for the Recreation criterion.',
+    scored:
+      'The Recreation criterion translates this qualitative judgement into the −5 to +5 scale.',
   },
 
   // Environmental justice
@@ -670,14 +674,15 @@ export const METRIC_DEFINITIONS: Record<
     computed:
       'The share of salinity readings at or above 1,050 µS/cm at in-Delta drinking-water points, over the whole run.',
     scored:
-      'Each percentage point of readings over the line above or below Business as Usual moves the score by 1, for each place.',
+      'Each 1-percentage-point decrease in readings over the threshold from Business as Usual changes the score by +1; each 1-percentage-point increase changes it by −1, capped at ±5 for each place.',
     scale: { step: '%', axis: 'Readings over the line vs Business as Usual', lowerBetter: true },
   },
   'bk-ej-flood': {
     takeaway: EJ_FLOOD_TAKEAWAY,
     measures: 'Flood risk across the Delta.',
-    computed: 'A Delta-wide qualitative judgement by the team.',
-    scored: 'Set by the team on the −5 to +5 scale; there is no published formula.',
+    computed: 'A Delta-wide qualitative judgement for the Environmental Justice criterion.',
+    scored:
+      'The Environmental Justice criterion sets the result on the −5 to +5 scale.',
   },
   'bk-ej-waterage': {
     takeaway: EJ_WATER_AGE_TAKEAWAY,
@@ -685,7 +690,7 @@ export const METRIC_DEFINITIONS: Record<
     computed:
       'The change in average water age, in days, against Business as Usual, with water temperature.',
     scored:
-      'Each area is placed on a monthly ladder (slight, moderate, significant, major, extreme) and the areas are averaged; older water scores lower.',
+      '',
   },
 
   // Economy
@@ -701,7 +706,7 @@ export const METRIC_DEFINITIONS: Record<
     computed: 'Direct gross revenue against Business as Usual ($1.105B a year).',
     scale: ECONOMY_SCALE,
     scoreRows: ngwLevelRows(['−19.1%', -3], ['−25.5%', -4], ['−45.5%', -5]),
-    scored: `${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
+    scored: ECONOMY_RULE,
   },
   'bk-econ-jobs': {
     takeaway: {
@@ -715,7 +720,7 @@ export const METRIC_DEFINITIONS: Record<
     computed: 'Total jobs against Business as Usual (7,526 direct, 11,679 total).',
     scale: ECONOMY_SCALE,
     scoreRows: ngwLevelRows(['−31.3%', -4], ['−34.2%', -4], ['−42.8%', -5]),
-    scored: `${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
+    scored: ECONOMY_RULE,
   },
   'bk-econ-value': {
     takeaway: {
@@ -729,33 +734,34 @@ export const METRIC_DEFINITIONS: Record<
     computed: 'Total value added against Business as Usual ($670M direct, $997M total a year).',
     scale: ECONOMY_SCALE,
     scoreRows: ngwLevelRows(['−16.1%', -3], ['−23.2%', -3], ['−45.8%', -5]),
-    scored: `${ECONOMY_RULE} ${ECONOMY_RULE_NOTE}`,
+    scored: ECONOMY_RULE,
   },
 
   // Eco-cultural
   'bk-ec-restoration': {
     measures: 'How much land a scenario restores.',
-    computed: 'Restored acres.',
-    scored: 'Set by the team on the −5 to +5 scale; there is no published rule per acre.',
+    computed: '',
+    scored:
+      'The Eco-cultural criterion sets the result on the −5 to +5 scale.',
   },
   'bk-ec-access': {
     measures: 'How far a scenario secures Tribal access to land.',
-    computed: '[How the team judges access: forthcoming.]',
+    computed: '',
     scored:
-      'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
+      'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual.',
   },
   'bk-ec-tek': {
     measures:
       'How far a scenario supports Indigenous science and traditional ecological knowledge (TEK).',
-    computed: '[How the team judges this: forthcoming.]',
+    computed: '',
     scored:
-      'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
+      'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual.',
   },
   'bk-ec-sovereignty': {
     measures: 'How far a scenario supports Tribal sovereignty.',
-    computed: '[How the team judges this: forthcoming.]',
+    computed: '',
     scored:
-      'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual. The conditions beneath are checked where a scenario puts them in place. [Confirm the steps and conditions with the team.]',
+      'Qualitative, in steps rather than a −5 to +5 score: each arrow is one step of gain over Business as Usual.',
   },
 }
 
@@ -768,7 +774,7 @@ export const PERIOD_WHY: Partial<Record<TeamKey, string>> = {
   ecology:
     'For species fundamental niches, we chose to use values in spring, since we are looking at both juvenile and adult stages for some species. Most native fish species spawn in spring, and that is when they are in their juvenile stages.',
   recreation:
-    'Visitation to state parks for day use and boating peaks in the summer season (April–September) when temperatures are highest and water-dependent activities are most in demand, whereas birding and waterfowl hunting at wildlife reserves peak in the winter (October–March) when migratory populations overwinter and when permits are issued for harvests. In the summer, boating depends directly on expected hydrological conditions, including those associated with fisheries, while land-based day use depends indirectly on hydrological conditions as they relate to scenery and near-riverine recreational activities. In the winter, access for birders is directly dependent on hydrological conditions, and waterfowl hunting is indirectly dependent, as permit systems set a take quota that is independent of expected hydrological conditions (Jenkins et al., 2026).',
+    'Visitation to state parks for day use and boating peaks in the summer season (April–September) when temperatures are highest and water-dependent activities are most in demand, whereas birding and waterfowl hunting at wildlife reserves peak in the winter (October–March) when migratory populations overwinter and when permits are issued for harvests. In the summer, boating depends directly on expected hydrological conditions, including those associated with fisheries, while land-based day use depends indirectly on hydrological conditions as they relate to scenery and near-riverine recreational activities. In the winter, access for birders is directly dependent on hydrological conditions, and waterfowl hunting is indirectly dependent, as permit systems set a take quota that is independent of expected hydrological conditions.',
   environmentalJustice:
     'Understanding how scenarios perform over a wet-water year and a dry water-year allows us to observe nuance associated with overall conditions that may be otherwise washed out in the full model run (which combines both water years).',
   economy:

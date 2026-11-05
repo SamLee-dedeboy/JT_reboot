@@ -21,7 +21,6 @@ import {
 } from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
 import type { EcologySpeciesKey } from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
 import { applyOutflowScores } from './applyScores'
-import { ECOLOGY_OUTFLOW } from '../../../../../internal/rank-visualization/drilldown/ecologyWorkbook'
 import {
   ANY,
   OUTFLOW_KEYS,
@@ -168,7 +167,7 @@ function ecoSpecies(key: EcologySpeciesKey): CriterionNode {
     note: 'Proportion of days within the species’ salinity and temperature thresholds, as reported in the Ecology tab.',
     places: ECO_PLACES,
     periods: ECO_PERIODS,
-    values: ECOLOGY_OUTFLOW[`bk-eco-niche-${key}`] ?? {},
+    values: {}, // ranking/values/ecology.ts
     sources: [ECO_SOURCE],
   }
 }
@@ -212,7 +211,7 @@ function ecologyTree(): CriterionNode {
         note: 'The aggregate species-suitability score reported in the Ecology tab. Species rows beneath it show measures only, without individual scores.',
         places: NO_FACET,
         periods: NO_FACET,
-        values: ECOLOGY_OUTFLOW['bk-eco-species'] ?? {},
+        values: {}, // ranking/values/ecology.ts
         sources: [ECO_SOURCE],
         children: ECO_OUTFLOW_SPECIES.map(ecoSpecies),
       },
@@ -391,6 +390,12 @@ function recreationTree(): CriterionNode {
           'recreation',
           'Recreation economy',
           'The outflow run creates no recreation economy on restored land.',
+        ),
+        notApplicable(
+          'of-rec-infrastructure',
+          'recreation',
+          'Infrastructure impact',
+          'The outflow run builds no infrastructure.',
         ),
       ],
     },

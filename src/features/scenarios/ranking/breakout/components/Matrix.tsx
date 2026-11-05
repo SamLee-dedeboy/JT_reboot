@@ -963,6 +963,23 @@ function QualitativeCell({
   )
 }
 
+/** Economy table dollars in compact notation; the cell detail keeps the exact amount. */
+function compactUsd(value: number): string {
+  const amount = Math.abs(value)
+  const compact = (divisor: number, suffix: string) => {
+    const scaled = amount / divisor
+    const rounded = scaled < 10 ? Math.round(scaled * 10) / 10 : Math.round(scaled)
+    return `$${rounded.toLocaleString('en-US')}${suffix}`
+  }
+  const text =
+    amount >= 1_000_000
+      ? compact(1_000_000, 'M')
+      : amount >= 1_000
+        ? compact(1_000, 'K')
+        : `$${Math.round(amount).toLocaleString('en-US')}`
+  return `${value < 0 ? '−' : '+'}${text}`
+}
+
 /**
  * One cell. A score takes the −5…+5 palette at its value, whether that value is the
  * score or its difference from Business as Usual. A detail is plain text, or a bar
@@ -1009,9 +1026,11 @@ function Cell({
     ? why
     : unit === 'score'
       ? scoreText(value)
-      : signedText
-        ? signed(value, unit)
-        : fmtValue(value, unit)
+      : unit === 'usd'
+        ? compactUsd(value)
+        : signedText
+          ? signed(value, unit)
+          : fmtValue(value, unit)
   // A detail that reads as zero (no acres, no change, a −0.001% that prints 0%) is
   // background, so it recedes.
   const quiet =
@@ -1113,7 +1132,7 @@ function Cell({
         }}
       >
         <Typography
-          variant={score && !empty ? 'chartValueLarge' : unit === 'usd' ? 'captionSmall' : 'body2'}
+          variant={score && !empty ? 'chartValueLarge' : 'body2'}
           noWrap
           sx={{ position: 'relative', color: 'inherit' }}
         >

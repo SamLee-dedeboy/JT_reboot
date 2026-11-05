@@ -9,10 +9,7 @@
 // `bk-` id, so this page can relabel periods, regroup rows and add ranks without
 // changing the pivot or the by-subteam pages.
 import type { EcologySpeciesKey } from '../../../../../internal/rank-visualization/drilldown/ecologyNiche'
-import {
-  ECOLOGY_CURRENT,
-  ECOLOGY_SLR,
-} from '../../../../../internal/rank-visualization/drilldown/ecologyWorkbook'
+import { ECOLOGY_VALUES } from '../../values/ecology'
 import { ECOLOGY_RERUN_DELTA } from '../../../../../internal/rank-visualization/drilldown/ecologyRerun'
 import type { RerunScenario } from '../../../../../internal/rank-visualization/drilldown/ecologyRerun'
 import {
@@ -34,7 +31,7 @@ import {
   EJ_DRINKING_SHARES,
   EJ_DRINKING_SHARES_SLR,
 } from './ejDrinkingTable'
-import { applyAdaptationScores } from './applyScores'
+import { applyAdaptationScores, expandValues } from './applyScores'
 import { EJ_WATER_AGE_DAYS, EJ_WATER_AGE_DAYS_SLR } from './ejWaterAgeTable'
 import { MEASURE_LABELS } from './labels'
 
@@ -228,16 +225,20 @@ function sameUnderSlr(row: CriterionNode): CriterionNode {
   }
 }
 
-/** Replace every Ecology value with the keyed rows in the current ranking workbook. */
-function fromEcologyWorkbook(row: CriterionNode): CriterionNode {
-  const values = ECOLOGY_CURRENT[row.id] ?? {}
-  const slrValues = ECOLOGY_SLR[row.id]
+/** Every Ecology row reads ranking/values/ecology.ts, its places and periods included. */
+function fromEcologyValues(row: CriterionNode): CriterionNode {
+  const file = ECOLOGY_VALUES.adaptation[row.id.replace(/^bk-/, '')]
+  const values = expandValues(file?.values ?? {})
+  const slrValues = file?.seaLevelRise && expandValues(file.seaLevelRise)
   const sliceIds = [
     ...Object.values(values).flatMap((series) => Object.keys(series ?? {})),
     ...Object.values(slrValues ?? {}).flatMap((series) => Object.keys(series ?? {})),
   ]
   const places = new Set(sliceIds.map((slice) => slice.split('|')[0]))
-  const periods = new Set(sliceIds.map((slice) => slice.split('|')[1]))
+  // A values file's table can't hold its order: numeric keys like 2019 always list first.
+  const periods = new Set(
+    sliceIds.map((slice) => slice.split('|')[1]).sort((a, b) => +(b === ANY) - +(a === ANY)),
+  )
   const facet = (key: string, axis: 'place' | 'period'): Facet => ({
     key,
     label:
@@ -268,7 +269,7 @@ function fromEcologyWorkbook(row: CriterionNode): CriterionNode {
     notApplicableIn: undefined,
     forthcoming: undefined,
     forthcomingFor: undefined,
-    children: row.children?.map(fromEcologyWorkbook),
+    children: row.children?.map(fromEcologyValues),
   }
 }
 
@@ -346,7 +347,7 @@ function ecologyTree(): CriterionNode {
     children: species,
   }
   const root = node('ecology')
-  return fromEcologyWorkbook(
+  return fromEcologyValues(
     adapt(root, {
       provenance: 'reported',
       note: 'The Ecology team’s own criterion score, from the ranking table workbook. How Landscape, Food webs and Species suitability combine is still to be published.',
@@ -527,13 +528,31 @@ function recreationEconomy(): CriterionNode {
           notApplicableAt: { em: ['northDelta', 'southDelta'] },
         }),
       ),
-      {
-        ...qualitativeRow('bk-rec-economy-infrastructure', 'recreation'),
-        steps: { bau: 0, em: 0, ngw: 0, bf: -1, cor: -1, tunnel: -3, more: 0 },
-        notApplicable: ['em', 'ngw', 'more'],
-      },
     ],
   })
+}
+
+/** Infrastructure impact as a ranking score, with the team's arrows beneath it. */
+function infrastructureImpact(): CriterionNode {
+  return {
+    id: 'bk-rec-infrastructure',
+    label: 'Infrastructure impact',
+    level: 'metric',
+    team: 'recreation',
+    edge: 'beside',
+    provenance: 'reported',
+    unit: 'score',
+    betterHigher: true,
+    note: 'The team’s judgement of anticipated infrastructure changes: salinity gates around Franks Tract would block boaters’ access during dry periods under Bolster & Fortify, and A Tunnel would affect Delta towns’ recreation economies and make some areas inaccessible for extended periods.',
+    sources: [RECREATION_WORKBOOK_SOURCE],
+    places: NOT_BROKEN_OUT,
+    periods: NOT_BROKEN_OUT,
+    values: {}, // ranking/scores.ts
+    children: [
+      // Its arrows are in ranking/values/recreation.ts.
+      qualitativeRow('bk-rec-infrastructure-descriptive', 'recreation'),
+    ],
+  }
 }
 
 function recreationTree(): CriterionNode {
@@ -562,6 +581,7 @@ function recreationTree(): CriterionNode {
       ),
       recSameUnderSlr(habitatRestoration()),
       recSameUnderSlr(recreationEconomy()),
+      recSameUnderSlr(infrastructureImpact()),
     ],
   })
 }

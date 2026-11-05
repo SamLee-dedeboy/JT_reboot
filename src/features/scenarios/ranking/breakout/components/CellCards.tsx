@@ -294,7 +294,7 @@ export function CellCard({ inspect, onClose }: { inspect: Inspect | null; onClos
  * The info button beside a score's name, and the explainer it opens. A criterion
  * score lists its metrics and how they combine; a metric opens with the team's takeaway,
  * then says what it measures, how it is computed, what it considers and how it is
- * scored. Content: labels.ts.
+ * scored. Metric sections are optional. Content: labels.ts.
  */
 export function ScoreInfo({ node }: { node: CriterionNode }) {
   const title = node.level === 'team' ? UI.teamScore(node.label) : node.label
@@ -349,14 +349,18 @@ export function ScoreInfo({ node }: { node: CriterionNode }) {
           <Prose text={metric.measures} team={node.team} />
         </Section>
       )}
-      <Section label={UI.computed}>
-        <Prose text={metric.computed} team={node.team} />
-      </Section>
-      <Section label={UI.howScored}>
-        {metric.scale && <ScoreScale {...metric.scale} />}
-        {metric.scoreRows && <ScoreRows {...metric.scoreRows} />}
-        <Prose text={metric.scored} team={node.team} />
-      </Section>
+      {metric.computed && (
+        <Section label={UI.computed}>
+          <Prose text={metric.computed} team={node.team} />
+        </Section>
+      )}
+      {(metric.scale || metric.scoreRows || metric.scored) && (
+        <Section label={UI.howScored}>
+          {metric.scale && <ScoreScale {...metric.scale} />}
+          {metric.scoreRows && <ScoreRows {...metric.scoreRows} />}
+          {metric.scored && <Prose text={metric.scored} team={node.team} />}
+        </Section>
+      )}
     </Explainer>
   )
 }

@@ -173,7 +173,7 @@ The outflow +1 follows Caveat 5: all together averages the regions, (2 + 3 + 0 +
 | Habitat restoration, sea level rise | +3          | +5                  | N/A               | N/A                 | N/A      |
 | Recreation economy                  | +3          | +5                  | N/A               | N/A                 | N/A      |
 | Recreation economy, sea level rise  | +3          | +5                  | N/A               | N/A                 | N/A      |
-| Infrastructure impact (qualitative) | N/A         | N/A                 | −1                | −1                  | −3       |
+| Infrastructure impact               | 0           | 0                   | −1                | 0                   | −3       |
 
 Eco Machine +3 is the team's assigned score. Bolster & Fortify, Calling on Reserves and
 A Tunnel have no acres behind them, so the team scores them under Infrastructure impact
@@ -426,7 +426,7 @@ and do not join the adaptation ranking.
 1. Recreation has no restoration level control: its only New Green Watershed values are the 50% level
    from the Nov 2026 workbook. The team has not confirmed separate 25% and 100% values (`rankingModel.ts`).
 2. The label `versionOnly: 'NGW only'` still uses an abbreviation (`labels.ts`).
-3. Team and metric-row scores, and Economy's wetland levels, are held once, in `src/features/scenarios/ranking/scores.ts`. Change one there and every view follows; measures beneath the metrics and notes that quote a score do not.
+3. Team and metric-row scores, and Economy's wetland levels, are held once, in `src/features/scenarios/ranking/scores.ts`. Change one there and every view follows. The measures beneath the metrics (acres, dollars, days, arrows) are in `ranking/values/`, one file per team, and win over the workbook data and generator scripts they started from. Notes that quote a number do not follow either file.
 
 ## Source discrepancies
 

@@ -1,5 +1,6 @@
-// Puts ../../scores.ts onto each team's score and metric rows. It runs last, after a tree
-// is built, so that file wins over any workbook or report data a row was assembled from.
+// Puts ../../scores.ts onto each team's score and metric rows, and ../../values/ onto the
+// rows beneath them. It runs last, after a tree is built, so those files win over any
+// workbook or report data a row was assembled from.
 import { ANY, sliceKey } from '../../../../../internal/rank-visualization/drilldown/model'
 import type {
   CriterionNode,
@@ -8,6 +9,8 @@ import type {
 } from '../../../../../internal/rank-visualization/drilldown/model'
 import { CRITERION_SCORES } from '../../scores'
 import type { RowScores } from '../../scores'
+import { TEAM_VALUES } from '../../values'
+import type { MeasureRow, ScenarioValues } from '../../values/types'
 
 type Values = Partial<Record<ScenarioKey, SliceValues>>
 type ByScenario = Partial<Record<ScenarioKey, number | null>>
@@ -75,6 +78,40 @@ function outflowRow(node: CriterionNode, scores: RowScores): CriterionNode {
   }
 }
 
+/** A values file's scenarios as the slices the table reads. */
+export function expandValues(values: ScenarioValues): Values {
+  const out: Values = {}
+  for (const [key, value] of Object.entries(values)) {
+    const series: SliceValues = {}
+    if (value === null || typeof value === 'number') series[sliceKey(ANY, ANY)] = value
+    else
+      for (const [place, periods] of Object.entries(value))
+        for (const [period, cell] of Object.entries(periods)) series[sliceKey(place, period)] = cell
+    out[key as ScenarioKey] = series
+  }
+  return out
+}
+
+/** The rows beneath the metrics, from the team's values file. */
+function withMeasures(node: CriterionNode, rows: Record<string, MeasureRow>): CriterionNode {
+  const row = rows[rowId(node)]
+  return {
+    ...node,
+    ...(row?.values && { values: expandValues(row.values) }),
+    ...(row?.seaLevelRise && {
+      slr: {
+        note: '',
+        sources: node.sources ?? [],
+        ...node.slr,
+        values: expandValues(row.seaLevelRise),
+      },
+    }),
+    ...(row?.steps && { steps: row.steps }),
+    ...(row?.ngwLevels && { ngwLevels: row.ngwLevels }),
+    children: node.children?.map((child) => withMeasures(child, rows)),
+  }
+}
+
 /** Every row reads the same under sea level rise as it does today. */
 function repeatUnderSlr(row: CriterionNode): CriterionNode {
   return {
@@ -100,11 +137,12 @@ function applyTo(
 
 /** A team's rows in the adaptation table. Eco-cultural's repeat under sea level rise. */
 export function applyAdaptationScores(root: CriterionNode): CriterionNode {
-  const applied = applyTo(root, adaptationRow)
+  const measured = withMeasures(root, TEAM_VALUES[root.team].adaptation)
+  const applied = applyTo(measured, adaptationRow)
   return root.team === 'ecoCultural' ? repeatUnderSlr(applied) : applied
 }
 
 /** A team's rows in the outflow table. */
 export function applyOutflowScores(root: CriterionNode): CriterionNode {
-  return applyTo(root, outflowRow)
+  return applyTo(withMeasures(root, TEAM_VALUES[root.team].outflow), outflowRow)
 }

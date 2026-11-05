@@ -39,7 +39,7 @@ export function mapItems(state: Breakout, team: TeamKey): MapItem[] {
   if (!MAP_REGION_KEY[team]) return []
   const ownMap = !MAP_ENTITIES_ONLY.includes(team)
   const mapped = (node: CriterionNode) =>
-    node.places[0]?.key !== ANY &&
+    node.places.some((place) => place.key !== ANY) &&
     Object.keys(inClimate(node, state.climate).values).some((key) => !key.startsWith(`${ANY}|`))
   return state.rows
     .filter(

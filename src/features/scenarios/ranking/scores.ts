@@ -18,8 +18,8 @@
 // average the team's other criteria without it. A scenario left out of a metric row keeps
 // whatever the table already shows there, usually N/A or forthcoming.
 //
-// Measures beneath the metrics (acres, dollars, days) stay in the breakout model, and
-// written notes that quote a score do not update on their own. Provenance is in
+// Measures beneath the metrics (acres, dollars, days) are in ./values/, one file per team.
+// Written notes that quote a score do not update on their own. Provenance is in
 // src/internal/rank-visualization/RANKINGS.md.
 import type { TeamKey } from '../../../internal/rank-visualization/data'
 
@@ -54,31 +54,31 @@ export interface TeamScores extends RowScores {
 
 export const CRITERION_SCORES: Record<TeamKey, TeamScores> = {
   ecology: {
-    current: { ngw: 3.1, em: 1.33, bf: 0, cor: -0.33, tunnel: 0.33, bau: 0 },
-    seaLevelRise: { ngw: 3.8, em: 1.7, bf: 0, cor: -0.7, tunnel: -0.3, bau: 0 },
-    outflow: { more: 0.44, less: null, hist: 0 },
+    current: { ngw: 2.34, em: 1.33, bf: 0, cor: -0.33, tunnel: 0.33, bau: 0 },
+    seaLevelRise: { ngw: 3, em: 1.33, bf: 0, cor: -0.7, tunnel: -0.3, bau: 0 },
+    outflow: { more: 0, less: null, hist: 0 },
     metrics: {
       // Habitat availability
       'eco-habitat': {
-        current: { ngw: 5, em: 3, bf: 0, cor: 0, tunnel: 0, bau: 0 },
-        seaLevelRise: { ngw: 5, em: 3, bf: 0, cor: 0, tunnel: 0, bau: 0 },
+        current: { ngw: 4, em: 2, bf: 0, cor: 0, tunnel: 0, bau: 0 },
+        seaLevelRise: { ngw: 4, em: 2, bf: 0, cor: 0, tunnel: 0, bau: 0 },
       },
       // Food webs
       'eco-foodweb': {
-        current: { ngw: 4, em: 1, bf: 0, cor: 0, tunnel: 0, bau: 0 },
-        seaLevelRise: { ngw: 4, em: 1, bf: 0, cor: 0, tunnel: 0, bau: 0 },
+        current: { ngw: 3, em: 1, bf: 0, cor: 0, tunnel: 0, bau: 0 },
+        seaLevelRise: { ngw: 3, em: 1, bf: 0, cor: 0, tunnel: 0, bau: 0 },
       },
       // Species suitability
       'eco-species': {
-        current: { ngw: -0.08, em: 0.34, bf: 0.08, cor: -1.57, tunnel: 1.1 },
-        seaLevelRise: { ngw: 1.5, em: 1.1, bf: 0.39, cor: -2.82, tunnel: -1.07 },
-        outflow: { more: 0.44 },
+        current: { ngw: 0, em: 0, bf: 0, cor: -2, tunnel: 1 },
+        seaLevelRise: { ngw: 2, em: 1, bf: 0, cor: -3, tunnel: -1 },
+        outflow: { more: 0 },
       },
     },
   },
   recreation: {
-    current: { ngw: 3, em: 2, bf: 0, cor: 0, tunnel: -1, bau: 0 },
-    seaLevelRise: { ngw: 3, em: 2, bf: 0, cor: 0, tunnel: -1, bau: 0 },
+    current: { ngw: 3, em: 2, bf: -1, cor: 0, tunnel: -1, bau: 0 },
+    seaLevelRise: { ngw: 3, em: 2, bf: -1, cor: 0, tunnel: -1, bau: 0 },
     outflow: { more: 0, less: null, hist: 0 },
     metrics: {
       // Salinity stress
@@ -103,12 +103,17 @@ export const CRITERION_SCORES: Record<TeamKey, TeamScores> = {
         current: { ngw: 5, em: 3, bf: 0, cor: 0, tunnel: 0, bau: 0 },
         seaLevelRise: { ngw: 5, em: 3, bf: 0, cor: 0, tunnel: 0, bau: 0 },
       },
+      // Infrastructure impact
+      'rec-infrastructure': {
+        current: { ngw: 0, em: 0, bf: -1, cor: 0, tunnel: -3, bau: 0 },
+        seaLevelRise: { ngw: 0, em: 0, bf: -1, cor: 0, tunnel: -3, bau: 0 },
+      },
     },
   },
   environmentalJustice: {
-    current: { ngw: 1, em: 0, bf: 0, cor: 0, tunnel: 0, bau: 0 },
+    current: { ngw: 2, em: 1, bf: 0, cor: 0, tunnel: 0, bau: 0 },
     // Temporary numbers, until the team's sea-level-rise score is final.
-    seaLevelRise: { ngw: 5, em: 5, bf: 5, cor: 5, tunnel: 5, bau: 0 },
+    seaLevelRise: { ngw: 1, em: 1, bf: 0, cor: 1, tunnel: 0, bau: 0 },
     outflow: { more: 4, less: -2, hist: 0 },
     metrics: {
       // Drinking water: all points, whole period. Each vulnerability class and water year
@@ -121,12 +126,12 @@ export const CRITERION_SCORES: Record<TeamKey, TeamScores> = {
       // Flood risk attenuation
       'ej-flood': {
         current: { ngw: 3, em: 0, bf: 2, cor: 0, tunnel: 1, bau: 0 },
-        seaLevelRise: { ngw: 3, em: 0, bf: 2, cor: 0, tunnel: 1, bau: 0 },
+        seaLevelRise: { ngw: 3, em: 0, bf: 1, cor: 0, tunnel: 0, bau: 0 },
       },
       // Water age + temperature
       'ej-waterage': {
-        current: { ngw: -3, em: -2, bf: -1, cor: 0, tunnel: 0, bau: 0 },
-        seaLevelRise: { ngw: -4, em: -3, bf: -1, cor: 0, tunnel: 0, bau: 0 },
+        current: { ngw: -2, em: -1, bf: -1, cor: 0, tunnel: 0, bau: 0 },
+        seaLevelRise: { ngw: -2, em: -1, bf: -1, cor: 0, tunnel: 0, bau: 0 },
       },
     },
   },
