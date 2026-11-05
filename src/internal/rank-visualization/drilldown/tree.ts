@@ -82,7 +82,6 @@ export const SLR_STATUS: Partial<Record<TeamKey, 'loaded' | 'pending'>> = {
   environmentalJustice: 'loaded',
   recreation: 'loaded',
   economy: 'loaded',
-  ecoCultural: 'loaded',
 }
 
 /** Ecology pools its sea-level-rise regions over both years; the period says so. */
