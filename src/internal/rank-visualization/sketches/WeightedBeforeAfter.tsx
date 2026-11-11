@@ -20,8 +20,13 @@ import type { WeightMode } from '../components/WeightModeToggle'
 import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, LABEL_COLUMN, VALUE_COLUMN } from '../components/layout'
 import { RankNumber, RowLabel, ScoreCell, TotalCell } from '../components/ChartBits'
-import { WEIGHT_MAX, WEIGHT_STEP, weightOpacity, weightedRanking } from '../data'
-import { RANKED, SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
+import {
+  WEIGHT_MAX,
+  WEIGHT_STEP,
+  weightOpacity,
+  weightedRanking,
+} from '../../../features/scenarios/ranking/model/teams'
+import { RANKED, SCENARIOS } from '../../../features/scenarios/ranking/model/scenarioScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 /** Every scenario row, matrix and list alike, so the bump lines land on the rows. */

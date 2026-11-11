@@ -1,6 +1,6 @@
 // The places each team reports its criterion by, for the "Which regions" section
-// of the team's page. Region names match the outlines in the rank-visualization
-// shapefile (src/internal/rank-visualization/subteams/regionShapes.ts) so the map
+// of the team's page. Region names match the outlines in the ranking
+// shapefile (src/features/scenarios/ranking/regions/regionShapes.ts) so the map
 // can label them. Eco-cultural has no entry: its geography is historic Tribal
 // territory, and specific cultural-practice sites are deliberately not mapped.
 import type { evaluationTeams } from './results'

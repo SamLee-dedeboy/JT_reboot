@@ -52,3 +52,9 @@ public/data/scenario-explorer/d1641_calsim_source/
 
 # macOS Finder duplicates ("foo 2.tsx") must never land in the repo
 * 2.*
+
+# Local-only working files and team source documents (method reports, decks,
+# spreadsheets). Kept on disk, never pushed.
+tmp/
+.tmp/
+docs/team-documents/

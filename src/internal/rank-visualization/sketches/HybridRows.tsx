@@ -6,8 +6,15 @@ import { CARD_WIDTH, COLUMN_GAP, LABEL_COLUMN, trackColumns } from '../component
 import TugTrack from '../components/TugTrack'
 import PresetButtons from '../components/PresetButtons'
 import { DeltaBadge, RowLabel, ScoreCell, TeamKey } from '../components/ChartBits'
-import { TEAMS, WEIGHT_PRESETS, fmtScore, toPct, weightOpacity, weightedRanking } from '../data'
-import { SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
+import {
+  TEAMS,
+  WEIGHT_PRESETS,
+  fmtScore,
+  toPct,
+  weightOpacity,
+  weightedRanking,
+} from '../../../features/scenarios/ranking/model/teams'
+import { SCENARIOS } from '../../../features/scenarios/ranking/model/scenarioScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 const rowPaddingX = 1.25

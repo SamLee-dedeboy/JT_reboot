@@ -11,7 +11,7 @@ import { getScenarioCodes } from '../../api'
 import InfoButton from '../../shared/InfoButton'
 import CodeGraph from './CodeGraph'
 import type { GraphNode, tCode } from './renderers/CodeGraphRenderer'
-import { cubicOut } from './transitions'
+import { cubicOut } from '../../shared/easing'
 import type { tScenarioData } from './types'
 
 // transition:scale={{ start: 0.85, duration: 200, easing: cubicOut }}

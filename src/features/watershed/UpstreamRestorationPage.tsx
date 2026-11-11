@@ -20,8 +20,9 @@ import {
 import { alpha } from '@mui/material/styles'
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { EvaluationHero, SectionHeading } from '../scenarios/evaluation/shared'
-import { evaluationCardSx } from '../scenarios/evaluation/styles'
+import ScenarioPageHero from '../scenarios/ScenarioPageHero'
+import { SectionHeading } from '../scenarios/evaluation/evaluationComponents'
+import { evaluationCardSx } from '../scenarios/styles'
 import { jtSpacing } from '../../theme'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
@@ -68,7 +69,7 @@ export default function UpstreamRestorationPage() {
     <>
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
-        <EvaluationHero
+        <ScenarioPageHero
           image="/images/scenarios/web/new-green-watershed.webp"
           eyebrow={hero.eyebrow}
           title={hero.title}
@@ -92,7 +93,7 @@ export default function UpstreamRestorationPage() {
               Back to New Green Watershed
             </Button>
           </Box>
-        </EvaluationHero>
+        </ScenarioPageHero>
 
         {/* Hybrid-width frame: readable prose and wide chart sections share one page. */}
         <Container

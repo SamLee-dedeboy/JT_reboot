@@ -13,8 +13,8 @@ import {
 } from '../components/layout'
 import PresetButtons from '../components/PresetButtons'
 import { DeltaBadge, RowLabel, ScaleLabels } from '../components/ChartBits'
-import { fmtScore, toPct, weightedRanking } from '../data'
-import { SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
+import { fmtScore, toPct, weightedRanking } from '../../../features/scenarios/ranking/model/teams'
+import { SCENARIOS } from '../../../features/scenarios/ranking/model/scenarioScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 /** Wider value column: it shows both scores ("equal → weighted"). */

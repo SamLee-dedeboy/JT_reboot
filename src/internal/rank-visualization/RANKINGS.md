@@ -1,5 +1,9 @@
 # Rankings reference
 
+> **Note (Nov 2026):** the `drilldown/` and `subteams/` code, the raw team tables and their
+> `scripts/build-*.py` generators were removed. This file is kept as a record. Every ranking number
+> now lives in `src/features/scenarios/ranking/data/`, one file per team.
+
 What each team scores, what each score rests on, and what is still open. Rewritten
 2 Nov 2026 from the ranking table workbooks the teams filled in, and read back from
 the data the site uses, so these numbers are the site's numbers.

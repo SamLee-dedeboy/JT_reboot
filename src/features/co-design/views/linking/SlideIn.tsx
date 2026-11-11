@@ -8,7 +8,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import { animate } from 'framer-motion'
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { cubicOut } from './transitions'
+import { cubicOut } from '../../shared/easing'
 
 const DURATION = 0.4
 // Svelte's slide sets opacity to min(t * 20, 1): fully opaque once the eased

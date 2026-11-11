@@ -10,8 +10,15 @@ import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, COLUMN_GAP, ROW_GAP, trackColumns } from '../components/layout'
 import TugTrack from '../components/TugTrack'
 import { DeltaBadge, RowLabel, ScaleLabels } from '../components/ChartBits'
-import { WEIGHT_CHIPS, fmtScore, fmtWeight, toPct, weightDotSize, weightedRanking } from '../data'
-import { SCENARIOS } from '../../../features/scenarios/ranking/breakout/model/teamScores'
+import {
+  WEIGHT_CHIPS,
+  fmtScore,
+  fmtWeight,
+  toPct,
+  weightDotSize,
+  weightedRanking,
+} from '../../../features/scenarios/ranking/model/teams'
+import { SCENARIOS } from '../../../features/scenarios/ranking/model/scenarioScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 const rowColumns = trackColumns()

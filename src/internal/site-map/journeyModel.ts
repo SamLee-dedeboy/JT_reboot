@@ -84,7 +84,7 @@ export function linksBetween(
   )
 }
 
-/** The team's methodology page, as TeamMethodologyPage renders it for this team. */
+/** The team's methodology page, as CriterionPage renders it for this team. */
 function methodologyOutline(team: JourneyTeam): OutlineItem[] {
   const story = criterionStories[team.id]
   const regions = criterionRegions[team.id]

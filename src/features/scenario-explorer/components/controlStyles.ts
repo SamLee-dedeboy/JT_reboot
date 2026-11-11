@@ -1,13 +1,7 @@
 // Style objects shared by the explorer's controls; the components live in controls.tsx.
 import type { SxProps, Theme } from '@mui/material/styles'
 import { explorerControl } from '../../../theme'
-
-const focusRing = {
-  outline: 2,
-  outlineStyle: 'solid',
-  outlineColor: 'primary.main',
-  outlineOffset: 2,
-} as const
+import { focusRing } from '../../../ui/focusRing'
 
 /** The dropdown list every explorer select opens. */
 export const selectMenuProps = {

@@ -19,7 +19,7 @@ import { assetUrl } from '../../../utils/baseUrl'
 import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
 import StoryTabs from '../StoryTabs'
 import { scenarioBySlug, storyInReadingOrder } from '../content'
-import Highlight from './Highlight'
+import MapLegendRow from './MapLegendRow'
 import ScenarioChip, { chipWidth } from './ScenarioChip'
 import useMapState from './useMapState'
 
@@ -352,7 +352,11 @@ export default function IntroductionPage() {
                           const symbol = getLegendItem(scenario.slug, selectionKey)
                           return (
                             symbol && (
-                              <Highlight key={selectionKey} title={symbol.label} symbol={symbol} />
+                              <MapLegendRow
+                                key={selectionKey}
+                                title={symbol.label}
+                                symbol={symbol}
+                              />
                             )
                           )
                         })}
@@ -371,7 +375,7 @@ export default function IntroductionPage() {
                             : undefined
 
                           return (
-                            <Highlight
+                            <MapLegendRow
                               key={highlight.title}
                               title={highlight.title}
                               summary={highlight.summary}

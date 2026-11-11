@@ -7,8 +7,7 @@ import { assetUrl } from '../../../../../utils/baseUrl'
 import type { BlockAggregator } from '../renderers/BlockAggregator'
 import type { tSectionMetadata } from '../types'
 import Section from './Section'
-
-const cubicOut = (t: number) => (t - 1) ** 3 + 1
+import { cubicOut } from '../../../shared/easing'
 
 // Sections let clicks through to the sankey; blocks and headers opt back in.
 const SectionContainer = styled(motion.div)({

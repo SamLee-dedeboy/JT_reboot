@@ -14,13 +14,11 @@ import type { TeamPaletteKey } from './components/teamPalette'
 import { CARD_WIDTH } from './components/layout'
 import { StagePanels, StageTabBar } from './components/StageTabs'
 import type { StageTab } from './components/StageTabs'
-import { TEAMS } from './data'
-import PivotTable from './sketches/PivotTable'
+import { TEAMS } from '../../features/scenarios/ranking/model/teams'
 import OverallRanking from './sketches/OverallRanking'
 import ScoreShift from './sketches/ScoreShift'
 import WeightedBeforeAfter from './sketches/WeightedBeforeAfter'
 import WeightedTugOfWar from './sketches/WeightedTugOfWar'
-import SubteamPages from './subteams/SubteamPages'
 
 const CONCEPTS = [
   { term: 'Ballot', definition: 'one subteam’s score for a scenario, −5 to +5' },
@@ -64,103 +62,48 @@ const STEP_3_TABS: StageTab[] = [
   },
 ]
 
-// Step 4 explores how a reader goes deeper than the one score each subteam gives.
-// Two earlier designs (4a three axes, 4b detail inside the view) were retired in
-// Oct 2026 in favour of the pivot. See ./drilldown/model.ts for the
-// three-dimensional model it reads.
-const STEP_4_TABS: StageTab[] = [
-  {
-    id: '4c',
-    label: 'Build the comparison',
-    note: 'Tick criteria anywhere in the tree, or type to find one. On a parent row the arrow opens it, the box ticks it and “N parts” swaps it for its children. For scenarios and periods, one value holds that dimension fixed and two or more make it an axis. Places compare within one subteam only, because each subteam drew its own boundaries; where that subteam has outlines, several places are drawn as one map per scenario instead of a table. Different subteams or units get separate tables.',
-    content: <PivotTable />,
-  },
-]
-
 /** Height (px) of the step badge row, so both text columns start on the same line. */
 const STEP_BADGE_ROW = 26
 
-/**
- * Which way round the page is read.
- *
- * By scenario puts the six futures first and asks which wins, which is the question
- * the project exists to answer, and which forces every criterion into one
- * commensurable number. By subteam puts the five criteria first and asks what each
- * one looked at, which needs no commensurability and so can show the evidence the
- * other mode has to drop. Neither replaces the other.
- */
-type Mode = 'scenario' | 'subteam'
-
-// The subteam pages keep hue for values, so the team palette is always neutral there.
-const NEUTRAL = TEAM_PALETTES.find((p) => p.key === 'neutral') ?? TEAM_PALETTES[0]
-
-const MODES: { key: Mode; label: string; note: string }[] = [
-  {
-    key: 'scenario',
-    label: 'By scenario',
-    note: 'Which future ranks highest, and the degree to which the weights affect the result',
-  },
-  {
-    key: 'subteam',
-    label: 'By subteam',
-    note: 'What each criterion measured, and what goes into the score',
-  },
-]
-
 export default function RankVisualization() {
   const [paletteKey, setPaletteKey] = useState<TeamPaletteKey>('color')
-  const [mode, setMode] = useState<Mode>('scenario')
   const palette = TEAM_PALETTES.find((p) => p.key === paletteKey) ?? TEAM_PALETTES[0]
 
   return (
     <PageLayout title="Rank Visualization" fullWidthContent hideTitle>
       <MotionConfig reducedMotion="user">
-        <TeamPaletteContext.Provider value={mode === 'subteam' ? NEUTRAL.colors : palette.colors}>
+        <TeamPaletteContext.Provider value={palette.colors}>
           <Box sx={(theme) => ({ px: theme.jtSpacing.page.x, pt: theme.jtSpacing.section.sm })}>
             <Typography variant="h2" component="h1">
               Rank Visualization
             </Typography>
-            <ModePicker value={mode} onChange={setMode} />
-            {mode === 'scenario' && (
-              <TeamPalettePicker value={paletteKey} onChange={setPaletteKey} />
-            )}
+            <TeamPalettePicker value={paletteKey} onChange={setPaletteKey} />
           </Box>
 
-          {mode === 'subteam' ? (
-            <SubteamPages />
-          ) : (
-            <>
-              <Step
-                step={1}
-                eyebrow="Equal weights"
-                title="The overall ranking"
-                intro="Five subteams scored six adaptation scenarios against Business as Usual, each on its own criterion. With equal weights, their scores give one overall ranking. Scores come from the Oct 2026 conference slides, or the Sept 2026 reports where the slides have none. This step shows only the scores the subteams published; the later steps still use our inferred values, marked with an asterisk, where a subteam has not published one."
-                extra={<StepOneKey />}
-                tabs={STEP_1_TABS}
-              />
-              <Step
-                step={2}
-                eyebrow="Weights"
-                title="Changing whose voice counts"
-                intro="Give a team more or less weight and watch the ranking change against the equal-weight order on the left."
-                tabs={STEP_2_TABS}
-              />
-              <Step
-                step={3}
-                eyebrow="Sensitivity"
-                title="Does the weighting change the answer?"
-                intro="How far each score moves under a chosen lens. When a scenario’s rank changes, the choice of weights affects the answer."
-                tabs={STEP_3_TABS}
-              />
-              <Step
-                step={4}
-                eyebrow="Depth"
-                title="Going deeper than one score"
-                intro="Every published value belongs to one scenario and one position in the criterion tree: subteam → metric → measurement. Some also belong to one place and period. Choose what varies and the table takes that shape. A child does not always enter its parent’s score: Ecology ranks 8 species across 8 regions and 2 water years, but those ranks never reach the criterion score."
-                tabs={STEP_4_TABS}
-              />
-            </>
-          )}
+          <>
+            <Step
+              step={1}
+              eyebrow="Equal weights"
+              title="The overall ranking"
+              intro="Five subteams scored six adaptation scenarios against Business as Usual, each on its own criterion. With equal weights, their scores give one overall ranking. Scores come from the Oct 2026 conference slides, or the Sept 2026 reports where the slides have none. This step shows only the scores the subteams published; the later steps still use our inferred values, marked with an asterisk, where a subteam has not published one."
+              extra={<StepOneKey />}
+              tabs={STEP_1_TABS}
+            />
+            <Step
+              step={2}
+              eyebrow="Weights"
+              title="Changing whose voice counts"
+              intro="Give a team more or less weight and watch the ranking change against the equal-weight order on the left."
+              tabs={STEP_2_TABS}
+            />
+            <Step
+              step={3}
+              eyebrow="Sensitivity"
+              title="Does the weighting change the answer?"
+              intro="How far each score moves under a chosen lens. When a scenario’s rank changes, the choice of weights affects the answer."
+              tabs={STEP_3_TABS}
+            />
+          </>
         </TeamPaletteContext.Provider>
       </MotionConfig>
     </PageLayout>
@@ -308,59 +251,6 @@ function StepOneKey() {
 }
 
 /** Switches the team palette for every design on the page; score colors stay fixed. */
-/**
- * The page's primary switch, so it sits above the steps rather than inside one.
- * Each mode carries a line saying what it answers, because the two are different
- * questions rather than two views of the same one.
- */
-function ModePicker({ value, onChange }: { value: Mode; onChange: (key: Mode) => void }) {
-  return (
-    <Box
-      role="radiogroup"
-      aria-label="How to read this page"
-      sx={(theme) => ({
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: theme.jtSpacing.gap.xs,
-        mt: theme.jtSpacing.component.md,
-      })}
-    >
-      {MODES.map((option) => {
-        const active = option.key === value
-        return (
-          <ButtonBase
-            key={option.key}
-            role="radio"
-            aria-checked={active}
-            onClick={() => onChange(option.key)}
-            sx={(theme) => ({
-              display: 'grid',
-              gap: 0.2,
-              justifyItems: 'start',
-              textAlign: 'left',
-              px: 1.5,
-              py: 1,
-              borderRadius: 1.5,
-              border: 1,
-              borderColor: active ? 'primary.main' : 'border.strong',
-              bgcolor: active ? theme.chart.voting.well : 'transparent',
-              transition: 'border-color 150ms ease, background-color 150ms ease',
-              '&:hover, &.Mui-focusVisible': { borderColor: 'primary.main' },
-            })}
-          >
-            <Typography variant="chartTitle" sx={{ color: active ? 'common.white' : 'base.100' }}>
-              {option.label}
-            </Typography>
-            <Typography variant="chartAxis" sx={{ color: 'base.300' }}>
-              {option.note}
-            </Typography>
-          </ButtonBase>
-        )
-      })}
-    </Box>
-  )
-}
-
 function TeamPalettePicker({
   value,
   onChange,

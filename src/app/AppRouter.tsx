@@ -8,8 +8,8 @@ import LandingPage from '../features/scenarios/LandingPage'
 import BackgroundPage from '../features/scenarios/baseline/BackgroundPage'
 import KeyParametersPage from '../features/scenarios/baseline/KeyParametersPage'
 import IntroductionPage from '../features/scenarios/narration/IntroductionPage'
-import LegacyResultsRedirect from '../features/scenarios/results/LegacyResultsRedirect'
-import Results from '../features/scenarios/results/Page'
+import LegacyResultsRedirect from '../features/scenarios/LegacyResultsRedirect'
+import ModelingPage from '../features/scenarios/modeling/ModelingPage'
 import BaselineExploration from '../internal/BaselineExploration'
 import CoDesignTimelinePage from '../internal/CoDesignTimeline'
 import ScenarioTimeLapse from '../internal/ScenarioTimeLapse'
@@ -23,18 +23,18 @@ const ScenarioExplorerPage = lazy(
 const RegionalSummaryPage = lazy(() => import('../features/regional-summary/RegionalSummaryPage'))
 const UpstreamRestorationPage = lazy(() => import('../features/watershed/UpstreamRestorationPage'))
 const RankVisualization = lazy(() => import('../internal/rank-visualization/RankVisualization'))
-const BreakoutPage = lazy(() => import('../features/scenarios/ranking/breakout/BreakoutPage'))
+const CriterionTablePage = lazy(
+  () => import('../features/scenarios/ranking/criterion-table/CriterionTablePage'),
+)
 const CoDesignDashboard = lazy(() => import('../features/co-design/CoDesignDashboard'))
 const SiteMapPage = lazy(() => import('../internal/site-map/SiteMapPage'))
 const CriteriaCopyEditor = lazy(() => import('../internal/criteria-copy/CriteriaCopyEditor'))
 const TribalStewardshipSpectrum = lazy(() => import('../internal/TribalStewardshipSpectrum'))
 const EcoculturalMetricsArrow = lazy(() => import('../internal/EcoculturalMetricsArrow'))
-const TeamMethodologyPage = lazy(
-  () => import('../features/scenarios/evaluation/TeamMethodologyPage'),
-)
-const RankingPage = lazy(() => import('../features/scenarios/ranking/Page'))
-const EvaluationPage = lazy(() => import('../features/scenarios/results/EvaluationPage'))
-const FamiliesPage = lazy(() => import('../features/scenarios/results/FamiliesPage'))
+const CriterionPage = lazy(() => import('../features/scenarios/evaluation/CriterionPage'))
+const RankingPage = lazy(() => import('../features/scenarios/ranking/RankingPage'))
+const EvaluationPage = lazy(() => import('../features/scenarios/evaluation/EvaluationPage'))
+const FamiliesPage = lazy(() => import('../features/scenarios/evaluation/FamiliesPage'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
 
@@ -46,12 +46,12 @@ export default function AppRouter() {
       <Route path="/scenarios/background-context" element={<BackgroundPage />} />
       <Route path="/scenarios/key-parameters" element={<KeyParametersPage />} />
       <Route path="/scenarios/results" element={<LegacyResultsRedirect />} />
-      <Route path="/scenarios/modeling" element={<Results />} />
+      <Route path="/scenarios/modeling" element={<ModelingPage />} />
       <Route path="/scenarios/evaluation" element={deferred(<EvaluationPage />)} />
       <Route path="/scenarios/evaluation/families" element={deferred(<FamiliesPage />)} />
       <Route path="/scenarios/:scenarioSlug/results" element={<LegacyResultsRedirect />} />
       <Route path="/scenarios/:scenarioSlug/results/:teamId" element={<LegacyResultsRedirect />} />
-      <Route path="/scenarios/evaluation/:teamId" element={deferred(<TeamMethodologyPage />)} />
+      <Route path="/scenarios/evaluation/:teamId" element={deferred(<CriterionPage />)} />
       <Route path="/scenarios/ranking" element={deferred(<RankingPage />)} />
       <Route path="/scenarios/ranking/:view" element={deferred(<RankingPage />)} />
       <Route path="/scenarios/:scenarioSlug" element={<IntroductionPage />} />
@@ -80,7 +80,7 @@ export default function AppRouter() {
       <Route path="/pages/watershed" element={deferred(<UpstreamRestorationPage />)} />
       <Route path="/pages/kelp-diagram" element={<KelpDiagram />} />
       <Route path="/pages/rank-visualization" element={deferred(<RankVisualization />)} />
-      <Route path="/pages/breakout" element={deferred(<BreakoutPage />)} />
+      <Route path="/pages/breakout" element={deferred(<CriterionTablePage />)} />
       <Route path="/pages/co-design-timeline" element={<CoDesignTimelinePage />} />
       <Route path="/pages/site-map" element={deferred(<SiteMapPage />)} />
       <Route path="/pages/criteria-copy" element={deferred(<CriteriaCopyEditor />)} />

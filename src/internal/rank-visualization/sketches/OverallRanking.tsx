@@ -18,13 +18,19 @@ import { useTeams } from '../components/teamPalette'
 import { CARD_WIDTH, COLUMN_GAP, ROW_GAP, TRACK_HEIGHT, trackColumns } from '../components/layout'
 import { BallotPip, RankNumber, ScaleLabels } from '../components/ChartBits'
 import TeamIcon from '../../../ui/TeamIcon'
-import { ADAPTATION_SCENARIOS, TEAMS, fmtScore, scored, toPct } from '../data'
-import type { Score } from '../data'
-import { SCENARIO_KEYS } from '../drilldown/model'
-import type { ScenarioKey } from '../drilldown/model'
-import { UI } from '../../../features/scenarios/ranking/breakout/model/labels'
-import { publishedTeamScore } from '../../../features/scenarios/ranking/breakout/model/teamScores'
-import { BREAKOUT_SCENARIOS } from '../../../features/scenarios/ranking/breakout/useBreakout'
+import {
+  ADAPTATION_SCENARIOS,
+  TEAMS,
+  fmtScore,
+  scored,
+  toPct,
+} from '../../../features/scenarios/ranking/model/teams'
+import type { Score } from '../../../features/scenarios/ranking/model/teams'
+import { SCENARIO_KEYS } from '../../../features/scenarios/ranking/model/criteria'
+import type { ScenarioKey } from '../../../features/scenarios/ranking/model/criteria'
+import { UI } from '../../../features/scenarios/ranking/tableText'
+import { publishedTeamScore } from '../../../features/scenarios/ranking/model/scenarioScores'
+import { TABLE_SCENARIOS } from '../../../features/scenarios/ranking/criterion-table/useCriterionTable'
 
 interface RankedScenario {
   key: ScenarioKey
@@ -47,7 +53,7 @@ const SCENARIO_ROWS: RankedScenario[] = (() => {
   })
   const byScore = [...rows].sort((a, b) => b.avg - a.avg)
   for (const row of rows) row.rank = byScore.indexOf(row) + 1
-  return BREAKOUT_SCENARIOS.map((key) => rows.find((row) => row.key === key)!)
+  return TABLE_SCENARIOS.map((key) => rows.find((row) => row.key === key)!)
 })()
 
 const RANKED_ROWS = [...SCENARIO_ROWS].sort((a, b) => a.rank - b.rank)

@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material'
-import { WEIGHT_PRESETS, sameWeights } from '../data'
-import type { Weights } from '../data'
+import { WEIGHT_PRESETS, sameWeights } from '../../../features/scenarios/ranking/model/teams'
+import type { Weights } from '../../../features/scenarios/ranking/model/teams'
 
 interface PresetButtonsProps {
   weights: Weights

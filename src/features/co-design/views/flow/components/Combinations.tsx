@@ -8,8 +8,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useState } from 'react'
 import InfoButton from '../../../shared/InfoButton'
 import { useFlowState } from '../flowStore'
+import { cubicOut } from '../../../shared/easing'
 
-const cubicOut = (t: number) => (t - 1) ** 3 + 1
 // Svelte plays an outro by running the intro easing backwards in time, which
 // for cubicOut is cubicIn when expressed as a forward (framer-motion) ease.
 const cubicIn = (t: number) => t ** 3

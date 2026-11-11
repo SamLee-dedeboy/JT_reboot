@@ -10,7 +10,7 @@ import { Layer, Source } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
 import { jtSpacing, ranking } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
-import { Segmented } from '../scenarios/ranking/breakout/components/controls'
+import { Segmented } from '../../ui/Segmented'
 import RegionalStackedTimeline from './RegionalStackedTimeline'
 import { RegionalPlaceLayers, RegionalPlacePreview } from './RegionalSalinityMapParts'
 import {

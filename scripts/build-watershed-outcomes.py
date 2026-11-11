@@ -5,7 +5,7 @@ The source is Maggie Gallagher's "NGW Upland Restoration Scenario Outcomes"
 workbook (v4, October 2026), outside the repo; pass its path:
 
   python3 -I scripts/build-watershed-outcomes.py \
-      "tmp/watershed/NGW Upland Restoration Scenario Outcomes_v4.xlsx"
+      "docs/team-documents/watershed/ngw-upland-restoration-outcomes-v4.xlsx"
 
 Sheet1 holds three blocks read here:
   - the scenario matrix (E5:I16): share of each landscape treated, by

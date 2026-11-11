@@ -20,11 +20,11 @@ TARGET = Path('editorial/criteria-sources')
 
 # The report each criterion page was condensed from. Update a path when a team sends a new version.
 REPORTS = {
-    'ecology': 'tmp/pdfs/Ecology/Copy of ECOLOGY_ The Story Behind the Criterion.docx',
-    'environmental-justice': 'tmp/pdfs/EJ and vulnerable communities/Environmental Justice_ The Story Behind the Criterion.docx',
-    'ecocultural-restoration': 'tmp/pdfs/Eco-cultural/Eco-cultural Restoration and Indigenous Sovereignty_ The Story Behind the Criterion.docx',
-    'recreation': 'tmp/pdfs/Recreation/Copy of Recreation_ The Story Behind the Criterion.docx',
-    'economy': 'tmp/pdfs/Economy/Economic_Analysis__ The Story Behind the Criterion.docx',
+    'ecology': 'docs/team-documents/ecology/ecology-method.docx',
+    'environmental-justice': 'docs/team-documents/environmental-justice/environmental-justice-method.docx',
+    'ecocultural-restoration': 'docs/team-documents/eco-cultural/eco-cultural-method.docx',
+    'recreation': 'docs/team-documents/recreation/recreation-method.docx',
+    'economy': 'docs/team-documents/economy/economy-method.docx',
 }
 
 
