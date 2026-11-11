@@ -42,7 +42,7 @@ Criterion names and colors on the tabs (Ecology, Recreation, …) are in `model/
 
 | Section           | What it names                                                    |
 | ----------------- | ---------------------------------------------------------------- |
-| `SCENARIO_LABELS` | A scenario's name in the heads, chips and sentence               |
+| `scenarioName`    | A scenario's name in the table (wording: `src/content/names.ts`) |
 | `SCENARIO_GROUPS` | "Changes to landscape" / "Changes to water flow"                 |
 | `PLACE_TRAYS`     | Which place tabs sit together, and each group's heading          |
 | `UI`              | Headings, buttons, legend, empty-cell words ("Forthcoming", N/A) |

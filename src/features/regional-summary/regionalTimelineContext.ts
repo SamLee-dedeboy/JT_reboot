@@ -1,5 +1,8 @@
-import { bolsterGateClosures } from './bolsterGateClosures'
-import { callingOnReservesReleasePeriods } from './callingOnReservesReleasePeriods'
+import {
+  bolsterGateClosures,
+  callingOnReservesReleasePeriods,
+  WATER_YEAR_START,
+} from '../scenarios/content'
 
 export interface RegionalTimelineContextPeriod {
   id: string
@@ -12,19 +15,19 @@ const drySeasonPeriods: readonly RegionalTimelineContextPeriod[] = [
   {
     id: 'dry-season-2018-19',
     label: 'Dry Season',
-    startDate: '2018-10-01',
+    startDate: WATER_YEAR_START.wet2019,
     endDate: '2019-03-31',
   },
   {
     id: 'dry-season-2019-20',
     label: 'Dry Season',
-    startDate: '2019-10-01',
+    startDate: WATER_YEAR_START.dry2020,
     endDate: '2020-03-31',
   },
   {
     id: 'dry-season-2020-21',
     label: 'Dry Season',
-    startDate: '2020-10-01',
+    startDate: WATER_YEAR_START.critical2021,
     endDate: '2020-11-29',
   },
 ]

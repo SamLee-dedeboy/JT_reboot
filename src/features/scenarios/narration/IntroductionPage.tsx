@@ -5,27 +5,28 @@ import { useState, type ReactNode } from 'react'
 import { NavigationControl } from 'react-map-gl/mapbox'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import BaseMap from '../../../map/BaseMap'
-import Annotations from '../../../map/layers/scenarios/Annotations'
-import Camera from '../../../map/layers/scenarios/Camera'
-import Layers from '../../../map/layers/scenarios/Layers'
-import Legend from '../../../map/layers/scenarios/Legend'
-import SalinitySnapshot from '../../../map/layers/scenarios/SalinitySnapshot'
-import { getConfig, getLegendItem } from '../../../map/layers/scenarios/config'
-import { jtSpacing } from '../../../theme'
+import Annotations from '../../../map/scenarios/Annotations'
+import Camera from '../../../map/scenarios/Camera'
+import Layers from '../../../map/scenarios/Layers'
+import Legend from '../../../map/scenarios/Legend'
+import SalinitySnapshot from '../../../map/scenarios/SalinitySnapshot'
+import { getConfig, getLegendItem } from '../../../map/scenarios/config'
+import { jtSpacing, navigation } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import PageRail from '../../../ui/PageRail'
 import { assetUrl } from '../../../utils/baseUrl'
-import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
+import { SALINITY_MAP_STYLE } from '../../../map/mapStyles'
 import StoryTabs from '../StoryTabs'
 import { scenarioBySlug, storyInReadingOrder } from '../content'
 import MapLegendRow from './MapLegendRow'
 import ScenarioChip, { chipWidth } from './ScenarioChip'
 import useMapState from './useMapState'
+import { scenarioName } from '../../../content/names'
 
 const scenarioDetailGridColumns = {
   xs: '1fr',
-  lg: 'minmax(180px, .3fr) minmax(0, 1fr) minmax(320px, .9fr)',
+  lg: `${navigation.railColumn} minmax(0, 1fr) minmax(320px, .9fr)`,
 } as const
 
 const paragraphHighlights = [
@@ -80,7 +81,7 @@ const tieredOutflowsEmphasis = [
   'critical factor for outcomes. Two of our other project scenarios',
 ] as const
 
-const tieredOutflowsAccents = ['A Tunnel', 'Calling on Reserves'] as const
+const tieredOutflowsAccents = [scenarioName('tunnel'), scenarioName('cor')]
 
 function HighlightedParagraph({
   text,
@@ -96,7 +97,7 @@ function HighlightedParagraph({
   const contextualPrimaryBlueBoldHighlights = text.startsWith(
     'Calling on Reserves changes how existing reservoirs are operated',
   )
-    ? ['Calling on Reserves']
+    ? [scenarioName('cor')]
     : []
 
   while (cursor < text.length) {
@@ -529,7 +530,7 @@ export default function IntroductionPage() {
               >
                 <BaseMap
                   initialViewState={mapConfig.initialViewState}
-                  mapStyleUrl={mapConfig.mapStyleUrl ?? SCENARIO_EXPLORER_MAP_STYLE}
+                  mapStyleUrl={mapConfig.mapStyleUrl ?? SALINITY_MAP_STYLE}
                   interactive={mapConfig.interactive}
                   dragPan={mapConfig.interactive}
                   dragRotate={false}

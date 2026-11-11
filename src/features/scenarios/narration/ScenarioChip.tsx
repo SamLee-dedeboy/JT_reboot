@@ -1,7 +1,7 @@
 import { Typography } from '@mui/material'
 import type { ReactNode } from 'react'
-import type { LegendItem } from '../../../map/layers/scenarios/config'
-import { symbolSwatchSx } from '../../../map/layers/scenarios/symbolSwatch'
+import type { LegendItem } from '../../../map/scenarios/config'
+import { symbolSwatchSx } from '../../../map/scenarios/symbolSwatch'
 
 export const chipWidth = 84
 const chipHeight = 34

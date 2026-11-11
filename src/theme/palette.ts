@@ -92,5 +92,3 @@ export const palette = {
   surfaceStrong: '#39474b',
   footerBg: '#343c40',
 } as const
-
-export type JtPalette = typeof palette

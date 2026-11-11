@@ -1,9 +1,10 @@
 import type { ScenarioContent } from './types'
+import { scenarioName, scenarioSlug } from '../../../content/names'
 
 export const baselineScenario: ScenarioContent = {
-  slug: 'business-as-usual',
+  slug: scenarioSlug('bau'),
   number: '01',
-  title: 'Business as Usual',
+  title: scenarioName('bau', 'scenarioStory'),
   image: '/images/scenarios/web/business-as-usual.webp',
   summary:
     'If current conditions and familiar water-management responses continue, how will the Delta change—and who will feel those changes first?',

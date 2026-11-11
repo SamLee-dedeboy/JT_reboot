@@ -8,6 +8,14 @@ import type { Map as MapboxMap } from 'mapbox-gl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Source } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
+import {
+  REGIONAL_BOLSTER_BOUNDS,
+  REGIONAL_OVERVIEW,
+  REGIONAL_OVERVIEW_MAX_ZOOM,
+  REGIONAL_STRATEGY_CAMERAS,
+  REGIONAL_WELCOME_BOUNDS,
+} from '../../map/cameras'
+import { SALINITY_MAP_STYLE } from '../../map/mapStyles'
 import { assetUrl } from '../../utils/baseUrl'
 import type { ScenarioContent } from '../scenarios/content'
 import RegionalPatternsPage from './RegionalPatternsPage'
@@ -16,9 +24,6 @@ import {
   filterPlacesByReleaseView,
   panRegionalPreviewIntoView,
   regionalInteractiveLayerIds,
-  regionalMapStyleUrl,
-  regionalOverview,
-  regionalOverviewMaxZoom,
   regionalPreviewPopupSx,
   regionalReleaseViewOptions,
   registerRegionalMapPatterns,
@@ -40,20 +45,10 @@ interface RegionalSalinityExplorerProps {
   onBack: () => void
 }
 
-type Bounds = [[number, number], [number, number]]
-
 const overviewPadding = regionalMapScales.touch.overviewPadding
-const overviewMaxZoom = regionalOverviewMaxZoom
-
-const strategyWelcomeBounds: Record<string, Bounds> = {
-  'bolster-and-fortify': [
-    [-122.67, 37.95],
-    [-121.18, 38.05],
-  ],
-}
+const overviewMaxZoom = REGIONAL_OVERVIEW_MAX_ZOOM
 
 interface BolsterStrategyLayer {
-  bounds: [[number, number], [number, number]]
   path: string
   type: 'area' | 'line'
 }
@@ -62,61 +57,16 @@ const bolsterStrategyLayers: BolsterStrategyLayer[] = [
   {
     path: '/data/geospatial-assets/scenarios/bolster-and-fortify/operable-gates.geojson',
     type: 'area',
-    bounds: [
-      [-121.585826, 38.029868],
-      [-121.583398, 38.063663],
-    ],
   },
   {
     path: '/data/geospatial-assets/scenarios/bolster-and-fortify/levee-repair.geojson',
     type: 'area',
-    bounds: [
-      [-121.591647, 38.031175],
-      [-121.581838, 38.063425],
-    ],
   },
   {
     path: '/data/geospatial-assets/scenarios/bolster-and-fortify/freshwater-pathway.geojson',
     type: 'line',
-    bounds: [
-      [-121.584181, 37.851688],
-      [-121.555849, 38.07381],
-    ],
   },
 ]
-
-const bolsterFranksTractBounds: [[number, number], [number, number]] = [
-  [-121.591647, 38.029868],
-  [-121.581838, 38.063663],
-]
-
-const strategyCameras: Record<
-  string,
-  Array<{ longitude: number; latitude: number; zoom: number }>
-> = {
-  'eco-machine': [
-    { longitude: -122.04, latitude: 38.16, zoom: 10.6 },
-    { longitude: -121.61, latitude: 38.04, zoom: 11.4 },
-  ],
-  'new-green-watershed': [
-    { longitude: -121.72, latitude: 38.03, zoom: 9.8 },
-    { longitude: -121.9, latitude: 38.12, zoom: 9.3 },
-    { longitude: -121.78, latitude: 38.3, zoom: 8.5 },
-  ],
-  'calling-on-reserves': [
-    { longitude: -122.42, latitude: 40.72, zoom: 8.2 },
-    { longitude: -121.93, latitude: 38.13, zoom: 8.8 },
-  ],
-  'bolster-and-fortify': [
-    { longitude: -121.61, latitude: 38.04, zoom: 11.5 },
-    { longitude: -121.59, latitude: 38.0, zoom: 11.1 },
-    { longitude: -121.55, latitude: 37.9, zoom: 10.3 },
-  ],
-  'a-tunnel': [
-    { longitude: -121.53, latitude: 38.36, zoom: 10.3 },
-    { longitude: -121.62, latitude: 37.85, zoom: 9.2 },
-  ],
-}
 
 export default function RegionalSalinityExplorer({
   scenario,
@@ -178,14 +128,19 @@ export default function RegionalSalinityExplorer({
       const bolsterLayer =
         scenario.slug === 'bolster-and-fortify' ? bolsterStrategyLayers[stepIndex] : undefined
       if (bolsterLayer && mapRef.current) {
-        mapRef.current.fitBounds(stepIndex < 2 ? bolsterFranksTractBounds : bolsterLayer.bounds, {
-          padding: 150,
-          duration: reduceMotion ? 0 : 1100,
-          essential: false,
-        })
+        mapRef.current.fitBounds(
+          stepIndex < 2
+            ? REGIONAL_BOLSTER_BOUNDS.franksTract
+            : REGIONAL_BOLSTER_BOUNDS.freshwaterPathway,
+          {
+            padding: 150,
+            duration: reduceMotion ? 0 : 1100,
+            essential: false,
+          },
+        )
         return
       }
-      const camera = strategyCameras[scenario.slug]?.[stepIndex]
+      const camera = REGIONAL_STRATEGY_CAMERAS[scenario.slug]?.[stepIndex]
       if (!camera || !mapRef.current) return
       mapRef.current.flyTo({
         center: [camera.longitude, camera.latitude],
@@ -213,8 +168,8 @@ export default function RegionalSalinityExplorer({
         return
       }
       map.flyTo({
-        center: [regionalOverview.longitude, regionalOverview.latitude],
-        zoom: regionalOverview.zoom,
+        center: [REGIONAL_OVERVIEW.longitude, REGIONAL_OVERVIEW.latitude],
+        zoom: REGIONAL_OVERVIEW.zoom,
         duration,
         essential: false,
       })
@@ -232,7 +187,7 @@ export default function RegionalSalinityExplorer({
     (duration: number) => {
       const map = mapRef.current
       if (!map) return
-      const explicitBounds = strategyWelcomeBounds[scenario.slug]
+      const explicitBounds = REGIONAL_WELCOME_BOUNDS[scenario.slug]
       if (explicitBounds) {
         map.fitBounds(explicitBounds, {
           padding: 36,
@@ -259,8 +214,8 @@ export default function RegionalSalinityExplorer({
         return
       }
       map.flyTo({
-        center: [regionalOverview.longitude - 0.2, regionalOverview.latitude],
-        zoom: regionalOverview.zoom,
+        center: [REGIONAL_OVERVIEW.longitude - 0.2, REGIONAL_OVERVIEW.latitude],
+        zoom: REGIONAL_OVERVIEW.zoom,
         duration,
         essential: false,
       })
@@ -504,8 +459,8 @@ export default function RegionalSalinityExplorer({
                 </Box>
               ) : null}
               <BaseMap
-                mapStyleUrl={regionalMapStyleUrl}
-                initialViewState={regionalOverview}
+                mapStyleUrl={SALINITY_MAP_STYLE}
+                initialViewState={REGIONAL_OVERVIEW}
                 dragPan
                 scrollZoom
                 touchZoomRotate
@@ -752,9 +707,7 @@ export default function RegionalSalinityExplorer({
                     <Source
                       id="tunnel-strategy-sites"
                       type="geojson"
-                        data={assetUrl(
-                          '/data/geospatial-assets/scenarios/tunnel/sites.geojson',
-                        )}
+                      data={assetUrl('/data/geospatial-assets/scenarios/tunnel/sites.geojson')}
                     >
                       {strategyGuideStep === 0 ? (
                         <Layer
@@ -780,7 +733,9 @@ export default function RegionalSalinityExplorer({
                       <Source
                         id="tunnel-strategy-route"
                         type="geojson"
-                        data={assetUrl('/data/geospatial-assets/scenarios/tunnel/alignment.geojson')}
+                        data={assetUrl(
+                          '/data/geospatial-assets/scenarios/tunnel/alignment.geojson',
+                        )}
                       >
                         <Layer
                           id="tunnel-strategy-route-line"

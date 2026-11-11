@@ -1,8 +1,10 @@
+import { TEAM_NAMES } from '../../../content/names'
+
 export const evaluationTeams = [
   {
     id: 'ecology',
-    number: '01',
-    label: 'Ecology',
+    number: TEAM_NAMES.ecology.number,
+    label: TEAM_NAMES.ecology.name,
     summary:
       'Assesses how adaptation scenarios affect the Delta aquatic ecosystem through projected environmental conditions, food webs, and habitat availability.',
     entityGroups: [
@@ -46,8 +48,8 @@ export const evaluationTeams = [
   },
   {
     id: 'environmental-justice',
-    number: '02',
-    label: 'Environmental Justice & Vulnerable Communities',
+    number: TEAM_NAMES.environmentalJustice.number,
+    label: TEAM_NAMES.environmentalJustice.name,
     summary:
       'Assesses whether scenario burdens fall unfairly on Delta communities through drinking-water quality, flood risk reduction, and harmful-algal-bloom conditions.',
     entityGroups: [
@@ -97,8 +99,8 @@ export const evaluationTeams = [
   },
   {
     id: 'ecocultural-restoration',
-    number: '03',
-    label: 'Eco-cultural Restoration & Indigenous Sovereignty',
+    number: TEAM_NAMES.ecoCultural.number,
+    label: TEAM_NAMES.ecoCultural.name,
     summary:
       'Assesses whether scenarios advance eco-cultural restoration and Indigenous sovereignty through ecosystem restoration, land access, Indigenous science and Traditional Ecological Knowledge, and Tribal sovereignty.',
     entityGroups: [
@@ -155,8 +157,8 @@ export const evaluationTeams = [
   },
   {
     id: 'recreation',
-    number: '04',
-    label: 'Recreation',
+    number: TEAM_NAMES.recreation.number,
+    label: TEAM_NAMES.recreation.name,
     summary:
       'Examines how each future scenario changes conditions for angling, boating, birding, waterfowl hunting, and day use at state parks.',
     entityGroups: [
@@ -198,8 +200,8 @@ export const evaluationTeams = [
   },
   {
     id: 'economy',
-    number: '05',
-    label: 'Economy',
+    number: TEAM_NAMES.economy.number,
+    label: TEAM_NAMES.economy.name,
     summary:
       'Examines what happens to the Delta agricultural economy when salinity and landscape conditions change by tracking gross revenue, employment, and value added.',
     entityGroups: [

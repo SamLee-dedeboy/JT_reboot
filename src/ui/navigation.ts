@@ -80,7 +80,8 @@ export const navItems: NavItem[] = [
           {
             label: 'Choose a Future',
             href: '/scenarios',
-            caption: 'Understand what are current operations, outflow variations, and five adaptation scenarios.',
+            caption:
+              'Understand what are current operations, outflow variations, and five adaptation scenarios.',
           },
         ],
       },
@@ -118,7 +119,7 @@ export const navItems: NavItem[] = [
             label: 'By criterion',
             href: '/scenarios/ranking/by-criterion',
             caption: 'See how each criterion score is built',
-          }
+          },
         ],
       },
     ],

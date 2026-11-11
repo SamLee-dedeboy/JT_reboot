@@ -211,7 +211,7 @@ the runtime files above.
 
 `public/data/operations/bolster-and-fortify-gate-schedule.json` is the source of
 truth for the Franks Tract gate schedule across the website, and
-`bolsterGateClosures.ts` reads it:
+`src/features/scenarios/content/operations.ts` reads it:
 
 - Closure 1: October 1, 2018 through January 13, 2019.
 - Closure 2: November 27 through December 10, 2019.
@@ -234,7 +234,7 @@ does not have. The site does not display those notes.
 `public/data/operations/calling-on-reserves-release-schedule.json` is the source of
 truth for the COR release schedule across the website: months when COR releases
 more than, less than, or about the same as Business as Usual (CalSim) at Shasta Dam.
-`callingOnReservesReleasePeriods.ts` reads its higher-release periods:
+`src/features/scenarios/content/operations.ts` reads its higher-release periods:
 
 - January 1 through February 28, 2019.
 - September 1 through October 31, 2019.

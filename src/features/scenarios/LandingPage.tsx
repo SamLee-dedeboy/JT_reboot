@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
+import { ActionButton } from '../../ui/ActionLink'
 import NavRail from '../../ui/NavRail'
 import ScrollReveal from '../../ui/animation/ScrollReveal'
 import { assetUrl } from '../../utils/baseUrl'
 import AdaptationPanels from './AdaptationPanels'
 import OutflowPanel from './OutflowPanel'
 import { navigation } from '../../theme'
+import { scenarioName } from '../../content/names'
 
 const stickyPanels = [
   {
@@ -46,35 +48,35 @@ const stickyPanels = [
 
 const adaptationScenarioItems = [
   {
-    title: 'Eco Machine',
+    title: scenarioName('em', 'scenarioStory'),
     image: assetUrl('/images/scenarios/web/eco-machine-2.webp'),
     eyebrow: '01',
     body: 'Where can tidal restoration be implemented in the Delta to strategically reduce salinity, while also creating ecological, eco-cultural, recreational, and community benefits?',
     href: '/scenarios/eco-machine',
   },
   {
-    title: 'New Green Watershed',
+    title: scenarioName('ngw', 'scenarioStory'),
     image: assetUrl('/images/scenarios/web/new-green-watershed.webp'),
     eyebrow: '02',
     body: 'In addition to tidal restoration, what if the Delta and larger watershed were holistically restored to reduce systemic risks to the Delta’s water infrastructure, transition to a more regenerative and sustainable economy, and advance Indigenous sovereignty?',
     href: '/scenarios/new-green-watershed',
   },
   {
-    title: 'Bolster and Fortify',
+    title: scenarioName('bf', 'scenarioStory'),
     image: assetUrl('/images/scenarios/web/bolster-fortify-2.webp'),
     eyebrow: '03',
     body: 'What if reinforced levees combined with operable gates created a more resilient freshwater corridor through the Delta?',
     href: '/scenarios/bolster-and-fortify',
   },
   {
-    title: 'Calling on Reserves',
+    title: scenarioName('cor', 'scenarioStory'),
     image: assetUrl('/images/scenarios/web/calling-on-reserves.webp'),
     eyebrow: '04',
     body: 'What if the state’s major dams and reservoirs were operated differently \u2013 mainly by changing when and how water is stored and released \u2013 to improve drought resilience, manage salinity, and better support aquatic ecosystems?',
     href: '/scenarios/calling-on-reserves',
   },
   {
-    title: 'A Tunnel',
+    title: scenarioName('tunnel', 'scenarioStory'),
     image: assetUrl('/images/scenarios/web/a-tunnel.webp'),
     eyebrow: '05',
     body: 'What if a large tunnel \u2014 the Delta Conveyance Project, or DCP—were constructed to divert freshwater from the Sacramento River during high storm flows and convey that water underground to export pumps in the South Delta?',
@@ -278,8 +280,6 @@ function StickyScenarioPanels() {
         }}
       >
         <Box
-          component="nav"
-          aria-label="Scenario landing sections"
           sx={{
             display: { xs: 'none', lg: 'flex' },
             position: 'relative',
@@ -295,7 +295,7 @@ function StickyScenarioPanels() {
           <NavRail
             items={scenarioRailItems}
             ariaLabel="Scenario landing sections"
-            variant="home"
+            variant="sticky"
             activeItemId={stickyPanels[activePanel].id}
             scrollBehavior="auto"
             onNavigate={(id) => {
@@ -381,38 +381,8 @@ function StickyScenarioPanels() {
                       <Typography variant="bodyLarge">{panel.body}</Typography>
                       {index === 0 && (
                         <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                          <Stack
-                            direction="row"
-                            useFlexGap
-                            spacing={theme.jtSpacing.gap.sm}
-                            sx={{ alignItems: 'center', flexWrap: 'wrap' }}
-                          >
-                            <Button disabled variant="contained" color="primary">
-                              Understand Key Parameters
-                            </Button>
-                            <Typography
-                              variant="captionSmall"
-                              sx={{ color: 'primary.main', fontStyle: 'italic' }}
-                            >
-                              Forthcoming
-                            </Typography>
-                          </Stack>
-                          <Stack
-                            direction="row"
-                            useFlexGap
-                            spacing={theme.jtSpacing.gap.sm}
-                            sx={{ alignItems: 'center', flexWrap: 'wrap' }}
-                          >
-                            <Button disabled variant="outlined">
-                              Understand Salinity Basics
-                            </Button>
-                            <Typography
-                              variant="captionSmall"
-                              sx={{ color: 'primary.main', fontStyle: 'italic' }}
-                            >
-                              Forthcoming
-                            </Typography>
-                          </Stack>
+                          <ActionButton label="Understand Key Parameters" />
+                          <ActionButton label="Understand Salinity Basics" variant="outlined" />
                         </Stack>
                       )}
                     </Stack>

@@ -8,6 +8,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Layer, Source } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
+import {
+  REGIONAL_OVERVIEW,
+  REGIONAL_OVERVIEW_MAX_ZOOM,
+  REGIONAL_STRATEGY_CAMERAS,
+} from '../../map/cameras'
+import { SALINITY_MAP_STYLE } from '../../map/mapStyles'
 import { jtSpacing, ranking } from '../../theme'
 import { assetUrl } from '../../utils/baseUrl'
 import { Segmented } from '../../ui/Segmented'
@@ -17,9 +23,6 @@ import {
   filterPlacesByReleaseView,
   panRegionalPreviewIntoView,
   regionalInteractiveLayerIds,
-  regionalMapStyleUrl,
-  regionalOverview,
-  regionalOverviewMaxZoom,
   regionalPreviewPopupSx,
   regionalReleaseViewOptions,
   regionalTrendLabel,
@@ -63,34 +66,6 @@ export function SalinityResultsHeading({ id }: { id: string }) {
 const resultColumns = { xs: 'minmax(0, 1fr)', lg: 'minmax(260px, 0.42fr) minmax(0, 1fr)' }
 
 const releaseViewOptions = regionalReleaseViewOptions.map(([value, label]) => ({ value, label }))
-
-const strategyCameras: Record<
-  string,
-  Array<{ longitude: number; latitude: number; zoom: number }>
-> = {
-  'eco-machine': [
-    { longitude: -122.04, latitude: 38.16, zoom: 10.6 },
-    { longitude: -121.61, latitude: 38.04, zoom: 11.4 },
-  ],
-  'new-green-watershed': [
-    { longitude: -121.72, latitude: 38.03, zoom: 9.8 },
-    { longitude: -121.9, latitude: 38.12, zoom: 9.3 },
-    { longitude: -121.78, latitude: 38.3, zoom: 8.5 },
-  ],
-  'calling-on-reserves': [
-    { longitude: -122.42, latitude: 40.72, zoom: 8.2 },
-    { longitude: -121.93, latitude: 38.13, zoom: 8.8 },
-  ],
-  'bolster-and-fortify': [
-    { longitude: -121.61, latitude: 38.04, zoom: 11.5 },
-    { longitude: -121.59, latitude: 38.0, zoom: 11.1 },
-    { longitude: -121.55, latitude: 37.9, zoom: 10.3 },
-  ],
-  'a-tunnel': [
-    { longitude: -121.53, latitude: 38.36, zoom: 10.3 },
-    { longitude: -121.62, latitude: 37.85, zoom: 9.2 },
-  ],
-}
 
 const shastaReservoirPoint = {
   type: 'FeatureCollection' as const,
@@ -472,7 +447,7 @@ export default function RegionalSalinitySummary({
       if (!map || !overviewBounds) return
       map.fitBounds(overviewBounds, {
         padding: regionalMapScales.web.overviewPadding,
-        maxZoom: regionalOverviewMaxZoom,
+        maxZoom: REGIONAL_OVERVIEW_MAX_ZOOM,
         duration,
         essential: false,
       })
@@ -511,7 +486,7 @@ export default function RegionalSalinitySummary({
     })
 
     const map = mapRef.current
-    const camera = strategyCameras[scenarioSlug]?.[stepIndex]
+    const camera = REGIONAL_STRATEGY_CAMERAS[scenarioSlug]?.[stepIndex]
     if (willActivate && map && camera) {
       map.flyTo({
         center: [camera.longitude, camera.latitude],
@@ -676,8 +651,8 @@ export default function RegionalSalinitySummary({
               >
                 {/* Static map: regions and pins are selectable, but the camera stays put */}
                 <BaseMap
-                  mapStyleUrl={regionalMapStyleUrl}
-                  initialViewState={regionalOverview}
+                  mapStyleUrl={SALINITY_MAP_STYLE}
+                  initialViewState={REGIONAL_OVERVIEW}
                   dragPan={false}
                   dragRotate={false}
                   scrollZoom={false}

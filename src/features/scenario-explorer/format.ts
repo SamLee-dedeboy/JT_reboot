@@ -1,13 +1,6 @@
 import { palette } from '../../theme/index'
 import type { RangeMode } from './types'
 
-export const scenarioColors = [
-  palette.salinity.pink,
-  palette.salinity.teal,
-  palette.base[200],
-  palette.common.white,
-  palette.base[300],
-]
 export const chartTransition = { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const }
 
 export const formatNumber = (value: number | null | undefined, digits = 2) =>

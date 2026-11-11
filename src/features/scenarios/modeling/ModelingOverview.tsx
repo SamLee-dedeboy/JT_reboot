@@ -9,18 +9,20 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Layer, Marker, NavigationControl, Source } from 'react-map-gl/mapbox'
 import { Link } from 'react-router-dom'
 import BaseMap from '../../../map/BaseMap'
-import Camera from '../../../map/layers/scenarios/Camera'
-import Layers from '../../../map/layers/scenarios/Layers'
-import { getConfig } from '../../../map/layers/scenarios/config'
-import { jtSpacing, map } from '../../../theme'
+import Camera from '../../../map/scenarios/Camera'
+import Layers from '../../../map/scenarios/Layers'
+import { getConfig } from '../../../map/scenarios/config'
+import { jtSpacing, map, navigation } from '../../../theme'
 import PageRail from '../../../ui/PageRail'
 import { assetUrl } from '../../../utils/baseUrl'
-import { SCENARIO_EXPLORER_MAP_STYLE } from '../../scenario-explorer/mapConfig'
+import { DELTA_START_VIEW, MODELING_CAMERAS } from '../../../map/cameras'
+import { SALINITY_MAP_STYLE } from '../../../map/mapStyles'
 import { SalinityResultsHeading } from '../../regional-summary/RegionalSalinitySummary'
 import ChoiceCards from './ChoiceCards'
 import ModeledSalinity from './ModeledSalinity'
 import { GateTimeline, ReleaseTimeline } from './OperationSchedules'
 import { fullBleedBand, waterYearColor } from '../styles'
+import { scenarioName, scenarioSlug } from '../../../content/names'
 
 const overviewNavigation = [
   { id: 'how-modeled', label: 'How are scenarios modeled?' },
@@ -40,40 +42,40 @@ const implementationDetails = [
   {
     id: 'eco',
     group: 'landscape',
-    slug: 'eco-machine',
-    label: 'Eco Machine',
+    slug: scenarioSlug('em'),
+    label: scenarioName('em', 'scenarioStory'),
     detailTitle: 'Two areas restored',
     lead: 'The model reshapes the landscape at two places.',
   },
   {
     id: 'ngw',
     group: 'landscape',
-    slug: 'new-green-watershed',
-    label: 'New Green Watershed',
+    slug: scenarioSlug('ngw'),
+    label: scenarioName('ngw', 'scenarioStory'),
     detailTitle: 'Six areas restored',
     lead: 'The model keeps both Eco Machine areas and adds four more.',
   },
   {
     id: 'bolster',
     group: 'landscape',
-    slug: 'bolster-and-fortify',
-    label: 'Bolster and Fortify',
+    slug: scenarioSlug('bf'),
+    label: scenarioName('bf', 'scenarioStory'),
     detailTitle: 'When the Franks Tract gates close',
     lead: 'Two operable gates at Franks Tract close three times in the run, limiting saltwater movement along the freshwater corridor.',
   },
   {
     id: 'tunnel',
     group: 'flow',
-    slug: 'a-tunnel',
-    label: 'A Tunnel',
+    slug: scenarioSlug('tunnel'),
+    label: scenarioName('tunnel', 'scenarioStory'),
     detailTitle: 'A new route beneath the Delta',
     lead: 'A Tunnel is based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project.',
   },
   {
     id: 'reserves',
     group: 'flow',
-    slug: 'calling-on-reserves',
-    label: 'Calling on Reserves',
+    slug: scenarioSlug('cor'),
+    label: scenarioName('cor', 'scenarioStory'),
     detailTitle: 'How Shasta Dam releases change',
     lead: 'Each bar is one month’s release at Shasta Dam, in cubic feet per second (cfs), compared with CalSim Baseline. Shading marks periods of higher flow above the line and lower flow below it.',
   },
@@ -114,7 +116,7 @@ const newGreenWatershedAreas = [
 
 const baselineRows = [
   {
-    baseline: 'Historical Baseline',
+    baseline: scenarioName('hist'),
     description: 'Current conditions modeled in SCHISM.',
     model: 'SCHISM',
     changes: ['Amount of Delta outflow', 'through changes in exports'],
@@ -281,18 +283,6 @@ const bolsterLabels: MapLabelData[] = [
   },
 ]
 
-/** Frames all six areas in New Green Watershed, and Eco Machine's two on the same view. */
-const restoredAreaBounds: [[number, number], [number, number]] = [
-  [-122.32, 37.96],
-  [-121.32, 38.6],
-]
-
-/** Close on Franks Tract, where the gates and levees are. */
-const bolsterGateBounds: [[number, number], [number, number]] = [
-  [-121.66, 38.0],
-  [-121.46, 38.09],
-]
-
 const tunnelLabels: MapLabelData[] = [
   {
     text: 'Northern Delta intakes',
@@ -303,12 +293,6 @@ const tunnelLabels: MapLabelData[] = [
   },
   { text: 'Tunnel alignment', longitude: -121.42, latitude: 38.117, bare: true },
   { text: 'Bethany pumping facilities', longitude: -121.56, latitude: 37.79, bare: true },
-]
-
-/** Close on the Bay and the Delta, from the Golden Gate to the eastern stations. */
-const stationMapBounds: [[number, number], [number, number]] = [
-  [-122.55, 37.5],
-  [-121.2, 38.62],
 ]
 
 /** The same text width as the team methodology pages. */
@@ -626,12 +610,12 @@ function StationMap({ model }: { model: StationModel }) {
       }}
     >
       <BaseMap
-        mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
-        initialViewState={{ longitude: -121.9, latitude: 38.1, zoom: 8.4 }}
+        mapStyleUrl={SALINITY_MAP_STYLE}
+        initialViewState={DELTA_START_VIEW}
         interactive={false}
         attributionControl={false}
       >
-        <Camera bounds={stationMapBounds} />
+        <Camera bounds={MODELING_CAMERAS.stationMap} />
         {stations && (
           <Source id="modeling-stations" type="geojson" data={stations}>
             <Layer
@@ -777,9 +761,9 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
   }[id as string]
   const bounds =
     id === 'eco' || id === 'ngw'
-      ? restoredAreaBounds
+      ? MODELING_CAMERAS.restoredAreas
       : id === 'bolster'
-        ? bolsterGateBounds
+        ? MODELING_CAMERAS.bolsterGates
         : mapConfig.bounds.delta
 
   return (
@@ -798,7 +782,7 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
       <BaseMap
         key={slug}
         initialViewState={mapConfig.initialViewState}
-        mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
+        mapStyleUrl={SALINITY_MAP_STYLE}
         interactive={mapConfig.interactive}
         dragPan={mapConfig.interactive}
         dragRotate={false}
@@ -806,7 +790,12 @@ function ScenarioMap({ implementation }: { implementation: Implementation }) {
         touchZoomRotate={mapConfig.interactive}
         maxBounds={mapConfig.maxBounds}
       >
-        {bounds && <Camera bounds={bounds} />}
+        {bounds && (
+          <Camera
+            bounds={bounds}
+            padding={id === 'bolster' ? MODELING_CAMERAS.bolsterGatesPadding : undefined}
+          />
+        )}
         <Layers
           scenarioSlug={layerSlug}
           showAdaptationLayers
@@ -1079,7 +1068,10 @@ export default function ModelingOverview() {
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'minmax(180px, 220px) minmax(0, 1fr)' },
+        gridTemplateColumns: {
+          xs: 'minmax(0, 1fr)',
+          lg: `${navigation.railColumn} minmax(0, 1fr)`,
+        },
         columnGap: { lg: jtSpacing.section.md },
         alignItems: 'start',
       }}
@@ -1089,11 +1081,7 @@ export default function ModelingOverview() {
         ariaLabel="Modeling page sections"
         activeItemId={activeSection}
         onNavigate={(id) => setActiveSection(id as OverviewSectionId)}
-        sx={{
-          gridColumn: { lg: 1 },
-          gridRow: { lg: '1 / span 3' },
-          pt: { xs: jtSpacing.component.lg, md: jtSpacing.section.md },
-        }}
+        sx={{ gridColumn: { lg: 1 }, gridRow: { lg: '1 / span 3' } }}
       />
 
       {/* The method: what the model is, then one distinct block per question. */}
@@ -1175,7 +1163,7 @@ export default function ModelingOverview() {
         >
           <SubsectionHeading id="outflow-variations-title" title="Outflow variations">
             2 variations, modeled in SCHISM, compared with{' '}
-            <KeyPhrase>Historical Baseline</KeyPhrase>.
+            <KeyPhrase>{scenarioName('hist')}</KeyPhrase>.
           </SubsectionHeading>
           <ModelOverview
             model="schism"

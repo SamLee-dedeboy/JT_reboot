@@ -1,11 +1,13 @@
-// Shared model for the drill-down (4c) and the by-subteam pages.
+// The ranking tables' row model.
 //
 // A number on this page is always a cell in three dimensions:
 //   scenario  ×  criterion path (subteam → metric → entity)  ×  slice (place, period)
 // The four drill-down intents the design has to support — scenario-, subteam-,
 // metric- and entity-driven — are not four flows. They are which dimension is
 // pinned while the others vary, which is why one selection state serves them all.
-import { ADAPTATION_SCENARIOS, OUTFLOW_SCENARIOS, TEAMS } from './teams'
+import { SCENARIO_NAMES } from '../../../../content/names'
+import type { ScenarioKey } from '../../../../content/names'
+import { ADAPTATION_SCENARIOS } from './teams'
 import type { Score, TeamKey } from './teams'
 import type { MetricInfo } from '../data/types'
 
@@ -22,8 +24,7 @@ export const OUTFLOW_KEYS = ['more', 'less', 'hist'] as const
  * against. Never a column; a baseline only, held where a team has published it.
  */
 export const CALSIM_BAU = 'csbau'
-export type ScenarioKey =
-  (typeof SCENARIO_KEYS)[number] | (typeof OUTFLOW_KEYS)[number] | typeof CALSIM_BAU
+export type { ScenarioKey }
 
 /** The six scenarios with the names and colors ../data.ts already defines for them. */
 export const DRILL_SCENARIOS = ADAPTATION_SCENARIOS.map((scenario, i) => ({
@@ -32,11 +33,10 @@ export const DRILL_SCENARIOS = ADAPTATION_SCENARIOS.map((scenario, i) => ({
   color: scenario.color,
 }))
 
-export const SCENARIO_NAME = Object.fromEntries([
-  ...DRILL_SCENARIOS.map((scenario) => [scenario.key, scenario.name]),
-  ...OUTFLOW_SCENARIOS.map((scenario, i) => [OUTFLOW_KEYS[i], scenario.name]),
-  [CALSIM_BAU, 'Business as Usual (CalSim)'],
-]) as Record<ScenarioKey, string>
+/** Every scenario's site-wide name (src/content/names.ts). */
+export const SCENARIO_NAME = Object.fromEntries(
+  Object.values(SCENARIO_NAMES).map((scenario) => [scenario.key, scenario.name]),
+) as Record<ScenarioKey, string>
 
 /** Depth in the criterion tree. */
 export type NodeLevel = 'team' | 'metric' | 'entity'
@@ -84,13 +84,6 @@ export interface Source {
   where: string
   /** Verbatim from the document, or the rule where `doc` is 'ours'. */
   quote: string
-}
-
-export const DOC_LABEL: Record<Source['doc'], string> = {
-  slides: 'BDSC 2026 conference slides · Oct 2026',
-  report: 'The Story Behind the Criterion · Sept 2026',
-  data: 'Subteam data files · Oct 2026',
-  ours: 'Ours — not published by the subteam',
 }
 
 export type Unit =
@@ -375,12 +368,6 @@ export function cellProvenance(
   return node.provenance
 }
 
-/** True where this node is broken out along the given axis at all. */
-export const TEAM_BY_KEY = Object.fromEntries(TEAMS.map((team) => [team.key, team])) as Record<
-  TeamKey,
-  (typeof TEAMS)[number]
->
-
 // ---------- formatting ----------
 
 const LADDER = ['no change', 'slight', 'moderate', 'significant', 'major', 'extreme']
@@ -426,21 +413,4 @@ export function fmtValue(value: number, unit: Unit): string {
       return rounded > 0 ? `+${rounded}` : `−${Math.abs(rounded)}`
     }
   }
-}
-
-/** Short label for the edge badge on a child row. */
-export const EDGE_LABEL: Record<EdgeKind, string> = {
-  averages: 'averages into',
-  measures: 'measurement',
-  derives: 'derives',
-  refines: 'one scenario, finer',
-  duplicates: 'same number',
-  beside: 'beside the score',
-  unscored: 'not scored',
-}
-
-export const PROVENANCE_LABEL: Record<Provenance, string> = {
-  reported: 'reported',
-  inferred: 'inferred',
-  unscored: 'not scored',
 }

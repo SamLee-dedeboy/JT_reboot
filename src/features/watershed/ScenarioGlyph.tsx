@@ -3,10 +3,10 @@
 // it scales down as a whole when its grid cell is narrower than the drawing.
 import ForestRoundedIcon from '@mui/icons-material/ForestRounded'
 import GrassRoundedIcon from '@mui/icons-material/GrassRounded'
-import { useEffect, useState } from 'react'
 import { Box, Stack, Typography } from '@mui/material'
 import { jtSpacing } from '../../theme'
 import { FloodplainTileIcon } from '../../ui/Icon'
+import { useElementWidth } from './chartUtils'
 import { HABITAT_META, LANDSCAPES, formatCompact } from './habitats'
 import type { Landscape } from './types'
 
@@ -181,19 +181,9 @@ function OverlayGlyph({
 
 /** Fits the squares to the cell's width, never enlarging them past full size. */
 function ScaledGlyph({ segments }: { segments: Record<Landscape, ScenarioSegment> }) {
-  const [element, setElement] = useState<HTMLDivElement | null>(null)
-  const [scale, setScale] = useState(1)
-
-  useEffect(() => {
-    if (!element) return undefined
-    const update = () =>
-      setScale(Math.min(1, (element.getBoundingClientRect().width - originX - 4) / fullLargestSide))
-    update()
-    if (typeof ResizeObserver === 'undefined') return undefined
-    const observer = new ResizeObserver(update)
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [element])
+  // Starts at full size, until the cell has been measured.
+  const [setElement, width] = useElementWidth(fullLargestSide + originX + 4)
+  const scale = Math.min(1, (width - originX - 4) / fullLargestSide)
 
   return (
     <Box ref={setElement} sx={{ width: '100%' }}>

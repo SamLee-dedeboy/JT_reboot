@@ -2,9 +2,10 @@
 // Conference talk (September 29, 2026) and the NGW Upland Restoration Scenario Outcomes
 // workbook (v4).
 import type { Landscape, WatershedOutcomeMetric } from './types'
+import { scenarioName } from '../../content/names'
 
 export const hero = {
-  eyebrow: 'New Green Watershed',
+  eyebrow: scenarioName('ngw'),
   title: 'Upstream habitat restoration',
   summary:
     'How could watershed-scale restoration of montane forests, wet meadows, and floodplains upstream of the Delta affect water, carbon storage, and land cover?',

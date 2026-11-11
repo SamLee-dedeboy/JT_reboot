@@ -15,6 +15,7 @@ import {
 } from './regionalSummaryStyles'
 import RegionalSalinityExplorer from './RegionalSalinityExplorer'
 import RegionalProjectIntroduction from './RegionalProjectIntroduction'
+import { scenarioSlug } from '../../content/names'
 
 const alternativeDeltaOutflows: ScenarioContent = {
   slug: 'alternative-delta-outflows',
@@ -372,7 +373,11 @@ export default function RegionalSummaryPage() {
                               </Typography>
                               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, mt: 3 }}>
                                 <Button
-                                  variant={scenario.title === 'A Tunnel' ? 'outlined' : 'contained'}
+                                  variant={
+                                    scenario.slug === scenarioSlug('tunnel')
+                                      ? 'outlined'
+                                      : 'contained'
+                                  }
                                   size="large"
                                   endIcon={<ArrowForwardIcon />}
                                   onClick={(event) => {
@@ -383,7 +388,7 @@ export default function RegionalSummaryPage() {
                                     ...regionalSummaryControlStyles.primaryTouchButton,
                                   }}
                                 >
-                                  {scenario.title === 'A Tunnel'
+                                  {scenario.slug === scenarioSlug('tunnel')
                                     ? 'Scenario Overview'
                                     : 'Salinity Exploration'}
                                 </Button>
@@ -405,7 +410,7 @@ export default function RegionalSummaryPage() {
                                   All scenarios
                                 </Button>
                               </Box>
-                              {scenario.title === 'A Tunnel' ? (
+                              {scenario.slug === scenarioSlug('tunnel') ? (
                                 <Typography
                                   sx={{
                                     ...regionalSummaryTypography.instruction,

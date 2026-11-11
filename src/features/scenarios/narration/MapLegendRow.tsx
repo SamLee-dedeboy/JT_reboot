@@ -1,7 +1,7 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Box, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
 import { useId, useState, type ReactNode } from 'react'
-import type { LegendItem } from '../../../map/layers/scenarios/config'
+import type { LegendItem } from '../../../map/scenarios/config'
 import { jtSpacing } from '../../../theme'
 import ScenarioChip from './ScenarioChip'
 

@@ -14,6 +14,7 @@ import {
   valueFormat,
 } from './regionalTimeline'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
+import { WATER_YEAR_START } from '../scenarios/content'
 
 interface RegionalStackedTimelineProps {
   scenarioSlug: string
@@ -94,22 +95,37 @@ function waterYears(scenarioSlug: string) {
   return timelineDomain(scenarioSlug).isOutflowComparison
     ? [
         {
-          start: '2020-10-01',
-          end: '2021-10-01',
+          start: WATER_YEAR_START.critical2021,
+          end: WATER_YEAR_START.critical2022,
           label: 'Critical water year 2021',
           shortLabel: 'Critical 2021',
         },
         {
-          start: '2021-10-01',
+          start: WATER_YEAR_START.critical2022,
           end: '2022-01-01',
           label: 'Critical water year 2022',
           shortLabel: '2022',
         },
       ]
     : [
-        { start: '2018-10-01', end: '2019-10-01', label: 'Wet water year 2019', shortLabel: 'Wet' },
-        { start: '2019-10-01', end: '2020-10-01', label: 'Dry water year 2020', shortLabel: 'Dry' },
-        { start: '2020-10-01', end: '2020-11-29', label: 'Critical 2021', shortLabel: 'Critical' },
+        {
+          start: WATER_YEAR_START.wet2019,
+          end: WATER_YEAR_START.dry2020,
+          label: 'Wet water year 2019',
+          shortLabel: 'Wet',
+        },
+        {
+          start: WATER_YEAR_START.dry2020,
+          end: WATER_YEAR_START.critical2021,
+          label: 'Dry water year 2020',
+          shortLabel: 'Dry',
+        },
+        {
+          start: WATER_YEAR_START.critical2021,
+          end: '2020-11-29',
+          label: 'Critical 2021',
+          shortLabel: 'Critical',
+        },
       ]
 }
 

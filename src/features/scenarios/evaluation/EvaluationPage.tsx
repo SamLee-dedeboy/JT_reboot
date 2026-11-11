@@ -1,10 +1,11 @@
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import { Box, Button, Container, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, navigation } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
+import { ActionButton } from '../../../ui/ActionLink'
 import PageRail from '../../../ui/PageRail'
 import TeamIcon from '../../../ui/TeamIcon'
 import { evaluationTeams } from '../content'
@@ -73,7 +74,7 @@ export default function EvaluationPage() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', lg: 'minmax(180px, .3fr) minmax(0, 1.92fr)' },
+              gridTemplateColumns: { xs: '1fr', lg: `${navigation.railColumn} minmax(0, 1fr)` },
               gap: { xs: jtSpacing.gap.xl, lg: 0 },
               columnGap: { lg: jtSpacing.section.md },
               alignItems: 'start',
@@ -85,10 +86,7 @@ export default function EvaluationPage() {
               ariaLabel="Evaluation sections"
               activeItemId={activeSection}
               onNavigate={(id) => setActiveSection(id as SectionId)}
-              sx={{
-                gridRow: { lg: '1 / span 3' },
-                pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
-              }}
+              sx={{ gridRow: { lg: '1 / span 3' } }}
             />
 
             <Box
@@ -137,22 +135,10 @@ export default function EvaluationPage() {
                 Choose a scenario to see key takeaways from all five evaluation criteria in one
                 place.
               </Typography>
-              <Stack
-                direction="row"
-                useFlexGap
-                spacing={jtSpacing.gap.sm}
-                sx={{ mt: jtSpacing.component.lg, alignItems: 'center', flexWrap: 'wrap' }}
-              >
-                <Button disabled variant="contained">
-                  Explore scenario takeaways
-                </Button>
-                <Typography
-                  variant="captionSmall"
-                  sx={{ color: 'primary.main', fontStyle: 'italic' }}
-                >
-                  Forthcoming
-                </Typography>
-              </Stack>
+              <ActionButton
+                label="Explore scenario takeaways"
+                sx={{ mt: jtSpacing.component.lg }}
+              />
             </Box>
 
             <Box

@@ -3,14 +3,15 @@
 // text color, so a team's icon inherits that team's color wherever it is used.
 import { Box } from '@mui/material'
 import type { ReactNode } from 'react'
-/** The five evaluation subteams, keyed as in the ranking data. */
-export type TeamKey = 'ecology' | 'recreation' | 'environmentalJustice' | 'economy' | 'ecoCultural'
+import { teamShortName } from '../content/names'
+import type { TeamKey } from '../content/names'
+
+export type { TeamKey }
 
 /** Marks the criterion each icon stands for, so the imagery stays tied to the metric. */
-const ICONS: Record<TeamKey, { title: string; art: ReactNode }> = {
+const ICONS: Record<TeamKey, { art: ReactNode }> = {
   // Delta ecology: fish over open water (species and food web).
   ecology: {
-    title: 'Ecology',
     art: (
       <>
         <path d="M3.6 11.2c2.4-3.2 6-4.8 9.2-4.8 2.9 0 4.8 1.9 4.8 4.8s-1.9 4.8-4.8 4.8c-3.2 0-6.8-1.6-9.2-4.8Z" />
@@ -22,7 +23,6 @@ const ICONS: Record<TeamKey, { title: string; art: ReactNode }> = {
   },
   // Recreation: boating on the Delta.
   recreation: {
-    title: 'Recreation',
     art: (
       <>
         <path d="M12.9 3.4 19 14.2h-6.1Z" />
@@ -33,7 +33,6 @@ const ICONS: Record<TeamKey, { title: string; art: ReactNode }> = {
   },
   // Environmental justice: drinking water at home (the criterion's core metric).
   environmentalJustice: {
-    title: 'Env. Justice',
     art: (
       <>
         <path d="M3.9 10.6 12 4.3l8.1 6.3v9.1a1 1 0 0 1-1 1H4.9a1 1 0 0 1-1-1Z" />
@@ -43,7 +42,6 @@ const ICONS: Record<TeamKey, { title: string; art: ReactNode }> = {
   },
   // Economy: Delta agriculture.
   economy: {
-    title: 'Economy',
     art: (
       <>
         <path d="M12 20.8V7.6" />
@@ -58,7 +56,6 @@ const ICONS: Record<TeamKey, { title: string; art: ReactNode }> = {
   // Eco-cultural restoration: tule stands at the waterline — the Delta marsh
   // landscape and access to it, deliberately not ceremonial imagery.
   ecoCultural: {
-    title: 'Eco-cultural',
     art: (
       <>
         <path d="M3 20.8h18" />
@@ -88,7 +85,7 @@ export default function TeamIcon({ team, size = 16, decorative = true }: TeamIco
       viewBox="0 0 24 24"
       role={decorative ? undefined : 'img'}
       aria-hidden={decorative || undefined}
-      aria-label={decorative ? undefined : icon.title}
+      aria-label={decorative ? undefined : teamShortName(team)}
       sx={{
         flex: 'none',
         width: size,

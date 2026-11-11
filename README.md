@@ -136,7 +136,6 @@ Data visualizations that are not general-purpose UI.
 
 `src/data` contains static content consumed by the website:
 
-- `homeContent.ts` drives repeated home-page copy and icon-backed content.
 - `docYears.ts` provides repository document/timeline content.
 - `resources.ts` provides references and articles.
 - `studios.ts` provides service-learning studio content.

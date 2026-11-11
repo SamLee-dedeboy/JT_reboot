@@ -2,11 +2,8 @@
 // numbered tab bar, a filled-primary active state, outlined chips for a set, and
 // hairline-ruled rows for a list. Sized for a trackpad in a hurry and a projector.
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import CheckIcon from '@mui/icons-material/Check'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-import ExpandLessIcon from '@mui/icons-material/ExpandLess'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
-import { Box, ButtonBase, Chip, IconButton, Stack, Typography } from '@mui/material'
+import { Box, ButtonBase, Chip, Stack, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { jtSpacing, ranking } from '../../../../../theme'
@@ -183,88 +180,6 @@ export function SetChip({
         '&.Mui-disabled': { opacity: 1, borderStyle: 'dashed', color: 'base.300' },
       }}
     />
-  )
-}
-
-/** A measure in the list: a checkbox row, with a disclosure for its parts. */
-export function MeasureRow({
-  label,
-  on,
-  onToggle,
-  parts,
-  nested,
-}: {
-  label: string
-  on: boolean
-  onToggle: () => void
-  parts?: { open: boolean; onToggle: () => void }
-  nested?: boolean
-}) {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: parts ? 'minmax(0, 1fr) auto' : 'minmax(0, 1fr)',
-        alignItems: 'center',
-        borderTop: 1,
-        borderColor: 'border.subtle',
-      }}
-    >
-      <ButtonBase
-        role="checkbox"
-        aria-checked={on}
-        onClick={onToggle}
-        sx={{
-          justifyContent: 'flex-start',
-          textAlign: 'left',
-          gap: jtSpacing.gap.sm,
-          py: nested ? 0.75 : 1.1,
-          pl: nested ? jtSpacing.component.md : 0,
-          pr: 1,
-          borderRadius: 0.5,
-          '&:hover .measure-box': { borderColor: 'primary.main' },
-          '&.Mui-focusVisible': focusRing,
-        }}
-      >
-        <Box
-          className="measure-box"
-          sx={{
-            width: 18,
-            height: 18,
-            flex: 'none',
-            display: 'grid',
-            placeItems: 'center',
-            borderRadius: 0.5,
-            border: 1.5,
-            borderColor: on ? 'primary.main' : 'border.strong',
-            bgcolor: on ? 'primary.main' : 'transparent',
-            color: 'common.black',
-            // The tick takes its size from a text variant, not a literal.
-            typography: 'body2',
-          }}
-        >
-          {on && <CheckIcon fontSize="inherit" />}
-        </Box>
-        <Typography
-          variant="body2"
-          component="span"
-          sx={{ color: on ? 'common.white' : 'base.100' }}
-        >
-          {label}
-        </Typography>
-      </ButtonBase>
-      {parts && (
-        <IconButton
-          size="small"
-          onClick={parts.onToggle}
-          aria-expanded={parts.open}
-          aria-label={parts.open ? `Close the parts of ${label}` : `Open the parts of ${label}`}
-          sx={{ color: parts.open ? 'primary.main' : 'base.100' }}
-        >
-          {parts.open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </IconButton>
-      )}
-    </Box>
   )
 }
 

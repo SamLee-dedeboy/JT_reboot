@@ -14,19 +14,15 @@ import {
   regionalSummarySizing,
   type RegionalMapScale,
 } from './regionalSummaryStyles'
-import { callingOnReservesReleasePeriods } from './callingOnReservesReleasePeriods'
+import { callingOnReservesReleasePeriods } from '../scenarios/content'
+import type { MapBounds } from '../../map/cameras'
 
 /*
  * Map pieces shared by the kiosk explorer (RegionalSalinityExplorer) and the
  * scenario results page (RegionalSalinitySummary), so both draw regions the same way.
  */
 
-export const regionalMapStyleUrl = 'mapbox://styles/justtransition/cmreic454000z01sle8uh6v7n'
-export const regionalOverview = { longitude: -121.96, latitude: 38.06, zoom: 9.5 }
-export const regionalOverviewMaxZoom = 11.5
-
 export type RegionalReleaseView = 'all' | 'before' | 'during-after'
-export type Bounds = [[number, number], [number, number]]
 
 export const regionalTrendLabel = {
   saltier: 'Generally saltier',
@@ -52,7 +48,7 @@ function collectPositions(geometry: Geometry, positions: Position[]) {
   walk(geometry.coordinates)
 }
 
-export function scenarioOverviewBounds(places: RegionalPlace[]): Bounds | null {
+export function scenarioOverviewBounds(places: RegionalPlace[]): MapBounds | null {
   const positions: Position[] = []
   places.forEach((place) => {
     positions.push(place.coordinates)

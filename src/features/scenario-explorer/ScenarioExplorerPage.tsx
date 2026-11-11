@@ -37,6 +37,7 @@ import type {
   ValueMode,
   ValueSeries,
 } from './types'
+import { scenarioCodeForLabel } from '../../content/names'
 
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
   'rma-scenarios': {
@@ -92,24 +93,7 @@ const requiredComparisonBaseline = (mode: DashboardMode, scenarioKey: string) =>
   if (mode === 'slr-scenarios') return 'baseline-calsim-slr'
   return null
 }
-const scenarioAbbreviation = (label: string) =>
-  ({
-    'Business as Usual': 'BAU',
-    'Bolster & Fortify': 'B&F',
-    'Calling on Reserves': 'COR',
-    'A Tunnel': 'TUN',
-    'Eco Machine': 'ECO',
-    'New Green Watershed': 'NGW',
-    'Baseline (SLR)': 'BAU SLR',
-    'Business as Usual (CalSim)': 'BAU CalSim',
-    'Business as Usual (CalSim, SLR)': 'BAU CalSim SLR',
-    'Bolster & Fortify (SLR)': 'B&F SLR',
-    'Eco Machine (SLR)': 'ECO SLR',
-    'New Green Watershed (SLR)': 'NGW SLR',
-    'Business As Usual': 'BAU',
-    '+30% Delta outflow': '+30% outflow',
-    '-10% Delta outflow': '-10% outflow',
-  })[label] ?? label
+const scenarioAbbreviation = (label: string) => scenarioCodeForLabel(label)
 
 function ResponsiveScenarioLabel({
   fullName = false,

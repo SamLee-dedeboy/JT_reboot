@@ -1,27 +1,28 @@
 import { excludedRegionalPatternIds } from './regionalPlaceContent'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
+import { WATER_YEAR_START } from '../scenarios/content'
 
 /* Date scale shared by the kiosk pattern timeline and the results-page stacked timeline. */
 
 export const valueFormat = new Intl.NumberFormat('en-US', { maximumFractionDigits: 1 })
 const defaultQuarterTicks = [
-  ['2018-10-01', 'Oct 2018'],
+  [WATER_YEAR_START.wet2019, 'Oct 2018'],
   ['2019-01-01', 'Jan 2019'],
   ['2019-04-01', 'Apr 2019'],
   ['2019-07-01', 'Jul 2019'],
-  ['2019-10-01', 'Oct 2019'],
+  [WATER_YEAR_START.dry2020, 'Oct 2019'],
   ['2020-01-01', 'Jan 2020'],
   ['2020-04-01', 'Apr 2020'],
   ['2020-07-01', 'Jul 2020'],
-  ['2020-10-01', 'Oct 2020'],
+  [WATER_YEAR_START.critical2021, 'Oct 2020'],
 ] as const
 
 const outflowQuarterTicks = [
-  ['2020-10-01', 'Oct 2020'],
+  [WATER_YEAR_START.critical2021, 'Oct 2020'],
   ['2021-01-01', 'Jan 2021'],
   ['2021-04-01', 'Apr 2021'],
   ['2021-07-01', 'Jul 2021'],
-  ['2021-10-01', 'Oct 2021'],
+  [WATER_YEAR_START.critical2022, 'Oct 2021'],
   ['2022-01-01', 'Jan 2022'],
 ] as const
 

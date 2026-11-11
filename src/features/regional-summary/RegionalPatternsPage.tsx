@@ -9,7 +9,8 @@ import { Layer, Marker, Source, type LayerProps } from 'react-map-gl/mapbox'
 import BaseMap from '../../map/BaseMap'
 import { assetUrl } from '../../utils/baseUrl'
 import type { ScenarioContent } from '../scenarios/content'
-import { SCENARIO_EXPLORER_MAP_STYLE } from '../scenario-explorer/mapConfig'
+import { REGIONAL_PATTERN_ZOOM } from '../../map/cameras'
+import { SALINITY_MAP_STYLE } from '../../map/mapStyles'
 import {
   type PatternEvidence,
   type PatternStationEvidence,
@@ -33,6 +34,7 @@ import {
   regionalSummaryTimelineStyles,
 } from './regionalSummaryStyles'
 import RegionalPatternsTutorial from './RegionalPatternsTutorial'
+import { WATER_YEAR_START } from '../scenarios/content'
 
 interface Props {
   scenario: ScenarioContent
@@ -681,9 +683,11 @@ function StationMap({
           [Math.min(...longitudes), Math.min(...latitudes)],
           [Math.max(...longitudes), Math.max(...latitudes)],
         ],
-        { padding: 34, maxZoom: 12, duration: 0 },
+        { padding: 34, maxZoom: REGIONAL_PATTERN_ZOOM.fitMaxZoom, duration: 0 },
       )
-      map.setZoom(Math.max(7.5, map.getZoom() - 0.8))
+      map.setZoom(
+        Math.max(REGIONAL_PATTERN_ZOOM.minZoom, map.getZoom() - REGIONAL_PATTERN_ZOOM.fitZoomOut),
+      )
     },
     [stations],
   )
@@ -696,11 +700,13 @@ function StationMap({
   return (
     <Box sx={{ width: '100%', height: '100%', minHeight: 0, overflow: 'hidden' }}>
       <BaseMap
-        mapStyleUrl={SCENARIO_EXPLORER_MAP_STYLE}
+        mapStyleUrl={SALINITY_MAP_STYLE}
         initialViewState={{
           longitude: place.coordinates[0],
           latitude: place.coordinates[1],
-          zoom: place.id.includes('freshwater') ? 9.7 : 11.2,
+          zoom: place.id.includes('freshwater')
+            ? REGIONAL_PATTERN_ZOOM.freshwater
+            : REGIONAL_PATTERN_ZOOM.place,
         }}
         dragPan={false}
         scrollZoom={false}
@@ -814,8 +820,8 @@ function Timeline({
         {domain.isOutflowComparison ? (
           <>
             {[
-              ['2020-10-01', '2021-10-01', 'Critical year'],
-              ['2021-10-01', '2022-01-01', 'Critical year'],
+              [WATER_YEAR_START.critical2021, WATER_YEAR_START.critical2022, 'Critical year'],
+              [WATER_YEAR_START.critical2022, '2022-01-01', 'Critical year'],
             ].map(([startDate, endDate, label], index) => {
               const left = datePosition(startDate, domain)
               const width = datePosition(endDate, domain) - left
@@ -844,7 +850,7 @@ function Timeline({
           <>
             <Box
               sx={{
-                width: `${datePosition('2019-10-01', domain)}%`,
+                width: `${datePosition(WATER_YEAR_START.dry2020, domain)}%`,
                 bgcolor: alpha(theme.palette.primary.main, 0.1),
                 borderLeft: 4,
                 borderColor: 'primary.main',
@@ -857,7 +863,7 @@ function Timeline({
             </Box>
             <Box
               sx={{
-                width: `${datePosition('2020-10-01', domain) - datePosition('2019-10-01', domain)}%`,
+                width: `${datePosition(WATER_YEAR_START.critical2021, domain) - datePosition(WATER_YEAR_START.dry2020, domain)}%`,
                 bgcolor: alpha(theme.palette.salinity.pink, 0.16),
                 borderLeft: 4,
                 borderColor: 'salinity.pink',

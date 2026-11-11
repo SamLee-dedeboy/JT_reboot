@@ -1,10 +1,11 @@
 import type { ScenarioContent } from './types'
+import { scenarioName, scenarioSlug } from '../../../content/names'
 
 export const adaptationScenarios: ScenarioContent[] = [
   {
-    slug: 'eco-machine',
+    slug: scenarioSlug('em'),
     number: '01',
-    title: 'Eco Machine',
+    title: scenarioName('em', 'scenarioStory'),
     image: '/images/scenarios/web/eco-machine-2.webp',
     summary:
       'Implementing tidal wetland restoration where it can reduce salinity intrusion, while also creating ecological, eco-cultural, recreational and community benefits.',
@@ -64,9 +65,9 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
-    slug: 'new-green-watershed',
+    slug: scenarioSlug('ngw'),
     number: '02',
-    title: 'New Green Watershed',
+    title: scenarioName('ngw', 'scenarioStory'),
     image: '/images/scenarios/web/new-green-watershed.webp',
     summary:
       'The Delta and its watershed are restored as one connected system, allowing land and ecosystems to help manage water salinity, flooding, and climate risk.',
@@ -209,9 +210,9 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
-    slug: 'calling-on-reserves',
+    slug: scenarioSlug('cor'),
     number: '04',
-    title: 'Calling on Reserves',
+    title: scenarioName('cor', 'scenarioStory'),
     image: '/images/scenarios/web/calling-on-reserves.webp',
     summary: 'Adjusting the timing and amount of water released from large dam reservoirs.',
     story: [
@@ -265,9 +266,9 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
-    slug: 'bolster-and-fortify',
+    slug: scenarioSlug('bf'),
     number: '03',
-    title: 'Bolster and Fortify',
+    title: scenarioName('bf', 'scenarioStory'),
     image: '/images/scenarios/web/bolster-fortify-2.webp',
     summary:
       'Engineered gates and reinforced levees create a more controlled and reliable freshwater corridor through the Delta connected to the southern pumping plants.',
@@ -330,9 +331,9 @@ export const adaptationScenarios: ScenarioContent[] = [
       'Explore the modeling results and evaluation criteria to see where these effects fall and who they reach.',
   },
   {
-    slug: 'a-tunnel',
+    slug: scenarioSlug('tunnel'),
     number: '05',
-    title: 'A Tunnel',
+    title: scenarioName('tunnel', 'scenarioStory'),
     image: '/images/scenarios/web/a-tunnel.webp',
     summary:
       'Some Sacramento River water is diverted in the northern Delta and carried beneath the Delta to Bethany Reservoir through a more direct, protected route.',

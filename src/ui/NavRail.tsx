@@ -1,10 +1,14 @@
-// Reusable section navigation rail with scroll-spy behavior for any page that exposes
-// stable section IDs. The mechanism (scroll spy, click-to-scroll, active state, no text
-// selection) lives here once; `variant` picks one of three layouts:
-//   fixed: pinned to the right edge of the viewport, label then dot, one line per item
-//   home:  sticky inside a narrative column, dot then label, one line per item
-//   page:  the in-flow "On this page" list beside an article (use PageRail), dot then
-//          label; long labels wrap and the dot stays on the first line
+// The site's one section rail, with scroll spy: it marks the section in view and scrolls to
+// the one a reader picks. Every rail shares its items' look (eyebrow labels; nested or
+// criterion-colored items in navigationSubLabel with a smaller dot), their spacing and their
+// hover. `variant` only places it, for three different kinds of page:
+//   fixed:  pinned to the right edge of the viewport, label then dot, one line per item.
+//           For pages whose content fills the width, e.g. the Background page and its map.
+//   sticky: pins as the reader scrolls past full-bleed colored panels (Home, the scenarios
+//           landing), dot then label. Dots are outlined in white to read on those colors.
+//   page:   the in-flow "On this page" list in an article's rail column (use PageRail),
+//           dot then label; long labels wrap and the dot stays on the first line.
+// Don't add a variant or restyle items per page; change the rail here for every page.
 import { useEffect, useState, type ReactNode } from 'react'
 import { Box } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
@@ -20,17 +24,7 @@ export interface NavRailItem {
   color?: string
 }
 
-export type NavRailVariant = 'fixed' | 'home' | 'page'
-
-const HOME_SECTIONS: NavRailItem[] = [
-  { id: 'top', label: 'Top' },
-  { id: 'whatif', label: 'What If?' },
-  { id: 'foundations', label: 'Foundations' },
-  { id: 'approach', label: 'Approach' },
-  { id: 'stakes', label: "What's at Stake?" },
-  { id: 'mission', label: 'Mission' },
-  { id: 'works', label: 'How It Works' },
-]
+export type NavRailVariant = 'fixed' | 'sticky' | 'page'
 
 /** Container layout per variant; everything else about the rail is shared. */
 const containerSx: Record<NavRailVariant, (theme: Theme) => object> = {
@@ -41,27 +35,24 @@ const containerSx: Record<NavRailVariant, (theme: Theme) => object> = {
     transform: 'translateY(-50%)',
     zIndex: 70,
     display: { xs: 'none', lg: 'flex' },
-    gap: theme.jtSpacing.gap.xs,
   }),
-  home: (theme) => ({
+  sticky: () => ({
     position: 'sticky',
     top: '25vh',
     zIndex: 3,
     display: { xs: 'none', lg: 'flex' },
     alignSelf: 'start',
-    gap: theme.jtSpacing.gap.sm,
   }),
-  page: (theme) => ({
+  page: () => ({
     position: 'relative',
     zIndex: 1,
     display: 'flex',
     alignItems: 'flex-start',
-    gap: theme.jtSpacing.gap.xs,
   }),
 }
 
 interface NavRailProps {
-  items?: NavRailItem[]
+  items: NavRailItem[]
   ariaLabel?: string
   variant?: NavRailVariant
   activeItemId?: string
@@ -71,7 +62,7 @@ interface NavRailProps {
 }
 
 export default function NavRail({
-  items = HOME_SECTIONS,
+  items,
   ariaLabel = 'Section navigation',
   variant = 'fixed',
   activeItemId,
@@ -122,6 +113,7 @@ export default function NavRail({
         (theme) => ({
           ...containerSx[variant](theme),
           flexDirection: 'column',
+          gap: theme.jtSpacing.gap.xs,
           pointerEvents: 'auto',
           userSelect: 'none',
         }),
@@ -131,11 +123,8 @@ export default function NavRail({
       {items.map((s) => {
         const on = activeId === s.id
         const accent = s.color ?? 'primary.main'
-        const labelTypography = s.color
-          ? 'navigationSubLabel'
-          : s.indent
-            ? 'captionSmall'
-            : 'eyebrow'
+        // Top-level items read as eyebrows; nested (or criterion-colored) items one step smaller.
+        const labelTypography = s.indent || s.color ? 'navigationSubLabel' : 'eyebrow'
         const dot = (
           // A first-line-tall slot keeps the dot beside the label's first line when it wraps.
           <Box
@@ -161,7 +150,7 @@ export default function NavRail({
                 borderRadius: '50%',
                 border: '2px solid',
                 borderColor:
-                  variant === 'home'
+                  variant === 'sticky'
                     ? on
                       ? 'primary.main'
                       : 'common.white'
@@ -220,7 +209,7 @@ export default function NavRail({
               opacity: s.disabled ? 0.58 : 1,
               color: on ? 'primary.main' : 'base.200',
               '&:hover .rail-dot, &:hover .rail-label': {
-                color: s.color ?? (variant === 'home' ? 'common.white' : 'primary.main'),
+                color: s.color ?? 'primary.main',
               },
               '&:hover .rail-dot': {
                 borderColor: accent,

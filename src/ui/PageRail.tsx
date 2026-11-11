@@ -5,7 +5,7 @@ import NavRail, { type NavRailItem } from './NavRail'
 
 /**
  * The "On this page" rail beside an article: a sticky eyebrow and the `page` NavRail.
- * Place it in the page grid's rail column; `sx` sets its grid placement and padding.
+ * Place it in the page grid's rail column; `sx` sets only its grid placement.
  */
 export default function PageRail({
   items,
@@ -24,7 +24,13 @@ export default function PageRail({
     <Box
       component="aside"
       sx={[
-        { position: { lg: 'sticky' }, top: { lg: navigation.pageRailTop }, zIndex: 3 },
+        {
+          position: { lg: 'sticky' },
+          top: { lg: navigation.pageRailTop },
+          zIndex: 3,
+          // Every page's rail starts the same distance below the hero.
+          pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl },
+        },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >

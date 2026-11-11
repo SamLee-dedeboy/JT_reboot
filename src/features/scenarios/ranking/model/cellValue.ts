@@ -1,15 +1,6 @@
 // The value at one coordinate, and the words for it. Pure functions, kept apart
 // from the components that show them so React fast refresh keeps working.
-import {
-  ANY,
-  SCENARIO_NAME,
-  cellProvenance,
-  effectiveSlice,
-  inClimate,
-  labelOf,
-  resolve,
-  sliceKey,
-} from './criteria'
+import { cellProvenance, effectiveSlice, inClimate, resolve, sliceKey } from './criteria'
 import type { Climate, CriterionNode, ScenarioKey, Unit } from './criteria'
 import { NODE_INDEX } from './nodeIndex'
 
@@ -61,24 +52,4 @@ export function rankAt(coords: Coords): number | null {
   const view = { ...node, values: node.ranks }
   const slice = effectiveSlice(view, coords.place, coords.period)
   return resolve(view, coords.scenario as ScenarioKey, slice.place, slice.period).value ?? null
-}
-
-/** Why a row or column came back empty; the reasons differ and both matter. */
-export function emptyReason(dim: Dim, key: string): string {
-  if (dim !== 'criterion') return 'nothing measured here'
-  const node = NODE_INDEX.get(key)
-  if (!node) return 'nothing measured here'
-  if (node.children?.length) return `no value here; ${node.children.length} measurements inside`
-  if (node.provenance === 'unscored') return 'never scored'
-  return 'not in this analysis'
-}
-
-/** The full coordinate in words, since a cell on its own does not say where it sits. */
-export function describeCoords(coords: Coords, node: CriterionNode): string {
-  const slice = effectiveSlice(node, coords.place, coords.period)
-  const parts = [SCENARIO_NAME[coords.scenario as ScenarioKey]]
-  if (coords.climate === 'slr') parts.push('with sea level rise')
-  if (slice.place !== ANY) parts.push(labelOf(node.places, slice.place))
-  if (slice.period !== ANY) parts.push(labelOf(node.periods, slice.period))
-  return parts.join(' · ')
 }

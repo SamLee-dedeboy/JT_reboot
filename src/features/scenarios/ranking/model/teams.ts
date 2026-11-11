@@ -1,5 +1,5 @@
-// The team scores themselves live in features/scenarios/ranking/scores.ts; this file holds
-// the scenarios, teams and ranking arithmetic.
+// The scenarios, teams and ranking arithmetic. Names come from src/content/names.ts;
+// the scores from the team files in ../data/.
 // Criterion scores from the five subteams' two sources in research/criteria-stories/:
 // the "Story Behind the Criterion" reports (Sept 2026 drafts) and the Bay-Delta Science
 // Conference slides (Oct 2026), which supersede them. Provenance, derivations, what the
@@ -16,11 +16,12 @@
 // outflow runs use a different increment and are never ranked with the adaptations.
 import { alpha } from '@mui/material/styles'
 import { chart } from '../../../../theme'
+import { scenarioName, teamShortName } from '../../../../content/names'
+import type { TeamKey } from '../../../../content/names'
 
 const voting = chart.voting
 
-/** Stable id per subteam: keys icons and palettes, independent of display name. */
-export type TeamKey = 'ecology' | 'recreation' | 'environmentalJustice' | 'economy' | 'ecoCultural'
+export type { TeamKey }
 
 export interface Team {
   key: TeamKey
@@ -52,13 +53,20 @@ export const WEIGHT_STEP = 0.5
 export const WEIGHT_CHIPS = [0, 0.5, 1, 2]
 export const EQUAL_WEIGHTS: Weights = [1, 1, 1, 1, 1]
 
-export const TEAMS: Team[] = [
-  { key: 'ecology', name: 'Ecology', color: voting.team.ecology },
-  { key: 'recreation', name: 'Recreation', color: voting.team.recreation },
-  { key: 'environmentalJustice', name: 'Env. Justice', color: voting.team.environmentalJustice },
-  { key: 'economy', name: 'Economy', color: voting.team.economy },
-  { key: 'ecoCultural', name: 'Eco-cultural', color: voting.team.ecoCultural },
+/** The ranking's team order: score arrays follow it. */
+const RANKING_ORDER: TeamKey[] = [
+  'ecology',
+  'recreation',
+  'environmentalJustice',
+  'economy',
+  'ecoCultural',
 ]
+
+export const TEAMS: Team[] = RANKING_ORDER.map((key) => ({
+  key,
+  name: teamShortName(key),
+  color: voting.team[key],
+}))
 
 /** A scenario's name and color, before any scores. */
 export type ScenarioIdentity = Pick<Scenario, 'name' | 'color'>
@@ -69,12 +77,12 @@ export type ScenarioIdentity = Pick<Scenario, 'name' | 'color'>
  * ./scenarioScores.ts builds the ranked sets from the table that reads them.
  */
 export const ADAPTATION_SCENARIOS: ScenarioIdentity[] = [
-  { name: 'New Green Watershed', color: voting.scenario.newGreenWatershed },
-  { name: 'Eco Machine', color: voting.scenario.ecoMachine },
-  { name: 'Bolster & Fortify', color: voting.scenario.bolsterAndFortify },
-  { name: 'Calling on Reserves', color: voting.scenario.callingOnReserves },
-  { name: 'A Tunnel', color: voting.scenario.deltaTunnel },
-  { name: 'Business as Usual', color: voting.scenario.businessAsUsual },
+  { name: scenarioName('ngw'), color: voting.scenario.newGreenWatershed },
+  { name: scenarioName('em'), color: voting.scenario.ecoMachine },
+  { name: scenarioName('bf'), color: voting.scenario.bolsterAndFortify },
+  { name: scenarioName('cor'), color: voting.scenario.callingOnReserves },
+  { name: scenarioName('tunnel'), color: voting.scenario.deltaTunnel },
+  { name: scenarioName('bau'), color: voting.scenario.businessAsUsual },
 ]
 
 const NOT_INFERRED = [false, false, false, false, false]
@@ -90,7 +98,7 @@ const NOT_INFERRED = [false, false, false, false, false]
 export const OUTFLOW_SCENARIOS: Scenario[] = [
   {
     // EJ: drinking water only (+4 in every cut); Eco-cultural: one overall score.
-    name: 'More outflow (+30%)',
+    name: scenarioName('more'),
     color: voting.scenario.moreOutflow,
     // Recreation: +1, the average of its regions (ranking table workbook, Nov 2026).
     // EJ: +4, the team's own score in that workbook.
@@ -101,29 +109,27 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
   {
     // EJ publishes −1 for the whole run and both seasons, then an "average" of −1.5
     // rounded to −2; −2 is the overall score it states, so it is the one used.
-    name: 'Less outflow (−10%)',
+    name: scenarioName('less'),
     color: voting.scenario.lessOutflow,
     scores: [null, null, -2, null, -2],
     provisional: NOT_INFERRED,
   },
   {
-    name: 'Historical Baseline',
+    name: scenarioName('hist'),
     color: voting.scenario.businessAsUsual,
     scores: [null, null, 0, null, 0],
     provisional: NOT_INFERRED,
   },
 ]
 
-/** Short team names for the "<team> first" preset labels, in TEAMS order. */
-const PRESET_TEAM_NAMES = ['Ecology', 'Recreation', 'Justice', 'Economy', 'Eco-cultural']
 const FIRST_WEIGHT = 2
 const OTHERS_WEIGHT = 0.5
 
 /** Equal, plus one "<team> first" lens per team: that team ×2, everyone else ×½. */
 export const WEIGHT_PRESETS: { name: string; weights: Weights }[] = [
   { name: 'Equal', weights: EQUAL_WEIGHTS },
-  ...PRESET_TEAM_NAMES.map((name, teamIndex) => ({
-    name: `${name} first`,
+  ...TEAMS.map(({ key }, teamIndex) => ({
+    name: `${teamShortName(key, 'weightPresets')} first`,
     weights: TEAMS.map((_, i) => (i === teamIndex ? FIRST_WEIGHT : OTHERS_WEIGHT)),
   })),
 ]

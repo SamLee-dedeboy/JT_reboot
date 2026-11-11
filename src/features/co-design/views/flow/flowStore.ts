@@ -257,15 +257,6 @@ export const combinationState = {
   },
 }
 
-export const uiState = {
-  get view_mode() {
-    return state.view_mode
-  },
-  set view_mode(value: boolean) {
-    set('view_mode', value)
-  },
-}
-
 export const sectionState = {
   get category_options() {
     return state.category_options

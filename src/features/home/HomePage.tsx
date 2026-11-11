@@ -1,17 +1,24 @@
 import { Box } from '@mui/material'
 import { lazy, Suspense } from 'react'
+import { HOME_PHOTOS, HOME_RAIL_ITEMS } from '../../content/home'
 import Footer from '../../ui/Footer'
+import NavRail from '../../ui/NavRail'
 import Navbar from '../../ui/Navbar'
-import WhatIfPanel from './components/01_WhatIfPanel'
-import FuturesPanel from './components/02_FuturesPanel'
-import StakesPanel from './components/03_StakesPanel'
-import WorksPanel from './components/04_WorksPanel'
+import RailGrid from '../../ui/RailGrid'
 import HomeImagePanel from './components/HomeImagePanel'
-import HomeNavRail from './components/HomeNavRail'
+import { FuturesPanel, StakesPanel, WhatIfPanel, WorksPanel } from './components/HomePanels'
 import PanelSlant from './components/PanelSlant'
 import { navigation } from '../../theme'
 
-const HeroMap = lazy(() => import('../../map/instances/HeroMap'))
+const HeroMap = lazy(() => import('./components/HeroMap'))
+
+/** Each narrative panel's color; the slants into and out of a panel take the same one. */
+const panelBg = {
+  whatIf: '#1e4b56',
+  futures: 'base.500',
+  stakes: 'base.800',
+  works: 'base.900',
+}
 
 export default function HomePage() {
   return (
@@ -21,8 +28,8 @@ export default function HomePage() {
         <Box
           sx={(theme) => ({
             position: 'relative',
+            // The page's left gutter: the hero title, the rail and every panel's text line up on it.
             '--home-rail-inset': theme.spacing(3),
-            '--home-panel-rail-column': '13rem',
             [theme.breakpoints.up('md')]: { '--home-rail-inset': theme.spacing(8) },
             [theme.breakpoints.up('lg')]: { '--home-rail-inset': theme.spacing(10) },
           })}
@@ -51,61 +58,53 @@ export default function HomePage() {
             </Suspense>
           </Box>
           <Box sx={{ position: 'relative' }}>
-            <Box
+            {/* The rail rides over every panel below the hero, in the same rail column. */}
+            <RailGrid
+              rail={
+                <NavRail
+                  items={HOME_RAIL_ITEMS}
+                  ariaLabel="Explore the home page"
+                  variant="sticky"
+                />
+              }
               sx={(theme) => ({
                 position: 'absolute',
-                top: 0,
-                bottom: 0,
+                inset: 0,
                 zIndex: 3,
                 pointerEvents: 'none',
-                display: { xs: 'none', lg: 'block' },
+                // The dot's center sits on the gutter line.
                 pl: `calc(var(--home-rail-inset) - ${theme.spacing(1.125 / 2)} + 1px)`,
                 pt: '4.5rem',
               })}
-            >
-              <HomeNavRail />
-            </Box>
-            <PanelSlant color="#1e4b56" attachment="before" tilt="up-right" />
-            <WhatIfPanel />
-            <PanelSlant color="#1e4b56" attachment="after" tilt="down-right" />
+            />
+            <PanelSlant color={panelBg.whatIf} attachment="before" tilt="up-right" />
+            <WhatIfPanel bg={panelBg.whatIf} />
+            <PanelSlant color={panelBg.whatIf} attachment="after" tilt="down-right" />
             <HomeImagePanel
-              id="futures-photo"
-              ariaLabel="What is a just transition?"
-              image="images/community-fishing.jpg"
+              photo={HOME_PHOTOS.justTransition}
               textPositionY="35%"
               backgroundSize={{ xs: 'cover', md: 'cover', lg: '130% auto' }}
               backgroundPosition={{ xs: '62% center', md: 'center 57%', lg: '0% 35%' }}
-              text="The term Just Transition is used in the domains of climate, energy, and environmental justice and refers to efforts to reduce inequity in society. This project seeks to advance such efforts by democratizing science and decision making in the Delta through a participatory scenario planning process."
-              buttonLabel="What is a just transition?"
             />
-            <PanelSlant color="base.500" attachment="before" tilt="down-right" />
-            <FuturesPanel />
-            <PanelSlant color="base.500" attachment="after" tilt="down-right" />
+            <PanelSlant color={panelBg.futures} attachment="before" tilt="down-right" />
+            <FuturesPanel bg={panelBg.futures} />
+            <PanelSlant color={panelBg.futures} attachment="after" tilt="down-right" />
             <HomeImagePanel
-              id="stakes-photo"
-              ariaLabel="Participatory scenario planning"
-              image="images/exhibit.jpg"
+              photo={HOME_PHOTOS.scenarioPlanning}
               backgroundPosition={{ xs: '62% center', md: 'center 38%', lg: 'center 35%' }}
               textWidth="60ch"
-              text="By envisioning diverse ways in which climate, governance, and ecosystems might co-evolve, scenario-based planning offers tools to reflect on current actions and goals, and in turn, fosters shared learning and socio-technical innovation."
-              buttonLabel="Participatory Scenario Planning"
-              buttonHref="https://delta-just-transitions-ucdavis.hub.arcgis.com/pages/scenario-planning"
             />
-            <PanelSlant color="base.800" attachment="before" tilt="down-right" />
-            <StakesPanel />
-            <PanelSlant color="base.800" attachment="after" tilt="up-right" />
+            <PanelSlant color={panelBg.stakes} attachment="before" tilt="down-right" />
+            <StakesPanel bg={panelBg.stakes} />
+            <PanelSlant color={panelBg.stakes} attachment="after" tilt="up-right" />
             <HomeImagePanel
-              id="works-photo"
-              ariaLabel="A delta in transition"
-              image="images/tulare-basin.jpg"
+              photo={HOME_PHOTOS.deltaInTransition}
               textPositionY="50%"
               backgroundPosition={{ xs: '62% center', md: 'center 42%', lg: 'center bottom 10%' }}
-              text="Salinity management in the Delta during drought has historically been done on an emergency basis. However, with future droughts and sea-level rise more likely, long-range planning that creatively visions new futures for salinity management while holistically considering the tradeoffs associated with those futures is needed."
-              buttonLabel="A Delta in Transition"
               textWidth="75ch"
             />
-            <PanelSlant color="base.900" attachment="before" tilt="down-right" />
-            <WorksPanel />
+            <PanelSlant color={panelBg.works} attachment="before" tilt="down-right" />
+            <WorksPanel bg={panelBg.works} />
           </Box>
         </Box>
         <Footer />

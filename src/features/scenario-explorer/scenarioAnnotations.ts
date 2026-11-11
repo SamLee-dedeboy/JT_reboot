@@ -1,5 +1,4 @@
-import { bolsterGateClosures } from '../regional-summary/bolsterGateClosures'
-import { callingOnReservesReleasePeriods } from '../regional-summary/callingOnReservesReleasePeriods'
+import { bolsterGateClosures, callingOnReservesReleasePeriods } from '../scenarios/content'
 import type { DashboardMode } from './types'
 
 export interface ScenarioAnnotation {

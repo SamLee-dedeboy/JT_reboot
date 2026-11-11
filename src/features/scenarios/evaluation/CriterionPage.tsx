@@ -24,10 +24,11 @@ import { Fragment, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { Label } from '../ranking/regions/RegionLabel'
 import { REGION_SHAPES, REGION_TEAM_VIEWBOX, WATERWAY_PATH } from '../ranking/regions/regionShapes'
-import { jtSpacing } from '../../../theme'
+import { jtSpacing, navigation } from '../../../theme'
 import Footer from '../../../ui/Footer'
 import Navbar from '../../../ui/Navbar'
 import StageChip from '../../../ui/StageChip'
+import { ActionButton } from '../../../ui/ActionLink'
 import PageRail from '../../../ui/PageRail'
 import TeamIcon from '../../../ui/TeamIcon'
 import {
@@ -92,17 +93,13 @@ export default function CriterionPage() {
             px: 0,
             pb: jtSpacing.section.xl,
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', lg: 'minmax(180px, .3fr) minmax(0, 1.92fr)' },
+            gridTemplateColumns: { xs: '1fr', lg: `${navigation.railColumn} minmax(0, 1fr)` },
             gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
             alignItems: 'start',
           }}
         >
           {/* Section rail: beside the content from lg up, above it on smaller screens */}
-          <PageRail
-            items={sections}
-            ariaLabel={`${team.label} sections`}
-            sx={{ pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl } }}
-          />
+          <PageRail items={sections} ariaLabel={`${team.label} sections`} />
 
           <CitationContext.Provider
             value={{ accent: color, references: criterionReferences[team.id] }}
@@ -249,25 +246,11 @@ function WhatSection({ story, accent }: SectionProps) {
           </Typography>
         ))}
       </Stack>
-      <Stack
-        direction="row"
-        useFlexGap
-        spacing={jtSpacing.gap.sm}
-        sx={{
-          gridColumn: 1,
-          justifySelf: 'start',
-          mt: jtSpacing.component.lg,
-          alignItems: 'center',
-          flexWrap: 'wrap',
-        }}
-      >
-        <Button disabled variant="outlined">
-          Read full documentation
-        </Button>
-        <Typography variant="captionSmall" sx={{ color: 'primary.main', fontStyle: 'italic' }}>
-          Forthcoming
-        </Typography>
-      </Stack>
+      <ActionButton
+        label="Read full documentation"
+        variant="outlined"
+        sx={{ gridColumn: 1, justifySelf: 'start', mt: jtSpacing.component.lg }}
+      />
     </Box>
   )
 }

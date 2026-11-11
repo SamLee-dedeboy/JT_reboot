@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import gateSchedule from '../../../../public/data/operations/bolster-and-fortify-gate-schedule.json'
 import releaseSchedule from '../../../../public/data/operations/calling-on-reserves-release-schedule.json'
 import { waterYearColor } from '../styles'
+import { WATER_YEAR_START } from '../content'
 
 const DAY_MS = 86_400_000
 
@@ -41,17 +42,22 @@ const formatCfs = (cfs: number) => signedCfs.format(cfs).replace('-', '−')
 const waterYears = [
   {
     label: 'Wet water year 2019',
-    start: '2018-10-01',
-    end: '2019-10-01',
+    start: WATER_YEAR_START.wet2019,
+    end: WATER_YEAR_START.dry2020,
     tone: waterYearColor.wet,
   },
   {
     label: 'Dry water year 2020',
-    start: '2019-10-01',
-    end: '2020-10-01',
+    start: WATER_YEAR_START.dry2020,
+    end: WATER_YEAR_START.critical2021,
     tone: waterYearColor.dry,
   },
-  { label: 'Critical', start: '2020-10-01', end: '2020-11-30', tone: waterYearColor.critical },
+  {
+    label: 'Critical',
+    start: WATER_YEAR_START.critical2021,
+    end: '2020-11-30',
+    tone: waterYearColor.critical,
+  },
 ] as const
 
 const waterYearColumns = waterYears
@@ -59,15 +65,15 @@ const waterYearColumns = waterYears
   .join(' ')
 
 const axisTicks = [
-  '2018-10-01',
+  WATER_YEAR_START.wet2019,
   '2019-01-01',
   '2019-04-01',
   '2019-07-01',
-  '2019-10-01',
+  WATER_YEAR_START.dry2020,
   '2020-01-01',
   '2020-04-01',
   '2020-07-01',
-  '2020-10-01',
+  WATER_YEAR_START.critical2021,
 ].map((date) => {
   const parsed = parseDate(date)
   const showYear = parsed.getUTCMonth() === 9

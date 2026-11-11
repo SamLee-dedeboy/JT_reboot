@@ -3,37 +3,24 @@
 // empty cells. A criterion's own words (takeaways, caveats, info cards, a scenario's
 // takeaway) live in its file in ../data/.
 //
-//   SCENARIO_LABELS   a scenario's name in the table heads, chips and sentence
 //   SCENARIO_GROUPS   the headings over the two groups of scenario columns
 //   PLACE_TRAYS       which place tabs sit together after "All together"
 //   UI                headings, buttons, legend, notes, and the words for empty cells
 //   PERIOD_MONTHS     the months behind each period, in the TIME PERIOD info card
 //
-// Criterion names on the tabs (Ecology, Recreation, …) are shared with the whole
-// site: TEAMS in ./model/teams.ts.
+// Team and scenario names are shared with the whole site: src/content/names.ts. Where
+// this table words a scenario its own way, that is a `rankingTable` variant there.
 //
 // A species name ending ", juvenile" or ", adult" is shown as the species with a
 // life-stage chip, and the map groups the stages under one tab. Keep that ending in
 // the data files to keep the chip.
 import { teamText } from './data'
-import { SCENARIO_NAME } from './model/criteria'
+import { scenarioName as siteScenarioName } from '../../../content/names'
 import type { ScenarioKey } from './model/criteria'
 import type { TeamKey } from './model/teams'
 
-/**
- * A scenario's name wherever this table shows it. Leave one out to use the site's
- * name for it (SCENARIO_NAME in ./model/criteria.ts).
- */
-export const SCENARIO_LABELS: Partial<Record<ScenarioKey, string>> = {
-  // em: 'Eco Machine',
-  // ngw: 'New Green Watershed',
-  // bf: 'Bolster & Fortify',
-  // cor: 'Calling on Reserves',
-  // tunnel: 'A Tunnel',
-  more: 'Increased Delta outflow',
-}
-
-export const scenarioName = (key: ScenarioKey) => SCENARIO_LABELS[key] ?? SCENARIO_NAME[key]
+/** A scenario's name wherever this table shows it. */
+export const scenarioName = (key: ScenarioKey) => siteScenarioName(key, 'rankingTable')
 
 /** The headings over the scenario columns' two groups, and over their chips. */
 export const SCENARIO_GROUPS = {

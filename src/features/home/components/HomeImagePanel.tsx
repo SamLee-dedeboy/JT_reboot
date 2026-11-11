@@ -1,20 +1,16 @@
 import { Box, Typography, useTheme } from '@mui/material'
 import ScrollReveal from '../../../ui/animation/ScrollReveal'
 import { assetUrl } from '../../../utils/baseUrl'
-import { HomeCta } from './HomeActions'
+import type { HOME_PHOTOS } from '../../../content/home'
+import { ActionButton } from '../../../ui/ActionLink'
 
 type ResponsiveValue<T> = T | Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', T>>
 
 interface HomeImagePanelProps {
-  id: string
-  ariaLabel: string
-  image: string
+  /** The photo, its text and its button, from src/content/home.ts. */
+  photo: (typeof HOME_PHOTOS)[keyof typeof HOME_PHOTOS]
   backgroundPosition: object
   backgroundSize?: object | string
-  text: string
-  buttonLabel: string
-  /** Route, `#anchor` or external URL; leave it out to show the button as forthcoming. */
-  buttonHref?: string
   textWidth?: string
   /** Vertical center of the text block within the image panel. */
   textPositionY?: ResponsiveValue<string | number>
@@ -22,14 +18,9 @@ interface HomeImagePanelProps {
 }
 
 export default function HomeImagePanel({
-  id,
-  ariaLabel,
-  image,
+  photo,
   backgroundPosition,
   backgroundSize = 'cover',
-  text,
-  buttonLabel,
-  buttonHref,
   textWidth = '75ch',
   textPositionY = '50%',
   textShadow = false,
@@ -39,14 +30,13 @@ export default function HomeImagePanel({
   return (
     <Box
       component="section"
-      id={id}
-      data-home-section="image"
-      aria-label={ariaLabel}
+      id={photo.id}
+      aria-label={photo.link.label}
       sx={{
         position: 'relative',
         zIndex: 4,
         height: '110dvh',
-        backgroundImage: `linear-gradient(90deg, ${theme.palette.translucent.blackShadow}, transparent 58%), url(${assetUrl(image)})`,
+        backgroundImage: `linear-gradient(90deg, ${theme.palette.translucent.blackShadow}, transparent 58%), url(${assetUrl(photo.image)})`,
         backgroundSize,
         backgroundPosition,
       }}
@@ -57,10 +47,7 @@ export default function HomeImagePanel({
           top: textPositionY,
           transform: 'translateY(-50%)',
           width: '100%',
-          pl: {
-            xs: 'var(--home-rail-inset)',
-            lg: `var(--home-rail-inset)`,
-          },
+          pl: 'var(--home-rail-inset)',
           pr: 'var(--home-rail-inset)',
         }}
       >
@@ -75,10 +62,10 @@ export default function HomeImagePanel({
               textShadow: textShadow ? `0 1px 3px ${theme.palette.translucent.textShadow}` : 'none',
             }}
           >
-            {text}
+            {photo.text}
           </Typography>
           <Box sx={{ mt: theme.jtSpacing.component.lg }}>
-            <HomeCta label={buttonLabel} href={buttonHref} />
+            <ActionButton {...photo.link} />
           </Box>
         </ScrollReveal>
       </Box>

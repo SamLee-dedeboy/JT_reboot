@@ -3,7 +3,8 @@ import { Box } from '@mui/material'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import Map, { type MapMouseEvent, type MapProps, type MapRef } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { DELTA_MAP_STYLE, fillParentStyle, type MapViewState } from './mapCameraView'
+import type { MapViewState } from './cameras'
+import { DELTA_MAP_STYLE, fillParentStyle } from './mapStyles'
 import { resolveMapStyle } from './offlineBasemapStyle'
 
 type BaseMapProps = Omit<

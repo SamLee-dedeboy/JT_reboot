@@ -4,12 +4,13 @@ import { Box, Button, Stack, Typography, useTheme } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { assetUrl } from '../../utils/baseUrl'
 import { navigation } from '../../theme'
+import { scenarioName } from '../../content/names'
 
 const variations = [
   {
     key: 'current',
     eyebrow: 'Current operations',
-    title: 'Business as Usual',
+    title: scenarioName('bau'),
     body: 'Begin with this starting point before changing Delta outflow assumptions.',
     gridArea: 'current',
   },

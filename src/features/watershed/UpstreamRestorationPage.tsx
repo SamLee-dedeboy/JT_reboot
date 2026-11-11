@@ -23,7 +23,7 @@ import { Link } from 'react-router-dom'
 import ScenarioPageHero from '../scenarios/ScenarioPageHero'
 import { SectionHeading } from '../scenarios/evaluation/evaluationComponents'
 import { evaluationCardSx } from '../scenarios/styles'
-import { jtSpacing } from '../../theme'
+import { jtSpacing, navigation } from '../../theme'
 import Footer from '../../ui/Footer'
 import Navbar from '../../ui/Navbar'
 import PageRail from '../../ui/PageRail'
@@ -105,17 +105,13 @@ export default function UpstreamRestorationPage() {
             display: 'grid',
             gridTemplateColumns: {
               xs: '1fr',
-              lg: '240px minmax(0, 1fr) minmax(360px, .92fr)',
+              lg: `${navigation.railColumn} minmax(0, 1fr) minmax(360px, .92fr)`,
             },
             gap: { xs: jtSpacing.gap.xl, lg: jtSpacing.section.md },
             alignItems: 'start',
           }}
         >
-          <PageRail
-            items={pageSections}
-            ariaLabel="Upstream restoration sections"
-            sx={{ pt: { xs: jtSpacing.component.lg, md: jtSpacing.component.xl } }}
-          />
+          <PageRail items={pageSections} ariaLabel="Upstream restoration sections" />
 
           <Stack
             spacing={jtSpacing.section.xl}

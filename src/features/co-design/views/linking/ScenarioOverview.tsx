@@ -9,6 +9,7 @@ import GraphNodeTooltip from './GraphNodeTooltip'
 import type { GraphNode } from './renderers/CodeGraphRenderer'
 import SlideIn from './SlideIn'
 import type { tScenarioData } from './types'
+import { scenarioName } from '../../../../content/names'
 
 const loadingPulse = keyframes`
   0%, 100% { transform: scale(1); opacity: 0.3; }
@@ -97,7 +98,7 @@ export default function ScenarioOverview({
                 onSelectScenario(next)
               }}
             >
-              {scenario.name === 'Tunnel Vision' ? 'A Tunnel' : scenario.name}
+              {scenario.name === 'Tunnel Vision' ? scenarioName('tunnel') : scenario.name}
             </ScenarioButton>
           ))}
         </Box>

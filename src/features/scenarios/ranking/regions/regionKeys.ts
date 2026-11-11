@@ -57,8 +57,3 @@ export const REGION_DATA_KEY: Partial<Record<TeamKey, Record<string, string>>> =
   recreation: RECREATION_REGION_KEY,
   economy: ECONOMY_ZONE_KEY,
 }
-
-/** True where a team's places can be drawn: it has outlines and they key into its data. */
-export function hasRegionMap(team: TeamKey): boolean {
-  return !!REGION_DATA_KEY[team]
-}

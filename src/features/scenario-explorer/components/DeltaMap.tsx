@@ -6,7 +6,8 @@ import { polygonContains } from 'd3'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
-import { SCENARIO_EXPLORER_MAP_STYLE } from '../mapConfig'
+import { EXPLORER_BOUNDS } from '../../../map/cameras'
+import { SALINITY_MAP_STYLE } from '../../../map/mapStyles'
 import { labelFontLayout, resolveMapStyle } from '../../../map/offlineBasemapStyle'
 import { explorerControl, palette } from '../../../theme/index'
 import { useCompactExplorer } from '../explorerType'
@@ -19,11 +20,6 @@ import type {
   HistogramBrush,
   ScenarioDataset,
 } from '../types'
-
-const MAP_BOUNDS: mapboxgl.LngLatBoundsLike = [
-  [-122.82, 37.8],
-  [-121.1, 38.36],
-]
 
 interface MapCanvasProps {
   data: ScenarioDataset
@@ -269,8 +265,8 @@ function MapCanvas({
     if (!containerRef.current) return
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: resolveMapStyle(SCENARIO_EXPLORER_MAP_STYLE),
-      bounds: MAP_BOUNDS,
+      style: resolveMapStyle(SALINITY_MAP_STYLE),
+      bounds: EXPLORER_BOUNDS,
       fitBoundsOptions: { padding: 10 },
       attributionControl: false,
     })

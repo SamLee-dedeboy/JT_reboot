@@ -33,6 +33,8 @@ import type { D1641Dataset, DashboardMode, RangeMode, Scenario, ScenarioDataset 
 import ExplorerInfoPopover from './ExplorerInfoPopover'
 import { ControlLabel, InfoButton } from './controls'
 import { overlayChipSx, segmentedSx, smallIconSx } from './controlStyles'
+import { scenarioCodeForLabel } from '../../../content/names'
+import { WATER_YEAR_START } from '../../scenarios/content'
 
 const DEFAULT_WIDTH = 900
 const DEFAULT_HEIGHT = 390
@@ -104,23 +106,7 @@ const TIMEFRAME_OPTIONS: Array<{ key: TimeframeFocus; label: string }> = [
 
 const regionalSummaryCache = new WeakMap<ScenarioDataset, Map<string, SeriesSummary>>()
 
-const SCENARIO_ABBREVIATIONS: Record<string, string> = {
-  'Business as Usual': 'BAU',
-  'Bolster & Fortify': 'B&F',
-  'Calling on Reserves': 'COR',
-  'A Tunnel': 'TUN',
-  'Eco Machine': 'ECO',
-  'New Green Watershed': 'NGW',
-  'Baseline (SLR)': 'BAU',
-  'Bolster & Fortify (SLR)': 'B&F',
-  'Eco Machine (SLR)': 'ECO',
-  'New Green Watershed (SLR)': 'NGW',
-  'Business As Usual': 'BAU',
-  '+30% Delta outflow': '+30% outflow',
-  '-10% Delta outflow': '-10% outflow',
-}
-
-const abbreviateScenario = (label: string) => SCENARIO_ABBREVIATIONS[label] ?? label
+const abbreviateScenario = (label: string) => scenarioCodeForLabel(label, { keepSlr: false })
 
 function ChartSvg({
   data,
@@ -272,8 +258,8 @@ function ChartSvg({
   const finalDateIndex = data.dates.length - 1
   const periods = (() => {
     if (dashboardMode === 'rma-schism') {
-      const dryStart = boundaryIndex('2019-10-01')
-      const criticalStart = boundaryIndex('2020-10-01')
+      const dryStart = boundaryIndex(WATER_YEAR_START.dry2020)
+      const criticalStart = boundaryIndex(WATER_YEAR_START.critical2021)
       return dryStart >= 0 && criticalStart >= 0
         ? [
             { start: 0, end: dryStart, label: 'Wet year' },
@@ -283,8 +269,8 @@ function ChartSvg({
         : []
     }
     if (dashboardMode === 'tiered-outflows') {
-      const criticalStart = boundaryIndex('2020-10-01')
-      const secondCriticalStart = boundaryIndex('2021-10-01')
+      const criticalStart = boundaryIndex(WATER_YEAR_START.critical2021)
+      const secondCriticalStart = boundaryIndex(WATER_YEAR_START.critical2022)
       return criticalStart >= 0 && secondCriticalStart >= 0
         ? [
             { start: 0, end: criticalStart, label: 'Dry year' },
@@ -294,8 +280,8 @@ function ChartSvg({
         : []
     }
     if (dashboardMode === 'schism-runs') {
-      const dryStart = boundaryIndex('2019-10-01')
-      const criticalStart = boundaryIndex('2020-10-01')
+      const dryStart = boundaryIndex(WATER_YEAR_START.dry2020)
+      const criticalStart = boundaryIndex(WATER_YEAR_START.critical2021)
       return dryStart >= 0 && criticalStart >= 0
         ? [
             { start: 0, end: dryStart, label: 'Wet year' },
@@ -304,8 +290,8 @@ function ChartSvg({
           ]
         : []
     }
-    const dryStart = boundaryIndex('2019-10-01')
-    const criticalStart = boundaryIndex('2020-10-01')
+    const dryStart = boundaryIndex(WATER_YEAR_START.dry2020)
+    const criticalStart = boundaryIndex(WATER_YEAR_START.critical2021)
     return dryStart >= 0 && criticalStart >= 0
       ? [
           { start: 0, end: dryStart, label: 'Wet year' },

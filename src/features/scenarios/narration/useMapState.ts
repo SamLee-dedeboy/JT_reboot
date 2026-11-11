@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Config, MapScope } from '../../../map/layers/scenarios/config'
+import type { Config, MapScope } from '../../../map/scenarios/config'
 import { map } from '../../../theme'
 
 interface MapState {

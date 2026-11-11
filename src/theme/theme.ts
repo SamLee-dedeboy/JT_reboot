@@ -38,6 +38,8 @@ export const navigation = {
   }),
   /** Where an in-page "On this page" rail pins: below the navbar and a sticky tab bar. */
   pageRailTop: 148,
+  /** The section rail's column, beside page content from lg up: one width on every page. */
+  railColumn: 'minmax(180px, 220px)',
   desktopButtonMinWidth: 140,
   activeBorder: `1px solid ${palette.translucent.primaryGreen}`,
   activeBackground: palette.translucent.primaryGreen,
