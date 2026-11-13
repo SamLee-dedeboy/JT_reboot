@@ -4,7 +4,6 @@ import { map } from '@/theme'
 import { assetUrl } from '@/utils/baseUrl'
 import { DELTA_START_VIEW, STORY_BOUNDS, STORY_MAX_BOUNDS, type MapBounds } from '../cameras'
 import { HERO_MAP_STYLE } from '../mapStyles'
-import { labelFontLayout } from '../offlineBasemapStyle'
 import { flowArrows } from './flowArrows'
 import { scenarioMarkerIds, scenarioPatternIds, type ScenarioPattern } from './patterns'
 
@@ -64,7 +63,6 @@ export interface SourceConfig {
   type: 'vector' | 'raster-array' | 'geojson'
   url?: string
   data?: string | FeatureCollection
-  offlineData?: string
   tileSize?: number
   layers: LayerProps[]
   activation?: 'adaptation'
@@ -531,7 +529,6 @@ const newGreenWatershedHabitats: SourceConfig = {
   id: 'scenario-ngw-delta-habitats',
   type: 'vector',
   url: 'mapbox://justtransition.i7mkqy',
-  offlineData: assetUrl('/data/geospatial-assets/scenarios/new-green-watershed/habitats.geojson'),
   visibilityScope: 'delta',
   activation: 'adaptation',
   selectableProperty: 'type',
@@ -603,7 +600,6 @@ const newGreenWatershedRiparian: SourceConfig = {
   id: 'scenario-ngw-riparian',
   type: 'vector',
   url: 'mapbox://justtransition.esdnqq',
-  offlineData: assetUrl('/data/geospatial-assets/scenarios/new-green-watershed/riparian.geojson'),
   visibilityScope: 'delta',
   activation: 'adaptation',
   selectionKey: 'riparian',
@@ -628,9 +624,6 @@ const legalDeltaBoundary: SourceConfig = {
   id: 'legal-delta-boundary',
   type: 'vector',
   url: 'mapbox://justtransition.xprtiz',
-  offlineData: assetUrl(
-    '/data/geospatial-assets/scenarios/new-green-watershed/legal-delta-boundary.geojson',
-  ),
   visibilityScope: 'delta',
   layers: [
     {
@@ -654,9 +647,6 @@ const statewideWatershedShade: SourceConfig = {
   id: 'statewide-watershed-shade',
   type: 'vector',
   url: 'mapbox://justtransition.cskd9m',
-  offlineData: assetUrl(
-    '/data/geospatial-assets/scenarios/new-green-watershed/watershed-shade.geojson',
-  ),
   visibilityScope: 'statewide',
   layers: [
     {
@@ -680,9 +670,6 @@ const statewideWatershedRegions: SourceConfig = {
   id: 'statewide-watershed-regions',
   type: 'vector',
   url: 'mapbox://justtransition.92mkk4',
-  offlineData: assetUrl(
-    '/data/geospatial-assets/scenarios/new-green-watershed/watershed-region.geojson',
-  ),
   visibilityScope: 'statewide',
   layers: [
     {
@@ -739,7 +726,6 @@ const statewideWatershedRegionLabels: SourceConfig = {
       maxzoom: 22,
       layout: {
         'text-field': ['get', 'name'],
-        ...labelFontLayout(),
         'text-size': 12,
         'text-max-width': 12,
         'text-allow-overlap': false,
@@ -757,9 +743,6 @@ const statewideIndigenousTerritories: SourceConfig = {
   id: 'statewide-indigenous-territories',
   type: 'vector',
   url: 'mapbox://justtransition.5q5r23',
-  offlineData: assetUrl(
-    '/data/geospatial-assets/scenarios/new-green-watershed/indigenous-territories.geojson',
-  ),
   visibilityScope: 'statewide-ecocultural',
   layers: [
     {
@@ -784,7 +767,6 @@ const statewideIndigenousTerritories: SourceConfig = {
       maxzoom: 22,
       layout: {
         'text-field': ['get', 'TRIBE_NAME'],
-        ...labelFontLayout(),
         'text-size': 12,
         'text-max-width': 10,
       },

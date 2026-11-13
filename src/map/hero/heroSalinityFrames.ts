@@ -6,7 +6,6 @@
 // features at regional zooms. Kept in a non-component module so it can be
 // imported without tripping the react-refresh "only export components" lint
 // rule.
-import { assetUrl } from '@/utils/baseUrl'
 
 export const HERO_SALINITY_FRAME_COUNT = 155
 export const HERO_SALINITY_SOURCE_LAYER = 'salinity'
@@ -18,8 +17,6 @@ export interface HeroSalinityPair {
   /** Last global frame (0-154) covered by this tileset, inclusive. */
   frameEnd: number
   tilesetUrl: string
-  /** Bundled copy of the tileset; built by scripts/build-offline-salinity-tiles.py. */
-  offlineTilesPath: string
   sourceId: string
   layerId: string
 }
@@ -35,7 +32,6 @@ function buildPair(pairIndex: number, frameStart: number, frameEnd: number): Her
     frameStart,
     frameEnd,
     tilesetUrl: `mapbox://justtransition.salinity_vector_pair_${suffix}`,
-    offlineTilesPath: `/data/salinity/home-animation/pair_${suffix}/{z}/{x}/{y}.pbf`,
     sourceId: `salinity-vector-pair-${suffix}-source`,
     layerId: `salinity-vector-pair-${suffix}-fill`,
   }
@@ -60,21 +56,6 @@ export const HERO_SALINITY_PAIRS: readonly HeroSalinityPair[] = [
   buildPair(9, 127, 140),
   buildPair(10, 141, 154),
 ]
-
-/**
- * Source props for a pair's bundled tiles. The URL is absolute because tile
- * requests run in a worker, where a path would not resolve against the page.
- * The zoom range and bounds match the build script, so the map never asks for
- * a tile that was not built.
- */
-export function getOfflineSalinitySourceProps(pair: HeroSalinityPair) {
-  return {
-    tiles: [window.location.origin + assetUrl(pair.offlineTilesPath)],
-    minzoom: 7,
-    maxzoom: 10,
-    bounds: [-123.005155, 37.402516, -121.255919, 38.803441] as [number, number, number, number],
-  }
-}
 
 /** Wraps a frame index into the valid [0, HERO_SALINITY_FRAME_COUNT) range. */
 export function normalizeSalinityFrame(frame: number): number {

@@ -2,8 +2,6 @@
 
 Interactive salinity comparison. The public route (`/pages/scenario-explorer`) offers four modes: 01 Adaptation Scenario Comparison, 02 Alternative Delta Outflow, 03 Sea Level Rise Adaptation Scenario Comparison, and 04 Sea Level Rise vs. Current Comparison. The internal and D-1641 routes also offer the model and run comparisons.
 
-Append `?map=offline` to switch every map on the site to the network-free exhibit mode (`?offline=1` remains a compatibility alias). See `src/map/offlineBasemapStyle.ts` and the regional summary README for its data and rebuild steps.
-
 ## Station spread
 
 The Station spread control decides which stations count on each date: all of them, or those inside the central 90% or 50% of that date's values. The timeline's line, its shaded band, and the current average deviation all use that set (`summarizeSpread` in `format.ts`). The percent reading still divides by the whole region's base-scenario mean unless a lasso is active.

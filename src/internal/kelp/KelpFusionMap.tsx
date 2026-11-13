@@ -8,7 +8,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { Box } from '@mui/material'
-import { isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import DeltaStationPointsLayer from '../delta-stations/DeltaStationPointsLayer'
 import BaseMap from '../../map/BaseMap'
 import { DELTA_INITIAL_VIEW_STATE } from '../delta-stations/deltaStationConstants'
@@ -197,7 +196,7 @@ export default function KelpFusionMap({
         initialViewState={DELTA_INITIAL_VIEW_STATE}
         onMapReady={(map: MapboxMap) => setMapObj(map)}
       >
-        {!isOfflineMapEnabled() && <DeltaStationPointsLayer />}
+        <DeltaStationPointsLayer />
       </BaseMap>
 
       {overlayReady && mapObj && (

@@ -106,7 +106,7 @@
     },
     {
       "path": "tiered-outflows/rivers.geojson",
-      "source": "public/data/geospatial-assets/basemap/offline-basemap.geojson named waterways, clipped to the Bay-Delta",
+      "source": "OpenStreetMap named waterways (from the retired offline basemap extract), clipped to the Bay-Delta",
       "features": 2,
       "bytes": 63057,
       "delivery": "geojson"

@@ -1,4 +1,4 @@
-"""Populate offline scenario GeoJSON from the source packages in JT_exploration.
+"""Populate scenario GeoJSON from the source packages in JT_exploration.
 
 Requires the small `pyshp` package. All outputs are WGS84 GeoJSON. The converter
 handles the one Web Mercator source currently in the library without requiring
@@ -74,7 +74,7 @@ EXISTING_PROVENANCE = {
     ),
     "new-green-watershed/watershed-region-labels.geojson": "curated runtime label points",
     "tiered-outflows/rivers.geojson": (
-        "public/data/geospatial-assets/basemap/offline-basemap.geojson named waterways, "
+        "OpenStreetMap named waterways (from the retired offline basemap extract), "
         "clipped to the Bay-Delta"
     ),
     "tiered-outflows/sacramento-river-mainstem.geojson": (

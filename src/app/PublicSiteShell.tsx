@@ -1,5 +1,4 @@
 import AppRouter from './AppRouter'
-import Screensaver from './Screensaver'
 import { ScrollToTop } from '@/ui'
 
 export default function PublicSiteShell() {
@@ -7,7 +6,6 @@ export default function PublicSiteShell() {
     <>
       <ScrollToTop />
       <AppRouter />
-      <Screensaver />
     </>
   )
 }

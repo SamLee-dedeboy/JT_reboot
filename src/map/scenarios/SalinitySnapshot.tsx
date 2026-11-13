@@ -2,12 +2,7 @@
 // for it. It sits under the basemap labels, so scenario layers and annotations stay on top.
 import { useEffect, useState } from 'react'
 import { Layer, Source, useMap } from 'react-map-gl/mapbox'
-import { isOfflineMapEnabled } from '../offlineBasemapStyle'
-import {
-  HERO_SALINITY_SOURCE_LAYER,
-  getOfflineSalinitySourceProps,
-  getSalinityPairForFrame,
-} from '../hero/heroSalinityFrames'
+import { HERO_SALINITY_SOURCE_LAYER, getSalinityPairForFrame } from '../hero/heroSalinityFrames'
 import { SALINITY_ACTIVE_OPACITY } from '../hero/heroSalinityAnimation'
 
 export default function SalinitySnapshot({ frame }: { frame: number }) {
@@ -47,11 +42,7 @@ export default function SalinitySnapshot({ frame }: { frame: number }) {
   const pair = getSalinityPairForFrame(frame)
 
   return (
-    <Source
-      id={pair.sourceId}
-      type="vector"
-      {...(isOfflineMapEnabled() ? getOfflineSalinitySourceProps(pair) : { url: pair.tilesetUrl })}
-    >
+    <Source id={pair.sourceId} type="vector" url={pair.tilesetUrl}>
       <Layer
         id={pair.layerId}
         beforeId={firstLabelLayerId}

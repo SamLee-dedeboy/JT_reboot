@@ -1,6 +1,6 @@
 // The home hero's map on its own: the Suisun Bay camera at a breakpoint-tuned
 // zoom with the 155-frame salinity animation playing over the hero style.
-// HeroMap places it under the title; the screensaver fills the viewport with it.
+// HeroMap places it under the title.
 import { useCallback, useState } from 'react'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { useMediaQuery, useTheme } from '@mui/material'

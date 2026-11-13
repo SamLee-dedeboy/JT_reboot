@@ -8,7 +8,6 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 import { formatDate, formatNumber, valueColor } from '../format'
 import { EXPLORER_BOUNDS } from '@/map/cameras'
 import { SALINITY_MAP_STYLE } from '@/map/mapStyles'
-import { labelFontLayout, resolveMapStyle } from '@/map/offlineBasemapStyle'
 import { explorerControl, palette } from '@/theme'
 import { useCompactExplorer } from '../explorerType'
 import { smallIconSx } from './controlStyles'
@@ -265,7 +264,7 @@ function MapCanvas({
     if (!containerRef.current) return
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: resolveMapStyle(SALINITY_MAP_STYLE),
+      style: SALINITY_MAP_STYLE,
       bounds: EXPLORER_BOUNDS,
       fitBoundsOptions: { padding: 10 },
       attributionControl: false,
@@ -343,7 +342,6 @@ function MapCanvas({
         filter: ['in', ['get', 'd1641State'], ['literal', ['compliant', 'exceeded']]],
         layout: {
           'text-field': ['match', ['get', 'd1641State'], 'exceeded', '◆', '◇'],
-          ...labelFontLayout(),
           'text-size': [
             'match',
             ['get', 'd1641State'],
@@ -381,7 +379,6 @@ function MapCanvas({
         filter: ['==', ['get', 'd1641State'], 'exceeded'],
         layout: {
           'text-field': ['get', 'exceedanceScenarios'],
-          ...labelFontLayout(),
           'text-size': emphasizeD1641Stations ? 16 : 14,
           'text-offset': [0.85, -0.85],
           'text-allow-overlap': true,
@@ -462,7 +459,6 @@ function MapCanvas({
           filter: ['==', ['get', 'brushed'], 1],
           layout: {
             'text-field': ['to-string', ['get', 'station_id']],
-            ...labelFontLayout(),
             'text-size': 12,
             'text-offset': [0, 1.35],
             'text-anchor': 'top',

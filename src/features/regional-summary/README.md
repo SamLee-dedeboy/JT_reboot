@@ -46,32 +46,6 @@ that modeling results are coming soon beneath the action row.
 `RegionalSalinityExplorer.tsx` implements the second stage as a touchscreen
 mockup informed by the sibling `JT_exploration/RMA/artwork` project.
 
-### Offline basemap
-
-`npm run build:kiosk` builds the complete site in offline map mode
-(`.env.kiosk` sets `VITE_MAP_MODE=offline`); serve it with `npm run preview`. In other
-builds, append `?map=offline` to any route (`?offline=1` remains an alias) to replace
-remote Mapbox Studio styles across the site with the self-contained exhibit basemap in
-`src/map/offlineBasemapStyle.ts`. Every map shares one mode and style: the scenario
-explorer's water color with the common land, road, and label specs. It copies the online land, landuse, road, water, and label specs, and load only
-files served by this application:
-
-- `public/data/geospatial-assets/basemap/offline-basemap.geojson`: OpenStreetMap roads,
-  settlement labels (with a Mapbox-style `symbolrank`), and bay labels.
-- `public/data/geospatial-assets/basemap/offline-landuse.geojson`: OpenStreetMap
-  farmland, wood, park, residential, and lake polygons.
-- `public/fonts/`: bundled Proxima Nova Regular/Semibold glyph ranges used by
-  the offline symbol layers.
-
-All regional polygons, station evidence, and strategy-guide geometries continue
-to use the existing bundled files. `BaseMap` requires a Mapbox token only when
-its resolved style is a `mapbox://` URL.
-
-To refresh the OpenStreetMap layers, run `node scripts/build-offline-basemap.mjs`.
-It queries Overpass (`scripts/offline-basemap.overpassql` plus tiled landuse
-queries), caches responses in `.cache/offline-basemap/`, and rewrites both
-GeoJSON files.
-
 - The explanation header occupies the top `15dvh`.
 - The interactive map occupies the bottom `85dvh`.
 - Entering the map from scenario selection opens a skippable, scenario-specific

@@ -6,18 +6,17 @@ The Mapbox maps the public site draws. Nothing here imports from a feature or fr
 
 ## Shared pieces
 
-| File                     | What it does                                                                                    |
-| ------------------------ | ----------------------------------------------------------------------------------------------- |
-| `BaseMap.tsx`            | The one Mapbox map component every map starts from: access token, style, offline basemap        |
-| `cameras.ts`             | Every camera position on the public site, grouped by page. Change a view here                   |
-| `mapStyles.ts`           | The Mapbox styles: Delta, hero, salinity results                                                |
-| `offlineBasemapStyle.ts` | Offline mode: swaps Mapbox's hosted tiles for bundled ones when the site runs without a network |
+| File           | What it does                                                                  |
+| -------------- | ----------------------------------------------------------------------------- |
+| `BaseMap.tsx`  | The one Mapbox map component every map starts from: access token and style    |
+| `cameras.ts`   | Every camera position on the public site, grouped by page. Change a view here |
+| `mapStyles.ts` | The Mapbox styles: Delta, hero, salinity results                              |
 
 ## `hero/`: the home page's animated salinity map
 
 | File                       | What it does                                                                                    |
 | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| `HeroSalinityMap.tsx`      | The map behind the home page title and the screensaver: Suisun Bay camera plus the animation    |
+| `HeroSalinityMap.tsx`      | The map behind the home page title: Suisun Bay camera plus the animation                        |
 | `HeroSalinityLayer.tsx`    | Plays Water Year 2019's 155 salinity frames, crossfading one tileset into the next              |
 | `heroSalinityFrames.ts`    | Which frames sit in which of the 11 tilesets, and their source and layer ids                    |
 | `heroSalinityAnimation.ts` | The playback steps (ready check, apply a frame, advance), kept apart so they can be unit tested |

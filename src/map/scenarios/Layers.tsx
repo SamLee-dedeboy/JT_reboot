@@ -1,9 +1,7 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
 import { useEffect, useState } from 'react'
 import { Layer, Source, useMap } from 'react-map-gl/mapbox'
-import type { LayerProps } from 'react-map-gl/mapbox'
 import { map } from '@/theme'
-import { isOfflineMapEnabled } from '../offlineBasemapStyle'
 import { layersBySlug, type MapScope } from './config'
 import { registerScenarioMarkers, registerScenarioPatterns, scenarioMarkerIds } from './patterns'
 
@@ -16,12 +14,6 @@ interface LayersProps {
   hiddenSelectionKeys?: string[]
 }
 
-function withoutSourceLayer(layer: LayerProps): LayerProps {
-  const localLayer = { ...layer }
-  delete localLayer['source-layer']
-  return localLayer
-}
-
 export default function Layers({
   scenarioSlug,
   showAdaptationLayers = false,
@@ -31,9 +23,7 @@ export default function Layers({
 }: LayersProps) {
   const { current: mapRef } = useMap()
   const [patternsReady, setPatternsReady] = useState(false)
-  const offline = isOfflineMapEnabled()
   const sources = (layersBySlug[scenarioSlug] ?? []).filter((source) => {
-    if (offline && source.url?.startsWith('mapbox://') && !source.offlineData) return false
     if (source.selectionKey && hiddenSelectionKeys?.includes(source.selectionKey)) return false
     const sourceScope = source.visibilityScope ?? 'delta'
     if (visibilityScope === 'statewide-ecocultural') {
@@ -68,17 +58,13 @@ export default function Layers({
         <Source
           key={source.id}
           id={source.id}
-          type={offline && source.offlineData ? 'geojson' : source.type}
-          {...(offline && source.offlineData
-            ? { data: source.offlineData }
-            : {
-                ...(source.url == null ? {} : { url: source.url }),
-                ...(source.data == null ? {} : { data: source.data }),
-                ...(source.tileSize == null ? {} : { tileSize: source.tileSize }),
-              })}
+          type={source.type}
+          {...(source.url == null ? {} : { url: source.url })}
+          {...(source.data == null ? {} : { data: source.data })}
+          {...(source.tileSize == null ? {} : { tileSize: source.tileSize })}
         >
           {source.layers.map((layer) => {
-            const activeLayer = offline && source.offlineData ? withoutSourceLayer(layer) : layer
+            const activeLayer = layer
             const isPatternLayer =
               activeLayer.type === 'fill' && activeLayer.paint?.['fill-pattern'] != null
 

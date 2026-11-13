@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
-import { isOfflineMapEnabled } from '../../map/offlineBasemapStyle'
 import DeltaStationPointsLayer from './DeltaStationPointsLayer'
 import { DELTA_INITIAL_VIEW_STATE } from './deltaStationConstants'
 import BaseMap, { type MapMouseEvent } from '../../map/BaseMap'
@@ -112,14 +111,11 @@ export default function DrinkingWaterMap({
         onMouseMove={handleMouseMove}
         onMouseLeave={() => setTooltip(null)}
       >
-        {/* The station tiles are remote: offline, the map shows without them. */}
-        {!isOfflineMapEnabled() && (
-          <DeltaStationPointsLayer
-            highlightedStationIndex={highlightedStationIndex}
-            unacceptableOver75={unacceptableOver75}
-            goodOver75={goodOver75}
-          />
-        )}
+        <DeltaStationPointsLayer
+          highlightedStationIndex={highlightedStationIndex}
+          unacceptableOver75={unacceptableOver75}
+          goodOver75={goodOver75}
+        />
       </BaseMap>
 
       {tooltip && (

@@ -41,7 +41,7 @@ export const RESTORED_AREAS_BOUNDS: MapBounds = [
 ]
 
 /* ---------------------------------------------------------------------------------- */
-/* Home hero and screensaver                                                          */
+/* Home hero                                                                          */
 /* ---------------------------------------------------------------------------------- */
 
 /** Suisun Bay, centered behind the home page title. */

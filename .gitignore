@@ -41,7 +41,7 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Offline basemap Overpass downloads (scripts/build-offline-basemap.mjs)
+# Tool caches
 .cache/
 
 # Non-runtime analysis outputs; keep these outside production deployments.
