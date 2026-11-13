@@ -52,7 +52,6 @@ declare module '@mui/material/styles' {
     chartSentenceValue: CSSProperties
     tableValueStrong: CSSProperties
     sentenceValueLarge: CSSProperties
-    chartColumnHead: CSSProperties
     chartAxis: CSSProperties
     chartValue: CSSProperties
     chartValueLarge: CSSProperties
@@ -161,7 +160,6 @@ declare module '@mui/material/Typography' {
     chartSentenceValue: true
     tableValueStrong: true
     sentenceValueLarge: true
-    chartColumnHead: true
     chartAxis: true
     chartValue: true
     chartValueLarge: true

@@ -83,7 +83,7 @@ export default function HybridRows() {
 
             {/* The raw ballots behind the score, ghosted by weight */}
             <Box sx={{ ...ballotGridSx, mt: 0.75 }}>
-              <Typography variant="chartColumnHead">Ballots</Typography>
+              <Typography variant="columnHead">Ballots</Typography>
               <Box sx={teamColumnsSx}>
                 {scenario.scores.map((score, i) => (
                   <ScoreCell
@@ -110,7 +110,7 @@ export default function HybridRows() {
           pr: `calc(1px + ${theme.spacing(rowPaddingX)})`,
         })}
       >
-        <Typography variant="chartColumnHead">Weights</Typography>
+        <Typography variant="columnHead">Weights</Typography>
         <Box sx={teamColumnsSx}>
           {TEAMS.map((team, i) => (
             <Box

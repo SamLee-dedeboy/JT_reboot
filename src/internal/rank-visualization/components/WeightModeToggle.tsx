@@ -21,7 +21,7 @@ export default function WeightModeToggle({
       aria-label="Weight controls"
       sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 1.5 }}
     >
-      <Typography variant="chartColumnHead" sx={{ mr: 0.5 }}>
+      <Typography variant="columnHead" sx={{ mr: 0.5 }}>
         Weights
       </Typography>
       {MODES.map((mode) => {

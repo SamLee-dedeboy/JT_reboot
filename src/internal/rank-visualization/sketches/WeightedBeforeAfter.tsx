@@ -73,14 +73,11 @@ export default function WeightedBeforeAfter() {
         }}
       >
         {/* Header row */}
-        <Typography variant="chartColumnHead" sx={{ alignSelf: 'end', pb: 1 }}>
+        <Typography variant="columnHead" sx={{ alignSelf: 'end', pb: 1 }}>
           Equal weights
         </Typography>
         <Box />
-        <Typography
-          variant="chartColumnHead"
-          sx={{ alignSelf: 'end', pb: 1, color: 'primary.main' }}
-        >
+        <Typography variant="columnHead" sx={{ alignSelf: 'end', pb: 1, color: 'primary.main' }}>
           Current weights
         </Typography>
         {teams.map((team, i) => (
@@ -105,7 +102,7 @@ export default function WeightedBeforeAfter() {
             </Typography>
           </Box>
         ))}
-        <Typography variant="chartColumnHead" sx={{ alignSelf: 'end', textAlign: 'center', pb: 1 }}>
+        <Typography variant="columnHead" sx={{ alignSelf: 'end', textAlign: 'center', pb: 1 }}>
           Wtd.
         </Typography>
 

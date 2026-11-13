@@ -26,7 +26,8 @@ function TimelineRow({
 }: {
   id?: string
   date: ReactNode
-  marker: ReactNode
+  /** The row's dot; leave it out for a row with no date of its own. */
+  marker?: ReactNode
   /** Distance from the row's top to the dot's centre, in px; the line starts or ends there. */
   markerTop: number
   first?: boolean
@@ -137,28 +138,34 @@ function Dot({ size, filled, pulse = false }: { size: number; filled: boolean; p
 
 function WorkshopRow({
   workshop,
+  year,
   latest,
   last,
 }: {
   workshop: Workshop
+  /** The year above this workshop; a workshop dated only by that year repeats nothing. */
+  year: string
   latest: boolean
   last: boolean
 }) {
+  const dated = workshop.day !== year
   return (
     <TimelineRow
       id={workshop.id}
       markerTop={16}
       last={last}
-      marker={<Dot size={latest ? 16 : 14} filled={latest} pulse={latest} />}
+      marker={dated ? <Dot size={latest ? 16 : 14} filled={latest} pulse={latest} /> : undefined}
       date={
-        <Typography
-          variant="h4"
-          component="time"
-          dateTime={workshop.isoDate}
-          sx={{ display: 'block', pt: { md: jtSpacing.component.xs } }}
-        >
-          {workshop.day}
-        </Typography>
+        dated && (
+          <Typography
+            variant="h4"
+            component="time"
+            dateTime={workshop.isoDate}
+            sx={{ display: 'block', pt: { md: jtSpacing.component.xs } }}
+          >
+            {workshop.day}
+          </Typography>
+        )
       }
     >
       <Box sx={{ pb: last ? 0 : { xs: jtSpacing.section.sm, md: jtSpacing.section.md } }}>
@@ -269,6 +276,7 @@ export default function Timeline() {
               <WorkshopRow
                 key={workshop.id}
                 workshop={workshop}
+                year={year.year}
                 latest={yearIndex === 0 && workshopIndex === 0}
                 last={yearIndex === lastYear && workshopIndex === year.workshops.length - 1}
               />

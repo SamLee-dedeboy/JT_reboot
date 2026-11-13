@@ -86,15 +86,17 @@ export default function StudioFeatureCard({
           {body}
         </Typography>
         {actionLabel && (
-          <Button
-            component="a"
-            href={actionHref}
-            variant="contained"
-            endIcon={<Icon name="arrow-down" size={18} />}
-            sx={{ alignSelf: 'flex-start', mt: 'auto' }}
-          >
-            {actionLabel}
-          </Button>
+          // Pinned to the card's foot, with clear space above it
+          <Box sx={{ mt: 'auto', pt: jtSpacing.component.md }}>
+            <Button
+              component="a"
+              href={actionHref}
+              variant="contained"
+              endIcon={<Icon name="arrow-down" size={18} />}
+            >
+              {actionLabel}
+            </Button>
+          </Box>
         )}
       </Stack>
     </Box>

@@ -24,13 +24,7 @@ import {
   type ProjectedEdge,
 } from './lib/kelpFusion'
 import { tensionToT, tensionToThickness } from './lib/tension'
-import type {
-  KelpPoint,
-  KelpSet,
-  SetStat,
-  SpgEdge,
-  WaterwayRouting,
-} from './lib/types'
+import type { KelpPoint, KelpSet, SetStat, SpgEdge, WaterwayRouting } from './lib/types'
 
 export type KelpRenderMode = 'fused' | 'graph'
 

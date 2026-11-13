@@ -270,7 +270,7 @@ function TeamPalettePicker({
         mt: theme.jtSpacing.component.sm,
       })}
     >
-      <Typography variant="chartColumnHead" sx={{ mr: 0.5 }}>
+      <Typography variant="columnHead" sx={{ mr: 0.5 }}>
         Team colors
       </Typography>
       {TEAM_PALETTES.map((option) => {

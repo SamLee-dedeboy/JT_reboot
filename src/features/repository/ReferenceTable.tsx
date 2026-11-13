@@ -22,7 +22,7 @@ export default function ReferenceTable({ references }: { references: Reference[]
         }}
       >
         {['Title', 'Source', 'Author, year'].map((head) => (
-          <Typography key={head} role="columnheader" variant="chartColumnHead">
+          <Typography key={head} role="columnheader" variant="columnHead">
             {head}
           </Typography>
         ))}
@@ -78,7 +78,7 @@ export default function ReferenceTable({ references }: { references: Reference[]
               </Typography>
               <Typography
                 role="cell"
-                variant="meta"
+                variant="body2"
                 component="span"
                 sx={{ gridColumn: { xs: 1, md: 'auto' }, color: 'base.200' }}
               >

@@ -11,6 +11,23 @@ function splitMeta(meta: string) {
   return match ? { authors: match[1], year: match[2] } : { authors: meta, year: undefined }
 }
 
+/**
+ * The authors as cited in a line: "Rudnick et al." for three or more (or a list that already
+ * ends in "et al."), "Milligan & Kraus-Polk" for two, the surname alone for one.
+ */
+function shortAuthors(authors: string) {
+  const names = authors
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean)
+  const truncated = names.some((name) => /^et\.?\s*al\.?$/i.test(name))
+  const people = names.filter((name) => !/^et\.?\s*al\.?$/i.test(name))
+  const surname = (name: string) => name.split(/\s+/).at(-1) ?? name
+  if (people.length === 0) return ''
+  if (truncated || people.length > 2) return `${surname(people[0])} et al.`
+  return people.map(surname).join(' & ')
+}
+
 function Abstract({ article }: { article: Article }) {
   return (
     <>
@@ -55,6 +72,7 @@ export default function ArticleAccordion() {
               title={article.title}
               source={article.source}
               authors={authors}
+              citation={shortAuthors(authors)}
               year={year}
               kicker={article.kicker}
               href={article.href}

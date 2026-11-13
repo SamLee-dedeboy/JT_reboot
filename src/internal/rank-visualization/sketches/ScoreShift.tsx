@@ -70,7 +70,7 @@ export default function ScoreShift() {
       >
         <Box />
         <ScaleLabels labels={['−5', '0 · Business as Usual', '+5']} />
-        <Typography variant="chartColumnHead" sx={{ textAlign: 'right' }}>
+        <Typography variant="columnHead" sx={{ textAlign: 'right' }}>
           Equal → weighted
         </Typography>
       </Box>

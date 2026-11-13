@@ -125,11 +125,13 @@ export const typography = {
     color: palette.common.white,
   },
   // A raised card's title in the heading face, such as a workshop document.
+  // A card's title: h3's regular-weight uppercase body face, a step smaller.
   cardHeading: {
-    fontFamily: fontHeading,
-    fontSize: '1.2rem',
-    lineHeight: 1.2,
-    letterSpacing: '0.02em',
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.15rem, 1rem + 0.4vw, 1.4rem)',
+    fontWeight: 400,
+    lineHeight: 1.15,
+    letterSpacing: '0.035em',
     textTransform: 'uppercase',
   },
   cardTitle: { fontFamily: fontBody, fontSize: '1.2rem', lineHeight: 1.3, fontWeight: 700 },
@@ -322,14 +324,6 @@ export const typography = {
     fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
     lineHeight: 1.25,
     fontWeight: 700,
-  },
-  chartColumnHead: {
-    fontFamily: fontBody,
-    fontSize: '0.66rem',
-    lineHeight: 1.2,
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    color: palette.base[100],
   },
   chartAxis: {
     fontFamily: fontBody,

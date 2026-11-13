@@ -17,6 +17,8 @@ export interface ArticleAccordionCardProps {
   title: string
   source: string
   authors?: string
+  /** The authors as cited in the closed row, e.g. "Rudnick et al.". */
+  citation?: string
   year?: string
   /** The abstract's label, such as "Abstract" or "Highlights". */
   kicker?: string
@@ -34,6 +36,7 @@ export default function ArticleAccordionCard({
   title,
   source,
   authors,
+  citation,
   year,
   kicker = 'Abstract',
   href,
@@ -98,11 +101,15 @@ export default function ArticleAccordionCard({
             {title}
           </Typography>
           {!open && (
-            <Typography variant="meta" component="p" sx={{ mt: jtSpacing.component.xs }}>
+            <Typography variant="body2" component="p" sx={{ mt: jtSpacing.component.xs }}>
               <Box component="span" sx={{ color: 'primary.main' }}>
                 {source}
               </Box>
-              {year && <Box component="span" sx={{ color: 'base.200' }}>{` · ${year}`}</Box>}
+              {(citation || year) && (
+                <Box component="span" sx={{ color: 'base.200' }}>
+                  {` · ${[citation, year].filter(Boolean).join(', ')}`}
+                </Box>
+              )}
             </Typography>
           )}
         </Box>
@@ -157,7 +164,7 @@ export default function ArticleAccordionCard({
                 {facts.map((fact) => (
                   <Box key={fact.label} sx={{ display: 'contents' }}>
                     <Typography
-                      variant="chartColumnHead"
+                      variant="columnHead"
                       component="dt"
                       sx={{ color: 'base.200', pt: { sm: jtSpacing.gap.xs / 2 } }}
                     >

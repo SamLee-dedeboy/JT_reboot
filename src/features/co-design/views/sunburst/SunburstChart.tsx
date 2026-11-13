@@ -483,7 +483,7 @@ function CodeSection({ label, children }: { label: string; children: ReactNode }
   return (
     <Box>
       <Typography
-        variant="chartColumnHead"
+        variant="columnHead"
         component="h4"
         sx={(theme) => ({ mb: 0.5, color: theme.coDesign.sunburst.tooltip.sectionLabel })}
       >

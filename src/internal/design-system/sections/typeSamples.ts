@@ -91,7 +91,6 @@ export const typeGroups: Array<{ label: string; variants: Record<string, TypeSam
       chartTitle: { sample: 'Overall ranking', use: 'Chart titles' },
       chartUnit: { sample: '(µS/cm)', use: 'A unit beside a chart title; keeps its case' },
       chartLabel: { sample: 'Ecology', use: 'Series labels' },
-      chartColumnHead: { sample: 'Score', use: 'Dense column heads' },
       chartAxis: { sample: '−5   0   +5', use: 'Axis ticks (base.300: below 4.5:1 on the ground)' },
       chartValue: { sample: '+2.5', use: 'Values on bars' },
       chartValueLarge: { sample: '+2.5', use: 'Values on large bars' },

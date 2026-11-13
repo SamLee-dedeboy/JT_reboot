@@ -33,7 +33,7 @@ export default function LensRankGrid() {
       <Box sx={{ display: 'grid', gridTemplateColumns: columns, gap: 0.5, alignItems: 'center' }}>
         {/* Header: equal baseline, one selectable column per lens, range */}
         <Box />
-        <Typography variant="chartColumnHead" sx={{ textAlign: 'center', pb: 0.5 }}>
+        <Typography variant="columnHead" sx={{ textAlign: 'center', pb: 0.5 }}>
           Equal
         </Typography>
         {LENSES.map((lens) => {
@@ -44,7 +44,7 @@ export default function LensRankGrid() {
               onClick={() => setSelected(lens.name)}
               aria-pressed={active}
               sx={{
-                typography: 'chartColumnHead',
+                typography: 'columnHead',
                 mb: 0.5,
                 py: 0.6,
                 borderRadius: 999,
@@ -60,7 +60,7 @@ export default function LensRankGrid() {
             </ButtonBase>
           )
         })}
-        <Typography variant="chartColumnHead" sx={{ textAlign: 'center', pb: 0.5 }}>
+        <Typography variant="columnHead" sx={{ textAlign: 'center', pb: 0.5 }}>
           Range
         </Typography>
 

@@ -424,7 +424,7 @@ function TierScale({ label, color }: { label: string; color: (theme: Theme) => s
       <Box sx={(theme) => ({ flex: 'none', width: 2, borderRadius: 1, bgcolor: color(theme) })} />
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Typography
-          variant="chartColumnHead"
+          variant="columnHead"
           sx={(theme) => ({
             writingMode: 'vertical-rl',
             transform: 'rotate(180deg)',
@@ -505,7 +505,7 @@ export default function OverallRanking({
                   )
                 }
               />
-              <Typography variant="chartColumnHead">{scoreLabel}</Typography>
+              <Typography variant="columnHead">{scoreLabel}</Typography>
             </Box>
             <Box
               component="label"
@@ -516,7 +516,7 @@ export default function OverallRanking({
                 checked={showSpread}
                 onChange={(event) => setShowSpread(event.target.checked)}
               />
-              <Typography variant="chartColumnHead">Range</Typography>
+              <Typography variant="columnHead">Range</Typography>
             </Box>
             {!rankOrderLocked && (
               <Box
@@ -528,12 +528,12 @@ export default function OverallRanking({
                   checked={rankOrder}
                   onChange={(event) => setRankOrder(event.target.checked)}
                 />
-                <Typography variant="chartColumnHead">Rank order</Typography>
+                <Typography variant="columnHead">Rank order</Typography>
               </Box>
             )}
           </Box>
           <ScaleLabels labels={['−5', '0', '5']} />
-          <Typography variant="chartColumnHead" sx={{ textAlign: 'right' }}>
+          <Typography variant="columnHead" sx={{ textAlign: 'right' }}>
             Overall
           </Typography>
         </Box>

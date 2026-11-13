@@ -128,9 +128,9 @@ export default function ResourceReportCard({
             display: 'flex',
             flexWrap: 'wrap',
             columnGap: jtSpacing.gap.md,
-            mt: jtSpacing.component.sm,
+            mt: jtSpacing.component.md,
             px: jtSpacing.component.md,
-            pb: jtSpacing.component.xs,
+            py: jtSpacing.component.xs,
             borderTop: 1,
             borderColor: 'border.subtle',
           }}

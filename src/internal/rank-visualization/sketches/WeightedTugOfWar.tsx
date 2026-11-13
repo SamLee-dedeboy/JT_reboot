@@ -108,7 +108,7 @@ export default function WeightedTugOfWar() {
       >
         <Box />
         <ScaleLabels labels={['−5', '0 · baseline', '+5']} />
-        <Typography variant="chartColumnHead" sx={{ textAlign: 'right' }}>
+        <Typography variant="columnHead" sx={{ textAlign: 'right' }}>
           Weighted
         </Typography>
       </Box>

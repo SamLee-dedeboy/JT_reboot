@@ -269,7 +269,7 @@ function ElementChip({
       })}
     >
       {detail && (
-        <Typography variant="chartColumnHead" component="span">
+        <Typography variant="columnHead" component="span">
           {detail}
         </Typography>
       )}
@@ -417,7 +417,7 @@ function SummaryTable() {
       >
         <Box role="row" sx={{ display: { xs: 'none !important', md: 'grid' } }}>
           {['Metric', 'Definition', 'Elements', 'Assessment'].map((heading) => (
-            <Typography key={heading} role="columnheader" variant="chartColumnHead">
+            <Typography key={heading} role="columnheader" variant="columnHead">
               {heading}
             </Typography>
           ))}
@@ -471,7 +471,7 @@ function ScenarioPicker({ value, onChange }: { value: string; onChange: (id: str
     <Box sx={(theme) => ({ display: 'flex', flexWrap: 'wrap', gap: theme.jtSpacing.gap.lg })}>
       {groups.map((group) => (
         <Box key={group}>
-          <Typography variant="chartColumnHead" component="p" sx={{ mb: 1 }}>
+          <Typography variant="columnHead" component="p" sx={{ mb: 1 }}>
             {group}
           </Typography>
           <ToggleButtonGroup

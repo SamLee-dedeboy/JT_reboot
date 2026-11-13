@@ -114,14 +114,15 @@ export default function CardsSection() {
         </Specimen>
         <Specimen
           name="ArticleAccordionCard"
-          spec="Closed: one row of number, title, source · year. Open: a reading card with a source / authors / year table and the abstract. The height eases open; the chevron turns."
+          spec="Closed: one row of number, title, then source · short authors, year. Open: a reading card with a source / authors / year table and the abstract. The height eases open; the chevron turns."
           usage={<UsageTag>repository · ArticleAccordion</UsageTag>}
         >
           <ArticleAccordionCard
             number="01"
             title="Delta Adapts"
             source="Delta Stewardship Council"
-            authors="Delta Stewardship Council staff"
+            authors="Jess Rudnick, Kenji Tomari, Kristin Dobbin, et. al"
+            citation="Rudnick et al."
             year="2021"
             open={articleOpen}
             onToggle={() => setArticleOpen(!articleOpen)}
