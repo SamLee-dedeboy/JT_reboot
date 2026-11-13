@@ -2,7 +2,7 @@
 // prioritized landscape, each cell drawn as a ScenarioGlyph.
 import { Box, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
-import { jtSpacing } from '../../theme'
+import { jtSpacing } from '@/theme'
 import { restorableAcres, treatmentShares } from './outcomes'
 import {
   HABITAT_META,

@@ -7,17 +7,17 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Layer, Source } from 'react-map-gl/mapbox'
-import BaseMap from '../../map/BaseMap'
+import BaseMap from '@/map/BaseMap'
 import {
   REGIONAL_BOLSTER_BOUNDS,
   REGIONAL_OVERVIEW,
   REGIONAL_OVERVIEW_MAX_ZOOM,
   REGIONAL_STRATEGY_CAMERAS,
   REGIONAL_WELCOME_BOUNDS,
-} from '../../map/cameras'
-import { SALINITY_MAP_STYLE } from '../../map/mapStyles'
-import { assetUrl } from '../../utils/baseUrl'
-import type { ScenarioContent } from '../scenarios/content'
+} from '@/map/cameras'
+import { SALINITY_MAP_STYLE } from '@/map/mapStyles'
+import { assetUrl } from '@/utils/baseUrl'
+import type { ScenarioContent } from '@/content/scenarios'
 import RegionalPatternsPage from './RegionalPatternsPage'
 import { RegionalPlaceLayers, RegionalPlacePreview } from './RegionalSalinityMapParts'
 import {

@@ -24,13 +24,13 @@ import {
   fmtScore,
   scored,
   toPct,
-} from '../../../features/scenarios/ranking/model/teams'
-import type { Score } from '../../../features/scenarios/ranking/model/teams'
-import { SCENARIO_KEYS } from '../../../features/scenarios/ranking/model/criteria'
-import type { ScenarioKey } from '../../../features/scenarios/ranking/model/criteria'
-import { UI } from '../../../features/scenarios/ranking/tableText'
-import { publishedTeamScore } from '../../../features/scenarios/ranking/model/scenarioScores'
-import { TABLE_SCENARIOS } from '../../../features/scenarios/ranking/criterion-table/useCriterionTable'
+} from '../../../features/scenario-ranking/model/teams'
+import type { Score } from '../../../features/scenario-ranking/model/teams'
+import { SCENARIO_KEYS } from '../../../features/scenario-ranking/model/criteria'
+import type { ScenarioKey } from '../../../features/scenario-ranking/model/criteria'
+import { UI } from '../../../features/scenario-ranking/tableText'
+import { publishedTeamScore } from '../../../features/scenario-ranking/model/scenarioScores'
+import { TABLE_SCENARIOS } from '../../../features/scenario-ranking/components/by-criterion/useCriterionTable'
 
 interface RankedScenario {
   key: ScenarioKey

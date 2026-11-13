@@ -1,7 +1,7 @@
 import { Layer, Source } from 'react-map-gl/mapbox'
 import type { LayerProps } from 'react-map-gl/mapbox'
 import type { FeatureCollection, LineString, Point } from 'geojson'
-import { map } from '../../theme'
+import { map } from '@/theme'
 import { labelFontLayout } from '../offlineBasemapStyle'
 
 const dinLabelFont = labelFontLayout(['DIN Offc Pro Medium', 'Arial Unicode MS Regular'])

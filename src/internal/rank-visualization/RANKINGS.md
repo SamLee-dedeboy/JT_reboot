@@ -2,7 +2,7 @@
 
 > **Note (Nov 2026):** the `drilldown/` and `subteams/` code, the raw team tables and their
 > `scripts/build-*.py` generators were removed. This file is kept as a record. Every ranking number
-> now lives in `src/features/scenarios/ranking/data/`, one file per team.
+> now lives in `src/features/scenario-ranking/data/`, one file per team.
 
 What each team scores, what each score rests on, and what is still open. Rewritten
 2 Nov 2026 from the ranking table workbooks the teams filled in, and read back from
@@ -19,7 +19,7 @@ the data the site uses, so these numbers are the site's numbers.
 Tabs in other copies of the workbook are out of date: the Recreation tab in (5) is
 old, and every tab except Recreation in (3) and (6) is old. Each workbook has values
 the team wrote as their own numbers, but the breakout table
-(`src/features/scenarios/ranking/breakout/`) shows **the difference from Business as
+(`src/features/scenario-ranking/breakout/`) shows **the difference from Business as
 Usual**. The acres on the Food webs rows are the exception: they show the sheet's number with a plus sign, so managed wetland reads +5,100 and +120,814.
 Scores run −5 to +5, with Business as Usual at 0.
 
@@ -28,7 +28,7 @@ Business as Usual run, except where noted.
 
 ## Overall ranking
 
-The team scores on this page are set in one file, `src/features/scenarios/ranking/scores.ts`; By criterion and By scenario both read it. The by-scenario page averages the five. Equal weights:
+The team scores on this page are set in one file, `src/features/scenario-ranking/scores.ts`; By criterion and By scenario both read it. The by-scenario page averages the five. Equal weights:
 
 | Rank | Scenario            | Ecology | Recreation | Env. Justice | Economy | Eco-cultural | Average |
 | ---- | ------------------- | ------- | ---------- | ------------ | ------- | ------------ | ------- |
@@ -411,7 +411,7 @@ and do not join the adaptation ranking.
 
 1. **Water-age re-run.** The days at each area and the sea-level-rise water-age and criterion scores
    are pending.
-2. **Copy outside the ranking.** `evaluationReports.ts` and `adaptationScenarios.ts` still describe the
+2. **Copy outside the ranking.** The criteria's `report` findings (`src/content/criteria/`) and the scenario files (`src/content/scenarios/`) still describe the
    older EJ scores and wet and dry seasons.
 3. **Takeaways against the data.** Bolster & Fortify has wet and dry reversed; Eco Machine and New Green
    Watershed are "most in both years" although Calling on Reserves is +2 in the dry year; Bolster &
@@ -430,7 +430,7 @@ and do not join the adaptation ranking.
 1. Recreation has no restoration level control: its only New Green Watershed values are the 50% level
    from the Nov 2026 workbook. The team has not confirmed separate 25% and 100% values (`rankingModel.ts`).
 2. The label `versionOnly: 'NGW only'` still uses an abbreviation (`labels.ts`).
-3. Team and metric-row scores, and Economy's wetland levels, are held once, in `src/features/scenarios/ranking/scores.ts`. Change one there and every view follows. The measures beneath the metrics (acres, dollars, days, arrows) are in `ranking/values/`, one file per team, and win over the workbook data and generator scripts they started from. Notes that quote a number do not follow either file.
+3. Team and metric-row scores, and Economy's wetland levels, are held once, in `src/features/scenario-ranking/scores.ts`. Change one there and every view follows. The measures beneath the metrics (acres, dollars, days, arrows) are in `ranking/values/`, one file per team, and win over the workbook data and generator scripts they started from. Notes that quote a number do not follow either file.
 
 ## Source discrepancies
 

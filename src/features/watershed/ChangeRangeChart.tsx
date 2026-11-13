@@ -19,7 +19,7 @@ export function ChartTitle({ title, unit }: { title: string; unit: string }) {
   return (
     <Typography variant="chartTitle" component="p" sx={{ color: 'common.white' }}>
       {title.toUpperCase()}{' '}
-      <Box component="span" sx={{ color: 'base.200', textTransform: 'none' }}>
+      <Box component="span" sx={{ typography: 'chartUnit', color: 'base.200' }}>
         ({unit})
       </Box>
     </Typography>

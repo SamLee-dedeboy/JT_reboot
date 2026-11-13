@@ -1,8 +1,11 @@
-import { Box, Typography } from '@mui/material'
+// A design studio: a raised card with the studio's image and number across the top, then its
+// place, title, summary and a download link.
+import { Box, Button, Stack, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import Icon from '../Icon'
-import { assetUrl } from '../../utils/baseUrl'
-import { jtSpacing } from '../../theme'
+import { raisedCardSx } from '../surfaceStyles'
+import { assetUrl } from '@/utils/baseUrl'
+import { jtSpacing } from '@/theme'
 
 export interface StudioFeatureCardProps {
   number: string
@@ -11,7 +14,6 @@ export interface StudioFeatureCardProps {
   image: string
   imageAlt: string
   place?: string
-  flip?: boolean
   actionLabel?: string
   actionHref?: string
 }
@@ -23,99 +25,78 @@ export default function StudioFeatureCard({
   image,
   imageAlt,
   place,
-  flip = false,
   actionLabel,
   actionHref = '#',
 }: StudioFeatureCardProps) {
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: flip ? '1fr 1.35fr' : '1.35fr 1fr', sm: '1fr 1.2fr' },
-        gap: { xs: jtSpacing.gap.md, md: jtSpacing.component.xl },
-        alignItems: 'center',
-        paddingBlock: { xs: jtSpacing.component.md, md: jtSpacing.component.xl },
-        borderBlock: '1px solid',
-        borderColor: 'border.subtle',
-      }}
-    >
+    <Box component="article" sx={raisedCardSx}>
+      {/* The studio's image, its number over a shade at the foot */}
       <Box
         sx={{
-          order: { xs: 0, md: flip ? 2 : 0 },
-          borderRadius: 0,
+          position: 'relative',
+          aspectRatio: '16 / 10',
           overflow: 'hidden',
-          border: '1px solid',
-          borderColor: 'border.default',
           bgcolor: 'base.700',
+          borderBottom: 1,
+          borderColor: 'border.subtle',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            background: (theme) =>
+              `linear-gradient(0deg, ${theme.palette.translucent[800]} 0%, transparent 45%)`,
+          },
         }}
       >
         <Box
+          className="raised-card-media"
           component="img"
           src={assetUrl(image)}
           alt={imageAlt}
           loading="lazy"
-          sx={{ width: '100%', display: 'block' }}
+          sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: jtSpacing.gap.xs }}>
-        <Typography variant="numberGhost" component="div">
+        <Typography
+          variant="numberTimeline"
+          component="span"
+          aria-hidden
+          sx={{
+            position: 'absolute',
+            zIndex: 1,
+            left: (theme) => theme.spacing(jtSpacing.component.md),
+            bottom: (theme) => theme.spacing(jtSpacing.component.sm),
+            color: 'common.white',
+          }}
+        >
           {number}
         </Typography>
-        <Typography variant="h3" component="h3" sx={{ color: 'primary.main' }}>
-          {title}
-        </Typography>
+      </Box>
+
+      {/* Place, title, summary and the download */}
+      <Stack spacing={jtSpacing.gap.sm} sx={{ flex: 1, p: jtSpacing.component.lg }}>
         {place && (
-          <Typography
-            variant="meta"
-            sx={{
-              typography: 'eyebrow',
-              color: 'secondary.light',
-            }}
-          >
+          <Typography variant="eyebrow" component="p" sx={{ color: 'primary.main' }}>
             {place}
           </Typography>
         )}
-        <Typography
-          variant="body1"
-          sx={{
-            maxWidth: place ? '42ch' : undefined,
-            color: 'base.100',
-          }}
-        >
+        <Typography variant="h3" component="h3" sx={{ color: 'common.white' }}>
+          {title}
+        </Typography>
+        <Typography variant="body1" sx={{ color: 'base.100', maxWidth: '52ch' }}>
           {body}
         </Typography>
         {actionLabel && (
-          <Box
+          <Button
             component="a"
             href={actionHref}
-            sx={{
-              display: 'inline-flex',
-              alignSelf: 'flex-start',
-              alignItems: 'center',
-              gap: jtSpacing.gap.xs,
-              marginTop: jtSpacing.component.sm,
-              typography: 'button',
-              paddingInline: jtSpacing.component.md,
-              paddingBlock: jtSpacing.component.xs,
-              borderRadius: 999,
-              border: '1.5px solid',
-              borderColor: 'primary.main',
-              color: 'primary.main',
-              transition: 'background 180ms ease, color 180ms ease, transform 160ms ease',
-              '& svg': { transition: 'transform 180ms ease' },
-              '&:hover': {
-                bgcolor: 'primary.main',
-                color: 'base.700',
-                transform: 'translateY(-1px)',
-              },
-              '&:hover svg': { transform: 'translateY(2px)' },
-            }}
+            variant="contained"
+            endIcon={<Icon name="arrow-down" size={18} />}
+            sx={{ alignSelf: 'flex-start', mt: 'auto' }}
           >
             {actionLabel}
-            <Icon name="arrow-down" size={16} />
-          </Box>
+          </Button>
         )}
-      </Box>
+      </Stack>
     </Box>
   )
 }

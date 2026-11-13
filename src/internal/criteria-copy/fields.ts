@@ -4,12 +4,7 @@
 // the text live on the site now, and where that text lives in code, so the copy
 // file (editorial/criteria-copy.json) can be filled outside the codebase and then
 // applied back by hand.
-import {
-  criterionReferences,
-  criterionRegions,
-  criterionStories,
-  evaluationTeams,
-} from '../../features/scenarios/content'
+import { criteria, type CriterionId } from '../../content/criteria'
 
 export type FieldKind = 'line' | 'paragraph' | 'list'
 
@@ -39,12 +34,16 @@ export interface CopyCriterion {
   sections: CopySection[]
 }
 
-type TeamId = (typeof evaluationTeams)[number]['id']
+type TeamId = CriterionId
 
-const STORIES = 'src/features/scenarios/content/criterionStories.ts'
-const REGIONS = 'src/features/scenarios/content/criterionRegions.ts'
-const REFERENCES = 'src/features/scenarios/content/criterionReferences.ts'
-const RESULTS = 'src/features/scenarios/content/results.ts'
+/** The file each criterion lives in (src/content/criteria/<name>.ts). */
+const criterionFile: Record<TeamId, string> = {
+  ecology: 'src/content/criteria/ecology.ts',
+  'environmental-justice': 'src/content/criteria/environmentalJustice.ts',
+  'ecocultural-restoration': 'src/content/criteria/ecoculturalRestoration.ts',
+  recreation: 'src/content/criteria/recreation.ts',
+  economy: 'src/content/criteria/economy.ts',
+}
 
 // The chip group the evaluation page shows for each criterion (EvaluationFramework.tsx).
 const chipGroup: Record<TeamId, string> = {
@@ -58,11 +57,12 @@ const chipGroup: Record<TeamId, string> = {
 const lines = (items: readonly string[] | undefined) => (items ?? []).join('\n')
 
 export function buildCriteriaFields(): CopyCriterion[] {
-  return evaluationTeams.map((team, teamIndex) => {
-    const id = team.id as TeamId
-    const story = criterionStories[id]
-    const regions = criterionRegions[id]
-    const at = (path: string) => `${STORIES} · ${id}.${path}`
+  return criteria.map((team) => {
+    const id = team.id
+    const story = team.story
+    const regions = team.regions
+    const file = criterionFile[id]
+    const at = (path: string) => `${file} · story.${path}`
     const key = (path: string) => `${id}.${path}`
     const chips = team.entityGroups.find((group) => group.label === chipGroup[id])
 
@@ -101,7 +101,7 @@ export function buildCriteriaFields(): CopyCriterion[] {
           label: `${chipGroup[id]} chips`,
           kind: 'list',
           live: lines(chips?.items),
-          source: `${RESULTS} · evaluationTeams[${teamIndex}].entityGroups “${chipGroup[id]}”`,
+          source: `${file} · entityGroups “${chipGroup[id]}”`,
         },
         {
           key: key('summary.why'),
@@ -180,14 +180,14 @@ export function buildCriteriaFields(): CopyCriterion[] {
                 label: 'Introduction',
                 kind: 'paragraph',
                 live: regions.intro,
-                source: `${REGIONS} · ${id}.intro`,
+                source: `${file} · regions.intro`,
               },
               ...regions.regions.map((region, index) => ({
                 key: key(`regions.${index}.note`),
                 label: `${region.name}: note (the name matches the map and stays fixed)`,
                 kind: 'line' as const,
                 live: region.note ?? '',
-                source: `${REGIONS} · ${id}.regions[${index}].note`,
+                source: `${file} · regions.regions[${index}].note`,
               })),
               ...(regions.mapNote
                 ? [
@@ -196,7 +196,7 @@ export function buildCriteriaFields(): CopyCriterion[] {
                       label: 'Map note',
                       kind: 'paragraph' as const,
                       live: regions.mapNote,
-                      source: `${REGIONS} · ${id}.mapNote`,
+                      source: `${file} · regions.mapNote`,
                     },
                   ]
                 : []),
@@ -432,8 +432,8 @@ export function buildCriteriaFields(): CopyCriterion[] {
           key: key('references'),
           label: 'References (one per line)',
           kind: 'list',
-          live: lines(criterionReferences[id]),
-          source: `${REFERENCES} · ${id}`,
+          live: lines(team.references),
+          source: `${file} · references`,
         },
       ],
     }

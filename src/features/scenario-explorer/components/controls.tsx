@@ -4,9 +4,9 @@ import { useId, type ReactNode } from 'react'
 import { Box, FormControl, IconButton, Select, Typography } from '@mui/material'
 import type { SelectChangeEvent } from '@mui/material/Select'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { explorerControl } from '../../../theme'
+import { explorerControl } from '@/theme'
 import { useCompactExplorer } from '../explorerType'
-import { smallIconSx, selectMenuProps } from './controlStyles'
+import { selectMenuProps, selectOpenSx, smallIconSx } from './controlStyles'
 
 export function InfoButton({
   label,
@@ -155,7 +155,8 @@ export function LabeledSelect({
           '&:hover': { bgcolor: 'base.900' },
           '& .MuiOutlinedInput-notchedOutline': { borderColor: 'border.strong' },
           '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'base.200' },
-          '& .MuiSelect-icon': { color: 'text.secondary' },
+          '& .MuiSelect-icon': { color: 'text.secondary', transition: 'transform 160ms ease' },
+          ...selectOpenSx,
           '& .MuiSelect-select': {
             typography: 'controlValue',
             color: roleColor ?? 'common.white',

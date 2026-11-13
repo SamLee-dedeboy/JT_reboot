@@ -23,6 +23,12 @@ export interface DocItem {
 }
 
 export interface Workshop {
+  /** Anchor for the page rail. */
+  id: string
+  /** The date column on the timeline: month and day, or the year when there is no one day. */
+  day: string
+  /** ISO date for the <time> element, when the workshop has one day. */
+  isoDate?: string
   date: string
   title: string
   tag?: string
@@ -39,6 +45,9 @@ export const DOC_YEARS: DocYear[] = [
     year: '2025',
     workshops: [
       {
+        id: 'tribal-workshop',
+        day: 'Dec 02',
+        isoDate: '2025-12-02',
         date: 'December 2nd, 2025',
         title: 'Tribal Workshop',
         tag: 'Eco-Cultural Values & Uses (with COEQWAL)',
@@ -53,6 +62,9 @@ export const DOC_YEARS: DocYear[] = [
         ],
       },
       {
+        id: 'public-workshop-2',
+        day: 'Jun 09',
+        isoDate: '2025-06-09',
         date: 'June 9th, 2025',
         title: 'Public Workshop #2',
         docs: [
@@ -85,6 +97,9 @@ export const DOC_YEARS: DocYear[] = [
     year: '2024',
     workshops: [
       {
+        id: 'environmental-justice-workshop',
+        day: 'Dec 03',
+        isoDate: '2024-12-03',
         date: 'December 3rd, 2024',
         title: 'Environmental Justice Workshop',
         docs: [
@@ -98,6 +113,9 @@ export const DOC_YEARS: DocYear[] = [
         ],
       },
       {
+        id: 'public-workshop-1',
+        day: 'Jun 11',
+        isoDate: '2024-06-11',
         date: 'June 11th, 2024',
         title: 'Public Workshop #1',
         docs: [
@@ -154,6 +172,8 @@ export const DOC_YEARS: DocYear[] = [
     year: '2023',
     workshops: [
       {
+        id: 'context-gathering',
+        day: '2023',
         date: 'Context Gathering',
         title: 'Context Gathering',
         docs: [

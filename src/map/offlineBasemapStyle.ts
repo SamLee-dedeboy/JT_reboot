@@ -1,6 +1,6 @@
 import type { ExpressionSpecification, StyleSpecification } from 'mapbox-gl'
-import { map as mapTokens } from '../theme/map'
-import { assetUrl } from '../utils/baseUrl'
+import { map as mapTokens } from '@/theme/map'
+import { assetUrl } from '@/utils/baseUrl'
 import { HERO_MAP_STYLE } from './mapStyles'
 
 export type MapMode = 'online' | 'offline'

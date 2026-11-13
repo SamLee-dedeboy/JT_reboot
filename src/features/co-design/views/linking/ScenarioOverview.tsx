@@ -9,7 +9,7 @@ import GraphNodeTooltip from './GraphNodeTooltip'
 import type { GraphNode } from './renderers/CodeGraphRenderer'
 import SlideIn from './SlideIn'
 import type { tScenarioData } from './types'
-import { scenarioName } from '../../../../content/names'
+import { scenarioName } from '@/content/names'
 
 const loadingPulse = keyframes`
   0%, 100% { transform: scale(1); opacity: 0.3; }

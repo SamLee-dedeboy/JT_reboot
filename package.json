@@ -12,7 +12,8 @@
     "format:check": "prettier . --check",
     "test": "vitest run",
     "audit:tokens": "node scripts/check-theme-tokens.mjs",
-    "audit:tokens:repository": "node scripts/check-theme-tokens.mjs src/features/repository src/ui/cards/StudioFeatureCard.tsx src/ui/cards/ResourceReportCard.tsx",
+    "audit:tokens:repository": "node scripts/check-theme-tokens.mjs src/features/repository src/features/background src/ui/cards/StudioFeatureCard.tsx src/ui/cards/ResourceReportCard.tsx",
+    "audit:tokens:changed": "node scripts/check-theme-tokens.mjs --changed",
     "copy:criteria": "node scripts/criteria-copy.mjs",
     "preview": "vite preview"
   },

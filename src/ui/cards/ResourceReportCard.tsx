@@ -1,8 +1,11 @@
+// A document in the repository: a raised card with its cover across the top, then its type,
+// title and description, and its download or view links in a footer.
 import { Box, Stack, Typography } from '@mui/material'
-import type { ReactNode } from 'react'
+import type { ElementType, ReactNode } from 'react'
 import Icon from '../Icon'
-import { assetUrl } from '../../utils/baseUrl'
-import { jtSpacing } from '../../theme'
+import { raisedCardSx } from '../surfaceStyles'
+import { assetUrl } from '@/utils/baseUrl'
+import { jtSpacing } from '@/theme'
 
 export interface ResourceReportAction {
   label: string
@@ -13,14 +16,17 @@ export interface ResourceReportAction {
 export interface ResourceReportCardProps {
   badge: string
   title: string
+  /** The cover. Without one the card shows a green title cover. */
   image?: string
+  /** A line above the title on the green cover, such as the workshop it came from. */
+  coverLabel?: string
   description: ReactNode
   actions?: ResourceReportAction[]
+  /** Heading level for the title; h3 by default. */
+  titleComponent?: ElementType
 }
 
 function ActionLink({ action }: { action: ResourceReportAction }) {
-  const ghost = action.kind !== 'download'
-
   return (
     <Box
       component="a"
@@ -29,27 +35,19 @@ function ActionLink({ action }: { action: ResourceReportAction }) {
         display: 'inline-flex',
         alignItems: 'center',
         gap: jtSpacing.gap.xs,
+        minHeight: 44,
         typography: 'button',
-        paddingInline: jtSpacing.component.md,
-        paddingBlock: jtSpacing.component.xs,
-        borderRadius: 999,
-        border: '1.5px solid',
-        borderColor: ghost ? 'border.strong' : 'primary.main',
-        color: ghost ? 'secondary.light' : 'primary.main',
-        transition: 'background 180ms ease, color 180ms ease, transform 160ms ease',
+        color: 'primary.main',
+        textDecoration: 'none',
         '& svg': { transition: 'transform 180ms ease' },
-        '&:hover': ghost
-          ? { bgcolor: 'translucent.primaryBlue', color: 'common.white' }
-          : { bgcolor: 'primary.main', color: 'base.700', transform: 'translateY(-1px)' },
-        '&:hover svg': { transform: 'translateX(2px)' },
+        '&:hover, &:focus-visible': { color: 'common.white' },
+        '&:hover svg, &:focus-visible svg': {
+          transform: action.kind === 'download' ? 'translateY(2px)' : 'translate(2px, -2px)',
+        },
       }}
     >
       {action.label}
-      {action.kind === 'download' ? (
-        <Icon name="arrow-down" size={15} />
-      ) : (
-        <Icon name="arrow-up-right" size={15} />
-      )}
+      <Icon name={action.kind === 'download' ? 'arrow-down' : 'arrow-up-right'} size={15} />
     </Box>
   )
 }
@@ -58,115 +56,90 @@ export default function ResourceReportCard({
   badge,
   title,
   image,
+  coverLabel,
   description,
   actions = [],
+  titleComponent = 'h3',
 }: ResourceReportCardProps) {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: 'surface',
-        border: '1px solid',
-        borderColor: 'border.subtle',
-        borderRadius: 1,
-        overflow: 'hidden',
-        transition: 'transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease',
-        '&:hover': {
-          transform: 'translateY(-3px)',
-          borderColor: 'translucent.primaryGreen',
-          boxShadow: (theme) => `0 16px 40px ${theme.palette.translucent.cardShadow}`,
-        },
-        '&:hover .report-cover-img': { transform: 'scale(1.04)' },
-      }}
-    >
+    <Box component="article" sx={raisedCardSx}>
+      {/* Cover: the document's own image, or a green title cover */}
       <Box
         sx={{
           position: 'relative',
           aspectRatio: '16 / 10',
-          bgcolor: 'base.700',
           overflow: 'hidden',
+          bgcolor: 'base.700',
+          borderBottom: 1,
+          borderColor: 'border.subtle',
         }}
       >
         {image ? (
           <Box
-            className="report-cover-img"
+            className="raised-card-media"
             component="img"
             src={assetUrl(image)}
-            alt={title}
+            alt=""
             loading="lazy"
-            sx={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              display: 'block',
-              transition: 'transform 400ms cubic-bezier(0.22,1,0.36,1)',
-            }}
+            sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
         ) : (
-          <Box
+          <Stack
+            className="raised-card-media"
             sx={{
               position: 'absolute',
               inset: 0,
-              display: 'grid',
-              placeItems: 'center',
+              justifyContent: 'space-between',
+              p: jtSpacing.component.md,
               bgcolor: 'primary.main',
-              padding: jtSpacing.gap.lg,
+              color: 'common.black',
             }}
           >
-            <Typography
-              variant="h4"
-              component="span"
-              sx={{ color: 'base.700', textAlign: 'center' }}
-            >
+            <Typography variant="eyebrow" component="span">
+              {coverLabel}
+            </Typography>
+            <Typography variant="h4" component="span">
               {title}
             </Typography>
-          </Box>
+          </Stack>
         )}
-        <Box
-          sx={{
-            position: 'absolute',
-            left: (theme) => theme.spacing(jtSpacing.component.sm),
-            top: (theme) => theme.spacing(jtSpacing.component.sm),
-            display: 'inline-flex',
-            alignItems: 'center',
-            bgcolor: 'translucent.700',
-            border: 1,
-            borderColor: 'translucent.primaryGreen',
-            color: 'primary.main',
-            typography: 'eyebrow',
-            paddingInline: jtSpacing.component.sm,
-            paddingBlock: jtSpacing.component.xs,
-            borderRadius: 999,
-            backdropFilter: 'blur(2px)',
-          }}
-        >
-          {badge}
-        </Box>
       </Box>
-      <Stack spacing={jtSpacing.gap.sm} sx={{ padding: jtSpacing.component.md, flex: 1 }}>
-        <Typography variant="cardTitle" component="h3" sx={{ color: 'secondary.light' }}>
+
+      {/* Type, title and description */}
+      <Stack
+        spacing={jtSpacing.gap.xs}
+        sx={{ flex: 1, px: jtSpacing.component.md, pt: jtSpacing.component.md }}
+      >
+        <Typography variant="chartLabel" component="p" sx={{ color: 'base.200' }}>
+          {badge}
+        </Typography>
+        <Typography variant="cardHeading" component={titleComponent} sx={{ color: 'common.white' }}>
           {title}
         </Typography>
         <Typography variant="cardBody" sx={{ color: 'base.100' }}>
           {description}
         </Typography>
-        {actions.length > 0 && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: jtSpacing.gap.sm,
-              marginTop: 'auto',
-              paddingTop: jtSpacing.component.xs,
-            }}
-          >
-            {actions.map((action) => (
-              <ActionLink key={`${action.kind}-${action.label}`} action={action} />
-            ))}
-          </Box>
-        )}
       </Stack>
+
+      {/* Links to the files */}
+      {actions.length > 0 && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            columnGap: jtSpacing.gap.md,
+            mt: jtSpacing.component.sm,
+            px: jtSpacing.component.md,
+            pb: jtSpacing.component.xs,
+            borderTop: 1,
+            borderColor: 'border.subtle',
+          }}
+        >
+          {actions.map((action) => (
+            <ActionLink key={`${action.kind}-${action.label}`} action={action} />
+          ))}
+        </Box>
+      )}
     </Box>
   )
 }

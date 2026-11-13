@@ -17,8 +17,8 @@ import {
   toPct,
   weightDotSize,
   weightedRanking,
-} from '../../../features/scenarios/ranking/model/teams'
-import { SCENARIOS } from '../../../features/scenarios/ranking/model/scenarioScores'
+} from '../../../features/scenario-ranking/model/teams'
+import { SCENARIOS } from '../../../features/scenario-ranking/model/scenarioScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 const rowColumns = trackColumns()

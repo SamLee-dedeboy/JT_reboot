@@ -3,7 +3,7 @@
 // response to public/data/co-design/ and these helpers serve them. Function
 // names follow the original routes; each resolves to the same JSON payload the
 // server returned.
-import { assetUrl } from '../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 
 const cache = new Map<string, Promise<unknown>>()
 

@@ -2,8 +2,9 @@ import { Box, Button, FormControl, MenuItem, Select, Tab, Tabs, Typography } fro
 import { alpha } from '@mui/material/styles'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { Link } from 'react-router-dom'
-import { explorerControl } from '../../../theme'
+import { explorerControl } from '@/theme'
 import { useCompactExplorer } from '../explorerType'
+import { menuItemSx, selectMenuProps } from './controlStyles'
 import type { DashboardMode } from '../types'
 
 const MODES: ReadonlyArray<{ number: string; label: string; value: DashboardMode }> = [
@@ -122,18 +123,7 @@ export default function ExplorerHeader({
                 aria-label="Dashboard comparison mode"
                 value={mode}
                 onChange={(event) => onModeChange(event.target.value as DashboardMode)}
-                MenuProps={{
-                  slotProps: {
-                    paper: {
-                      sx: {
-                        borderRadius: explorerControl.fieldRadius,
-                        bgcolor: 'base.700',
-                        border: 1,
-                        borderColor: 'brand.primaryBlue',
-                      },
-                    },
-                  },
-                }}
+                MenuProps={selectMenuProps}
                 sx={(theme) => ({
                   bgcolor: alpha(theme.palette.brand.primaryBlue, 0.08),
                   borderRadius: explorerControl.pillRadius,
@@ -154,39 +144,31 @@ export default function ExplorerHeader({
                     {
                       borderColor: 'brand.primaryBlue',
                     },
-                  '& .MuiSelect-icon': { color: 'brand.primaryBlue' },
+                  '& .MuiSelect-icon': {
+                    color: 'brand.primaryBlue',
+                    transition: 'transform 160ms ease',
+                  },
                 })}
               >
                 {availableModes.map(({ number, label, value }) => (
-                  <MenuItem
-                    key={value}
-                    value={value}
-                    sx={(theme) => ({
-                      color: 'brand.primaryBlue',
-                      typography: 'button',
-                      '&.Mui-selected': {
-                        bgcolor: alpha(theme.palette.brand.primaryGreen, 0.2),
-                        color: 'brand.primaryBlue',
-                      },
-                      '&.Mui-selected:hover, &:hover': {
-                        bgcolor: alpha(theme.palette.brand.primaryGreen, 0.28),
-                      },
-                    })}
-                  >
+                  <MenuItem key={value} value={value} sx={menuItemSx}>
                     <Box
+                      component="span"
                       sx={(theme) => ({
-                        alignItems: 'center',
+                        alignItems: 'baseline',
                         display: 'grid',
                         gap: theme.jtSpacing.gap.sm,
                         gridTemplateColumns: 'auto minmax(0, 1fr)',
                       })}
                     >
-                      <Typography component="span" variant="button" color="brand.primaryBlue">
+                      <Typography
+                        component="span"
+                        variant="numberBadge"
+                        sx={{ color: 'brand.primaryBlue' }}
+                      >
                         {number}
                       </Typography>
-                      <Typography component="span" variant="button" color="brand.primaryBlue">
-                        {label}
-                      </Typography>
+                      <Box component="span">{label}</Box>
                     </Box>
                   </MenuItem>
                 ))}

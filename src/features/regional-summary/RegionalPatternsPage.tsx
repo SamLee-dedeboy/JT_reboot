@@ -6,11 +6,11 @@ import { motion, useReducedMotion } from 'framer-motion'
 import type { Map as MapboxMap } from 'mapbox-gl'
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Layer, Marker, Source, type LayerProps } from 'react-map-gl/mapbox'
-import BaseMap from '../../map/BaseMap'
-import { assetUrl } from '../../utils/baseUrl'
-import type { ScenarioContent } from '../scenarios/content'
-import { REGIONAL_PATTERN_ZOOM } from '../../map/cameras'
-import { SALINITY_MAP_STYLE } from '../../map/mapStyles'
+import BaseMap from '@/map/BaseMap'
+import { assetUrl } from '@/utils/baseUrl'
+import type { ScenarioContent } from '@/content/scenarios'
+import { REGIONAL_PATTERN_ZOOM } from '@/map/cameras'
+import { SALINITY_MAP_STYLE } from '@/map/mapStyles'
 import {
   type PatternEvidence,
   type PatternStationEvidence,
@@ -34,7 +34,7 @@ import {
   regionalSummaryTimelineStyles,
 } from './regionalSummaryStyles'
 import RegionalPatternsTutorial from './RegionalPatternsTutorial'
-import { WATER_YEAR_START } from '../scenarios/content'
+import { WATER_YEAR_START } from '@/content/modelRuns'
 
 interface Props {
   scenario: ScenarioContent

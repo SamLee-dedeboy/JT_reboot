@@ -72,7 +72,7 @@ export const BACKGROUND_CAMERA_BY_STEP: Record<
 }
 
 /* ---------------------------------------------------------------------------------- */
-/* Scenario story maps (IntroductionPage), used by scenarios/config.ts                 */
+/* Scenario story maps (StoryPage), used by scenarios/config.ts                 */
 /* ---------------------------------------------------------------------------------- */
 
 /** How far a reader can pan: California. */

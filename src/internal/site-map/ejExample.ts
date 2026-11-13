@@ -1,16 +1,13 @@
 // Worked example of the evaluation pages for the Environmental Justice &
 // Vulnerable Communities team. Sections are read from the same content the live
-// pages render (`criterionStories`, `criterionRegions`), so the site map follows it.
-import {
-  criterionRegions,
-  criterionStories,
-  evaluationTeams,
-} from '../../features/scenarios/content'
+// pages render (src/content/criteria/environmentalJustice.ts), so the site map
+// follows it.
+import { criterionById, criteria } from '../../content/criteria'
 import type { ProposedPage } from './pageStructure'
 
-const team = evaluationTeams.find((item) => item.id === 'environmental-justice')!
-const story = criterionStories[team.id]
-const regions = criterionRegions[team.id]
+const team = criteria.find((item) => item.id === 'environmental-justice')!
+const story = criterionById[team.id].story
+const regions = criterionById[team.id].regions
 const shortName = team.label.split(' & ')[0]
 const methodologyPath = `/scenarios/evaluation/${team.id}`
 

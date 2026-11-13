@@ -6,7 +6,7 @@ import { Box, useTheme } from '@mui/material'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { lazy, Suspense, useEffect, useState } from 'react'
 
-const HeroSalinityMap = lazy(() => import('../map/hero/HeroSalinityMap'))
+const HeroSalinityMap = lazy(() => import('@/map/hero/HeroSalinityMap'))
 
 /** Seconds without interaction before the screensaver appears. */
 export const DEFAULT_SCREENSAVER_IDLE_SECONDS = 120

@@ -2,11 +2,8 @@
 // needed to close the visitor workflow. Each section is a block on the page; `to`
 // is where that block sends visitors. Section titles come from scenario content
 // where it exists, so they follow edits.
-import {
-  adaptationScenarios,
-  evaluationTeams,
-  tieredOutflowsScenario,
-} from '../../features/scenarios/content'
+import { adaptationScenarios, tieredOutflows } from '../../content/scenarios'
+import { criteria } from '../../content/criteria'
 import { ejMethodologyExample } from './ejExample'
 
 export interface UISection {
@@ -30,7 +27,7 @@ export interface ProposedPage {
   sections: UISection[]
 }
 
-const teamList = evaluationTeams.map((team) => team.label).join(' · ')
+const teamList = criteria.map((team) => team.label).join(' · ')
 const adaptationList = adaptationScenarios.map((scenario) => scenario.title).join(' · ')
 
 /** Sections of the pages as they are built today. */
@@ -40,7 +37,7 @@ export const currentSections: Record<string, UISection[]> = {
     { label: 'Understand Current Operations', detail: 'Baseline: how the Delta runs today' },
     {
       label: 'Explore Outflow Variations',
-      detail: tieredOutflowsScenario.title,
+      detail: tieredOutflows.title,
       to: '/scenarios/:scenarioSlug',
     },
     {
@@ -110,7 +107,7 @@ export const currentSections: Record<string, UISection[]> = {
     {
       label: 'How are scenarios evaluated?',
       detail: 'One block per team: criterion, why it matters, components',
-      children: evaluationTeams.map((team) => ({
+      children: criteria.map((team) => ({
         label: team.label,
         detail: 'More about how this team evaluated',
         to: '/scenarios/evaluation/:teamId',

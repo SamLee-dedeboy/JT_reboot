@@ -3,7 +3,7 @@
 import { Box } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import type { ReactNode } from 'react'
-import { navigation } from '../theme'
+import { navigation } from '@/theme'
 
 export default function RailGrid({
   rail,

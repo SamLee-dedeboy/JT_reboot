@@ -9,11 +9,10 @@ import {
   WHAT_IF,
   WORK_STEPS,
   WORKS_INTRO,
-} from '../../../content/home'
-import { ActionButton, TextLink } from '../../../ui/ActionLink'
-import { textLinkSx } from '../../../ui/actionStyles'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import { emphasize } from '../../../utils/highlightText'
+} from '@/content/home'
+import { ActionButton, ScrollReveal, TextLink } from '@/ui'
+import { textLinkSx } from '@/ui/actionStyles'
+import { emphasize } from '@/utils/highlightText'
 import HomePanel from './HomePanel'
 
 interface PanelProps {

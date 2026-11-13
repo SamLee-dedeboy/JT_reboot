@@ -1,8 +1,7 @@
 import { Box, Typography, useTheme } from '@mui/material'
-import ScrollReveal from '../../../ui/animation/ScrollReveal'
-import { assetUrl } from '../../../utils/baseUrl'
-import type { HOME_PHOTOS } from '../../../content/home'
-import { ActionButton } from '../../../ui/ActionLink'
+import { ActionButton, ScrollReveal } from '@/ui'
+import { assetUrl } from '@/utils/baseUrl'
+import type { HOME_PHOTOS } from '@/content/home'
 
 type ResponsiveValue<T> = T | Partial<Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', T>>
 

@@ -1,27 +1,92 @@
 // Style objects shared by the explorer's controls; the components live in controls.tsx.
 import type { SxProps, Theme } from '@mui/material/styles'
-import { explorerControl } from '../../../theme'
-import { focusRing } from '../../../ui/focusRing'
+import { explorerControl, navigation } from '@/theme'
+import { focusRing } from '@/ui/focusRing'
 
-/** The dropdown list every explorer select opens. */
+/**
+ * The dropdown list every explorer select opens: the site's menu panel (base.800, rounded,
+ * shadowed) a little below the field, its rows inset so each one has its own rounded hover.
+ */
 export const selectMenuProps = {
   slotProps: {
     paper: {
-      sx: { bgcolor: 'base.700', border: 1, borderColor: 'border.strong' },
+      sx: {
+        bgcolor: navigation.menuPanelBackground,
+        backgroundImage: 'none',
+        border: 1,
+        borderColor: 'border.default',
+        borderRadius: navigation.panelRadius,
+        boxShadow: navigation.dropdownShadow,
+        mt: 0.5,
+      },
+    },
+    list: {
+      sx: { display: 'flex', flexDirection: 'column', gap: 0.25, p: 0.75 },
     },
   },
 } as const
 
-export const menuItemSx = (color: 'brand.primaryBlue' | 'brand.primaryGreen' | 'common.white') =>
-  ({
-    typography: 'controlValue',
-    color,
-    '&.Mui-selected': { bgcolor: 'translucent.100', color },
-    '&&:hover, &&.Mui-selected:hover': {
-      bgcolor: 'translucent.primaryGreen',
-      color: 'text.primary',
-    },
-  }) as const
+/**
+ * One option in an explorer dropdown: white on the panel, whatever role the field has. The chosen
+ * option is bold with a green check at the end, not a filled row; hover is a light green tint.
+ */
+export const menuItemSx = {
+  typography: 'controlValue',
+  color: 'common.white',
+  minHeight: 40,
+  px: 1.5,
+  py: 1,
+  borderRadius: 0.5,
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: 1.5,
+  transition: 'background-color 160ms ease',
+  '&&:hover': { bgcolor: 'translucent.primaryGreenSubtle' },
+  '&.Mui-focusVisible': { ...focusRing, bgcolor: 'translucent.primaryGreenSubtle' },
+  '&&.Mui-selected, &&.Mui-selected:hover, &&.Mui-selected.Mui-focusVisible': {
+    bgcolor: 'transparent',
+    typography: 'controlValueSelected',
+  },
+  '&&.Mui-selected:hover': { bgcolor: 'translucent.primaryGreenSubtle' },
+  // The check: an L of two borders turned 45°.
+  '&.Mui-selected::after': {
+    content: '""',
+    flex: 'none',
+    width: 6,
+    height: 11,
+    mr: 0.5,
+    mb: 0.5,
+    borderRight: 2.5,
+    borderBottom: 2.5,
+    borderColor: 'primary.main',
+    transform: 'rotate(45deg)',
+  },
+  '&.Mui-disabled': { opacity: 0.38 },
+} as const
+
+/** A group head inside a dropdown (Baseline, Adaptation scenarios). */
+export const menuGroupHeadSx = {
+  typography: 'navigationSubLabel',
+  color: 'base.200',
+  bgcolor: 'transparent',
+  px: 1.5,
+  pt: 1.25,
+  pb: 0.5,
+} as const
+
+/** A group head after the first: a rule above it separates the groups. */
+export const menuGroupHeadDividedSx = {
+  ...menuGroupHeadSx,
+  borderTop: 1,
+  borderColor: 'border.default',
+  mt: 0.75,
+  pt: 1.75,
+} as const
+
+/** A select's field while its list is open: a 1 px green edge (MUI turns the chevron over). */
+export const selectOpenSx = {
+  '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: 'primary.main', borderWidth: 1 },
+} as const
 
 /** An icon button's glyph, at the controls' small size. */
 export const smallIconSx = {

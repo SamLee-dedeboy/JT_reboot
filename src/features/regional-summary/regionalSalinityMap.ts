@@ -14,8 +14,8 @@ import {
   regionalSummarySizing,
   type RegionalMapScale,
 } from './regionalSummaryStyles'
-import { callingOnReservesReleasePeriods } from '../scenarios/content'
-import type { MapBounds } from '../../map/cameras'
+import { callingOnReservesReleasePeriods } from '@/content/modelRuns'
+import type { MapBounds } from '@/map/cameras'
 
 /*
  * Map pieces shared by the kiosk explorer (RegionalSalinityExplorer) and the

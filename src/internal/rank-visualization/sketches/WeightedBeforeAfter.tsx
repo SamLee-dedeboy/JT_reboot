@@ -25,8 +25,8 @@ import {
   WEIGHT_STEP,
   weightOpacity,
   weightedRanking,
-} from '../../../features/scenarios/ranking/model/teams'
-import { RANKED, SCENARIOS } from '../../../features/scenarios/ranking/model/scenarioScores'
+} from '../../../features/scenario-ranking/model/teams'
+import { RANKED, SCENARIOS } from '../../../features/scenario-ranking/model/scenarioScores'
 import { rerankTransition, useWeights } from './useWeights'
 
 /** Every scenario row, matrix and list alike, so the bump lines land on the rows. */

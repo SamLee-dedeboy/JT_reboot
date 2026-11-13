@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build src/internal/rank-visualization/subteams/regionShapes.ts.
+"""Build src/content/deltaRegions.ts.
 
     python3 scripts/build-subteam-regions.py
 
@@ -30,7 +30,7 @@ WEST_DELTA = ROOT / "scripts/data/subteam-regions/west_delta_merged.gpkg"
 ECO_BAYS = ROOT / "scripts/data/subteam-regions/eco-bay-polygons.geojson"
 ECO_SUISUN = ROOT / "scripts/data/subteam-regions/eco-suisun-marsh.geojson"
 WATER = ROOT / "public/data/internal/kelp-fusion/delta_waterway.geojson"
-OUT = ROOT / "src/internal/rank-visualization/subteams/regionShapes.ts"
+OUT = ROOT / "src/content/deltaRegions.ts"
 
 TEAM = {"ECO": "ecology", "ECON": "economy", "EJ": "environmentalJustice", "REC": "recreation"}
 REGION_TOL, REGION_MIN_AREA = 0.002, 0.00002
@@ -301,7 +301,7 @@ def main():
         "// comparison layer showing how each team cut the Delta, not a join onto the data:",
         MISMATCH,
         "",
-        "import type { TeamKey } from '../data'",
+        "import type { TeamKey } from './names'",
         "",
         "export interface RegionShape {",
         "  team: TeamKey",

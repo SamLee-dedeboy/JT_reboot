@@ -18,7 +18,7 @@ import {
 import { alpha } from '@mui/material/styles'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { teamStyle, type EvaluationTeamId } from '../../features/scenarios/teamStyle'
+import { teamStyle, type EvaluationTeamId } from '../../ui/teamStyle'
 import { jtSpacing, navigation } from '../../theme'
 import PageLayout from '../PageLayout'
 import ReportPassages from './ReportPassages'

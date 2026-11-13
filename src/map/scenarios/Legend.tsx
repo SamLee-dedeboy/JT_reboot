@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material'
-import { map } from '../../theme'
+import { map } from '@/theme'
 import { isOfflineMapEnabled } from '../offlineBasemapStyle'
 import { layersBySlug, type MapScope } from './config'
 import { symbolSwatchSx } from './symbolSwatch'

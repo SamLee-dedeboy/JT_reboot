@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 import { chartTransition, formatNumber } from '../format'
 import { useCompactExplorer } from '../explorerType'
-import { explorerControl } from '../../../theme'
+import { explorerControl } from '@/theme'
 import ExplorerInfoPopover from './ExplorerInfoPopover'
 import { ControlLabel, InfoButton } from './controls'
 

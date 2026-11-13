@@ -41,7 +41,7 @@ export const chart = {
       ],
     },
     scenario: {
-      newGreenWatershed: palette.brand.primaryPink,
+      newGreenWatershed: palette.salinity.pink,
       ecoMachine: palette.salinity.teal,
       bolsterAndFortify: palette.accent.yellow,
       callingOnReserves: palette.accent.indigo,

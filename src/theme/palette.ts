@@ -3,7 +3,6 @@ export const palette = {
     base: '#253439',
     primaryBlue: '#51a2bd',
     primaryGreen: '#7ed957',
-    primaryPink: '#fb0169',
   },
   common: { white: '#f2f0ef', black: '#1a1a1a' },
   accent: {

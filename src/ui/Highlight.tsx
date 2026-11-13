@@ -1,7 +1,7 @@
 // Inline highlight primitive for emphasizing text with design-system variants.
 import { Box } from '@mui/material'
 import type { ReactNode } from 'react'
-import { highlighter } from '../theme'
+import { highlighter } from '@/theme'
 
 export type HighlightStyleVariant = 'underline' | 'raisedUnderline' | 'wash' | 'pill'
 

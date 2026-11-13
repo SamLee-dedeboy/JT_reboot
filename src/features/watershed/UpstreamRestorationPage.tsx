@@ -20,13 +20,9 @@ import {
 import { alpha } from '@mui/material/styles'
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import ScenarioPageHero from '../scenarios/ScenarioPageHero'
-import { SectionHeading } from '../scenarios/evaluation/evaluationComponents'
-import { evaluationCardSx } from '../scenarios/styles'
-import { jtSpacing, navigation } from '../../theme'
-import Footer from '../../ui/Footer'
-import Navbar from '../../ui/Navbar'
-import PageRail from '../../ui/PageRail'
+import { Footer, Navbar, NumberedHeading, PageHero, PageRail } from '@/ui'
+import { borderedPanelSx } from '@/ui/surfaceStyles'
+import { jtSpacing, navigation } from '@/theme'
 import ChangeRangeChart, { RestorationLevelLegend } from './ChangeRangeChart'
 import {
   changesIntro,
@@ -69,7 +65,7 @@ export default function UpstreamRestorationPage() {
     <>
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
-        <ScenarioPageHero
+        <PageHero
           image="/images/scenarios/web/new-green-watershed.webp"
           eyebrow={hero.eyebrow}
           title={hero.title}
@@ -93,7 +89,7 @@ export default function UpstreamRestorationPage() {
               Back to New Green Watershed
             </Button>
           </Box>
-        </ScenarioPageHero>
+        </PageHero>
 
         {/* Hybrid-width frame: readable prose and wide chart sections share one page. */}
         <Container
@@ -128,7 +124,7 @@ export default function UpstreamRestorationPage() {
               aria-labelledby="scenarios-title"
               sx={sectionSx}
             >
-              <SectionHeading
+              <NumberedHeading
                 variant="h3"
                 title="What are the nine watershed restoration sub-scenarios?"
                 id="scenarios-title"
@@ -139,7 +135,7 @@ export default function UpstreamRestorationPage() {
               </Typography>
               <Box
                 sx={{
-                  ...evaluationCardSx,
+                  ...borderedPanelSx,
                   mt: jtSpacing.gap.lg,
                   borderLeft: 3,
                   borderLeftColor: accent,
@@ -168,7 +164,7 @@ export default function UpstreamRestorationPage() {
             />
             <UncertainSection accent={accent} />
             <Box component="section" id="sources" aria-labelledby="sources-title" sx={sectionSx}>
-              <SectionHeading variant="h3" title="Sources" id="sources-title" accent={accent} />
+              <NumberedHeading variant="h3" title="Sources" id="sources-title" accent={accent} />
               <Box component="ol" sx={{ m: 0, p: 0, listStyle: 'none' }}>
                 {sources.map((source, index) => (
                   <Typography
@@ -203,7 +199,7 @@ export default function UpstreamRestorationPage() {
 function InvolveSection({ accent }: { accent: string }) {
   return (
     <Box component="section" id="involve" aria-labelledby="involve-title" sx={sectionSx}>
-      <SectionHeading
+      <NumberedHeading
         variant="h3"
         title="What does upstream restoration involve?"
         id="involve-title"
@@ -261,7 +257,7 @@ function EstimatedSection({
 
   return (
     <Box component="section" id="estimated" aria-labelledby="estimated-title" sx={sectionSx}>
-      <SectionHeading
+      <NumberedHeading
         variant="h3"
         title="How were the benefits estimated?"
         id="estimated-title"
@@ -372,7 +368,7 @@ function EstimatedSection({
         >
           <Box
             component="dl"
-            sx={{ ...evaluationCardSx, m: 0, borderTop: 3, borderTopColor: color }}
+            sx={{ ...borderedPanelSx, m: 0, borderTop: 3, borderTopColor: color }}
           >
             {method.spec.map((row, index) => (
               <Box
@@ -525,7 +521,7 @@ function OutcomeBlock({
 function ChangesSection({ accent }: { accent: string }) {
   return (
     <Box component="section" id="changes" aria-labelledby="changes-title" sx={sectionSx}>
-      <SectionHeading
+      <NumberedHeading
         variant="h3"
         title="How would the watershed change?"
         id="changes-title"
@@ -568,7 +564,7 @@ function ChangesSection({ accent }: { accent: string }) {
 function UncertainSection({ accent }: { accent: string }) {
   return (
     <Box component="section" id="uncertain" aria-labelledby="uncertain-title" sx={sectionSx}>
-      <SectionHeading
+      <NumberedHeading
         variant="h3"
         title="What remains uncertain?"
         id="uncertain-title"
@@ -585,7 +581,7 @@ function UncertainSection({ accent }: { accent: string }) {
           <Stack
             key={item.title}
             spacing={jtSpacing.gap.xs}
-            sx={{ ...evaluationCardSx, borderTop: 3, borderTopColor: accent }}
+            sx={{ ...borderedPanelSx, borderTop: 3, borderTopColor: accent }}
           >
             <Typography variant="h5" component="h3">
               {item.title}

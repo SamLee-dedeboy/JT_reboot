@@ -31,12 +31,23 @@ declare module '@mui/material/styles' {
     navigationLabel: CSSProperties
     navigationSubLabel: CSSProperties
     navigationShortcut: CSSProperties
+    captionProse: CSSProperties
+    controlValueSelected: CSSProperties
+    chipLabel: CSSProperties
+    chipQualifier: CSSProperties
+    factDate: CSSProperties
+    citationMark: CSSProperties
+    statNumberCompact: CSSProperties
+    statInline: CSSProperties
+    chapterTitle: CSSProperties
     displayNumber: CSSProperties
     statNumber: CSSProperties
     accentCardTitle: CSSProperties
     scenarioPanelTitle: CSSProperties
     footerLogo: CSSProperties
     chartTitle: CSSProperties
+    chartUnit: CSSProperties
+    cardHeading: CSSProperties
     chartLabel: CSSProperties
     chartSentenceValue: CSSProperties
     tableValueStrong: CSSProperties
@@ -129,12 +140,23 @@ declare module '@mui/material/Typography' {
     navigationLabel: true
     navigationSubLabel: true
     navigationShortcut: true
+    captionProse: true
+    controlValueSelected: true
+    chipLabel: true
+    chipQualifier: true
+    factDate: true
+    citationMark: true
+    statNumberCompact: true
+    statInline: true
+    chapterTitle: true
     displayNumber: true
     statNumber: true
     accentCardTitle: true
     scenarioPanelTitle: true
     footerLogo: true
     chartTitle: true
+    chartUnit: true
+    cardHeading: true
     chartLabel: true
     chartSentenceValue: true
     tableValueStrong: true

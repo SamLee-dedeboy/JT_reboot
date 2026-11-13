@@ -1,6 +1,6 @@
 import { excludedRegionalPatternIds } from './regionalPlaceContent'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
-import { WATER_YEAR_START } from '../scenarios/content'
+import { WATER_YEAR_START } from '@/content/modelRuns'
 
 /* Date scale shared by the kiosk pattern timeline and the results-page stacked timeline. */
 

@@ -3,7 +3,7 @@
 import { Box } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { motion } from 'framer-motion'
-import { assetUrl } from '../../../../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 import type { BlockAggregator } from '../renderers/BlockAggregator'
 import type { tSectionMetadata } from '../types'
 import Section from './Section'

@@ -2,7 +2,7 @@
 // Conference talk (September 29, 2026) and the NGW Upland Restoration Scenario Outcomes
 // workbook (v4).
 import type { Landscape, WatershedOutcomeMetric } from './types'
-import { scenarioName } from '../../content/names'
+import { scenarioName } from '@/content/names'
 
 export const hero = {
   eyebrow: scenarioName('ngw'),

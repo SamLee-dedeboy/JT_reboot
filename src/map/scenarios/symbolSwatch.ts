@@ -1,4 +1,4 @@
-import { map } from '../../theme'
+import { map } from '@/theme'
 import type { LegendItem } from './config'
 
 const patternImage = {

@@ -1,5 +1,6 @@
 import { palette } from './palette'
 
+// Hammersmith One is always set in uppercase: every variant that uses it sets textTransform.
 export const fontHeading = '"Hammersmith One", sans-serif'
 export const fontBody =
   '"proxima-nova", "Nunito Sans Variable", "Nunito Sans", "Helvetica Neue", Arial, sans-serif'
@@ -40,6 +41,14 @@ export const typography = {
     lineHeight: 1.2,
     fontWeight: 700,
     letterSpacing: '0.03em',
+  },
+  // A chapter title on a scroll-story card: h3, untracked and a little more open.
+  chapterTitle: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(1.5rem, 2vw, 2rem)',
+    lineHeight: 1.18,
+    letterSpacing: 0,
+    textTransform: 'uppercase',
   },
   h5: {
     fontFamily: fontBody,
@@ -115,6 +124,14 @@ export const typography = {
     textTransform: 'uppercase',
     color: palette.common.white,
   },
+  // A raised card's title in the heading face, such as a workshop document.
+  cardHeading: {
+    fontFamily: fontHeading,
+    fontSize: '1.2rem',
+    lineHeight: 1.2,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
   cardTitle: { fontFamily: fontBody, fontSize: '1.2rem', lineHeight: 1.3, fontWeight: 700 },
   cardBody: { fontFamily: fontBody, fontSize: '1.02rem', lineHeight: 1.5 },
   meta: { fontFamily: fontBody, fontSize: '0.95rem', lineHeight: 1.3 },
@@ -151,6 +168,51 @@ export const typography = {
     lineHeight: 1.2,
     textTransform: 'uppercase',
   },
+  // Caption-size prose that runs several lines (a dropdown's description, a source note):
+  // captionSmall's size with looser leading and no built-in color.
+  captionProse: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+    lineHeight: 1.5,
+  },
+  // The chosen option in a select: controlValue, bold.
+  controlValueSelected: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.98rem, 0.42rem + 0.625vw, 1.125rem)',
+    fontWeight: 800,
+    lineHeight: 1.2,
+    letterSpacing: 0,
+    textTransform: 'none',
+  },
+  // The label on a filled TagChip: captionSmall, bold, with no color of its own.
+  chipLabel: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+    fontWeight: 700,
+    lineHeight: 1.2,
+  },
+  // A lighter qualifier after a TagChip's bold label ("Salmon · juvenile").
+  chipQualifier: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+    fontWeight: 400,
+    lineHeight: 1.2,
+  },
+  // Dates listed under a fact: navigationSubLabel's size, regular weight, open leading.
+  factDate: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.78rem, 0.72rem + 0.18vw, 0.92rem)',
+    fontWeight: 400,
+    letterSpacing: '0.04em',
+    lineHeight: 1.5,
+    textTransform: 'uppercase',
+  },
+  // A citation number raised beside text; sized relative to the text it follows.
+  citationMark: {
+    fontSize: '0.7em',
+    fontWeight: 600,
+    lineHeight: 0,
+  },
   // A shortcut nested under a dropdown page; a quieter, sentence-case step below navigationLabel.
   navigationShortcut: {
     fontFamily: fontBody,
@@ -161,15 +223,33 @@ export const typography = {
   },
   displayNumber: {
     fontFamily: fontHeading,
+    textTransform: 'uppercase',
     fontSize: 'clamp(3.5rem, 18vw, 8rem)',
     lineHeight: 0.9,
     letterSpacing: 0,
   },
   statNumber: {
     fontFamily: fontHeading,
+    textTransform: 'uppercase',
     fontSize: 'clamp(2.25rem, 3vw, 3rem)',
     lineHeight: 0.9,
     letterSpacing: 0,
+  },
+  // statNumber for stats stacked in rows, where several sit one above another.
+  statNumberCompact: {
+    fontFamily: fontHeading,
+    textTransform: 'uppercase',
+    fontSize: 'clamp(2rem, 2.4vw, 2.5rem)',
+    lineHeight: 1.15,
+    letterSpacing: 0,
+  },
+  // A figure set inside a running sentence at h4 size, without opening up the line.
+  statInline: {
+    fontFamily: fontHeading,
+    fontSize: 'clamp(1.4rem, 1.4vw, 1.7rem)',
+    lineHeight: 1,
+    letterSpacing: '0.03em',
+    textTransform: 'uppercase',
   },
   accentCardTitle: {
     fontFamily: fontBody,
@@ -200,6 +280,14 @@ export const typography = {
     lineHeight: 1.2,
     letterSpacing: '0.02em',
     textTransform: 'uppercase',
+  },
+  // A unit beside a chart title. Units keep their case (µS/cm), so this is the body face.
+  chartUnit: {
+    fontFamily: fontBody,
+    fontSize: '0.95rem',
+    lineHeight: 1.2,
+    letterSpacing: 0,
+    textTransform: 'none',
   },
   chartLabel: {
     fontFamily: fontBody,
@@ -249,11 +337,22 @@ export const typography = {
     lineHeight: 1.2,
     color: palette.base[300],
   },
-  chartValue: { fontFamily: fontHeading, fontSize: '0.9rem', lineHeight: 1 },
-  chartValueLarge: { fontFamily: fontHeading, fontSize: '1.15rem', lineHeight: 1 },
+  chartValue: {
+    fontFamily: fontHeading,
+    textTransform: 'uppercase',
+    fontSize: '0.9rem',
+    lineHeight: 1,
+  },
+  chartValueLarge: {
+    fontFamily: fontHeading,
+    textTransform: 'uppercase',
+    fontSize: '1.15rem',
+    lineHeight: 1,
+  },
   // A reading called out on its own, such as a selected event's difference or dates.
   statValue: {
     fontFamily: fontHeading,
+    textTransform: 'uppercase',
     fontSize: 'clamp(1.2rem, 0.8rem + 0.7vw, 1.65rem)',
     lineHeight: 1.15,
   },
@@ -279,6 +378,7 @@ export const typography = {
   // suffix reads as a word, not a code.
   numberRank: {
     fontFamily: fontHeading,
+    textTransform: 'uppercase',
     fontSize: 'clamp(0.95rem, 0.85rem + 0.3vw, 1.1rem)',
     lineHeight: 1,
     letterSpacing: '0.04em',
@@ -288,6 +388,7 @@ export const typography = {
   // A scenario's overall score at the end of a ranking row: the number the row is about.
   numberScore: {
     fontFamily: fontHeading,
+    textTransform: 'uppercase',
     fontSize: 'clamp(1.5rem, 1.2rem + 0.6vw, 1.9rem)',
     lineHeight: 1,
     letterSpacing: '0.02em',
@@ -297,6 +398,7 @@ export const typography = {
   // labelled points under it, with a looser leading than body2 for longer reading.
   takeawayScenario: {
     fontFamily: fontHeading,
+    textTransform: 'uppercase',
     fontSize: 'clamp(1.625rem, 1.2rem + 0.8vw, 2rem)',
     lineHeight: 1.05,
     letterSpacing: '0.01em',

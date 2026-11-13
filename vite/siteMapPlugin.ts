@@ -34,8 +34,12 @@ export interface SiteMapLink {
 const toPosix = (file: string) => file.split(path.sep).join('/')
 
 function resolveModule(root: string, fromFile: string, specifier: string): string | null {
-  if (!specifier.startsWith('.')) return null
-  const base = path.resolve(root, path.dirname(fromFile), specifier)
+  // `@/` is src/ (the alias in vite.config.ts); other bare specifiers are packages.
+  const aliased = specifier.startsWith('@/')
+  if (!aliased && !specifier.startsWith('.')) return null
+  const base = aliased
+    ? path.resolve(root, 'src', specifier.slice(2))
+    : path.resolve(root, path.dirname(fromFile), specifier)
   const candidates = [
     base,
     `${base}.tsx`,

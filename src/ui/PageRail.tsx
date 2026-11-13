@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
-import { jtSpacing, navigation } from '../theme'
+import { jtSpacing, navigation } from '@/theme'
 import NavRail, { type NavRailItem } from './NavRail'
 
 /**

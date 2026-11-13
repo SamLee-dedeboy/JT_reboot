@@ -4,6 +4,7 @@ import {
   CircularProgress,
   IconButton,
   Link,
+  ListSubheader,
   MenuItem,
   Stack,
   ToggleButton,
@@ -12,10 +13,10 @@ import {
 } from '@mui/material'
 import { ThemeProvider } from '@mui/material/styles'
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz'
-import { explorerControl } from '../../theme'
+import { explorerControl } from '@/theme'
 import { explorerFontSizes, explorerTypographyTheme, useCompactExplorer } from './explorerType'
 import { summarizeSpread } from './format'
-import { assetUrl } from '../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 import DeltaMap from './components/DeltaMap'
 import RegionalChart from './components/RegionalChart'
 import StationHistogram from './components/StationHistogram'
@@ -23,7 +24,13 @@ import ExplorerHeader from './components/ExplorerHeader'
 import SalinityScale from './components/SalinityScale'
 import ExplorerInfoPopover from './components/ExplorerInfoPopover'
 import { ControlLabel, InfoButton, LabeledSelect } from './components/controls'
-import { menuItemSx, segmentedSx, smallIconSx } from './components/controlStyles'
+import {
+  menuGroupHeadDividedSx,
+  menuGroupHeadSx,
+  menuItemSx,
+  segmentedSx,
+  smallIconSx,
+} from './components/controlStyles'
 import ExplorerTutorial from './components/ExplorerTutorial'
 import type {
   D1641Dataset,
@@ -37,7 +44,7 @@ import type {
   ValueMode,
   ValueSeries,
 } from './types'
-import { scenarioCodeForLabel } from '../../content/names'
+import { scenarioCodeForLabel } from '@/content/names'
 
 const DATASET_CONFIG: Record<DashboardMode, { key: keyof ScenarioDatasets; url: string }> = {
   'rma-scenarios': {
@@ -114,6 +121,46 @@ function ResponsiveScenarioLabel({
       </Box>
     </>
   )
+}
+
+// Lists that mix Business as Usual with the scenarios compared against it are split in two
+// groups; the head names the second group.
+const SCENARIO_GROUP_HEAD: Partial<Record<DashboardMode, string>> = {
+  'rma-scenarios': 'Adaptation scenarios',
+  'calsim-scenarios': 'Adaptation scenarios',
+  'tiered-outflows': 'Outflow changes',
+}
+
+const isBaselineScenario = (item: Scenario) =>
+  item.key.startsWith('baseline') || /^business as usual/i.test(item.label)
+
+/** A scenario dropdown's rows, under group heads where the mode has them. */
+function scenarioMenuItems(
+  items: Scenario[],
+  mode: DashboardMode,
+  fullName: boolean,
+  isDisabled: (key: string) => boolean,
+) {
+  const row = (item: Scenario) => (
+    <MenuItem disabled={isDisabled(item.key)} key={item.key} value={item.key} sx={menuItemSx}>
+      <ResponsiveScenarioLabel fullName={fullName} label={item.label} />
+    </MenuItem>
+  )
+  const head = SCENARIO_GROUP_HEAD[mode]
+  const baselines = items.filter(isBaselineScenario)
+  const others = items.filter((item) => !isBaselineScenario(item))
+  if (!head || baselines.length === 0 || others.length === 0) return items.map(row)
+
+  return [
+    <ListSubheader key="group-baseline" disableSticky sx={menuGroupHeadSx}>
+      {baselines.length > 1 ? 'Baselines' : 'Baseline'}
+    </ListSubheader>,
+    ...baselines.map(row),
+    <ListSubheader key="group-scenarios" disableSticky sx={menuGroupHeadDividedSx}>
+      {head}
+    </ListSubheader>,
+    ...others.map(row),
+  ]
 }
 
 function SwapButton({
@@ -974,12 +1021,12 @@ export default function ScenarioExplorerPage({
                       setHistogramBrush(null)
                     }}
                   >
-                    <MenuItem value="rma" sx={menuItemSx('brand.primaryBlue')}>
+                    <MenuItem value="rma" sx={menuItemSx}>
                       RMA
                     </MenuItem>
                     <MenuItem
                       value={dashboardMode === 'rma-calsim' ? 'calsim' : 'schism'}
-                      sx={menuItemSx('brand.primaryBlue')}
+                      sx={menuItemSx}
                     >
                       {dashboardMode === 'rma-calsim' ? 'CalSim' : 'SCHISM'}
                     </MenuItem>
@@ -1010,12 +1057,12 @@ export default function ScenarioExplorerPage({
                       setHistogramBrush(null)
                     }}
                   >
-                    <MenuItem value="rma" sx={menuItemSx('brand.primaryGreen')}>
+                    <MenuItem value="rma" sx={menuItemSx}>
                       RMA
                     </MenuItem>
                     <MenuItem
                       value={dashboardMode === 'rma-calsim' ? 'calsim' : 'schism'}
-                      sx={menuItemSx('brand.primaryGreen')}
+                      sx={menuItemSx}
                     >
                       {dashboardMode === 'rma-calsim' ? 'CalSim' : 'SCHISM'}
                     </MenuItem>
@@ -1031,11 +1078,7 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
                     {data.scenarios.map((item) => (
-                      <MenuItem
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryGreen')}
-                      >
+                      <MenuItem key={item.key} value={item.key} sx={menuItemSx}>
                         <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
                       </MenuItem>
                     ))}
@@ -1054,11 +1097,7 @@ export default function ScenarioExplorerPage({
                     onChange={(event) => selectSlrFamily(event.target.value)}
                   >
                     {scenarioOptions.map((item) => (
-                      <MenuItem
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryGreen')}
-                      >
+                      <MenuItem key={item.key} value={item.key} sx={menuItemSx}>
                         <ResponsiveScenarioLabel
                           fullName={publicModesOnly}
                           label={item.label.replace(/\s*\(SLR\)$/, '')}
@@ -1080,16 +1119,12 @@ export default function ScenarioExplorerPage({
                     )}
                     onChange={(event) => selectBaseScenario(event.target.value)}
                   >
-                    {scenarioOptions.map((item) => (
-                      <MenuItem
-                        disabled={item.key === scenario}
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryBlue')}
-                      >
-                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
-                      </MenuItem>
-                    ))}
+                    {scenarioMenuItems(
+                      scenarioOptions,
+                      dashboardMode,
+                      publicModesOnly,
+                      (key) => key === scenario,
+                    )}
                   </LabeledSelect>
                   <SwapButton onClick={swapScenarios} />
                   <LabeledSelect
@@ -1102,16 +1137,12 @@ export default function ScenarioExplorerPage({
                     )}
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
-                    {scenarioOptions.map((item) => (
-                      <MenuItem
-                        disabled={item.key === baseScenario}
-                        key={item.key}
-                        value={item.key}
-                        sx={menuItemSx('brand.primaryGreen')}
-                      >
-                        <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
-                      </MenuItem>
-                    ))}
+                    {scenarioMenuItems(
+                      scenarioOptions,
+                      dashboardMode,
+                      publicModesOnly,
+                      (key) => key === baseScenario,
+                    )}
                   </LabeledSelect>
                 </>
               ) : (
@@ -1127,22 +1158,17 @@ export default function ScenarioExplorerPage({
                     )}
                     onChange={(event) => selectBaseScenario(event.target.value)}
                   >
-                    {scenarioOptions
-                      .filter((item) => item.key !== hiddenScenarioKey || item.key === baseScenario)
-                      .map((item) => (
-                        <MenuItem
-                          disabled={
-                            item.key === scenario ||
-                            (requiredComparisonBaseline(dashboardMode, scenario) !== null &&
-                              item.key !== requiredComparisonBaseline(dashboardMode, scenario))
-                          }
-                          key={item.key}
-                          value={item.key}
-                          sx={menuItemSx('brand.primaryBlue')}
-                        >
-                          <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
-                        </MenuItem>
-                      ))}
+                    {scenarioMenuItems(
+                      scenarioOptions.filter(
+                        (item) => item.key !== hiddenScenarioKey || item.key === baseScenario,
+                      ),
+                      dashboardMode,
+                      publicModesOnly,
+                      (key) =>
+                        key === scenario ||
+                        (requiredComparisonBaseline(dashboardMode, scenario) !== null &&
+                          key !== requiredComparisonBaseline(dashboardMode, scenario)),
+                    )}
                   </LabeledSelect>
                   <SwapButton
                     disabled={requiredComparisonBaseline(dashboardMode, scenario) !== null}
@@ -1158,18 +1184,12 @@ export default function ScenarioExplorerPage({
                     )}
                     onChange={(event) => selectMapScenario(event.target.value)}
                   >
-                    {scenarioOptions
-                      .filter((item) => item.key !== hiddenScenarioKey)
-                      .map((item) => (
-                        <MenuItem
-                          disabled={item.key === baseScenario}
-                          key={item.key}
-                          value={item.key}
-                          sx={menuItemSx('brand.primaryGreen')}
-                        >
-                          <ResponsiveScenarioLabel fullName={publicModesOnly} label={item.label} />
-                        </MenuItem>
-                      ))}
+                    {scenarioMenuItems(
+                      scenarioOptions.filter((item) => item.key !== hiddenScenarioKey),
+                      dashboardMode,
+                      publicModesOnly,
+                      (key) => key === baseScenario,
+                    )}
                   </LabeledSelect>
                 </>
               )}
@@ -1182,11 +1202,11 @@ export default function ScenarioExplorerPage({
                 onInfoClick={setRegionInfoAnchor}
                 onChange={(event) => selectRegion(event.target.value)}
               >
-                <MenuItem value="All regions" sx={menuItemSx('common.white')}>
+                <MenuItem value="All regions" sx={menuItemSx}>
                   All regions
                 </MenuItem>
                 {data.regions.map((item) => (
-                  <MenuItem key={item} value={item} sx={menuItemSx('common.white')}>
+                  <MenuItem key={item} value={item} sx={menuItemSx}>
                     {item}
                   </MenuItem>
                 ))}

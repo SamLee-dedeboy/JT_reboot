@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { assetUrl } from '../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 
 export interface PatternStationEvidence {
   stationId: number

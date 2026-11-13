@@ -3,7 +3,7 @@
 import { Box, ButtonBase, Typography } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import type { ReactNode } from 'react'
-import { jtSpacing, ranking } from '../theme'
+import { jtSpacing, ranking } from '@/theme'
 import { focusRing } from './focusRing'
 
 export interface SegmentOption<T extends string> {

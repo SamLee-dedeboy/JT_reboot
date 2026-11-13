@@ -1,9 +1,9 @@
 import { useMediaQuery, useTheme, Box, Typography } from '@mui/material'
 import { motion } from 'framer-motion'
 import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowDownRounded'
-import { HERO } from '../../../content/home'
-import HeroSalinityMap from '../../../map/hero/HeroSalinityMap'
-import { navigation } from '../../../theme'
+import { HERO } from '@/content/home'
+import HeroSalinityMap from '@/map/hero/HeroSalinityMap'
+import { navigation } from '@/theme'
 
 const mapContainerStyle = {
   position: 'absolute',

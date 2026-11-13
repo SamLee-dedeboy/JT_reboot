@@ -3,8 +3,8 @@
 // text color, so a team's icon inherits that team's color wherever it is used.
 import { Box } from '@mui/material'
 import type { ReactNode } from 'react'
-import { teamShortName } from '../content/names'
-import type { TeamKey } from '../content/names'
+import { teamShortName } from '@/content/names'
+import type { TeamKey } from '@/content/names'
 
 export type { TeamKey }
 

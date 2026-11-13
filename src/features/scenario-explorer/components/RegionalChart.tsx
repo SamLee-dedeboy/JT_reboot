@@ -32,9 +32,15 @@ import { getScenarioAnnotation } from '../scenarioAnnotations'
 import type { D1641Dataset, DashboardMode, RangeMode, Scenario, ScenarioDataset } from '../types'
 import ExplorerInfoPopover from './ExplorerInfoPopover'
 import { ControlLabel, InfoButton } from './controls'
-import { overlayChipSx, segmentedSx, smallIconSx } from './controlStyles'
-import { scenarioCodeForLabel } from '../../../content/names'
-import { WATER_YEAR_START } from '../../scenarios/content'
+import {
+  menuItemSx,
+  overlayChipSx,
+  segmentedSx,
+  selectMenuProps,
+  smallIconSx,
+} from './controlStyles'
+import { scenarioCodeForLabel } from '@/content/names'
+import { WATER_YEAR_START } from '@/content/modelRuns'
 
 const DEFAULT_WIDTH = 900
 const DEFAULT_HEIGHT = 390
@@ -426,6 +432,7 @@ function ChartSvg({
           size="small"
           value={timeframeFocus}
           onChange={(event) => onTimeframeFocusChange(event.target.value as TimeframeFocus)}
+          MenuProps={selectMenuProps}
           sx={(theme) => ({
             height: theme.spacing(4),
             minWidth: theme.spacing(20),
@@ -434,7 +441,11 @@ function ChartSvg({
           })}
         >
           {TIMEFRAME_OPTIONS.map((option) => (
-            <MenuItem key={option.key} value={option.key} sx={{ typography: 'captionSmall' }}>
+            <MenuItem
+              key={option.key}
+              value={option.key}
+              sx={{ ...menuItemSx, typography: 'captionSmall', minHeight: 36 }}
+            >
               {option.label}
             </MenuItem>
           ))}

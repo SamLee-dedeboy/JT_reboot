@@ -1,4 +1,4 @@
-import { bolsterGateClosures, callingOnReservesReleasePeriods } from '../scenarios/content'
+import { bolsterGateClosures, callingOnReservesReleasePeriods } from '@/content/modelRuns'
 import type { DashboardMode } from './types'
 
 export interface ScenarioAnnotation {

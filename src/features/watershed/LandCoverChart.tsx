@@ -2,7 +2,7 @@
 // wetland, marsh and riparian habitat gained to the right. Drawn at the container's pixel
 // width so its labels keep the site's type sizes.
 import { Box, Stack, Typography, useTheme } from '@mui/material'
-import { palette } from '../../theme'
+import { palette } from '@/theme'
 import { ChartTitle } from './ChangeRangeChart'
 import { LOSS_COLOR, MIN_CHART_WIDTH, compactNumber, useElementWidth } from './chartUtils'
 import { HABITAT_META, LEVEL_LABELS, PRIORITIES, RESTORATION_LEVELS, landscapeOf } from './habitats'

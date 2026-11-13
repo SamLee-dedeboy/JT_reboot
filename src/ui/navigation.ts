@@ -53,11 +53,10 @@ export const menuEntries = (item: NavItem): DropdownItem[] => {
 export const navItems: NavItem[] = [
   {
     label: 'Background',
-    disabled: true,
     caption: 'Explore the project background and its approach to just transitions.',
     dropdown: [
       { label: 'A Delta in Transition', href: '#', disabled: true },
-      { label: 'Participatory Scenario Planning', href: '#', disabled: true },
+      { label: 'Participatory Scenario Planning', href: '/pages/scenario-planning' },
       { label: 'What are current conditions?', href: '#', disabled: true },
     ],
   },
@@ -134,13 +133,57 @@ export const navItems: NavItem[] = [
   },
   {
     label: 'Resources',
-    disabled: true,
-    caption: 'Browse project documentation, methodology, learning materials, and references.',
-    dropdown: [
-      { label: 'Project Documentation', href: '/pages/project-documentation' },
-      { label: 'Criteria Methodology', href: '#', disabled: true },
-      { label: 'Service Learning', href: '/pages/service-learning', disabled: true },
-      { label: 'References & Resources', href: '/pages/resources', disabled: true },
+    caption: 'Browse project documentation, learning materials, references, and related projects.',
+    groups: [
+      {
+        label: 'Repository',
+        items: [
+          {
+            label: 'Project Documentation',
+            href: '/pages/project-documentation',
+            caption: 'Workshop reports, findings and outreach materials',
+          },
+          {
+            label: 'Service Learning',
+            href: '/pages/service-learning',
+            caption: 'Undergraduate design studios working with Delta communities',
+          },
+          {
+            label: 'References & Resources',
+            href: '/pages/resources',
+            caption: 'Delta research, articles and modeling resources',
+          },
+        ],
+      },
+      {
+        label: 'Related projects',
+        items: [
+          {
+            label: 'Franks Tract Futures',
+            href: 'https://franks-tract-futures-ucdavis.hub.arcgis.com/',
+            caption: 'Co-designing the future of Franks Tract',
+            external: true,
+          },
+          {
+            label: 'Delta Island Adaptations',
+            href: 'https://deltaislandadaptations-ucdavis.hub.arcgis.com/',
+            caption: 'Adaptation futures for subsided Delta islands',
+            external: true,
+          },
+          {
+            label: 'Delta Adapts',
+            href: 'https://www.deltacouncil.ca.gov/delta-plan/climate-change',
+            caption: "The Delta Stewardship Council's climate change initiative",
+            external: true,
+          },
+          {
+            label: 'DSC Salinity Workshop Series',
+            href: 'https://deltacouncil.ca.gov/pdf/science-program/2022-03-07-salinity-management-workshops-info-sheet-march-2022.pdf',
+            caption: 'Delta Stewardship Council salinity management workshops (PDF)',
+            external: true,
+          },
+        ],
+      },
     ],
   },
 ]

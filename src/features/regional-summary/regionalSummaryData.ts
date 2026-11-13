@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Geometry } from 'geojson'
-import { assetUrl } from '../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 
 export interface RegionalPattern {
   id: string

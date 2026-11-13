@@ -5,21 +5,15 @@
 // visitor moves on is checked against the scanned routes and links in
 // `virtual:site-map`.
 import type { SiteMapLink, SiteMapRoute } from 'virtual:site-map'
-import {
-  adaptationScenarios,
-  criterionRegions,
-  criterionStories,
-  evaluationTeams,
-  tieredOutflowsScenario,
-  storyInReadingOrder,
-} from '../../features/scenarios/content'
-import { methodologyPath } from '../../features/scenarios/evaluation/paths'
+import { adaptationScenarios, tieredOutflows, storyInReadingOrder } from '../../content/scenarios'
+import { criterionById, type Criterion } from '../../content/criteria'
+import { methodologyPath } from '../../content/routes'
 import { matchRoute } from './siteMapModel'
 
 export type JourneyScenario = (typeof journeyScenarios)[number]
-export type JourneyTeam = (typeof evaluationTeams)[number]
+export type JourneyTeam = Criterion
 
-export const journeyScenarios = [...adaptationScenarios, tieredOutflowsScenario]
+export const journeyScenarios = [...adaptationScenarios, tieredOutflows]
 
 export type StepStatus = 'live' | 'section' | 'planned'
 
@@ -86,8 +80,8 @@ export function linksBetween(
 
 /** The team's methodology page, as CriterionPage renders it for this team. */
 function methodologyOutline(team: JourneyTeam): OutlineItem[] {
-  const story = criterionStories[team.id]
-  const regions = criterionRegions[team.id]
+  const story = criterionById[team.id].story
+  const regions = criterionById[team.id].regions
   return [
     { title: 'What is this criterion?', detail: story.brief.what },
     {
@@ -143,7 +137,7 @@ export function buildJourney(
       status: status('/scenarios'),
       sees: [
         'Understand Current Operations',
-        `Explore Outflow Variations: ${tieredOutflowsScenario.title}`,
+        `Explore Outflow Variations: ${tieredOutflows.title}`,
         `Explore Adaptation Scenarios: ${adaptationScenarios.map((item) => item.title).join(', ')}`,
         "What's next? Modeling, evaluation, ranking",
       ],

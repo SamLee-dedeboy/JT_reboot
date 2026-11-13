@@ -6,8 +6,8 @@ import { Box, Button, Typography } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
-import { scenarios, type ScenarioContent } from '../scenarios/content'
-import { assetUrl } from '../../utils/baseUrl'
+import { scenarios, type ScenarioContent } from '@/content/scenarios'
+import { assetUrl } from '@/utils/baseUrl'
 import {
   regionalSummaryControlStyles,
   regionalSummarySizing,
@@ -15,7 +15,7 @@ import {
 } from './regionalSummaryStyles'
 import RegionalSalinityExplorer from './RegionalSalinityExplorer'
 import RegionalProjectIntroduction from './RegionalProjectIntroduction'
-import { scenarioSlug } from '../../content/names'
+import { scenarioSlug } from '@/content/names'
 
 const alternativeDeltaOutflows: ScenarioContent = {
   slug: 'alternative-delta-outflows',

@@ -4,7 +4,7 @@
 // kept and still toggles `showing-content`.
 import { Box, Typography } from '@mui/material'
 import { useState } from 'react'
-import { assetUrl } from '../../../../../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 import * as Constants from '../../constants'
 import { blockState, useFlowState } from '../../flowStore'
 import type { tBlock } from '../../types'

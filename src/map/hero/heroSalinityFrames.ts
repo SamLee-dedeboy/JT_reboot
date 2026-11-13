@@ -6,7 +6,7 @@
 // features at regional zooms. Kept in a non-component module so it can be
 // imported without tripping the react-refresh "only export components" lint
 // rule.
-import { assetUrl } from '../../utils/baseUrl'
+import { assetUrl } from '@/utils/baseUrl'
 
 export const HERO_SALINITY_FRAME_COUNT = 155
 export const HERO_SALINITY_SOURCE_LAYER = 'salinity'

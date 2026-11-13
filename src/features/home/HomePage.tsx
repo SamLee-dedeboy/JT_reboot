@@ -1,14 +1,11 @@
 import { Box } from '@mui/material'
 import { lazy, Suspense } from 'react'
-import { HOME_PHOTOS, HOME_RAIL_ITEMS } from '../../content/home'
-import Footer from '../../ui/Footer'
-import NavRail from '../../ui/NavRail'
-import Navbar from '../../ui/Navbar'
-import RailGrid from '../../ui/RailGrid'
+import { HOME_PHOTOS, HOME_RAIL_ITEMS } from '@/content/home'
+import { Footer, Navbar, NavRail, RailGrid } from '@/ui'
 import HomeImagePanel from './components/HomeImagePanel'
 import { FuturesPanel, StakesPanel, WhatIfPanel, WorksPanel } from './components/HomePanels'
 import PanelSlant from './components/PanelSlant'
-import { navigation } from '../../theme'
+import { navigation } from '@/theme'
 
 const HeroMap = lazy(() => import('./components/HeroMap'))
 

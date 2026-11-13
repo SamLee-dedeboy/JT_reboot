@@ -2,8 +2,8 @@ import { Box, ButtonBase, Stack, Typography } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useState, type ReactNode } from 'react'
-import { jtSpacing, ranking } from '../../theme'
-import TagChip from '../../ui/TagChip'
+import { jtSpacing, ranking } from '@/theme'
+import { TagChip } from '@/ui'
 import { usePatternEvidence, type PatternEvidence } from './regionalPatternEvidence'
 import { getRegionalTimelineContextPeriods } from './regionalTimelineContext'
 import {
@@ -14,7 +14,7 @@ import {
   valueFormat,
 } from './regionalTimeline'
 import type { RegionalPattern, RegionalPlace } from './regionalSummaryData'
-import { WATER_YEAR_START } from '../scenarios/content'
+import { WATER_YEAR_START } from '@/content/modelRuns'
 
 interface RegionalStackedTimelineProps {
   scenarioSlug: string

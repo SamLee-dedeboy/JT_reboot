@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import { Box, Chip, Stack, Typography } from '@mui/material'
 import type { Theme } from '@mui/material'
 import siteMap from 'virtual:site-map'
-import { evaluationTeams } from '../../features/scenarios/content'
+import { criteria } from '../../content/criteria'
 import {
   buildJourney,
   journeyScenarios,
@@ -26,10 +26,10 @@ const RAIL = 40
 
 export default function ScenarioJourney() {
   const [scenarioSlug, setScenarioSlug] = useState<string>(journeyScenarios[0].slug)
-  const [teamId, setTeamId] = useState<string>(evaluationTeams[1].id)
+  const [teamId, setTeamId] = useState<string>(criteria[1].id)
   const scenario =
     journeyScenarios.find((item) => item.slug === scenarioSlug) ?? journeyScenarios[0]
-  const team = evaluationTeams.find((item) => item.id === teamId) ?? evaluationTeams[0]
+  const team = criteria.find((item) => item.id === teamId) ?? criteria[0]
 
   const { steps, transitions } = useMemo(
     () => buildJourney(scenario, team, siteMap.routes, siteMap.links),
@@ -55,7 +55,7 @@ export default function ScenarioJourney() {
           ))}
         </ChoiceRow>
         <ChoiceRow label="Evaluation team">
-          {evaluationTeams.map((item) => (
+          {criteria.map((item) => (
             <Chip
               key={item.id}
               label={item.label}
@@ -184,7 +184,7 @@ function StepCard({
         {step.teamChoice && (
           <Section title="Choose a team to follow">
             <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.75 }}>
-              {evaluationTeams.map((item) => (
+              {criteria.map((item) => (
                 <Chip
                   key={item.id}
                   size="small"

@@ -4,9 +4,8 @@
 import { Box } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material'
 import type { ReactNode } from 'react'
-import type { HomeSection } from '../../../content/home'
-import RailGrid from '../../../ui/RailGrid'
-import SectionHead from '../../../ui/SectionHead'
+import type { HomeSection } from '@/content/home'
+import { RailGrid, SectionHead } from '@/ui'
 
 export default function HomePanel({
   section,

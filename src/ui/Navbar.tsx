@@ -26,7 +26,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import { assetUrl } from '../utils/baseUrl'
+import { visuallyHidden } from '@mui/utils'
+import Icon from './Icon'
+import { assetUrl } from '@/utils/baseUrl'
 import { menuGroups, navItems, type DropdownGroup, type DropdownItem } from './navigation'
 
 function DesktopNavbar() {
@@ -115,7 +117,7 @@ function DesktopNavbar() {
 
   // Menu items stay direct children of the menu list so arrow keys reach every link.
   const groupedMenuEntries = (groups: DropdownGroup[]) =>
-    groups.flatMap((group) =>
+    groups.flatMap((group, groupIndex) =>
       group.featured
         ? group.items.map((entry) => (
             <MenuItem
@@ -149,11 +151,16 @@ function DesktopNavbar() {
               key={`group:${group.label}`}
               sx={{
                 marginInline: theme.jtSpacing.component.xs,
-                marginTop: theme.jtSpacing.component.xs,
+                // A group that opens the menu needs no divider above it.
+                ...(groupIndex === 0
+                  ? { paddingTop: theme.jtSpacing.component.xs / 2 }
+                  : {
+                      marginTop: theme.jtSpacing.component.xs,
+                      paddingTop: theme.jtSpacing.component.sm,
+                    }),
                 paddingInline: 1.25,
-                paddingTop: theme.jtSpacing.component.sm,
                 paddingBottom: theme.jtSpacing.component.xs / 2,
-                borderTop: 1,
+                borderTop: groupIndex === 0 ? 0 : 1,
                 borderColor: 'border.subtle',
               }}
             >
@@ -174,6 +181,17 @@ function DesktopNavbar() {
                   <Box component="span" sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                     <Typography variant="navigationLabel" component="span">
                       {entry.label}
+                      {entry.external && (
+                        <Box
+                          component="span"
+                          sx={{ display: 'inline-flex', ml: 0.75, color: 'primary.main' }}
+                        >
+                          <Icon name="arrow-up-right" size={14} />
+                          <Box component="span" sx={visuallyHidden}>
+                            (opens in a new tab)
+                          </Box>
+                        </Box>
+                      )}
                     </Typography>
                     {entry.caption && (
                       <Typography variant="captionSmall" component="span">
@@ -281,7 +299,9 @@ function DesktopNavbar() {
               endIcon={
                 <KeyboardArrowDownIcon
                   sx={{
-                    fontSize: { md: 15, lg: 18 },
+                    // An icon's box, not text: sized directly rather than through fontSize.
+                    width: { md: 15, lg: 18 },
+                    height: { md: 15, lg: 18 },
                     transform: desktopMenuIndex === i ? 'rotate(180deg)' : 'rotate(0deg)',
                     transition: 'transform 180ms ease',
                   }}
@@ -349,9 +369,9 @@ function DesktopNavbar() {
               Explore
             </Typography>
             <Typography
-              variant="captionSmall"
+              variant="captionProse"
               component="p"
-              sx={{ color: 'base.100', lineHeight: 1.45, maxWidth: 280 }}
+              sx={{ color: 'base.100', maxWidth: 280 }}
             >
               {activeDesktopMenu.caption}
             </Typography>
@@ -370,7 +390,7 @@ function DesktopNavbar() {
             <MenuItem key={sub.label} disabled sx={menuItemSx}>
               <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
                 <Box className="dropdown-link-marker" component="span" sx={desktopMenuMarkerSx} />
-                <Typography component="span" variant="navigationLabel" sx={{ lineHeight: 1.25 }}>
+                <Typography component="span" variant="navigationLabel">
                   {sub.label}
                 </Typography>
               </Box>
@@ -388,11 +408,7 @@ function DesktopNavbar() {
               <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
                 <Box className="dropdown-link-marker" component="span" sx={desktopMenuMarkerSx} />
                 <Box component="span" sx={{ display: 'block' }}>
-                  <Typography
-                    component="span"
-                    variant="navigationLabel"
-                    sx={{ display: 'block', lineHeight: 1.25 }}
-                  >
+                  <Typography component="span" variant="navigationLabel" sx={{ display: 'block' }}>
                     {sub.label}
                   </Typography>
                   <Typography
@@ -419,7 +435,7 @@ function DesktopNavbar() {
             >
               <Box component="span" sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}>
                 <Box className="dropdown-link-marker" component="span" sx={desktopMenuMarkerSx} />
-                <Typography component="span" variant="navigationLabel" sx={{ lineHeight: 1.25 }}>
+                <Typography component="span" variant="navigationLabel">
                   {sub.label}
                 </Typography>
               </Box>

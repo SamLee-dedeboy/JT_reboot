@@ -2,7 +2,7 @@ import {
   bolsterGateClosures,
   callingOnReservesReleasePeriods,
   WATER_YEAR_START,
-} from '../scenarios/content'
+} from '@/content/modelRuns'
 
 export interface RegionalTimelineContextPeriod {
   id: string

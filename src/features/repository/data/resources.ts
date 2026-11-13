@@ -39,6 +39,8 @@ export interface Article {
   kicker: string
   paras: string[]
   list?: string[]
+  /** Where the article lives; the reading card shows "Open the source" when set. */
+  href?: string
 }
 
 export const ARTICLES: Article[] = [

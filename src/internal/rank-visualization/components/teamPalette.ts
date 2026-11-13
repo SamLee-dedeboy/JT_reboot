@@ -3,8 +3,8 @@
 // recolors all of them at once. Score colors (blue/orange) never change.
 import { createContext, useContext } from 'react'
 import { chart } from '../../../theme'
-import { TEAMS } from '../../../features/scenarios/ranking/model/teams'
-import type { Team } from '../../../features/scenarios/ranking/model/teams'
+import { TEAMS } from '../../../features/scenario-ranking/model/teams'
+import type { Team } from '../../../features/scenario-ranking/model/teams'
 
 export type TeamPaletteKey = keyof typeof chart.voting.teamPalettes
 

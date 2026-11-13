@@ -1,4 +1,4 @@
-import { palette } from '../../theme/index'
+import { palette } from '@/theme'
 import type { RangeMode } from './types'
 
 export const chartTransition = { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const }

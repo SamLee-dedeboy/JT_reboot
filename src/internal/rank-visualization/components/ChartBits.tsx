@@ -1,8 +1,8 @@
 // Small shared building blocks for the rank-visualization sketches.
 import { Box, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
-import { cellFill, fmtScore } from '../../../features/scenarios/ranking/model/teams'
-import type { Score } from '../../../features/scenarios/ranking/model/teams'
+import { cellFill, fmtScore } from '../../../features/scenario-ranking/model/teams'
+import type { Score } from '../../../features/scenario-ranking/model/teams'
 import { useTeams } from './teamPalette'
 import TeamIcon from '../../../ui/TeamIcon'
 

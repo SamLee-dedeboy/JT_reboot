@@ -2,7 +2,7 @@
 
 > **Note (Nov 2026):** the `drilldown/` and `subteams/` code, the raw team tables and their
 > `scripts/build-*.py` generators were removed. This file is kept as a record. Every ranking number
-> now lives in `src/features/scenarios/ranking/data/`, one file per team.
+> now lives in `src/features/scenario-ranking/data/`, one file per team.
 
 Tracker for the internal rank-visualization page (`/pages/rank-visualization`).
 Status: `[ ]` not started · `[~]` in progress · `[x]` done.

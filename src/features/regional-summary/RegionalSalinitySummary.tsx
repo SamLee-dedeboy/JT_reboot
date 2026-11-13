@@ -7,16 +7,16 @@ import type { Map as MapboxMap } from 'mapbox-gl'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Layer, Source } from 'react-map-gl/mapbox'
-import BaseMap from '../../map/BaseMap'
+import BaseMap from '@/map/BaseMap'
 import {
   REGIONAL_OVERVIEW,
   REGIONAL_OVERVIEW_MAX_ZOOM,
   REGIONAL_STRATEGY_CAMERAS,
-} from '../../map/cameras'
-import { SALINITY_MAP_STYLE } from '../../map/mapStyles'
-import { jtSpacing, ranking } from '../../theme'
-import { assetUrl } from '../../utils/baseUrl'
-import { Segmented } from '../../ui/Segmented'
+} from '@/map/cameras'
+import { SALINITY_MAP_STYLE } from '@/map/mapStyles'
+import { jtSpacing, ranking } from '@/theme'
+import { assetUrl } from '@/utils/baseUrl'
+import { Segmented } from '@/ui'
 import RegionalStackedTimeline from './RegionalStackedTimeline'
 import { RegionalPlaceLayers, RegionalPlacePreview } from './RegionalSalinityMapParts'
 import {
