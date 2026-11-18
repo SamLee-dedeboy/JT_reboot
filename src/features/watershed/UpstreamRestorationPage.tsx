@@ -20,7 +20,7 @@ import {
 import { alpha } from '@mui/material/styles'
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Footer, Navbar, NumberedHeading, PageHero, PageRail } from '@/ui'
+import { Footer, Navbar, NumberedHeading, PageHero, NavRail } from '@/ui'
 import { borderedPanelSx } from '@/ui/surfaceStyles'
 import { jtSpacing, navigation } from '@/theme'
 import ChangeRangeChart, { RestorationLevelLegend } from './ChangeRangeChart'
@@ -107,7 +107,7 @@ export default function UpstreamRestorationPage() {
             alignItems: 'start',
           }}
         >
-          <PageRail items={pageSections} ariaLabel="Upstream restoration sections" />
+          <NavRail variant="page" items={pageSections} ariaLabel="Upstream restoration sections" />
 
           <Stack
             spacing={jtSpacing.section.xl}

@@ -63,6 +63,12 @@ export const typography = {
     fontSize: 'clamp(1.1875rem, 0.95rem + 0.5vw, 1.875rem)',
     lineHeight: 1.3,
   },
+  // The statement on a home photo panel: body1, italic.
+  photoPanelText: {
+    fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)',
+    lineHeight: 1.3,
+    fontStyle: 'italic',
+  },
   body2: {
     fontSize: 'clamp(0.98rem, 0.9rem + 0.3vw, 1.2rem)',
     lineHeight: 1.25,

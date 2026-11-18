@@ -9,6 +9,7 @@ export interface SideGlowCardProps {
   body: ReactNode
   accent?: 'primary' | 'secondary'
   actionLabel?: string
+  /** Defaults to → (within the site); pass ↗ (`arrow-up-right`) only for an outside link. */
   actionIcon?: ReactNode
 }
 
@@ -66,7 +67,7 @@ export default function SideGlowCard({
           {body}
         </Typography>
         <Button
-          endIcon={actionIcon ?? <Icon name="arrow-up-right" size={15} />}
+          endIcon={actionIcon ?? <Icon name="arrow-right" size={15} />}
           sx={{
             alignSelf: 'flex-start',
             color: 'common.white',

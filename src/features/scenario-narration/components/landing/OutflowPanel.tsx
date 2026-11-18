@@ -4,31 +4,7 @@ import { Box, Button, Stack, Typography, useTheme } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { assetUrl } from '@/utils/baseUrl'
 import { navigation } from '@/theme'
-import { scenarioName } from '@/content/names'
-
-const variations = [
-  {
-    key: 'current',
-    eyebrow: 'Current operations',
-    title: scenarioName('bau'),
-    body: 'Begin with this starting point before changing Delta outflow assumptions.',
-    gridArea: 'current',
-  },
-  {
-    key: 'saltier',
-    eyebrow: 'A saltier Delta',
-    title: '10% Decrease in Delta outflow',
-    body: 'Explore a saltier Delta, 10% decrease from current operations.',
-    gridArea: 'saltier',
-  },
-  {
-    key: 'fresher',
-    eyebrow: 'A fresher Delta',
-    title: '30% Increase in Delta outflow',
-    body: 'Explore a fresher Delta, 30% increase from current operations.',
-    gridArea: 'fresher',
-  },
-] as const
+import { OUTFLOW_VARIATIONS as variations } from '@/content/landing'
 
 type VariationKey = (typeof variations)[number]['key']
 
@@ -260,9 +236,11 @@ export default function OutflowPanel({
                   textAlign: 'left',
                 }}
               >
-                <Typography variant="eyebrow" component="p" sx={{ color: 'primary.main' }}>
-                  {variation.eyebrow}
-                </Typography>
+                {variation.eyebrow && (
+                  <Typography variant="eyebrow" component="p" sx={{ color: 'primary.main' }}>
+                    {variation.eyebrow}
+                  </Typography>
+                )}
                 <Typography variant="h3" component="h3" sx={{ maxWidth: '20ch' }}>
                   {variation.title}
                 </Typography>

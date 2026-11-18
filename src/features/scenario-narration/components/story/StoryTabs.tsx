@@ -1,19 +1,7 @@
 import { Box, Container, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { jtSpacing, navigation } from '@/theme'
-import { scenarios } from '@/content/scenarios'
-
-const scenarioOrder = [
-  'eco-machine',
-  'new-green-watershed',
-  'bolster-and-fortify',
-  'calling-on-reserves',
-  'a-tunnel',
-] as const
-
-const orderedScenarios = scenarioOrder
-  .map((slug) => scenarios.find((scenario) => scenario.slug === slug))
-  .filter((scenario): scenario is (typeof scenarios)[number] => scenario != null)
+import { storyScenarios as orderedScenarios } from '@/content/scenarios'
 
 export default function StoryTabs({ currentSlug }: { currentSlug: string }) {
   return (

@@ -27,6 +27,8 @@ PHOTOS = [
     'bolster-fortify-2.JPG',
     'calling-on-reserves.jpg',
     'a-tunnel.jpg',
+    # The What's next section's photo on phones and tablets; the original sits one level up.
+    '../delta-aerial.jpg',
 ]
 
 

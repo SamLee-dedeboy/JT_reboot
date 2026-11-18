@@ -25,7 +25,7 @@ export default function BackgroundPage() {
       <NavRail items={navRailItems} ariaLabel="Background context sections" />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <BackgroundHero />
-        <Container maxWidth={false} disableGutters sx={{ position: 'relative' }}>
+        <Box sx={{ position: 'relative' }}>
           <BackgroundChapters />
           <Container
             maxWidth="lg"
@@ -34,7 +34,7 @@ export default function BackgroundPage() {
             <KeyTerms />
             <BackgroundNext />
           </Container>
-        </Container>
+        </Box>
       </Box>
       <Footer />
     </>

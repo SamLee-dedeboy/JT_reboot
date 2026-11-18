@@ -7,7 +7,7 @@ import {
   type OverviewSectionId,
 } from '@/content/modeling'
 import { jtSpacing, navigation } from '@/theme'
-import { Footer, Navbar, PageHero, PageRail } from '@/ui'
+import { Footer, Navbar, PageHero, NavRail } from '@/ui'
 import AdaptationScenariosSection from './components/AdaptationScenariosSection'
 import BaselinesSection from './components/BaselinesSection'
 import HowModeledSection from './components/HowModeledSection'
@@ -49,13 +49,18 @@ export default function ModelingPage() {
               alignItems: 'start',
             }}
           >
-            <PageRail
-              items={[...overviewNavigation]}
-              ariaLabel="Modeling page sections"
-              activeItemId={activeSection}
-              onNavigate={(id) => setActiveSection(id as OverviewSectionId)}
-              sx={{ gridColumn: { lg: 1 }, gridRow: { lg: '1 / span 3' } }}
-            />
+            {/* The rail's cell spans the rows beside it, so the rail stays pinned through all of them. */}
+            <Box
+              sx={{ gridColumn: { lg: 1 }, gridRow: { lg: '1 / span 3' }, alignSelf: 'stretch' }}
+            >
+              <NavRail
+                variant="page"
+                items={[...overviewNavigation]}
+                ariaLabel="Modeling page sections"
+                activeItemId={activeSection}
+                onNavigate={(id) => setActiveSection(id as OverviewSectionId)}
+              />
+            </Box>
 
             {/* The method: what the model is, then one distinct block per question. */}
             <Box component="div" sx={{ gridColumn: { lg: 2 }, gridRow: { lg: 1 }, minWidth: 0 }}>

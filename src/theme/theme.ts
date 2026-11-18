@@ -26,7 +26,27 @@ export const highlighter = {
   vibrancy: { subtle: 0.18, balanced: 0.32, vibrant: 0.52 },
 } as const
 
+/**
+ * Shadows for white text set over a map or photo: a tight dark edge keeps the letterforms
+ * crisp on bright patches, and a wide soft halo darkens the ground behind them.
+ */
+export const textOverImage = {
+  /** Display titles. */
+  title: [
+    `0 1px 2px ${palette.translucent.textShadowStrong}`,
+    `0 2px 12px ${palette.translucent.textShadow}`,
+    `0 0 36px ${palette.translucent.textShadow}`,
+  ].join(', '),
+  /** Body copy and captions. */
+  body: [
+    `0 1px 2px ${palette.translucent.textShadowStrong}`,
+    `0 1px 10px ${palette.translucent.textShadow}`,
+  ].join(', '),
+} as const
+
 const navigationBarHeight = { xs: 72, md: 76 } as const
+const sectionTabsHeight = 56
+const railWidth = 220
 
 export const navigation = {
   /** Navbar height in px; also where sticky elements below the navbar pin. */
@@ -36,10 +56,32 @@ export const navigation = {
     xs: `calc(${length} - ${navigationBarHeight.xs}px)`,
     md: `calc(${length} - ${navigationBarHeight.md}px)`,
   }),
+  /**
+   * Height in px of the section tabs that stand in for a sticky section rail from sm to lg.
+   * Phones (xs) have no tabs: the sections simply scroll.
+   */
+  sectionTabsHeight,
+  /** Where a section lands below the navbar and the section tabs (its scroll-margin-top). */
+  belowSectionTabs: {
+    xs: navigationBarHeight.xs,
+    sm: navigationBarHeight.xs + sectionTabsHeight,
+    md: navigationBarHeight.md + sectionTabsHeight,
+  },
+  /**
+   * The story pages' bottom dock below lg, which stands in for their rail and tabs: its
+   * height and its inset from the screen's edges, in px. `clearance` is the room a page
+   * leaves under its last content so the dock never covers it.
+   */
+  bottomDock: { height: 64, inset: 12, clearance: 64 + 2 * 12 },
   /** Where an in-page "On this page" rail pins: below the navbar and a sticky tab bar. */
   pageRailTop: 148,
-  /** The section rail's column, beside page content from lg up: one width on every page. */
-  railColumn: 'minmax(180px, 220px)',
+  /**
+   * The section rail's width in px from lg up, for the rails that sit in a column beside
+   * page content. NavRail sizes itself with it; `railColumn` is the same width as a grid
+   * track, for a page's grid (or RailGrid) to hold the rail, or to line content up with it.
+   */
+  railWidth,
+  railColumn: `${railWidth}px`,
   desktopButtonMinWidth: 140,
   activeBorder: `1px solid ${palette.translucent.primaryGreen}`,
   activeBackground: palette.translucent.primaryGreen,
@@ -50,6 +92,8 @@ export const navigation = {
   /** A grouped dropdown (headed sections, captions, nested shortcuts) needs a wider panel. */
   groupedPanelWidth: { min: 400, max: 440 },
   dropdownShadow: `0 20px 48px ${palette.translucent.cardShadow}`,
+  /** The mobile menu's layer: just under the navbar, which the theme pins at 99 (MuiAppBar). */
+  mobileMenuZIndex: 98,
   drawerShadow: `-18px 0 46px ${palette.translucent.blackShadow}`,
   spacing: {
     menuItemInline: 1.75,
@@ -189,7 +233,8 @@ export const logoWordmark = {
 const theme = createTheme({
   cssVariables: true,
   colorSchemes: { light: false, dark: true },
-  breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1400 } },
+  // MUI defaults, plus xxl for 1080p-and-up monitors.
+  breakpoints: { values: { xs: 0, sm: 600, md: 900, lg: 1200, xl: 1536, xxl: 1920 } },
   palette: {
     mode: 'dark',
     ...palette,

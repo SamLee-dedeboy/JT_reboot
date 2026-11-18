@@ -7,7 +7,7 @@ import { Box, Button, Container, Stack } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { jtSpacing, navigation } from '@/theme'
-import { Footer, Navbar, PageHero, PageRail, TeamIcon } from '@/ui'
+import { Footer, Navbar, PageHero, NavRail, TeamIcon } from '@/ui'
 import { criterionById } from '@/content/criteria'
 import { teamStyle } from '@/ui/teamStyle'
 import { findTeam, methodologyPath } from '@/content/routes'
@@ -74,7 +74,7 @@ export default function CriterionPage() {
           }}
         >
           {/* Section rail: beside the content from lg up, above it on smaller screens */}
-          <PageRail items={sections} ariaLabel={`${team.label} sections`} />
+          <NavRail variant="page" items={sections} ariaLabel={`${team.label} sections`} />
 
           <CitationContext.Provider
             value={{ accent: color, references: criterionById[team.id].references }}

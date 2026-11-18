@@ -41,6 +41,54 @@ export const LANDING_PANELS = [
   },
 ] as const
 
+/**
+ * The photo each section opens with below lg, where the panels stack into full-screen
+ * sections. Adaptation scenarios has none: its cards carry their own photos.
+ */
+export const LANDING_SECTION_PHOTOS = {
+  'current-operations': '/images/scenarios/web/business-as-usual.webp',
+  'tiered-outflows': '/images/scenarios/web/outflow.webp',
+  'whats-next': '/images/scenarios/web/delta-aerial.webp',
+} as const
+
+/**
+ * The three outflow variations, each with the cell it fills on the desktop outflow panel.
+ * Only Current operations carries an eyebrow; the other two are named by their titles.
+ */
+export const OUTFLOW_VARIATIONS: {
+  key: 'current' | 'saltier' | 'fresher'
+  eyebrow?: string
+  title: string
+  body: string
+  gridArea: string
+}[] = [
+  {
+    key: 'current',
+    eyebrow: 'Current operations',
+    title: scenarioName('bau'),
+    body: 'Begin with this starting point before changing Delta outflow assumptions.',
+    gridArea: 'current',
+  },
+  {
+    key: 'saltier',
+    title: '10% Decrease in Delta outflow',
+    body: 'Explore a saltier Delta, 10% decrease from current operations.',
+    gridArea: 'saltier',
+  },
+  {
+    key: 'fresher',
+    title: '30% Increase in Delta outflow',
+    body: 'Explore a fresher Delta, 30% increase from current operations.',
+    gridArea: 'fresher',
+  },
+]
+
+/** The Current Operations panel's two links; neither page is linked yet. */
+export const CURRENT_OPERATIONS_LINKS: { label: string; href?: string }[] = [
+  { label: 'Understand Key Parameters' },
+  { label: 'Understand Salinity Basics' },
+]
+
 export const ADAPTATION_CARDS = [
   {
     title: scenarioName('em', 'scenarioStory'),

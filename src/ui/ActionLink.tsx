@@ -7,14 +7,13 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import Icon from './Icon'
 import { textLinkSx } from './actionStyles'
+import { isExternal } from './linkTarget'
 
 export interface ActionTarget {
   label: string
   /** An in-app route, an in-page `#anchor` or an external `https://` URL. None marks it forthcoming. */
   href?: string
 }
-
-const isExternal = (href: string) => /^https?:\/\//.test(href)
 
 /** Router link for app routes, a plain anchor for `#` and external URLs (opened in a new tab). */
 function linkProps(href: string) {

@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, useTheme } from '@mui/material'
+import { Box, Stack, Typography, useMediaQuery, useTheme } from '@mui/material'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { useRef, useState } from 'react'
 import { ActionButton, NavRail } from '@/ui'
@@ -6,7 +6,8 @@ import { assetUrl } from '@/utils/baseUrl'
 import AdaptationPanels from './AdaptationPanels'
 import OutflowPanel from './OutflowPanel'
 import { navigation } from '@/theme'
-import { ADAPTATION_CARDS, LANDING_PANELS } from '@/content/landing'
+import { ADAPTATION_CARDS, CURRENT_OPERATIONS_LINKS, LANDING_PANELS } from '@/content/landing'
+import MobileScenarioPanels from './MobileScenarioPanels'
 import WhatsNextPanel from './WhatsNextPanel'
 
 const STICKY_PANEL_SCROLL_DVH = 150
@@ -20,7 +21,8 @@ const PANEL_TRANSITION = {
 
 const scenarioRailItems = LANDING_PANELS.map((panel) => ({ id: panel.id, label: panel.railLabel }))
 
-export default function ScenarioPanels() {
+/** From lg up: the panels pinned in place, cross-fading as the reader scrolls, beside the rail. */
+function DesktopScenarioPanels() {
   const theme = useTheme()
   const sectionRef = useRef<HTMLDivElement>(null)
   const [activePanel, setActivePanel] = useState(0)
@@ -65,7 +67,8 @@ export default function ScenarioPanels() {
           top: navigation.barHeight,
           height: navigation.belowBar('100dvh'),
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '20dvw 80dvw', lg: '15dvw 85dvw' },
+          // The site's rail column, the same width as on every other page with a rail.
+          gridTemplateColumns: `${navigation.railColumn} minmax(0, 1fr)`,
           overflow: 'hidden',
         }}
       >
@@ -77,6 +80,7 @@ export default function ScenarioPanels() {
             height: '100%',
             alignItems: 'center',
             justifyContent: 'center',
+            px: theme.jtSpacing.component.md,
             bgcolor: 'base.700',
             borderRight: '2px solid',
             borderColor: 'primary.main',
@@ -91,14 +95,6 @@ export default function ScenarioPanels() {
             onNavigate={(id) => {
               const panelIndex = LANDING_PANELS.findIndex((panel) => panel.id === id)
               if (panelIndex >= 0) setActivePanel(panelIndex)
-            }}
-            sx={{
-              position: 'static',
-              top: 'auto',
-              display: 'flex',
-              width: '100%',
-              alignSelf: 'center',
-              px: theme.jtSpacing.component.md,
             }}
           />
         </Box>
@@ -171,8 +167,13 @@ export default function ScenarioPanels() {
                       <Typography variant="bodyLarge">{panel.body}</Typography>
                       {index === 0 && (
                         <Stack spacing={theme.jtSpacing.gap.sm} sx={{ alignItems: 'flex-start' }}>
-                          <ActionButton label="Understand Key Parameters" />
-                          <ActionButton label="Understand Salinity Basics" variant="outlined" />
+                          {CURRENT_OPERATIONS_LINKS.map((link, linkIndex) => (
+                            <ActionButton
+                              key={link.label}
+                              {...link}
+                              variant={linkIndex === 0 ? 'contained' : 'outlined'}
+                            />
+                          ))}
                         </Stack>
                       )}
                     </Stack>
@@ -185,4 +186,12 @@ export default function ScenarioPanels() {
       </Box>
     </Box>
   )
+}
+
+/** The scenario panels: pinned and cross-fading from lg up, stacked sections under section tabs below. */
+export default function ScenarioPanels() {
+  const theme = useTheme()
+  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'), { noSsr: true })
+
+  return isLgUp ? <DesktopScenarioPanels /> : <MobileScenarioPanels />
 }

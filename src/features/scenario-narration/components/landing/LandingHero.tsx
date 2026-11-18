@@ -22,20 +22,29 @@ export default function LandingHero() {
         position: 'relative',
         height: navigation.belowBar('100dvh'),
         display: 'flex',
-        alignItems: 'center',
+        // Below md the words run the full width, so they sit low over a fade from the bottom.
+        alignItems: { xs: 'flex-end', md: 'center' },
+        pb: { xs: theme.jtSpacing.section.md, md: 0 },
         isolation: 'isolate',
         '&::before': {
           content: '""',
           position: 'absolute',
           inset: 0,
-          backgroundImage: `linear-gradient(90deg, ${alpha(theme.palette.base[900], 0.94)} 0%, ${alpha(theme.palette.base[900], 0.78)} 44%, ${alpha(theme.palette.base[900], 0.32)} 100%), url(${assetUrl('/images/scenarios/web/cover.webp')})`,
+          backgroundImage: {
+            xs: `linear-gradient(180deg, ${alpha(theme.palette.base[900], 0.3)} 0%, ${alpha(theme.palette.base[900], 0.78)} 38%, ${alpha(theme.palette.base[900], 0.94)} 62%), url(${assetUrl('/images/scenarios/web/cover.webp')})`,
+            md: `linear-gradient(90deg, ${alpha(theme.palette.base[900], 0.94)} 0%, ${alpha(theme.palette.base[900], 0.78)} 44%, ${alpha(theme.palette.base[900], 0.32)} 100%), url(${assetUrl('/images/scenarios/web/cover.webp')})`,
+          },
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           zIndex: -1,
         },
       }}
     >
-      <Container maxWidth="lg">
+      {/* The site's page inset below lg, where the default gutter left the words near the edge. */}
+      <Container
+        maxWidth="lg"
+        sx={{ px: { ...theme.jtSpacing.page.x, lg: theme.jtSpacing.gap.lg } }}
+      >
         <ScrollReveal>
           <Stack
             spacing={theme.jtSpacing.gap.lg}

@@ -1,4 +1,11 @@
 // The Background and Key Parameters pages: how the Delta works before any scenario.
+/** The card before the three chapters, while the map shows the whole Delta. */
+export const backgroundOverview = {
+  kicker: 'Overview',
+  title: 'Start with the Delta as both estuary and water supply hub',
+  body: 'The Delta is both an estuary and a water supply hub. That means each scenario starts with the same basic question: how much freshwater is available to hold back salinity while also serving ecosystems, Delta communities, farms, and cities?',
+}
+
 export const baselineBackgroundChapters = [
   {
     id: '01',

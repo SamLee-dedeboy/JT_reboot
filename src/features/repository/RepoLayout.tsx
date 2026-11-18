@@ -2,7 +2,7 @@
 // an "On this page" rail when the page has sections) and the footer.
 import type { ReactNode } from 'react'
 import { Container } from '@mui/material'
-import { Footer, Navbar, PageRail, RailGrid, type NavRailItem } from '@/ui'
+import { Footer, Navbar, NavRail, RailGrid, type NavRailItem } from '@/ui'
 import { jtSpacing } from '@/theme'
 import RepoHero from './RepoHero'
 import RepoTabs, { type RepoTabKey } from './RepoTabs'
@@ -37,7 +37,9 @@ export default function RepoLayout({
         sx={{ width: '90dvw', px: 0, pb: { xs: jtSpacing.section.md, md: jtSpacing.section.xl } }}
       >
         {rail ? (
-          <RailGrid rail={<PageRail items={rail} ariaLabel="Page sections" />}>{children}</RailGrid>
+          <RailGrid rail={<NavRail variant="page" items={rail} ariaLabel="Page sections" />}>
+            {children}
+          </RailGrid>
         ) : (
           children
         )}

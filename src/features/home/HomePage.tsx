@@ -1,7 +1,7 @@
-import { Box } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { lazy, Suspense } from 'react'
 import { HOME_PHOTOS, HOME_RAIL_ITEMS } from '@/content/home'
-import { Footer, Navbar, NavRail, RailGrid } from '@/ui'
+import { Footer, Navbar, NavRail, RailGrid, SectionTabs } from '@/ui'
 import HomeImagePanel from './components/HomeImagePanel'
 import { FuturesPanel, StakesPanel, WhatIfPanel, WorksPanel } from './components/HomePanels'
 import PanelSlant from './components/PanelSlant'
@@ -18,6 +18,12 @@ const panelBg = {
 }
 
 export default function HomePage() {
+  const theme = useTheme()
+  // The rail shows from lg up; below it, the section tabs take its place.
+  const showRail = useMediaQuery(theme.breakpoints.up('lg'), { noSsr: true })
+  // The tab strip shows from sm to lg; a phone gets neither tabs nor rail.
+  const showTabs = useMediaQuery(theme.breakpoints.up('sm'), { noSsr: true }) && !showRail
+
   return (
     <>
       <Navbar />
@@ -26,7 +32,11 @@ export default function HomePage() {
           sx={(theme) => ({
             position: 'relative',
             // The page's left gutter: the hero title, the rail and every panel's text line up on it.
+            // At sm it sits where the hero text stood: the phone gutter plus the hero's old indent.
             '--home-rail-inset': theme.spacing(3),
+            [theme.breakpoints.up('sm')]: {
+              '--home-rail-inset': theme.spacing(3 + theme.jtSpacing.component.md),
+            },
             [theme.breakpoints.up('md')]: { '--home-rail-inset': theme.spacing(8) },
             [theme.breakpoints.up('lg')]: { '--home-rail-inset': theme.spacing(10) },
           })}
@@ -74,7 +84,14 @@ export default function HomePage() {
                 pt: '4.5rem',
               })}
             />
-            <PanelSlant color={panelBg.whatIf} attachment="before" tilt="up-right" />
+            {/* From sm to lg the tabs pin under the navbar through every panel, in place of the rail. */}
+            {/* The hero ends on a slant into the first panel, except where the tab strip
+                (sm to lg) sits between them and gives the hero a straight edge. */}
+            {showTabs ? (
+              <SectionTabs items={HOME_RAIL_ITEMS} ariaLabel="Explore the home page" />
+            ) : (
+              <PanelSlant color={panelBg.whatIf} attachment="before" tilt="up-right" />
+            )}
             <WhatIfPanel bg={panelBg.whatIf} />
             <PanelSlant color={panelBg.whatIf} attachment="after" tilt="down-right" />
             <HomeImagePanel

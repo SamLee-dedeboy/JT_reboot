@@ -42,6 +42,10 @@ export const typeGroups: Array<{ label: string; variants: Record<string, TypeSam
         sample: 'Browse project documentation, references, and related projects.',
         use: 'Caption-size prose over several lines; menu descriptions, source notes',
       },
+      photoPanelText: {
+        sample: 'This project seeks to advance such efforts.',
+        use: 'The statement on a home photo panel',
+      },
       factDate: { sample: 'Jun 2024 – Aug 2025', use: 'Dates listed under a fact' },
       citationMark: { sample: '[3]', use: 'Raised citation numbers' },
       chapterTitle: { sample: 'Two rivers meet', use: 'Scroll-story chapter titles' },

@@ -1,18 +1,53 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import { Box, Button, Container, Stack, Typography } from '@mui/material'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import { Box, Button, Container, IconButton, Stack, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import type { ScenarioContent } from '@/content/scenarios'
 import { jtSpacing } from '@/theme'
 import { assetUrl } from '@/utils/baseUrl'
 import { storyGridColumns } from './storyLayout'
 
+/** Where the scenario sits among the five, for stepping between them without the tabs. */
+export interface ScenarioSteps {
+  previous?: ScenarioContent
+  next?: ScenarioContent
+  total: number
+}
+
+/** One arrow to the scenario before or after; disabled at either end. */
+function StepArrow({ to, direction }: { to?: ScenarioContent; direction: 'previous' | 'next' }) {
+  const Chevron = direction === 'previous' ? ChevronLeftIcon : ChevronRightIcon
+  return (
+    <IconButton
+      {...(to ? { component: Link, to: `/scenarios/${to.slug}` } : { disabled: true })}
+      aria-label={
+        to ? `${direction === 'previous' ? 'Previous' : 'Next'} scenario: ${to.title}` : undefined
+      }
+      sx={{
+        width: 44,
+        height: 44,
+        border: 1,
+        borderColor: to ? 'primary.main' : 'border.default',
+        color: 'primary.main',
+        '&:hover': { bgcolor: 'translucent.primaryGreen' },
+      }}
+    >
+      <Chevron />
+    </IconButton>
+  )
+}
+
 /** The scenario's photo, number, title and plain-language premise. */
 export default function StoryHero({
   scenario,
   isTieredOutflows,
+  scenarioSteps,
 }: {
   scenario: ScenarioContent
   isTieredOutflows: boolean
+  /** Below lg, where the scenario tabs give way: its number among the five and arrows. */
+  scenarioSteps?: ScenarioSteps
 }) {
   return (
     <Box
@@ -62,7 +97,26 @@ export default function StoryHero({
           >
             All scenarios
           </Button>
-          {!isTieredOutflows && <Typography variant="numberArticle">{scenario.number}</Typography>}
+          {!isTieredOutflows && !scenarioSteps && (
+            <Typography variant="numberArticle">{scenario.number}</Typography>
+          )}
+          {!isTieredOutflows && scenarioSteps && (
+            <Stack
+              direction="row"
+              sx={{ alignItems: 'center', justifyContent: 'space-between', gap: jtSpacing.gap.sm }}
+            >
+              <Stack direction="row" spacing={jtSpacing.gap.sm} sx={{ alignItems: 'baseline' }}>
+                <Typography variant="numberArticle">{scenario.number}</Typography>
+                <Typography variant="meta" component="span" sx={{ color: 'base.100' }}>
+                  of {String(scenarioSteps.total).padStart(2, '0')} adaptation scenarios
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={jtSpacing.gap.sm}>
+                <StepArrow to={scenarioSteps.previous} direction="previous" />
+                <StepArrow to={scenarioSteps.next} direction="next" />
+              </Stack>
+            </Stack>
+          )}
           <Typography variant="h1">{scenario.title}</Typography>
           <Typography variant="body1" sx={{ color: 'base.50', maxWidth: '60ch' }}>
             {scenario.summary}

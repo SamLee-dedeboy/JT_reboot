@@ -22,6 +22,15 @@ export const adaptationScenarios: ScenarioContent[] = [
 
 export const scenarios = [baseline, tieredOutflows, ...adaptationScenarios]
 
+/** The adaptation scenarios in the order a reader steps through their stories. */
+export const storyScenarios: ScenarioContent[] = [
+  ecoMachine,
+  newGreenWatershed,
+  bolsterAndFortify,
+  callingOnReserves,
+  aTunnel,
+]
+
 export const scenarioBySlug = Object.fromEntries(
   scenarios.map((scenario) => [scenario.slug, scenario]),
 )

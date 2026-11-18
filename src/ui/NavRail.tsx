@@ -1,17 +1,23 @@
 // The site's one section rail, with scroll spy: it marks the section in view and scrolls to
-// the one a reader picks. Every rail shares its items' look (eyebrow labels; nested or
-// criterion-colored items in navigationSubLabel with a smaller dot), their spacing and their
-// hover. `variant` only places it, for three different kinds of page:
-//   fixed:  pinned to the right edge of the viewport, label then dot, one line per item.
-//           For pages whose content fills the width, e.g. the Background page and its map.
+// the one a reader picks. Every rail on the site is this component, and everything about how
+// a rail looks and how wide it is comes from its variant, in `railVariants` below. A page
+// picks a variant and passes its items; it never sizes, places or restyles the rail.
+//   page:   the "On this page" list in an article's rail column: the heading, then dot and
+//           label; it pins below the page's tab bar from lg up and sits in flow below lg.
 //   sticky: pins as the reader scrolls past full-bleed colored panels (Home, the scenarios
-//           landing), dot then label. Dots are outlined in white to read on those colors.
-//   page:   the in-flow "On this page" list in an article's rail column (use PageRail),
-//           dot then label; long labels wrap and the dot stays on the first line.
-// Don't add a variant or restyle items per page; change the rail here for every page.
-import { useEffect, useState, type ReactNode } from 'react'
-import { Box } from '@mui/material'
-import type { SxProps, Theme } from '@mui/material'
+//           landing): dot then label, no heading, dots outlined in white to read on color.
+//   fixed:  pinned to the right edge of the viewport, label then dot, one line per item,
+//           for pages whose content fills the width (the Background page and its map).
+// The column variants (page, sticky) fill their column up to `navigation.railWidth` from lg
+// up and wrap a label too long for it, with the dot on its first line; the grid that holds one uses the
+// same width as its track (`navigation.railColumn`, or RailGrid). Items' look is shared by every variant
+// (eyebrow labels; nested or criterion-colored items in navigationSubLabel with a smaller
+// dot). Below lg the sticky and fixed rails hide, and pages show SectionTabs instead.
+import type { ReactNode } from 'react'
+import { Box, Typography } from '@mui/material'
+import type { Theme } from '@mui/material'
+import { navigation } from '@/theme'
+import useScrollSpy from './useScrollSpy'
 
 export interface NavRailItem {
   id: string
@@ -26,39 +32,73 @@ export interface NavRailItem {
 
 export type NavRailVariant = 'fixed' | 'sticky' | 'page'
 
-/** Container layout per variant; everything else about the rail is shared. */
-const containerSx: Record<NavRailVariant, (theme: Theme) => object> = {
-  fixed: (theme) => ({
-    position: 'fixed',
-    right: theme.spacing(theme.jtSpacing.component.md),
-    top: '50%',
-    transform: 'translateY(-50%)',
-    zIndex: 70,
-    display: { xs: 'none', lg: 'flex' },
-  }),
-  sticky: () => ({
-    position: 'sticky',
-    top: '25vh',
-    zIndex: 3,
-    display: { xs: 'none', lg: 'flex' },
-    alignSelf: 'start',
-  }),
-  page: () => ({
-    position: 'relative',
-    zIndex: 1,
-    display: 'flex',
-    alignItems: 'flex-start',
-  }),
+interface RailVariant {
+  /** The eyebrow above the items, if the variant has one. */
+  heading?: string
+  /** Dot before the label (in a rail column) or after it (at the screen's right edge). */
+  dotFirst: boolean
+  /** Long labels wrap within the rail's width; otherwise each item keeps one line. */
+  wraps: boolean
+  /** Inactive dots outlined in white, to read over photos and colored panels. */
+  lightDots: boolean
+  /** Where the rail sits and how wide it is. */
+  container: (theme: Theme) => object
+}
+
+/** Every rail's look, placement and width, by variant. Change a rail here, for every page. */
+const railVariants: Record<NavRailVariant, RailVariant> = {
+  page: {
+    heading: 'On this page',
+    dotFirst: true,
+    wraps: true,
+    lightDots: false,
+    container: (theme) => ({
+      position: { lg: 'sticky' },
+      top: { lg: navigation.pageRailTop },
+      zIndex: 3,
+      display: 'flex',
+      width: { lg: '100%' },
+      maxWidth: { lg: navigation.railWidth },
+      // Every page's rail starts the same distance below the hero.
+      pt: { xs: theme.jtSpacing.component.lg, md: theme.jtSpacing.component.xl },
+    }),
+  },
+  sticky: {
+    dotFirst: true,
+    wraps: true,
+    lightDots: true,
+    container: () => ({
+      position: 'sticky',
+      top: '25vh',
+      zIndex: 3,
+      display: { xs: 'none', lg: 'flex' },
+      width: '100%',
+      maxWidth: navigation.railWidth,
+    }),
+  },
+  fixed: {
+    dotFirst: false,
+    wraps: false,
+    lightDots: false,
+    container: (theme) => ({
+      position: 'fixed',
+      right: theme.spacing(theme.jtSpacing.component.md),
+      top: '50%',
+      transform: 'translateY(-50%)',
+      zIndex: 70,
+      display: { xs: 'none', lg: 'flex' },
+    }),
+  },
 }
 
 interface NavRailProps {
   items: NavRailItem[]
   ariaLabel?: string
   variant?: NavRailVariant
+  /** Set when the page tracks the current section itself; otherwise the rail's scroll spy does. */
   activeItemId?: string
   onNavigate?: (id: string) => void
   scrollBehavior?: ScrollBehavior
-  sx?: SxProps<Theme>
 }
 
 export default function NavRail({
@@ -68,36 +108,13 @@ export default function NavRail({
   activeItemId,
   onNavigate,
   scrollBehavior = 'smooth',
-  sx,
 }: NavRailProps) {
-  const [active, setActive] = useState(items[0]?.id ?? '')
-  const observedActiveId = items.some((item) => item.id === active) ? active : (items[0]?.id ?? '')
+  const observedActiveId = useScrollSpy(
+    items.map((item) => item.id),
+    activeItemId === undefined,
+  )
   const activeId = activeItemId ?? observedActiveId
-  const dotFirst = variant !== 'fixed'
-  const wraps = variant === 'page'
-
-  useEffect(() => {
-    if (activeItemId !== undefined) return
-
-    const els = items
-      .map((s) => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => !!el)
-    if (!els.length) return
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
-        const id = visible[0]?.target.id
-        if (!id) return
-        setActive(id)
-      },
-      { rootMargin: '-40% 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] },
-    )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
-  }, [activeItemId, items])
+  const { heading, dotFirst, wraps, lightDots, container } = railVariants[variant]
 
   const go = (id: string) => {
     onNavigate?.(id)
@@ -109,17 +126,27 @@ export default function NavRail({
     <Box
       component="nav"
       aria-label={ariaLabel}
-      sx={[
-        (theme) => ({
-          ...containerSx[variant](theme),
-          flexDirection: 'column',
-          gap: theme.jtSpacing.gap.xs,
-          pointerEvents: 'auto',
-          userSelect: 'none',
-        }),
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
+      sx={(theme) => ({
+        ...container(theme),
+        flexDirection: 'column',
+        gap: theme.jtSpacing.gap.xs,
+        pointerEvents: 'auto',
+        userSelect: 'none',
+      })}
     >
+      {heading && (
+        <Typography
+          variant="eyebrow"
+          component="p"
+          sx={{
+            color: 'base.200',
+            // The items' gap already sits below it: together they make the heading's space.
+            mb: (theme) => theme.jtSpacing.component.md - theme.jtSpacing.gap.xs,
+          }}
+        >
+          {heading}
+        </Typography>
+      )}
       {items.map((s) => {
         const on = activeId === s.id
         const accent = s.color ?? 'primary.main'
@@ -149,14 +176,13 @@ export default function NavRail({
                 }),
                 borderRadius: '50%',
                 border: '2px solid',
-                borderColor:
-                  variant === 'sticky'
-                    ? on
-                      ? 'primary.main'
-                      : 'common.white'
-                    : on
-                      ? accent
-                      : 'base.300',
+                borderColor: lightDots
+                  ? on
+                    ? 'primary.main'
+                    : 'common.white'
+                  : on
+                    ? accent
+                    : 'base.300',
                 bgcolor: on ? accent : 'transparent',
                 transform: on ? 'scale(1.2)' : 'none',
                 transition:

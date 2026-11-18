@@ -97,10 +97,7 @@ export const HOME_PHOTOS = {
     id: 'stakes-photo',
     image: 'images/exhibit.jpg',
     text: 'By envisioning diverse ways in which climate, governance, and ecosystems might co-evolve, scenario-based planning offers tools to reflect on current actions and goals, and in turn, fosters shared learning and socio-technical innovation.',
-    link: {
-      label: 'Participatory Scenario Planning',
-      href: 'https://delta-just-transitions-ucdavis.hub.arcgis.com/pages/scenario-planning',
-    },
+    link: { label: 'Participatory Scenario Planning', href: '/pages/scenario-planning' },
   },
   deltaInTransition: {
     id: 'works-photo',

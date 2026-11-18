@@ -55,6 +55,7 @@ export const palette = {
     orangeSubtle: 'rgba(247,124,59,0.10)',
     brickSubtle: 'rgba(214,69,61,0.10)',
     textShadow: 'rgba(16,22,24,0.6)',
+    textShadowStrong: 'rgba(16,22,24,0.85)',
     blackShadow: 'rgba(0,0,0,0.18)',
     darkSurface: 'rgba(20,29,31,0.74)',
     cardShadow: 'rgba(16,22,24,0.45)',

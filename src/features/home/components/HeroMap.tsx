@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import KeyboardDoubleArrowDownRoundedIcon from '@mui/icons-material/KeyboardDoubleArrowDownRounded'
 import { HERO } from '@/content/home'
 import HeroSalinityMap from '@/map/hero/HeroSalinityMap'
-import { navigation } from '@/theme'
+import { navigation, textOverImage } from '@/theme'
 
 const mapContainerStyle = {
   position: 'absolute',
@@ -38,15 +38,20 @@ export default function HeroMap() {
         sx={{
           position: 'absolute',
           left: 'var(--home-rail-inset)',
-          right: { xs: theme.spacing(3), md: 'auto' },
+          // Below md the box keeps the gutter on both sides, so the scroll cue centres on screen.
+          right: { xs: 'var(--home-rail-inset)', md: 'auto' },
           top: 'auto',
-          bottom: theme.spacing(12),
+          // On a phone the text sits low, so the scroll cue lands just above the map's logo.
+          bottom: { xs: theme.spacing(5), md: theme.spacing(12) },
           minHeight: 'max-content',
           zIndex: 24,
           pointerEvents: 'auto',
           color: 'common.white',
-          width: 'max-content',
-          pl: { xs: theme.jtSpacing.component.md, md: theme.jtSpacing.component.lg },
+          // Below md the box spans the inset to the right edge, so the lede wraps; above,
+          // it sizes to the one-line lede.
+          width: { xs: 'auto', md: 'max-content' },
+          // Up to lg the hero text sits on the page gutter, in line with the panels' text.
+          pl: { xs: 0, lg: theme.jtSpacing.component.lg },
           boxSizing: 'border-box',
         }}
       >
@@ -61,7 +66,7 @@ export default function HeroMap() {
             variant="logoHero"
             component="h1"
             sx={{
-              textShadow: `0 2px 30px ${theme.palette.translucent.textShadow}`,
+              textShadow: textOverImage.title,
               textWrap: 'balance',
             }}
           >
@@ -78,16 +83,20 @@ export default function HeroMap() {
               mt: { xs: theme.jtSpacing.component.sm, md: theme.jtSpacing.component.md },
               mb: 0,
               maxWidth: { xs: theme.jtSpacing.paragraphMaxWidth.default, md: 'none' },
-              textShadow: `0 1px 12px ${theme.palette.translucent.textShadow}`,
+              textShadow: textOverImage.body,
               hyphens: 'none',
               overflowWrap: 'normal',
               wordBreak: 'normal',
             }}
           >
-            <Box component="span" sx={{ display: 'block', whiteSpace: { md: 'nowrap' } }}>
-              {heroLedeLocation}
+            {/* Two set lines from md up; below md one paragraph that wraps naturally. */}
+            <Box
+              component="span"
+              sx={{ display: { xs: 'inline', md: 'block' }, whiteSpace: { md: 'nowrap' } }}
+            >
+              {heroLedeLocation}{' '}
             </Box>
-            <Box component="span" sx={{ display: 'block' }}>
+            <Box component="span" sx={{ display: { xs: 'inline', md: 'block' } }}>
               amid {heroLedeConditions}
             </Box>
           </Typography>
@@ -103,9 +112,12 @@ export default function HeroMap() {
               width: '100%',
               margin: '0 auto',
               paddingTop: theme.spacing(theme.jtSpacing.component.lg),
-              display: isMdUp ? 'flex' : 'none',
+              // Shown at every width; from md up it shifts left to sit under the title's centre.
+              display: 'flex',
               justifyContent: 'center',
-              transform: `translateX(-${theme.spacing(theme.jtSpacing.section.md)})`,
+              transform: isMdUp
+                ? `translateX(-${theme.spacing(theme.jtSpacing.section.md)})`
+                : undefined,
               pointerEvents: 'none',
             }}
           >
@@ -116,7 +128,7 @@ export default function HeroMap() {
                 alignItems: 'center',
                 gap: theme.jtSpacing.component.xs,
                 color: 'common.white',
-                textShadow: `0 1px 8px ${theme.palette.translucent.textShadow}`,
+                textShadow: textOverImage.body,
               }}
             >
               <KeyboardDoubleArrowDownRoundedIcon sx={{ typography: 'h3' }} />

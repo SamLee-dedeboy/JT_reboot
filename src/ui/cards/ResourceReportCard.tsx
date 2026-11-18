@@ -3,6 +3,7 @@
 import { Box, Stack, Typography } from '@mui/material'
 import type { ElementType, ReactNode } from 'react'
 import Icon from '../Icon'
+import { linkArrowName, newTabProps } from '../linkTarget'
 import { raisedCardSx } from '../surfaceStyles'
 import { assetUrl } from '@/utils/baseUrl'
 import { jtSpacing } from '@/theme'
@@ -26,11 +27,19 @@ export interface ResourceReportCardProps {
   titleComponent?: ElementType
 }
 
+/** A download gets ↓; a view gets ↗ (another site, new tab) or → (this site), none without a link. */
 function ActionLink({ action }: { action: ResourceReportAction }) {
+  const arrow = action.kind === 'download' ? 'arrow-down' : linkArrowName(action.href)
+  const nudge = {
+    'arrow-down': 'translateY(2px)',
+    'arrow-up-right': 'translate(2px, -2px)',
+    'arrow-right': 'translateX(2px)',
+  } as const
   return (
     <Box
       component="a"
       href={action.href ?? '#'}
+      {...(action.kind === 'view' && newTabProps(action.href))}
       sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -42,12 +51,12 @@ function ActionLink({ action }: { action: ResourceReportAction }) {
         '& svg': { transition: 'transform 180ms ease' },
         '&:hover, &:focus-visible': { color: 'common.white' },
         '&:hover svg, &:focus-visible svg': {
-          transform: action.kind === 'download' ? 'translateY(2px)' : 'translate(2px, -2px)',
+          transform: arrow ? nudge[arrow] : 'none',
         },
       }}
     >
       {action.label}
-      <Icon name={action.kind === 'download' ? 'arrow-down' : 'arrow-up-right'} size={15} />
+      {arrow && <Icon name={arrow} size={15} />}
     </Box>
   )
 }

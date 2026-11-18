@@ -32,6 +32,7 @@ declare module '@mui/material/styles' {
     navigationSubLabel: CSSProperties
     navigationShortcut: CSSProperties
     captionProse: CSSProperties
+    photoPanelText: CSSProperties
     controlValueSelected: CSSProperties
     chipLabel: CSSProperties
     chipQualifier: CSSProperties
@@ -119,6 +120,10 @@ declare module '@mui/material/styles' {
     ranking?: typeof ranking
     explorerControl?: typeof explorerControl
   }
+
+  interface BreakpointOverrides {
+    xxl: true
+  }
 }
 
 declare module '@mui/material/Typography' {
@@ -140,6 +145,7 @@ declare module '@mui/material/Typography' {
     navigationSubLabel: true
     navigationShortcut: true
     captionProse: true
+    photoPanelText: true
     controlValueSelected: true
     chipLabel: true
     chipQualifier: true

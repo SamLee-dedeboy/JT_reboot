@@ -1,38 +1,15 @@
-import CompareArrowsIcon from '@mui/icons-material/CompareArrows'
-import RouteIcon from '@mui/icons-material/Route'
-import WaterDropIcon from '@mui/icons-material/WaterDrop'
-import { Box, Stack, Typography, alpha, useTheme } from '@mui/material'
-import type { Theme } from '@mui/material'
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import scrollama from 'scrollama'
-import { baselineBackgroundChapters } from '@/content/background'
+// The Background page's map and its three chapters. From lg up the map is pinned full screen
+// and the cards scroll over it; below lg (MobileBackgroundChapters) the map is pinned at
+// the top of the screen and the cards scroll beneath it.
+import { Box, Stack, Typography, alpha, useMediaQuery, useTheme } from '@mui/material'
+import { useRef } from 'react'
+import { backgroundOverview } from '@/content/background'
 import ScenariosBackgroundMap from '@/map/background/ScenariosBackgroundMap'
-import type { ScenariosBackgroundMapStep } from '@/map/background/ScenariosBackgroundLayers'
-
-interface ContextChapter {
-  id: string
-  kicker: string
-  title: string
-  body: string
-  icon: ReactNode
-  /** The chapter's accent, read from the theme palette. */
-  accent: (palette: Theme['palette']) => string
-  mapStep: ScenariosBackgroundMapStep
-}
-
-const chapterPresentation = {
-  '01': { icon: <RouteIcon />, accent: (palette: Theme['palette']) => palette.primary.main },
-  '02': { icon: <CompareArrowsIcon />, accent: (palette: Theme['palette']) => palette.accent.blue },
-  '03': { icon: <WaterDropIcon />, accent: (palette: Theme['palette']) => palette.accent.yellow },
-} as const
-
-const contextChapters: ContextChapter[] = baselineBackgroundChapters.map((chapter) => ({
-  ...chapter,
-  ...chapterPresentation[chapter.id],
-}))
+import { contextChapters, useActiveStep } from './backgroundSteps'
+import MobileBackgroundChapters from './MobileBackgroundChapters'
 
 /** The sticky map with the overview and three chapters scrolling over it; each step moves the map. */
-export default function BackgroundChapters() {
+function DesktopBackgroundChapters() {
   const theme = useTheme()
   // The map's dark shade at a given opacity, the cards' quiet border and their two shadows.
   const shade = (opacity: number) => alpha(theme.palette.base[900], opacity)
@@ -40,50 +17,7 @@ export default function BackgroundChapters() {
   const activeShadow = `0 22px 60px ${shade(0.34)}`
   const restingShadow = `0 16px 44px ${shade(0.2)}`
   const stepsRef = useRef<HTMLDivElement | null>(null)
-  const [activeStep, setActiveStep] = useState<ScenariosBackgroundMapStep>('overview')
-  const scrollSteps = useMemo(
-    () => [
-      {
-        id: 'overview',
-        label: 'Overview',
-        mapStep: 'overview' as const,
-      },
-      ...contextChapters.map((chapter) => ({
-        id: `section-${chapter.id}`,
-        label: chapter.kicker,
-        mapStep: chapter.mapStep,
-      })),
-    ],
-    [],
-  )
-
-  useEffect(() => {
-    const stepRoot = stepsRef.current
-    if (!stepRoot) return undefined
-
-    const stepElements = stepRoot.querySelectorAll<HTMLElement>('.scenario-scroll-step')
-    if (stepElements.length === 0) return undefined
-
-    const scroller = scrollama()
-    scroller
-      .setup({
-        step: stepElements,
-        offset: 0.6,
-        threshold: 4,
-      })
-      .onStepEnter(({ index }) => {
-        const nextStep = scrollSteps[index]?.mapStep ?? 'overview'
-        setActiveStep(nextStep)
-      })
-
-    const handleResize = () => scroller.resize()
-    window.addEventListener('resize', handleResize)
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      scroller.destroy()
-    }
-  }, [scrollSteps])
+  const activeStep = useActiveStep(stepsRef, 0.6)
 
   return (
     <Box
@@ -169,15 +103,13 @@ export default function BackgroundChapters() {
             >
               <Stack spacing={1.4}>
                 <Typography variant="eyebrow" component="p" sx={{ color: 'secondary.light' }}>
-                  Overview
+                  {backgroundOverview.kicker}
                 </Typography>
                 <Typography variant="chapterTitle" component="h2" sx={{ color: 'common.white' }}>
-                  Start with the Delta as both estuary and water supply hub
+                  {backgroundOverview.title}
                 </Typography>
                 <Typography variant="body1" sx={{ color: 'base.100' }}>
-                  The Delta is both an estuary and a water supply hub. That means each scenario
-                  starts with the same basic question: how much freshwater is available to hold back
-                  salinity while also serving ecosystems, Delta communities, farms, and cities?
+                  {backgroundOverview.body}
                 </Typography>
               </Stack>
             </Box>
@@ -265,4 +197,10 @@ export default function BackgroundChapters() {
       </Box>
     </Box>
   )
+}
+
+export default function BackgroundChapters() {
+  const theme = useTheme()
+  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'), { noSsr: true })
+  return isLgUp ? <DesktopBackgroundChapters /> : <MobileBackgroundChapters />
 }

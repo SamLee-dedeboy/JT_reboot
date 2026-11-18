@@ -6,6 +6,7 @@ export {
   numbering,
   ranking,
   explorerControl,
+  textOverImage,
 } from './theme'
 export { palette } from './palette'
 export { typography, fontBody, fontHeading } from './typography'

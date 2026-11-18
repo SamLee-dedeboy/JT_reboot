@@ -1,6 +1,6 @@
 // The Delta references as a table: title, source, then authors and year. Each row is a link.
 import { Box, Typography } from '@mui/material'
-import { Icon, ScrollReveal } from '@/ui'
+import { Icon, ScrollReveal, linkArrowName, newTabProps } from '@/ui'
 import { focusRing } from '@/ui/focusRing'
 import type { Reference } from './data/resources'
 import { jtSpacing } from '@/theme'
@@ -29,14 +29,14 @@ export default function ReferenceTable({ references }: { references: Reference[]
       </Box>
 
       {references.map((reference, index) => {
-        const external = reference.href?.startsWith('http')
+        const arrow = linkArrowName(reference.href)
         return (
           <ScrollReveal key={reference.title} delay={index * 0.05}>
             <Box
               role="row"
               component="a"
               href={reference.href ?? '#'}
-              {...(external && { target: '_blank', rel: 'noopener noreferrer' })}
+              {...newTabProps(reference.href)}
               sx={{
                 display: 'grid',
                 gridTemplateColumns: { xs: 'minmax(0, 1fr) 2rem', md: COLUMNS.md },
@@ -51,7 +51,12 @@ export default function ReferenceTable({ references }: { references: Reference[]
                 '&:hover': {
                   bgcolor: 'translucent.100',
                   '& .reference-title': { color: 'primary.main' },
-                  '& .reference-arrow': { transform: 'translate(3px, -3px)', opacity: 1 },
+                  '& .reference-arrow': {
+                    // The nudge follows the arrow: up-right for ↗, right for →.
+                    transform:
+                      arrow === 'arrow-up-right' ? 'translate(3px, -3px)' : 'translateX(3px)',
+                    opacity: 1,
+                  },
                 },
                 '&:focus-visible': focusRing,
                 '@media (prefers-reduced-motion: reduce)': {
@@ -96,7 +101,7 @@ export default function ReferenceTable({ references }: { references: Reference[]
                   transition: 'transform 180ms ease, opacity 180ms ease',
                 }}
               >
-                <Icon name="arrow-up-right" size={18} />
+                {arrow && <Icon name={arrow} size={18} />}
               </Box>
             </Box>
           </ScrollReveal>

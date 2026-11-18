@@ -44,17 +44,67 @@ export const RESTORED_AREAS_BOUNDS: MapBounds = [
 /* Home hero                                                                          */
 /* ---------------------------------------------------------------------------------- */
 
-/** Suisun Bay, centered behind the home page title. */
-export const HERO_CENTER = { longitude: -122.05, latitude: 38.08 }
+/** Edge padding as fractions of the map's width (left, right) and height (top, bottom). */
+export interface FractionalPadding {
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
 
-/** The hero zoom at each MUI breakpoint. */
-export const HERO_ZOOM_BY_BREAKPOINT = {
-  xs: 9.15,
-  sm: 9.45,
-  md: 9.75,
-  lg: 10,
-  xl: 10.25,
-} as const
+export interface HeroCamera {
+  /** What must be in view: the salinity front from Carquinez Strait into the western Delta. */
+  bounds: MapBounds
+  /** Space kept clear of the subject, mostly for the title block at the bottom left. */
+  padding: FractionalPadding
+}
+
+/**
+ * The hero framing at each MUI breakpoint. Bounds plus fractional padding instead of a
+ * fixed zoom, so the subject fits whatever the aspect ratio: portrait phones put it in
+ * the top half above the title, wide screens keep it to the right of the title.
+ */
+export const HERO_CAMERA_BY_BREAKPOINT = {
+  /**
+   * Phones: the Golden Gate at the left edge to the eastern Delta, in the top half above
+   * the title. The width sets the zoom: these bounds come to zoom 8 on a 402px screen.
+   */
+  xs: {
+    bounds: [
+      [-122.512, 37.965],
+      [-121.408, 38.235],
+    ],
+    padding: { top: 0.06, bottom: 0.44, left: 0, right: 0 },
+  },
+  sm: {
+    bounds: [
+      [-122.41, 37.93],
+      [-121.53, 38.22],
+    ],
+    padding: { top: 0.06, bottom: 0.4, left: 0.04, right: 0.04 },
+  },
+  md: {
+    bounds: [
+      [-122.4, 37.94],
+      [-121.56, 38.2],
+    ],
+    padding: { top: 0.08, bottom: 0.36, left: 0.06, right: 0.06 },
+  },
+  lg: {
+    bounds: [
+      [-122.45, 37.92],
+      [-121.52, 38.22],
+    ],
+    padding: { top: 0.08, bottom: 0.28, left: 0.2, right: 0.04 },
+  },
+  xl: {
+    bounds: [
+      [-122.5, 37.9],
+      [-121.48, 38.24],
+    ],
+    padding: { top: 0.08, bottom: 0.26, left: 0.24, right: 0.04 },
+  },
+} as const satisfies Record<'xs' | 'sm' | 'md' | 'lg' | 'xl', HeroCamera>
 
 /* ---------------------------------------------------------------------------------- */
 /* Background page (/scenarios/background-context)                                     */

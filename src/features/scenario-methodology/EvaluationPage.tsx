@@ -1,6 +1,6 @@
 import { Box, Container } from '@mui/material'
 import { jtSpacing, navigation } from '@/theme'
-import { Footer, Navbar, PageHero, PageRail, TeamIcon } from '@/ui'
+import { Footer, Navbar, PageHero, NavRail, TeamIcon } from '@/ui'
 import { criteria } from '@/content/criteria'
 import { teamStyle } from '@/ui/teamStyle'
 import HowComparedSection from './components/evaluation/HowComparedSection'
@@ -48,13 +48,16 @@ export default function EvaluationPage() {
             }}
           >
             {/* Claude structure: the five criteria sit under the evaluation step they belong to. */}
-            <PageRail
-              items={[...sectionNavigation]}
-              ariaLabel="Evaluation sections"
-              activeItemId={activeSection}
-              onNavigate={(id) => setActiveSection(id as SectionId)}
-              sx={{ gridRow: { lg: '1 / span 3' } }}
-            />
+            {/* The rail's cell spans the rows beside it, so the rail stays pinned through all of them. */}
+            <Box sx={{ gridRow: { lg: '1 / span 3' }, alignSelf: 'stretch' }}>
+              <NavRail
+                variant="page"
+                items={[...sectionNavigation]}
+                ariaLabel="Evaluation sections"
+                activeItemId={activeSection}
+                onNavigate={(id) => setActiveSection(id as SectionId)}
+              />
+            </Box>
 
             <HowEvaluatedSection />
 

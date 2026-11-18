@@ -183,8 +183,17 @@ export function StakesPanel({ bg }: PanelProps) {
 // ---------- How it works? ----------
 
 // Ladder geometry (px): every step marker sits on one vertical line, like soundings on a depth line.
-const MARKER_SIZE = 44
-const LADDER_INSET = 72
+// A phone gets smaller markers and a shallower inset so the step text keeps its width.
+const LADDER = {
+  xs: { marker: 36, inset: 52 },
+  md: { marker: 44, inset: 72 },
+} as const
+
+/** One value per ladder breakpoint, built from that breakpoint's marker size and inset. */
+const byLadder = <T,>(value: (geometry: { marker: number; inset: number }) => T) => ({
+  xs: value(LADDER.xs),
+  md: value(LADDER.md),
+})
 
 export function WorksPanel({ bg }: PanelProps) {
   const theme = useTheme()
@@ -223,7 +232,7 @@ export function WorksPanel({ bg }: PanelProps) {
           m: 0,
           mt: theme.jtSpacing.gap.lg,
           p: 0,
-          pl: `${LADDER_INSET}px`,
+          pl: byLadder(({ inset }) => `${inset}px`),
           display: 'flex',
           flexDirection: 'column',
           gap: theme.jtSpacing.section.sm,
@@ -240,9 +249,12 @@ export function WorksPanel({ bg }: PanelProps) {
               '&:not(:last-of-type)::after': {
                 content: '""',
                 position: 'absolute',
-                left: MARKER_SIZE / 2 - 1 - LADDER_INSET,
-                top: MARKER_SIZE,
-                height: `calc(100% - ${MARKER_SIZE}px + ${theme.spacing(theme.jtSpacing.section.sm)})`,
+                left: byLadder(({ marker, inset }) => marker / 2 - 1 - inset),
+                top: byLadder(({ marker }) => marker),
+                height: byLadder(
+                  ({ marker }) =>
+                    `calc(100% - ${marker}px + ${theme.spacing(theme.jtSpacing.section.sm)})`,
+                ),
                 width: 2,
                 background: `linear-gradient(180deg, ${depthTone(index)}, ${depthTone(index + 1)})`,
               },
@@ -252,10 +264,10 @@ export function WorksPanel({ bg }: PanelProps) {
               aria-hidden="true"
               sx={{
                 position: 'absolute',
-                left: -LADDER_INSET,
+                left: byLadder(({ inset }) => -inset),
                 top: 0,
-                width: MARKER_SIZE,
-                height: MARKER_SIZE,
+                width: byLadder(({ marker }) => marker),
+                height: byLadder(({ marker }) => marker),
                 boxSizing: 'border-box',
                 borderRadius: '50%',
                 border: 2,

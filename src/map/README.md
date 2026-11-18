@@ -16,7 +16,7 @@ The Mapbox maps the public site draws. Nothing here imports from a feature or fr
 
 | File                       | What it does                                                                                    |
 | -------------------------- | ----------------------------------------------------------------------------------------------- |
-| `HeroSalinityMap.tsx`      | The map behind the home page title: Suisun Bay camera plus the animation                        |
+| `HeroSalinityMap.tsx`      | The map behind the home page title: per-breakpoint fit of the salinity front plus the animation |
 | `HeroSalinityLayer.tsx`    | Plays Water Year 2019's 155 salinity frames, crossfading one tileset into the next              |
 | `heroSalinityFrames.ts`    | Which frames sit in which of the 11 tilesets, and their source and layer ids                    |
 | `heroSalinityAnimation.ts` | The playback steps (ready check, apply a frame, advance), kept apart so they can be unit tested |

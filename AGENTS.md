@@ -153,6 +153,13 @@ These are requirements for new UI and UI refactors.
 - Preserve intentional geometry and motion exactly: width, height, radius, opacity, transform origin, duration, and easing are part of the design.
 - Do not remove an interaction or animation during cleanup unless explicitly requested.
 - Internal links use React Router `Link`. External links use anchors with `target="_blank"` and `rel="noopener noreferrer"` when opening a new tab.
+- Link arrows say where a link goes, and the arrow must match the target:
+  - ↗ `arrow-up-right`: leaves the site (`https://`) and always opens in a new tab.
+  - → `arrow-right`: stays on the site, either an app route or a `#section`.
+  - ↓ `arrow-down`: downloads a file.
+  - No arrow: the link has no target yet ("Forthcoming").
+
+  Don't hard-code an arrow. Use `ActionButton` / `TextLink`, which apply the rule, or derive the arrow from the href with `linkArrowName` and `newTabProps` in `src/ui/linkTarget.ts`. Hover nudges follow the arrow's direction.
 
 ### Home landing page
 

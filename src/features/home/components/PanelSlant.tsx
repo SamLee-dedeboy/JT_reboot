@@ -6,8 +6,15 @@ interface PanelSlantProps {
   tilt?: 'up-right' | 'down-right'
 }
 
-// Change this single value to adjust the vertical difference across every slant.
-export const PANEL_SLANT_HEIGHT = '4rem'
+// Change these values to adjust the vertical difference across every slant: a shallow cut on
+// a phone, where a 4rem drop over 390px would read as a wedge, and the full drop from md up.
+const PANEL_SLANT_HEIGHT = { xs: '1.25rem', md: '4rem' } as const
+
+/** One value per slant height breakpoint, built from that breakpoint's height. */
+const bySlantHeight = (value: (height: string) => string) => ({
+  xs: value(PANEL_SLANT_HEIGHT.xs),
+  md: value(PANEL_SLANT_HEIGHT.md),
+})
 
 const slantShape = {
   before: {
@@ -28,16 +35,16 @@ export default function PanelSlant({
   return (
     <Box sx={{ position: 'relative', height: 0, zIndex: 5, pointerEvents: 'none' }} aria-hidden>
       <Box
-        sx={(theme) => ({
+        sx={{
           position: 'absolute',
           right: 0,
           left: 0,
-          top: attachment === 'before' ? `calc(-${PANEL_SLANT_HEIGHT} - 1px)` : '-1px',
-          height: `calc(${PANEL_SLANT_HEIGHT} + 2px)`,
+          top:
+            attachment === 'before' ? bySlantHeight((height) => `calc(-${height} - 1px)`) : '-1px',
+          height: bySlantHeight((height) => `calc(${height} + 2px)`),
           bgcolor: color,
           clipPath: slantShape[attachment][tilt],
-          [theme.breakpoints.down('md')]: { display: 'none' },
-        })}
+        }}
       />
     </Box>
   )

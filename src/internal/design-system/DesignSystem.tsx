@@ -1,6 +1,6 @@
 import { Box, Container } from '@mui/material'
 import { jtSpacing, navigation } from '@/theme'
-import { Footer, Navbar, PageHero, PageRail, type NavRailItem } from '@/ui'
+import { Footer, Navbar, PageHero, NavRail, type NavRailItem } from '@/ui'
 import useActiveSection from './parts/useActiveSection'
 import CardsSection from './sections/CardsSection'
 import ColorSection from './sections/ColorSection'
@@ -53,7 +53,8 @@ export default function DesignSystem() {
               alignItems: 'start',
             }}
           >
-            <PageRail
+            <NavRail
+              variant="page"
               items={[...sections]}
               ariaLabel="Design system sections"
               activeItemId={activeSection}
