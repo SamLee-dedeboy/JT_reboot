@@ -38,7 +38,7 @@ export default function ActionTooltip({
   const tags = [
     isTop ? PATH_SECTION.shapes.top : null,
     shared === 1 ? PATH_SECTION.shapes.exclusive : null,
-  ].filter((tag): tag is string => Boolean(tag))
+  ].filter((tag) => tag !== null)
   const leads = action.leads.map((key) => LEADS.find((entry) => entry.key === key))
   const unscored = BRANCH_ORDER.filter((key) => action.scores[key] === 0)
 
