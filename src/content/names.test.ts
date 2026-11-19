@@ -25,7 +25,7 @@ describe('variants', () => {
   it('uses a place’s own wording where it has one', () => {
     expect(scenarioName('bf')).toBe('Bolster & Fortify')
     expect(scenarioName('bf', 'scenarioStory')).toBe('Bolster and Fortify')
-    expect(scenarioName('more', 'rankingTable')).toBe('Increased Delta outflow')
+    expect(scenarioName('more', 'rankingTable')).toBe('Increased Delta Outflow')
     expect(scenarioName('em', 'rankingTable')).toBe('Eco Machine')
     expect(teamShortName('environmentalJustice', 'weightPresets')).toBe('Justice')
     expect(teamBySlug('ecocultural-restoration')?.key).toBe('ecoCultural')

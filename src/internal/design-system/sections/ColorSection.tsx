@@ -34,6 +34,29 @@ const whereLabel = {
   none: 'Not drawn',
 } as const
 
+const governanceSwatches: Array<{ key: keyof typeof palette.governance; name: string }> = [
+  { key: 'flood', name: 'Flood risk' },
+  { key: 'ecosystem', name: 'Ecosystems' },
+  { key: 'agriculture', name: 'Agriculture' },
+  { key: 'waterSupply', name: 'Water supply reliability' },
+  { key: 'lead', name: 'Lead organization' },
+  { key: 'leadLane', name: 'Lead lane' },
+]
+
+const habitatSwatches: Array<{ key: keyof typeof palette.habitat; name: string }> = [
+  { key: 'forest', name: 'Forests' },
+  { key: 'forestMid', name: 'Forests, medium' },
+  { key: 'forestLight', name: 'Forests, minimal' },
+  { key: 'meadow', name: 'Meadows' },
+  { key: 'meadowMid', name: 'Meadows, medium' },
+  { key: 'meadowLight', name: 'Meadows, minimal' },
+  { key: 'floodplain', name: 'Floodplains' },
+  { key: 'floodplainMid', name: 'Floodplains, medium' },
+  { key: 'floodplainLight', name: 'Floodplains, minimal' },
+  { key: 'marsh', name: 'Floodplain marsh' },
+  { key: 'loss', name: 'Loss' },
+]
+
 const scoreSteps = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
 const scoreColor = (score: number) => {
   if (score === 0) return palette.base[300]
@@ -216,6 +239,40 @@ export default function ColorSection() {
               +5 Better
             </Typography>
           </Stack>
+        </SpecimenGroup>
+      </Box>
+
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+          gap: jtSpacing.section.sm,
+        }}
+      >
+        <SpecimenGroup
+          title="Governance · strategy areas and lead organizations"
+          note="Data-only hues for the Adaptation Plan path tree, always with a labeled key. Lead marks are squares on their own lanes."
+        >
+          <SwatchGrid min={120}>
+            {governanceSwatches.map(({ key, name }) => (
+              <Swatch
+                key={key}
+                color={palette.governance[key]}
+                name={name}
+                token={`governance.${key}`}
+              />
+            ))}
+          </SwatchGrid>
+        </SpecimenGroup>
+        <SpecimenGroup
+          title="Watershed habitats · upstream restoration"
+          note="One hue per landscape; restoration levels run from the light end (minimal) to the full hue (maximum)."
+        >
+          <SwatchGrid min={120}>
+            {habitatSwatches.map(({ key, name }) => (
+              <Swatch key={key} color={palette.habitat[key]} name={name} token={`habitat.${key}`} />
+            ))}
+          </SwatchGrid>
         </SpecimenGroup>
       </Box>
 

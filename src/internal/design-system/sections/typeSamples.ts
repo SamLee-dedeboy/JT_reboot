@@ -26,7 +26,15 @@ export const typeGroups: Array<{ label: string; variants: Record<string, TypeSam
         sample: 'Each scenario changes how much fresh water reaches the Delta.',
         use: 'Page copy and section intros',
       },
+      body1Strong: {
+        sample: 'Ana M. Zepeda, Ph.D.',
+        use: 'A bold run inside body1, such as a name leading its bio',
+      },
       bodyLarge: { sample: 'A hero lead line.', use: 'Not for page content or section intros' },
+      bodyLargeStrong: {
+        sample: 'Scenarios are models of possible futures.',
+        use: 'A bold lead statement among bodyLarge answers',
+      },
       body2: { sample: 'Supporting copy inside cards and panels.', use: 'Secondary copy' },
       caption: { sample: 'Map legends and figure notes.', use: 'Captions' },
       captionSmall: {

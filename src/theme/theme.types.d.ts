@@ -16,6 +16,8 @@ import type {
 declare module '@mui/material/styles' {
   interface TypographyVariants {
     bodyLarge: CSSProperties
+    bodyLargeStrong: CSSProperties
+    body1Strong: CSSProperties
     captionSmall: CSSProperties
     placeholderNote: CSSProperties
     columnHead: CSSProperties
@@ -129,6 +131,8 @@ declare module '@mui/material/styles' {
 declare module '@mui/material/Typography' {
   interface TypographyPropsVariantOverrides {
     bodyLarge: true
+    bodyLargeStrong: true
+    body1Strong: true
     captionSmall: true
     placeholderNote: true
     columnHead: true

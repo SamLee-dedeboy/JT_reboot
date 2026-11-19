@@ -10,9 +10,9 @@ import {
   WORK_STEPS,
   WORKS_INTRO,
 } from '@/content/home'
-import { ActionButton, ScrollReveal, TextLink } from '@/ui'
+import { ActionButton, Icon, ScrollReveal, TextLink } from '@/ui'
 import { textLinkSx } from '@/ui/actionStyles'
-import { emphasize } from '@/utils/highlightText'
+import { emphasize, highlightPhrases } from '@/utils/highlightText'
 import HomePanel from './HomePanel'
 
 interface PanelProps {
@@ -33,7 +33,6 @@ export function WhatIfPanel({ bg }: PanelProps) {
         minHeight: '80dvh',
         pt: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg },
         pb: { xs: theme.jtSpacing.section.lg, md: theme.jtSpacing.section.xl },
-        color: 'brand.primaryBlue',
       }}
     >
       <ScrollReveal>
@@ -52,11 +51,12 @@ export function WhatIfPanel({ bg }: PanelProps) {
               ))}
             </Typography>
           ) : (
+            // The turns in the argument, in the brand blue (4.6:1 on the panel's deep teal).
             <Typography
               key={index}
               variant="editorialEmphasis"
               component="p"
-              sx={{ mt: theme.jtSpacing.section.sm }}
+              sx={{ mt: theme.jtSpacing.section.sm, color: 'brand.primaryBlue' }}
             >
               {block.text}
             </Typography>
@@ -72,32 +72,49 @@ export function WhatIfPanel({ bg }: PanelProps) {
 
 // ---------- What futures? ----------
 
+/** A key term in the "What futures?" answers, set in the brand green. */
+const markGreen = (phrase: string, key: number) => (
+  <Box key={key} component="span" sx={{ color: 'primary.main' }}>
+    {phrase}
+  </Box>
+)
+
 export function FuturesPanel({ bg }: PanelProps) {
   const theme = useTheme()
+  const { scenarios } = FUTURES
+  // Open space, not a rule, keeps the three answers apart.
+  const planningGap = { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg }
   return (
     <HomePanel section={HOME_SECTIONS.futures} bg={bg} maxWidth="80ch">
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateRows: `repeat(${FUTURES.length}, minmax(0, 1fr))`,
-          gap: theme.jtSpacing.section.md,
-        }}
-      >
-        {FUTURES.map((future, index) => (
-          <ScrollReveal
-            key={future.title}
-            component="article"
-            delay={index * 0.1}
-            sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
-          >
-            <Typography variant="h3" component="h3" sx={{ color: 'primary.main' }}>
-              {future.title}
+      {/* Scenarios, the idea, as one statement; then what the method is and why to use it. */}
+      <ScrollReveal component="article">
+        <Typography variant="h3" component="h3" sx={{ color: 'common.white' }}>
+          {scenarios.label}
+        </Typography>
+        <Typography
+          variant="bodyLargeStrong"
+          component="p"
+          sx={{ color: 'common.white', mt: theme.jtSpacing.component.md }}
+        >
+          {highlightPhrases(scenarios.statement, scenarios.highlights, markGreen)}
+        </Typography>
+      </ScrollReveal>
+      <Box sx={{ display: 'grid', gap: planningGap, mt: planningGap }}>
+        {FUTURES.planning.map((item, index) => (
+          <ScrollReveal key={item.title} component="article" delay={(index + 1) * 0.1}>
+            <Typography
+              variant="h3"
+              component="h3"
+              sx={{ color: item.accent === 'why' ? 'secondary.main' : 'common.white' }}
+            >
+              {item.title}
             </Typography>
             <Typography
               variant="bodyLarge"
+              component="p"
               sx={{ color: 'common.white', mt: theme.jtSpacing.component.md }}
             >
-              {future.body}
+              {highlightPhrases(item.body, item.highlights, markGreen)}
             </Typography>
           </ScrollReveal>
         ))}
@@ -159,7 +176,25 @@ function StakeSection({
         disableRipple
         onClick={() => setExpanded((current) => !current)}
         aria-expanded={expanded}
-        sx={{ ...textLinkSx, mt: theme.jtSpacing.component.md }}
+        // The chevron says the text opens in place; it turns over once it has.
+        endIcon={
+          <Box
+            component="span"
+            sx={{
+              display: 'inline-flex',
+              transform: expanded ? 'rotate(180deg)' : 'none',
+              transition: 'transform 320ms ease',
+            }}
+          >
+            <Icon name="chevron-down" size={18} />
+          </Box>
+        }
+        sx={{
+          ...textLinkSx,
+          // The chevron opens text in place, so it holds still; the → nudge is for links.
+          '&:hover .MuiButton-endIcon': { transform: 'none' },
+          mt: theme.jtSpacing.component.md,
+        }}
       >
         {expanded ? 'Show less' : 'Read more'}
       </Button>
@@ -211,7 +246,8 @@ export function WorksPanel({ bg }: PanelProps) {
       <ScrollReveal>
         <Typography
           variant="bodyLarge"
-          sx={{ color: 'base.100', maxWidth: theme.jtSpacing.paragraphMaxWidth.default }}
+          component="p"
+          sx={{ color: 'common.white', maxWidth: theme.jtSpacing.paragraphMaxWidth.default }}
         >
           {WORKS_INTRO.lead}
         </Typography>
@@ -291,8 +327,10 @@ export function WorksPanel({ bg }: PanelProps) {
             </Typography>
             <Typography
               variant="body1"
+              component="p"
               sx={{
-                mt: theme.jtSpacing.gap.xs,
+                // The same heading-to-text space as every other panel on the page.
+                mt: theme.jtSpacing.component.md,
                 color: 'base.100',
                 maxWidth: theme.jtSpacing.paragraphMaxWidth.default,
               }}

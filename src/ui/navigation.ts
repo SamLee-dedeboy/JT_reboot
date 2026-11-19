@@ -54,10 +54,21 @@ export const navItems: NavItem[] = [
   {
     label: 'Background',
     caption: 'Explore the project background and its approach to just transitions.',
-    dropdown: [
-      { label: 'A Delta in Transition', href: '#', disabled: true },
-      { label: 'Participatory Scenario Planning', href: '/pages/scenario-planning' },
-      { label: 'What are current conditions?', href: '#', disabled: true },
+    groups: [
+      {
+        label: 'The Delta',
+        items: [
+          { label: 'A Delta in Transition', href: '#', disabled: true },
+          { label: 'What are current conditions?', href: '#', disabled: true },
+        ],
+      },
+      {
+        label: 'The Project',
+        items: [
+          { label: 'Participatory Scenario Planning', href: '/pages/scenario-planning' },
+          { label: 'About us', href: '/pages/about-us' },
+        ],
+      },
     ],
   },
   {
@@ -125,7 +136,7 @@ export const navItems: NavItem[] = [
   },
   {
     label: 'Governance',
-    disabled: true,
+    href: '/pages/governance',
   },
   {
     label: 'Co-Learning',

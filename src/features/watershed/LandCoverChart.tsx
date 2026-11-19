@@ -2,7 +2,7 @@
 // wetland, marsh and riparian habitat gained to the right. Drawn at the container's pixel
 // width so its labels keep the site's type sizes.
 import { Box, Stack, Typography, useTheme } from '@mui/material'
-import { palette } from '@/theme'
+import { chart, palette } from '@/theme'
 import { ChartTitle } from './ChangeRangeChart'
 import { LOSS_COLOR, MIN_CHART_WIDTH, compactNumber, useElementWidth } from './chartUtils'
 import { HABITAT_META, LEVEL_LABELS, PRIORITIES, RESTORATION_LEVELS, landscapeOf } from './habitats'
@@ -10,7 +10,10 @@ import type { WatershedOutcome, WatershedOutcomeMetric } from './types'
 
 type Category = 'forest' | 'meadow' | 'marsh' | 'riparian'
 
-const FLOODPLAIN_BLUE = '#51a2bd'
+const ramp = (habitat: keyof typeof chart.watershed.habitat) => {
+  const { light, mid, base } = chart.watershed.habitat[habitat]
+  return [light, mid, base] as [string, string, string]
+}
 
 const CATEGORIES: Array<{
   key: Category
@@ -24,28 +27,28 @@ const CATEGORIES: Array<{
     label: 'Forests',
     metric: 'forestCover',
     color: HABITAT_META.forests.baseColor,
-    shades: ['#b7d6bd', '#7fc694', '#4fb06f'],
+    shades: ramp('forests'),
   },
   {
     key: 'meadow',
     label: 'Meadows',
     metric: 'meadowWetland',
     color: HABITAT_META.meadows.baseColor,
-    shades: ['#eee59a', '#e3cf66', '#d8bf42'],
+    shades: ramp('meadows'),
   },
   {
     key: 'marsh',
     label: 'Floodplain Marsh / Wetland',
     metric: 'marsh',
-    color: FLOODPLAIN_BLUE,
-    shades: ['#b9ddec', '#86c5df', FLOODPLAIN_BLUE],
+    color: chart.watershed.habitat.marsh.base,
+    shades: ramp('marsh'),
   },
   {
     key: 'riparian',
     label: 'Riparian',
     metric: 'riparian',
-    color: FLOODPLAIN_BLUE,
-    shades: ['#b9ddec', '#86c5df', FLOODPLAIN_BLUE],
+    color: chart.watershed.habitat.marsh.base,
+    shades: ramp('marsh'),
   },
 ]
 
