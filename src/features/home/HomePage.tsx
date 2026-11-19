@@ -11,7 +11,7 @@ const HeroMap = lazy(() => import('./components/HeroMap'))
 
 /** Each narrative panel's color; the slants into and out of a panel take the same one. */
 const panelBg = {
-  whatIf: '#1e4b56',
+  whatIf: 'brand.deepTeal',
   futures: 'base.500',
   stakes: 'base.800',
   works: 'base.900',

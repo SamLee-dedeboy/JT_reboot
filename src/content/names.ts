@@ -156,10 +156,9 @@ export const SCENARIO_NAMES: Record<ScenarioKey, ScenarioNames> = {
   },
   more: {
     key: 'more',
-    name: 'More outflow (+30%)',
+    name: 'Increased Delta Outflow',
     shortName: '+30% outflow',
     code: '+30% outflow',
-    variants: { rankingTable: 'Increased Delta outflow' },
   },
   less: {
     key: 'less',

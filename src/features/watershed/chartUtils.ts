@@ -1,6 +1,7 @@
 // Helpers shared by the upstream restoration charts, which draw at their container's
 // pixel width so labels keep the site's type sizes.
 import { useEffect, useState } from 'react'
+import { chart } from '@/theme'
 
 /** 1.5M, -842.4K, 630, 6.4: one decimal above a thousand, whole tens, small values to 0.1. */
 export function compactNumber(value: number) {
@@ -33,4 +34,4 @@ export function useElementWidth(initial: number) {
 /** Below this width a chart keeps its shape and scrolls sideways. */
 export const MIN_CHART_WIDTH = 600
 /** Ticks and labels on the loss side of zero. */
-export const LOSS_COLOR = '#b9685e'
+export const LOSS_COLOR = chart.watershed.loss

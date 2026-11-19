@@ -3,6 +3,9 @@ export const palette = {
     base: '#253439',
     primaryBlue: '#51a2bd',
     primaryGreen: '#7ed957',
+    // The home "What if?" panel: a deep, muted teal, dark enough that brand blue text on it
+    // passes AA (4.6:1). It sits near base.500 in lightness and stands apart by hue.
+    deepTeal: '#15333b',
   },
   common: { white: '#f2f0ef', black: '#1a1a1a' },
   accent: {
@@ -83,6 +86,39 @@ export const palette = {
     // and always-present labels cover as secondary encoding.
     ecoCultural: '#ffe6b0',
     ecology: '#ffb347',
+  },
+  // Governance page. The four Delta Adapts strategy areas (flood risk, ecosystems,
+  // agriculture, water supply reliability) and the lead organizations' rose. On the
+  // menu-panel ground (base.800), all five are >= ΔE 18 apart to normal vision and
+  // >= 3:1 in contrast. The worst pair under CVD simulation is agriculture vs.
+  // ecosystems at ΔE 8.0 (protan); the rose keeps >= ΔE 10.4 from every area. Water
+  // supply and the rose sit lighter than the dark chart band (OKLCH L ~0.77). Charts
+  // that use these colors always pair them with a labeled legend or the area's name, and
+  // lead marks are squares on their own lanes.
+  governance: {
+    flood: '#5b6cf0',
+    ecosystem: '#4fb06f',
+    agriculture: '#d8bf42',
+    waterSupply: '#79e1e4',
+    lead: '#ff7f5c',
+    leadLane: '#ff7f5c61',
+  },
+  // Upstream watershed restoration (NGW): one hue per landscape, each with the light
+  // and middle steps of its minimal-to-maximum restoration ramp, and the red for losses.
+  habitat: {
+    forest: '#4fb06f',
+    forestMid: '#7fc694',
+    forestLight: '#b7d6bd',
+    meadow: '#d8bf42',
+    meadowMid: '#e3cf66',
+    meadowLight: '#eee59a',
+    floodplain: '#62b6d9',
+    floodplainMid: '#86c5df',
+    floodplainLight: '#b9ddec',
+    // Floodplain marsh and riparian in the land-cover chart; the same blue as
+    // brand.primaryBlue.
+    marsh: '#51a2bd',
+    loss: '#b9685e',
   },
   visualization: {
     // Single light neutral for monochrome chart series (9.9:1 on the card surface).

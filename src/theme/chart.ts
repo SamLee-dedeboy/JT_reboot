@@ -85,6 +85,63 @@ export const chart = {
     zeroLine: palette.base[300],
     well: palette.translucent[500],
   },
+  // Governance page path tree: one path per Adaptation Plan action, colored by its
+  // strategy area; the scenario lanes and paths stay neutral so only the area carries hue.
+  governance: {
+    area: {
+      FL: palette.governance.flood,
+      ECO: palette.governance.ecosystem,
+      AG: palette.governance.agriculture,
+      WSR: palette.governance.waterSupply,
+    },
+    lane: palette.base[300],
+    laneActive: palette.common.white,
+    path: palette.base[400],
+    pathActive: palette.base[50],
+    member: palette.base[50],
+    grid: palette.translucent[300],
+    terminal: palette.common.white,
+    terminalFill: palette.base[800],
+    /** Lead organizations: their own hue, apart from the four strategy areas and the gray
+     * scenario lanes, with square marks. */
+    lead: palette.governance.lead,
+    leadLane: palette.governance.leadLane,
+    /** The shaded band behind the actions only one scenario considers. */
+    band: palette.translucent[100],
+    /** The tint behind the scenario and lead actor names, from each zone's head down. */
+    zone: palette.translucent[50],
+    /** A top action's halo: its radius as a multiple of the mark's, and its opacity. */
+    glow: { radius: 2, opacity: 0.3 },
+    /** Opacity of the actions a pinned scenario leaves out. */
+    dimmed: 0.14,
+  },
+  // Upstream watershed restoration charts: one hue per landscape with the light and middle
+  // steps of its restoration ramp, and the red for losses.
+  watershed: {
+    habitat: {
+      forests: {
+        base: palette.habitat.forest,
+        mid: palette.habitat.forestMid,
+        light: palette.habitat.forestLight,
+      },
+      meadows: {
+        base: palette.habitat.meadow,
+        mid: palette.habitat.meadowMid,
+        light: palette.habitat.meadowLight,
+      },
+      floodplains: {
+        base: palette.habitat.floodplain,
+        mid: palette.habitat.floodplainMid,
+        light: palette.habitat.floodplainLight,
+      },
+      marsh: {
+        base: palette.habitat.marsh,
+        mid: palette.habitat.floodplainMid,
+        light: palette.habitat.floodplainLight,
+      },
+    },
+    loss: palette.habitat.loss,
+  },
   // Internal site map: navbar menu edges vs. in-page links between routes.
   siteMap: {
     menuEdge: palette.base[300],

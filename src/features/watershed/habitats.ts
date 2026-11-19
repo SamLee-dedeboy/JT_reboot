@@ -1,5 +1,6 @@
 // Identity colors, labels and number formats shared by the upstream restoration charts.
 import * as d3 from 'd3'
+import { chart } from '@/theme'
 import type { Landscape, PriorityLandscape, RestorationLevel } from './types'
 
 export const RESTORATION_LEVELS: RestorationLevel[] = ['min', 'med', 'max']
@@ -19,20 +20,23 @@ export const HABITAT_META: Record<
   forests: {
     label: 'Forests',
     priority: 'forest',
-    baseColor: '#4fb06f',
-    shadeRange: ['#b7d6bd', '#4fb06f'],
+    baseColor: chart.watershed.habitat.forests.base,
+    shadeRange: [chart.watershed.habitat.forests.light, chart.watershed.habitat.forests.base],
   },
   meadows: {
     label: 'Meadows',
     priority: 'meadow',
-    baseColor: '#d8bf42',
-    shadeRange: ['#eee59a', '#d8bf42'],
+    baseColor: chart.watershed.habitat.meadows.base,
+    shadeRange: [chart.watershed.habitat.meadows.light, chart.watershed.habitat.meadows.base],
   },
   floodplains: {
     label: 'Floodplains',
     priority: 'floodplain',
-    baseColor: '#62b6d9',
-    shadeRange: ['#b9ddec', '#62b6d9'],
+    baseColor: chart.watershed.habitat.floodplains.base,
+    shadeRange: [
+      chart.watershed.habitat.floodplains.light,
+      chart.watershed.habitat.floodplains.base,
+    ],
   },
 }
 

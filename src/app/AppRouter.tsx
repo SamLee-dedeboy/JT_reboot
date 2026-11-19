@@ -5,6 +5,7 @@ import ProjectDocumentation from '../features/repository/ProjectDocumentation'
 import Resources from '../features/repository/Resources'
 import ServiceLearning from '../features/repository/ServiceLearning'
 import ScenarioPlanningPage from '../features/background/ScenarioPlanningPage'
+import AboutPage from '../features/background/AboutPage'
 import LandingPage from '../features/scenario-narration/LandingPage'
 import BackgroundPage from '../features/scenario-narration/BackgroundPage'
 import KeyParametersPage from '../features/scenario-narration/KeyParametersPage'
@@ -33,6 +34,7 @@ const CriterionPage = lazy(() => import('../features/scenario-methodology/Criter
 const RankingPage = lazy(() => import('../features/scenario-ranking/RankingPage'))
 const EvaluationPage = lazy(() => import('../features/scenario-methodology/EvaluationPage'))
 const FamiliesPage = lazy(() => import('../features/scenario-methodology/FamiliesPage'))
+const GovernancePage = lazy(() => import('../features/governance/GovernancePage'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
 
@@ -54,6 +56,8 @@ export default function AppRouter() {
       <Route path="/pages/service-learning" element={<ServiceLearning />} />
       <Route path="/pages/resources" element={<Resources />} />
       <Route path="/pages/scenario-planning" element={<ScenarioPlanningPage />} />
+      <Route path="/pages/about-us" element={<AboutPage />} />
+      <Route path="/pages/governance" element={deferred(<GovernancePage />)} />
       <Route path="/pages/playground" element={<Playground />} />
       <Route path="/pages/baseline-exploration" element={<BaselineExploration />} />
       <Route path="/pages/scenario-time-lapse" element={<ScenarioTimeLapse />} />

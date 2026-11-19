@@ -113,21 +113,33 @@ export const WORKS_INTRO = {
   stepsLead: 'We deliver this through',
 }
 
-/** The "What futures?" panel: three questions and answers. */
-export const FUTURES = [
-  {
-    title: 'What are scenarios?',
-    body: 'Scenarios are models and depictions of possible futures and the pathways through which they could manifest.',
+/**
+ * The "What futures?" panel: what scenarios are (a bold statement), what participatory
+ * scenario planning is, then why to use it (`accent: 'why'` gives it the blue heading; the
+ * others are white). `highlights` are the phrases set in green in each answer.
+ */
+export const FUTURES = {
+  scenarios: {
+    label: 'What are scenarios?',
+    statement:
+      'Scenarios are models and depictions of possible futures and the pathways through which they could manifest.',
+    highlights: ['Scenarios', 'possible futures'],
   },
-  {
-    title: 'What is participatory scenario planning?',
-    body: 'Participatory scenario planning is an inclusive, “bottom up” approach that involves working directly with public contributors (particularly those who might be affected by planning outcomes) to create and evaluate future scenarios for a particular place.',
-  },
-  {
-    title: 'Why participatory scenario planning?',
-    body: 'Scenario planning is increasingly used in conservation and climate change adaptation research, especially when uncertainty, vulnerability, and divergent stakeholder interests create conflicting mandates.',
-  },
-]
+  planning: [
+    {
+      title: 'What is participatory scenario planning?',
+      body: 'Participatory scenario planning is an inclusive, “bottom up” approach that involves working directly with public contributors (particularly those who might be affected by planning outcomes) to create and evaluate future scenarios for a particular place.',
+      highlights: ['Participatory scenario planning'],
+      accent: 'what',
+    },
+    {
+      title: 'Why participatory scenario planning?',
+      body: 'Scenario planning is increasingly used in conservation and climate change adaptation research, especially when uncertainty, vulnerability, and divergent stakeholder interests create conflicting mandates.',
+      highlights: [],
+      accent: 'why',
+    },
+  ],
+} as const
 
 /** The "What's at stake?" panel: each section's lead, the phrase it emphasizes, and the text behind "Read more". */
 export const STAKE_SECTIONS = [

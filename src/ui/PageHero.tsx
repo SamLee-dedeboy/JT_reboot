@@ -22,7 +22,8 @@ export default function PageHero({
   crumbs?: Array<{ label: string; to: string }>
   eyebrow?: string
   title: string
-  summary: string
+  /** Plain text, or text with emphasis. */
+  summary: ReactNode
   /** Team color for the eyebrow and title; defaults to the theme's own colors. */
   accent?: string
   /** Optional title color when it should differ from the eyebrow accent. */

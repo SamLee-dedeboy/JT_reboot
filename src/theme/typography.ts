@@ -59,9 +59,21 @@ export const typography = {
     textTransform: 'uppercase',
   },
   body1: { fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)', lineHeight: 1.3 },
+  // A bold run inside body1 text, such as a name leading its bio.
+  body1Strong: {
+    fontSize: 'clamp(1.08rem, 0.95rem + 0.35vw, 1.35rem)',
+    lineHeight: 1.3,
+    fontWeight: 700,
+  },
   bodyLarge: {
     fontSize: 'clamp(1.1875rem, 0.95rem + 0.5vw, 1.875rem)',
     lineHeight: 1.3,
+  },
+  // bodyLarge in bold, for a lead statement that opens a run of bodyLarge answers.
+  bodyLargeStrong: {
+    fontSize: 'clamp(1.1875rem, 0.95rem + 0.5vw, 1.875rem)',
+    lineHeight: 1.3,
+    fontWeight: 700,
   },
   // The statement on a home photo panel: body1, italic.
   photoPanelText: {
