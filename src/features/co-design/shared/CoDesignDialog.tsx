@@ -43,6 +43,7 @@ export default function CoDesignDialog({
             bgcolor: theme.coDesign.shell.dialog.background,
             border: theme.coDesign.shell.dialog.border,
             borderRadius: theme.coDesign.shell.dialog.radius,
+            boxShadow: theme.coDesign.shell.dialog.shadow,
           }),
         },
       }}

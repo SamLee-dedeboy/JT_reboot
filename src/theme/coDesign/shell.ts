@@ -3,28 +3,40 @@
 import { alpha, darken } from '@mui/material/styles'
 import { palette } from '../palette'
 
+// Raised-card values shared with src/ui/surfaceStyles.ts (raisedCardSx).
+const cardRadius = '6px'
+const raisedShadow = `0 12px 28px ${palette.translucent.cardShadow}`
+const liftedShadow = `0 20px 48px ${palette.translucent.cardShadow}`
+
 export const shell = {
   pageBackground: palette.brand.base,
-  headerBackground: palette.base[700],
+  // View header: the dark band the data tools (salinity explorer) sit under.
+  headerBackground: palette.base[800],
   headerBorder: palette.border.subtle,
+  // Tutorial and welcome dialogs: the site's menu panel.
   dialog: {
     background: palette.base[800],
     border: `1px solid ${palette.translucent.primaryGreen}`,
     radius: '8px',
+    shadow: liftedShadow,
     backdrop: palette.translucent[700],
     maxWidth: 500,
   },
+  // Round "about this panel" toggle: a hairline ring that turns green on hover.
   infoButton: {
     size: 32,
-    background: palette.translucent[500],
-    border: `1px solid ${palette.border.default}`,
-    shadow: `0 2px 8px ${palette.translucent.blackShadow}`,
+    border: `1px solid ${palette.border.strong}`,
+    hoverBackground: palette.translucent.primaryGreen,
+    hoverBorder: palette.brand.primaryGreen,
   },
   timeline: {
-    rail: palette.brand.primaryBlue,
-    railWidth: 3,
-    dot: palette.common.white,
-    dotSize: 20,
+    // The rail at rest; it fills with `railFill` as the reader scrolls past.
+    rail: palette.border.default,
+    railFill: palette.brand.primaryGreen,
+    railWidth: 2,
+    dotSize: 14,
+    // Ring of page colour around each dot, breaking the rail either side of it.
+    dotHalo: 6,
     railColumn: 60,
     maxWidth: 1100,
     cardMaxWidth: 440,
@@ -40,16 +52,18 @@ export const shell = {
     // Per-group emphasis: `muted` for background steps, `highlight` for the
     // steps the audience should focus on; `default` is the landing-page look.
     tones: {
+      // The site's raised card: surface fill, hairline edge, soft shadow.
       default: {
-        rail: palette.brand.primaryBlue,
-        dot: palette.common.white,
-        date: palette.brand.primaryGreen,
-        border: `2px solid ${palette.brand.primaryBlue}`,
-        shadow: `0 2px 10px ${palette.translucent.primaryBlueStrong}`,
+        rail: palette.brand.primaryGreen,
+        dot: palette.brand.primaryGreen,
+        date: palette.common.white,
+        border: `1px solid ${palette.border.default}`,
+        shadow: raisedShadow,
         title: palette.common.white,
         subtitle: palette.brand.primaryGreen,
-        label: palette.brand.primaryBlue,
-        cardBackground: palette.base[700],
+        label: palette.brand.primaryGreen,
+        cardBackground: palette.surface,
+        tagBackground: palette.base[700],
         hollowDot: false,
         dashedRail: false,
       },
@@ -57,12 +71,13 @@ export const shell = {
         rail: palette.base[400],
         dot: palette.base[300],
         date: palette.base[200],
-        border: `2px solid ${palette.base[400]}`,
+        border: `1px solid ${palette.border.default}`,
         shadow: 'none',
         title: palette.base[100],
         subtitle: palette.base[200],
         label: palette.base[200],
         cardBackground: palette.base[700],
+        tagBackground: palette.base[700],
         hollowDot: false,
         dashedRail: false,
       },
@@ -72,12 +87,13 @@ export const shell = {
         rail: alpha(palette.brand.primaryGreen, 0.55),
         dot: darken(palette.brand.primaryGreen, 0.25),
         date: alpha(palette.brand.primaryGreen, 0.8),
-        border: `2px solid ${alpha(palette.brand.primaryGreen, 0.5)}`,
-        shadow: `0 2px 12px ${alpha(palette.brand.primaryGreen, 0.15)}`,
+        border: `1px solid ${alpha(palette.brand.primaryGreen, 0.5)}`,
+        shadow: raisedShadow,
         title: palette.common.white,
         subtitle: alpha(palette.brand.primaryGreen, 0.85),
         label: alpha(palette.brand.primaryGreen, 0.85),
         cardBackground: palette.base[700],
+        tagBackground: palette.base[700],
         hollowDot: false,
         dashedRail: false,
       },
@@ -87,24 +103,28 @@ export const shell = {
         rail: alpha(palette.brand.primaryGreen, 0.55),
         dot: alpha(palette.brand.primaryGreen, 0.8),
         date: alpha(palette.brand.primaryGreen, 0.8),
-        border: `2px dashed ${alpha(palette.brand.primaryGreen, 0.5)}`,
+        border: `1px dashed ${alpha(palette.brand.primaryGreen, 0.5)}`,
         shadow: 'none',
         title: palette.common.white,
         subtitle: alpha(palette.brand.primaryGreen, 0.85),
         label: alpha(palette.brand.primaryGreen, 0.85),
         cardBackground: 'transparent',
+        // See-through cards show the page behind the tag instead.
+        tagBackground: palette.brand.base,
         hollowDot: true,
         dashedRail: true,
       },
     },
+    // A step that opens a view lifts and takes a green edge on hover, as raisedCardSx does.
     card: {
-      background: palette.base[700],
-      border: `2px solid ${palette.brand.primaryBlue}`,
-      hoverBorder: palette.accent.blue,
-      radius: '6px',
-      shadow: `0 2px 10px ${palette.translucent.primaryBlueStrong}`,
-      hoverShadow: `0 8px 24px ${palette.translucent.primaryBlueGlow}`,
-      pulseShadow: `0 4px 20px ${palette.translucent.primaryBlueGlow}, 0 0 15px ${palette.translucent.primaryGreen}`,
+      radius: cardRadius,
+      hoverLift: 4,
+      hoverBorder: palette.translucent.primaryGreen,
+      hoverShadow: liftedShadow,
+      divider: palette.border.subtle,
+      body: palette.base[100],
+      hint: palette.base[200],
+      action: palette.brand.primaryGreen,
     },
   },
 } as const

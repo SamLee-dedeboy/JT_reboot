@@ -5,21 +5,21 @@ import { palette } from '../palette'
 
 export const flow = {
   // View surface behind the interview flow and the combinations panel.
-  surface: palette.surfaceStrong,
+  surface: palette.brand.base,
   text: palette.common.white,
   loading: {
     text: palette.base[50],
     track: palette.border.subtle,
-    indicator: palette.brand.primaryBlue,
+    indicator: palette.brand.primaryGreen,
     size: '2.5rem',
     thickness: 3,
   },
   // Right-hand "Shared Values and Concerns" panel; widths in px per breakpoint.
   controlPanel: {
     width: { xs: 320, md: 288, lg: 352, xl: 448 },
-    outline: `2px solid ${palette.translucent.primaryGreen}`,
-    background: palette.translucent[50],
-    radius: '8px',
+    outline: `1px solid ${palette.border.default}`,
+    background: palette.translucent[100],
+    radius: '6px',
   },
   sectionHeader: {
     background: palette.brand.primaryGreen,
@@ -39,10 +39,11 @@ export const flow = {
   block: {
     background: palette.base[400],
     text: palette.common.white,
-    outline: `1px solid ${palette.brand.primaryBlue}`,
-    clickedOutline: `4px solid ${palette.brand.primaryBlue}`,
-    clickedShadow: `0 0 2px 2px ${palette.base[300]}`,
-    clickedText: palette.brand.primaryBlue,
+    outline: `1px solid ${palette.border.strong}`,
+    // Chosen blocks take the site's selection green.
+    clickedOutline: `3px solid ${palette.brand.primaryGreen}`,
+    clickedShadow: `0 0 0 6px ${palette.translucent.primaryGreen}`,
+    clickedText: palette.brand.primaryGreen,
     focusOutline: `2px solid ${palette.accent.blue}`,
     radius: '4px',
     iconHoverBackground: palette.base[300],
@@ -50,7 +51,7 @@ export const flow = {
   // d3 sankey paths between blocks (fill comes from combinationPalette).
   path: { opacity: 0.7 },
   combinations: {
-    subtitle: palette.brand.primaryBlue,
+    subtitle: palette.brand.primaryGreen,
     optionLabel: palette.base[200],
     optionLabelActive: palette.common.white,
     connector: `2px dotted ${palette.base[200]}`,

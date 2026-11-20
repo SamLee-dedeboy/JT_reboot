@@ -3,33 +3,33 @@
 // values appear only in the data-only category palette below.
 import { palette } from '../palette'
 
-const panelRadius = '8px'
-const panelShadow = `0 4px 12px ${palette.translucent.cardShadow}`
+const panelRadius = '6px'
+const panelShadow = `0 12px 28px ${palette.translucent.cardShadow}`
 
 export const sunburst = {
-  // View background behind the rows (legacy --surface-elevated).
-  surface: palette.surfaceStrong,
+  // View background behind the rows: the site's page colour.
+  surface: palette.brand.base,
   text: palette.common.white,
   textMuted: palette.base[100],
-  // One comparison row holding the charts (legacy --surface-page).
+  // One comparison row holding the charts: a dark band on the page.
   row: {
-    background: palette.brand.base,
+    background: palette.base[700],
     border: `1px solid ${palette.border.subtle}`,
     radius: panelRadius,
   },
   // Descriptive text card beside each gallery row.
   textPanel: {
-    background: palette.surfaceStrong,
+    background: palette.translucent[100],
     border: `1px solid ${palette.border.subtle}`,
     radius: panelRadius,
-    shadow: panelShadow,
+    shadow: 'none',
     text: palette.base[50],
     // Underlined key phrases / population names in the row copy.
     underline: palette.brand.primaryGreen,
   },
   // Floating toggle panel (Top 5 / labels / order).
   controls: {
-    background: palette.surfaceStrong,
+    background: palette.base[800],
     border: `1px solid ${palette.border.default}`,
     radius: panelRadius,
     shadow: panelShadow,
@@ -42,10 +42,10 @@ export const sunburst = {
     inset: 2,
     travel: 24,
     durationMs: 300,
-    trackOff: palette.brand.base,
+    trackOff: palette.base[400],
     trackOn: palette.brand.primaryGreen,
     thumbColor: palette.common.white,
-    focusRing: palette.brand.primaryBlue,
+    focusRing: palette.brand.primaryGreen,
   },
   // "← Back" button shown while a wheel is zoomed into a theme.
   backButton: {

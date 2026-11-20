@@ -1,6 +1,7 @@
 // Scenario picker + description panel, ported from
 // JT_dashboard/src/lib/Linking/ScenarioOverview.svelte.
-import { Box, Button, Typography } from '@mui/material'
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import { Box, ButtonBase, Typography } from '@mui/material'
 import { keyframes } from '@mui/material/styles'
 import { useEffect, useState } from 'react'
 import { getScenarios } from '../../api'
@@ -10,15 +11,13 @@ import type { GraphNode } from './renderers/CodeGraphRenderer'
 import SlideIn from './SlideIn'
 import type { tScenarioData } from './types'
 import { scenarioName } from '@/content/names'
+import { focusRing } from '@/ui/focusRing'
+import { choiceCardSx } from '@/ui/surfaceStyles'
 
 const loadingPulse = keyframes`
   0%, 100% { transform: scale(1); opacity: 0.3; }
   50% { transform: scale(1.2); opacity: 1; }
 `
-
-// Stagger the resting pulse so buttons don't breathe in unison (2nd–5th only,
-// as in the original nth-of-type rules).
-const pulseDelay = (index: number) => (index >= 1 && index <= 4 ? `${index * 0.75}s` : '0s')
 
 interface ScenarioOverviewProps {
   selectedScenario: tScenarioData | undefined
@@ -87,10 +86,9 @@ export default function ScenarioOverview({
             mx: 0.5,
           }}
         >
-          {scenarioOverview.map((scenario, index) => (
+          {scenarioOverview.map((scenario) => (
             <ScenarioButton
               key={scenario.name}
-              index={index}
               active={selectedScenario?.name === scenario.name}
               onClick={() => {
                 const next = scenarioOverview.find((s) => s.name === scenario.name)
@@ -130,53 +128,39 @@ export default function ScenarioOverview({
   )
 }
 
+// One scenario in the picker: the site's choice card, filled green once chosen.
 function ScenarioButton({
-  index,
   active,
   onClick,
   children,
 }: {
-  index: number
   active: boolean
   onClick: () => void
   children: string
 }) {
   return (
-    <Button
+    <ButtonBase
       onClick={onClick}
       aria-pressed={active}
-      sx={(theme) => {
-        const button = theme.coDesign.linking.scenarioButton
-        const pulse = keyframes`
-          0%, 100% { box-shadow: ${button.shadow}; }
-          50% { box-shadow: ${button.pulseShadow}; }
-        `
-        return {
-          width: button.width,
-          minHeight: button.minHeight,
-          px: 2,
-          py: 1,
-          color: button.text,
-          bgcolor: button.background,
-          border: `1px solid ${active ? button.activeBorder : button.border}`,
-          boxShadow: active ? button.activeShadow : button.shadow,
-          animation: active ? 'none' : `${pulse} 3s ease-in-out infinite`,
-          animationDelay: pulseDelay(index),
-          transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-          '&:hover': {
-            bgcolor: button.background,
-            transform: 'translateY(-2px)',
-            boxShadow: button.hoverShadow,
-          },
-          '&:focus-visible': {
-            outline: `2px solid ${theme.palette.primary.main}`,
-            outlineOffset: 2,
-          },
-        }
-      }}
+      sx={(theme) => ({
+        ...choiceCardSx(active),
+        justifyContent: 'space-between',
+        gap: theme.jtSpacing.gap.xs,
+        width: theme.coDesign.linking.scenarioButton.width,
+        minHeight: theme.coDesign.linking.scenarioButton.minHeight,
+        px: theme.jtSpacing.component.sm,
+        py: theme.jtSpacing.component.xs,
+        borderRadius: 1,
+        textAlign: 'left',
+        transition: 'background-color 180ms ease, border-color 180ms ease, color 180ms ease',
+        '&.Mui-focusVisible': focusRing,
+      })}
     >
-      {children}
-    </Button>
+      <Typography component="span" variant="chartLabel" sx={{ minWidth: 0 }}>
+        {children}
+      </Typography>
+      {active && <CheckRoundedIcon aria-hidden sx={{ flexShrink: 0, width: 18, height: 18 }} />}
+    </ButtonBase>
   )
 }
 

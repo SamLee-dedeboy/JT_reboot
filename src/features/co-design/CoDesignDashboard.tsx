@@ -1,13 +1,17 @@
 // Co-design dashboard, migrated from the JT_dashboard Svelte app (App.svelte).
 // Styled with the site theme; dashboard-specific tokens live in theme.coDesign.
-import { Box, Stack, Typography } from '@mui/material'
+// The landing page is an ordinary site page (navbar, hero, footer); each view is a
+// full-height tool under its own header, like the salinity explorer. The views need
+// a laptop-sized screen: below lg every dashboard URL shows the landing page.
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { Box, Button, Stack, Typography } from '@mui/material'
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link as RouterLink, Route, Routes, useParams } from 'react-router-dom'
-import { Logo } from '@/ui'
+import { Footer, Navbar } from '@/ui'
 import CoDesignDialog from './shared/CoDesignDialog'
-import InfoButton from './shared/InfoButton'
 import { coDesignPath } from './shared/paths'
+import { useViewsAvailable } from './shared/useViewsAvailable'
 import Home from './views/Home'
 
 const Flow = lazy(() => import('./views/flow/Flow'))
@@ -159,6 +163,7 @@ export default function CoDesignDashboard() {
   const location = `/${rest.replace(/\/$/, '')}`
   const isNotHomePage = location !== '/'
   const currentPage = pageInfo[location] ?? null
+  const viewsAvailable = useViewsAvailable()
 
   // Open the tutorial whenever navigating to a content page.
   const [pageModalOpen, setPageModalOpen] = useState(() => location in pageInfo)
@@ -183,7 +188,11 @@ export default function CoDesignDashboard() {
   // Kiosk shortcut carried over from the exhibition dashboard: Enter goes fullscreen.
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Enter' && !isFullscreen) {
+      // Enter on a link or control activates it instead.
+      const onControl =
+        event.target instanceof Element &&
+        event.target.closest('a, button, input, select, textarea, [role="button"]') !== null
+      if (event.key === 'Enter' && !isFullscreen && !onControl) {
         event.preventDefault()
         enterFullscreen()
       }
@@ -191,6 +200,31 @@ export default function CoDesignDashboard() {
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
   }, [enterFullscreen, isFullscreen])
+
+  const views = (
+    <Suspense fallback={null}>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="flow" element={<Flow />} />
+        <Route path="linking" element={<Linking />} />
+        <Route path="mental-model" element={<MentalModel />} />
+        <Route path="sunburst" element={<Sunburst />} />
+        <Route path="sunburst-grid" element={<SunburstGrid />} />
+      </Routes>
+    </Suspense>
+  )
+
+  // Landing page: a site page that scrolls with the document. A view's URL keeps
+  // showing it on a small screen, so widening the window brings the view back.
+  if (!isNotHomePage || !viewsAvailable) {
+    return (
+      <>
+        <Navbar />
+        <Box component="main">{viewsAvailable ? views : <Home />}</Box>
+        <Footer />
+      </>
+    )
+  }
 
   return (
     <Box sx={{ bgcolor: (theme) => theme.coDesign.shell.pageBackground }}>
@@ -214,27 +248,36 @@ export default function CoDesignDashboard() {
           bgcolor: theme.coDesign.shell.pageBackground,
         })}
       >
-        {/* View title at left, site wordmark and dashboard-home link at right */}
+        {/* Back to the landing page and the view's title at left, its tutorial at right */}
         <Box
           component="header"
           sx={(theme) => ({
             flexShrink: 0,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: currentPage ? 'space-between' : 'flex-end',
-            gap: 2,
+            justifyContent: 'space-between',
+            gap: theme.jtSpacing.gap.md,
             px: { xs: 2, md: 4 },
-            py: 1,
+            py: 1.5,
             bgcolor: theme.coDesign.shell.headerBackground,
             borderBottom: `1px solid ${theme.coDesign.shell.headerBorder}`,
           })}
         >
-          {isNotHomePage && currentPage && (
-            <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, minWidth: 0 }}>
-              <InfoButton
-                onClick={() => setPageModalOpen((open) => !open)}
-                label="About this section"
-              />
+          <Stack
+            direction="row"
+            sx={(theme) => ({ alignItems: 'center', gap: theme.jtSpacing.gap.md, minWidth: 0 })}
+          >
+            <Button
+              component={RouterLink}
+              to={coDesignPath('/')}
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              aria-label="Back to the dashboard home"
+              sx={{ flexShrink: 0, whiteSpace: 'nowrap' }}
+            >
+              Dashboard home
+            </Button>
+            {currentPage && (
               <Stack
                 direction={{ xs: 'column', md: 'row' }}
                 sx={{ alignItems: { md: 'baseline' }, columnGap: 1.5, minWidth: 0 }}
@@ -246,36 +289,19 @@ export default function CoDesignDashboard() {
                   {currentPage.subtitle}
                 </Typography>
               </Stack>
-            </Stack>
-          )}
-          <Stack sx={{ alignItems: 'flex-end', flexShrink: 0 }}>
-            <Logo />
-            {isNotHomePage && (
-              <Typography
-                component={RouterLink}
-                to={coDesignPath('/')}
-                variant="chartLabel"
-                sx={{
-                  color: 'base.100',
-                  textDecoration: 'none',
-                  '&:hover, &:focus-visible': { color: 'primary.main' },
-                }}
-              >
-                ← Dashboard home
-              </Typography>
             )}
           </Stack>
+          {currentPage && (
+            <Button
+              variant="outlined"
+              onClick={() => setPageModalOpen((open) => !open)}
+              sx={{ flexShrink: 0 }}
+            >
+              Tutorial
+            </Button>
+          )}
         </Box>
-        <Suspense fallback={null}>
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="flow" element={<Flow />} />
-            <Route path="linking" element={<Linking />} />
-            <Route path="mental-model" element={<MentalModel />} />
-            <Route path="sunburst" element={<Sunburst />} />
-            <Route path="sunburst-grid" element={<SunburstGrid />} />
-          </Routes>
-        </Suspense>
+        {views}
       </Box>
     </Box>
   )

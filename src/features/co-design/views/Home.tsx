@@ -1,16 +1,26 @@
-// Dashboard landing page (welcome dialog + timeline), ported from
-// JT_dashboard/src/lib/Home.svelte and styled with the site theme.
-import { Box, Stack, Typography } from '@mui/material'
+// Dashboard landing page (hero, welcome dialog, timeline), ported from
+// JT_dashboard/src/lib/Home.svelte and laid out like the site's other pages.
+import { Box, Button, Container, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
+import { PageHero } from '@/ui'
+import { borderedPanelSx } from '@/ui/surfaceStyles'
 import CoDesignTimeline from '../components/CoDesignTimeline'
 import CoDesignDialog from '../shared/CoDesignDialog'
-import InfoButton from '../shared/InfoButton'
+import { useViewsAvailable } from '../shared/useViewsAvailable'
 
 // Module-level so the welcome dialog only opens on the first visit per page load.
 let visited = false
 
+// Participants working through the scenario boards at the 2025 public workshop.
+const HERO_IMAGE = '/images/background/psp-workshop-2025.webp'
+
+// Shown wherever the views are not offered (below lg).
+const LARGER_SCREEN_NOTE =
+  'For the best experience, visit on a laptop or larger screen, where each step opens an interactive view of the data.'
+
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(() => !visited)
+  const viewsAvailable = useViewsAvailable()
   useEffect(() => {
     visited = true
   }, [])
@@ -33,51 +43,52 @@ export default function Home() {
           Delta research project has prioritized and responded to public engagement through a
           participatory scenario planning process
         </Typography>
-        <Typography variant="meta" sx={{ color: 'secondary.main', fontStyle: 'italic' }}>
-          Click one of the modules to get started
-        </Typography>
+        {viewsAvailable ? (
+          <Typography variant="eyebrow" component="p">
+            Click one of the modules to get started
+          </Typography>
+        ) : (
+          <Typography variant="captionProse" component="p" sx={{ color: 'primary.main' }}>
+            {LARGER_SCREEN_NOTE}
+          </Typography>
+        )}
       </CoDesignDialog>
 
-      <InfoButton
-        onClick={() => setModalOpen((open) => !open)}
-        label="About this dashboard"
-        sx={{ position: 'fixed', top: 16, left: 16, zIndex: 100 }}
-      />
+      <PageHero
+        image={HERO_IMAGE}
+        eyebrow="Welcome to the"
+        title="Co-Design Dashboard"
+        summaryVariant="body1"
+        summary="“What is co-designing”? Co-designing is a collaborative process in which researchers, community members, and other partners learn from one another by sharing knowledge, experiences, and perspectives to jointly understand issues and develop solutions. It recognizes that expertise exists both inside and outside academia and values mutual learning throughout the research process"
+      >
+        <Box>
+          <Button variant="outlined" onClick={() => setModalOpen((open) => !open)}>
+            About this dashboard
+          </Button>
+        </Box>
+      </PageHero>
 
-      {/* Scrolls inside the fixed-height dashboard <main> */}
-      <Box
+      {/* The four steps of the process; from lg up each card opens its view */}
+      <Container
+        maxWidth="lg"
         sx={(theme) => ({
-          flex: '1 1 0',
-          minHeight: 0,
-          width: '100%',
-          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          px: theme.jtSpacing.gap.md,
-          pt: theme.jtSpacing.gap.md,
-          pb: theme.jtSpacing.section.md,
-          textAlign: 'center',
+          gap: theme.jtSpacing.section.sm,
+          py: { xs: theme.jtSpacing.section.md, md: theme.jtSpacing.section.lg },
         })}
       >
-        <Stack sx={{ alignItems: 'center', gap: 4 }}>
-          <Typography variant="h2" component="h1">
-            Welcome to the Co-Design Dashboard
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={(theme) => ({ maxWidth: theme.jtSpacing.paragraphMaxWidth.default })}
-          >
-            “What is co-designing”? Co-designing is a collaborative process in which researchers,
-            community members, and other partners learn from one another by sharing knowledge,
-            experiences, and perspectives to jointly understand issues and develop solutions. It
-            recognizes that expertise exists both inside and outside academia and values mutual
-            learning throughout the research process
-          </Typography>
-        </Stack>
-
-        <CoDesignTimeline sx={{ mt: 10 }} />
-      </Box>
+        {!viewsAvailable && (
+          <Box role="note" sx={[borderedPanelSx, { width: '100%' }]}>
+            <Typography variant="eyebrow" component="p" sx={{ mb: 1 }}>
+              Best on a larger screen
+            </Typography>
+            <Typography variant="body2">{LARGER_SCREEN_NOTE}</Typography>
+          </Box>
+        )}
+        <CoDesignTimeline />
+      </Container>
     </>
   )
 }
