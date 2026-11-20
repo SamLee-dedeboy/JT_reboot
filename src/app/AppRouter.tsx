@@ -34,6 +34,7 @@ const CriterionPage = lazy(() => import('../features/scenario-methodology/Criter
 const RankingPage = lazy(() => import('../features/scenario-ranking/RankingPage'))
 const EvaluationPage = lazy(() => import('../features/scenario-methodology/EvaluationPage'))
 const FamiliesPage = lazy(() => import('../features/scenario-methodology/FamiliesPage'))
+const TakeawaysPage = lazy(() => import('../features/scenario-methodology/TakeawaysPage'))
 const GovernancePage = lazy(() => import('../features/governance/GovernancePage'))
 
 const deferred = (element: React.ReactNode) => <Suspense fallback={null}>{element}</Suspense>
@@ -48,6 +49,7 @@ export default function AppRouter() {
       <Route path="/scenarios/modeling" element={<ModelingPage />} />
       <Route path="/scenarios/evaluation" element={deferred(<EvaluationPage />)} />
       <Route path="/scenarios/evaluation/families" element={deferred(<FamiliesPage />)} />
+      <Route path="/scenarios/evaluation/takeaways" element={deferred(<TakeawaysPage />)} />
       <Route path="/scenarios/evaluation/:teamId" element={deferred(<CriterionPage />)} />
       <Route path="/scenarios/ranking" element={deferred(<RankingPage />)} />
       <Route path="/scenarios/ranking/:view" element={deferred(<RankingPage />)} />

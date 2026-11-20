@@ -1,4 +1,4 @@
-// Co-design dashboard shell (header, tutorial dialogs, info button) and the
+// Co-design dashboard shell (header, How to read panels, info button) and the
 // landing timeline. Built from the site palette; see src/features/co-design.
 import { alpha, darken } from '@mui/material/styles'
 import { palette } from '../palette'
@@ -13,14 +13,20 @@ export const shell = {
   // View header: the dark band the data tools (salinity explorer) sit under.
   headerBackground: palette.base[800],
   headerBorder: palette.border.subtle,
-  // Tutorial and welcome dialogs: the site's menu panel.
+  // The "How to read this" panel each view opens with (shared/HowToReadDialog).
   dialog: {
-    background: palette.base[800],
-    border: `1px solid ${palette.translucent.primaryGreen}`,
-    radius: '8px',
+    background: palette.base[600],
+    border: `1px solid ${palette.border.default}`,
+    radius: '16px',
     shadow: liftedShadow,
     backdrop: palette.translucent[700],
-    maxWidth: 500,
+    maxWidth: 600,
+    // The step line, list labels and the footer note.
+    label: palette.base[200],
+    closeBorder: palette.border.default,
+    quoteBackground: palette.translucent[100],
+    glyphBackground: palette.translucent.primaryGreen,
+    tipBackground: palette.translucent.primaryGreenSubtle,
   },
   // Round "about this panel" toggle: a hairline ring that turns green on hover.
   infoButton: {
@@ -123,7 +129,10 @@ export const shell = {
       hoverShadow: liftedShadow,
       divider: palette.border.subtle,
       body: palette.base[100],
-      hint: palette.base[200],
+      // "Step 1 of 4" and the tag list's label.
+      label: palette.base[200],
+      chipText: palette.base[50],
+      chipBackground: palette.translucent[100],
       action: palette.brand.primaryGreen,
     },
   },

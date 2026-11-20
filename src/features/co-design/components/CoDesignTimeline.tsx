@@ -77,7 +77,7 @@ export default function CoDesignTimeline({
   // Without the views a step is informational: no link, and no hint that says to click.
   const steps = allSteps
     .filter((step) => !step.hidden)
-    .map((step) => (viewsAvailable ? step : { ...step, view: undefined, hint: undefined }))
+    .map((step) => (viewsAvailable ? step : { ...step, view: undefined, action: undefined }))
   const runs = groupRuns(steps)
   // The rail fills green as the reader scrolls past it, like the documentation timeline.
   const railRef = useRef<HTMLDivElement>(null)
@@ -519,50 +519,87 @@ function TimelineCard({
 }) {
   const view = step.view
   const tone = step.tone ?? 'default'
-  const content = (
+  const subtitle = step.subtitle.join(' ')
+  const content = compact ? (
     <>
       {step.status && <StatusTag status={step.status} tone={tone} />}
       {children}
       <Typography
-        variant={compact ? 'chartTitle' : 'h4'}
+        variant="chartTitle"
         component="h3"
         sx={(theme) => ({ color: toneOf(theme, tone).title })}
       >
         {step.title}
       </Typography>
-      {/* Full cards keep the authored line breaks; compact cards wrap to fit */}
       <Typography
-        variant={compact ? 'controlLabel' : 'eyebrow'}
+        variant="controlLabel"
         component="p"
         sx={(theme) => ({ color: toneOf(theme, tone).subtitle })}
       >
-        {compact
-          ? step.subtitle.join(' ')
-          : step.subtitle.map((line, i) => (
-              <Box component="span" key={line} sx={{ display: 'block' }}>
-                {line}
-                {i < step.subtitle.length - 1 ? ' ' : ''}
-              </Box>
-            ))}
+        {subtitle}
       </Typography>
-      {!compact && step.body && (
+    </>
+  ) : (
+    // Full card: Hammersmith only for the title; everything else in the body face.
+    <>
+      {step.status && <StatusTag status={step.status} tone={tone} />}
+      {children}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+        <Typography
+          variant="h4"
+          component="h3"
+          sx={(theme) => ({ color: toneOf(theme, tone).title })}
+        >
+          {step.title}
+        </Typography>
+        <Typography
+          variant="takeawayLead"
+          component="p"
+          sx={(theme) => ({ color: toneOf(theme, tone).subtitle })}
+        >
+          {subtitle}
+        </Typography>
+      </Box>
+      {step.body && (
         <Typography
           variant="cardBody"
-          sx={(theme) => ({ mt: 0.5, color: theme.coDesign.shell.timeline.card.body })}
+          sx={(theme) => ({ color: theme.coDesign.shell.timeline.card.body })}
         >
           {step.body}
         </Typography>
       )}
-      {!compact && step.hint && (
-        <Typography
-          variant="meta"
-          sx={(theme) => ({ color: theme.coDesign.shell.timeline.card.hint })}
-        >
-          {step.hint}
-        </Typography>
+      {step.details && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography
+            variant="takeawayLabel"
+            component="p"
+            sx={(theme) => ({ color: theme.coDesign.shell.timeline.card.label })}
+          >
+            {step.details.label}
+          </Typography>
+          <Box component="ul" sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, m: 0, p: 0 }}>
+            {step.details.items.map((item) => (
+              <Typography
+                key={item}
+                component="li"
+                variant="chipQualifier"
+                sx={(theme) => ({
+                  listStyle: 'none',
+                  px: 1.5,
+                  py: 0.625,
+                  borderRadius: 999,
+                  color: theme.coDesign.shell.timeline.card.chipText,
+                  bgcolor: theme.coDesign.shell.timeline.card.chipBackground,
+                })}
+              >
+                {item}
+              </Typography>
+            ))}
+          </Box>
+        </Box>
       )}
-      {/* The whole card is the link; this row says so, as a document card's footer does */}
-      {!compact && view && (
+      {/* The whole card is the link; this row names where it goes */}
+      {view && step.action && (
         <Box
           sx={(theme) => ({
             display: 'flex',
@@ -571,13 +608,14 @@ function TimelineCard({
             mt: theme.jtSpacing.component.xs,
             pt: theme.jtSpacing.component.sm,
             borderTop: `1px solid ${theme.coDesign.shell.timeline.card.divider}`,
-            typography: 'button',
             color: theme.coDesign.shell.timeline.card.action,
             '& svg': { transition: 'transform 180ms ease' },
           })}
         >
-          Explore
-          <Icon name="arrow-right" size={15} />
+          <Typography variant="tableValueStrong" component="span" sx={{ color: 'inherit' }}>
+            {step.action}
+          </Typography>
+          <Icon name="arrow-right" size={18} />
         </Box>
       )}
     </>
@@ -629,7 +667,7 @@ function cardBaseSx(compact: boolean, tone: TimelineTone) {
     flexDirection: 'column',
     alignItems: 'stretch',
     justifyContent: 'center',
-    gap: compact ? 1 : 1.25,
+    gap: compact ? 1 : 2,
     px: compact ? { xs: 3, md: 2 } : theme.jtSpacing.component.md,
     py: compact ? 2.5 : theme.jtSpacing.component.md,
     textAlign: compact ? 'center' : 'left',
@@ -647,7 +685,7 @@ const statusLabels: Record<TimelineStatus, string> = { ongoing: 'Ongoing', upcom
 function StatusTag({ status, tone }: { status: TimelineStatus; tone: TimelineTone }) {
   return (
     <Typography
-      variant="chartLabel"
+      variant="columnHead"
       component="span"
       sx={(theme) => {
         const toneTokens = toneOf(theme, tone)

@@ -77,9 +77,6 @@ export const sunburst = {
     haloDark: palette.translucent[600],
     haloLight: palette.common.white,
     calloutText: palette.base[50],
-    // Callout label size in viewBox units; the leader-line stacking (13 units
-    // per label) is tuned to it.
-    calloutFontSize: 11,
   },
   // Data-only categorical palette for the sunburst themes (shared across every
   // chart so a theme keeps its colour). Kept from the original dashboard: the

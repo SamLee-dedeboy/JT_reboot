@@ -4,9 +4,12 @@ export type TimelineStep = {
   date: string
   title: string
   subtitle: string[]
-  // Full-card copy; omitted in compact layouts.
+  // Full-card copy; omitted in compact layouts. One or two sentences.
   body?: string
-  hint?: string
+  // Full cards: a short labelled list of tags under the body ("We asked about …").
+  details?: { label: string; items: string[] }
+  // Full cards: the link line naming where the card goes ("Explore").
+  action?: string
   // Dashboard view the card opens (e.g. '/flow').
   view?: string
   // Consecutive steps with the same group get one heading.
@@ -29,31 +32,54 @@ export const dashboardSteps: TimelineStep[] = [
     view: '/flow',
     title: 'Listening',
     subtitle: ['Understanding public', 'values and concerns'],
-    body: 'Our process began by interviewing Delta residents, community organizers, Indigenous community members, farmers, scientists, experts and agency officials. Key questions we asked interviewees included what they most value about the Delta, what factors they believe drive change, what salinity adaptation strategies they are most interested in seeing explored, and who is and isn’t represented in Delta planning efforts.',
-    hint: 'Click to explore the results and connections across the interview data',
+    body: 'We interviewed Delta residents, community organizers, Indigenous community members, farmers, scientists, experts and agency officials.',
+    details: {
+      label: 'We asked about',
+      items: [
+        'What they value',
+        'What drives change',
+        'Strategies to explore',
+        'Who is represented',
+      ],
+    },
+    action: 'Explore',
   },
   {
     date: 'Early 2024',
     view: '/linking',
     title: 'Designing',
     subtitle: ['From ideas and values', 'to scenarios'],
-    body: "With a better understanding of interviewee's perceived drivers of change, management and adaptation strategies to explore, and values and priorities, we designed six distinct scenarios.",
-    hint: 'Click to explore how interviews shaped the design of each scenario',
+    body: 'What we heard in the interviews shaped six distinct scenarios.',
+    details: {
+      label: 'Built from',
+      items: ['Drivers of change', 'Strategies to explore', 'Values and priorities'],
+    },
+    action: 'Explore',
   },
   {
     date: '2025',
     view: '/mental-model',
     title: 'Conceptualizing',
     subtitle: ['Shared understandings of Delta salinity'],
-    body: 'Leveraging these interviews and data collected through our public workshops, we have been documenting how project participants conceptualize and understand salinity and salinity management in the Delta, as well as how those understandings change over time. These are visualized as “mental models” which are representations of how people understand a system, concept, or process works.',
-    hint: 'Click to see these mental models',
+    body: 'From interviews and public workshops, we map how participants understand salinity, and how that changes over time, as “mental models.”',
+    details: { label: 'Each model shows', items: ['What drives salinity', 'What is most at risk'] },
+    action: 'Explore',
   },
   {
     date: 'Summer 2025',
     view: '/sunburst',
     title: 'Comparing',
     subtitle: ['Different mental models'],
-    body: 'We then compare how the mental models are similar and different across different groups of people, including across age, years of engagement in the Delta, Delta resident or non-resident, and research team members compared to research participants.',
-    hint: 'Click to explore how mental models differ across participants',
+    body: 'We compare how mental models differ between groups of people.',
+    details: {
+      label: 'Compared by',
+      items: [
+        'Age',
+        'Years of engagement',
+        'Residents and non-residents',
+        'Researchers and participants',
+      ],
+    },
+    action: 'Explore',
   },
 ]

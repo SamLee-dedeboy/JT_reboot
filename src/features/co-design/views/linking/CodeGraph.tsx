@@ -7,6 +7,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import type { Theme } from '@mui/material/styles'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { readableTextOn } from '../../shared/contrast'
+import { visTextSizes } from '../../shared/visText'
 import { categoryColorScale } from './constants'
 import { CodeGraphRenderer } from './renderers/CodeGraphRenderer'
 import type { CodeGraphTokens, GraphNode, tCode } from './renderers/CodeGraphRenderer'
@@ -20,6 +21,7 @@ interface CodeGraphProps {
 function graphTokens(theme: Theme): CodeGraphTokens {
   const { linking } = theme.coDesign
   const categoryColor = categoryColorScale(linking.category)
+  const sizes = visTextSizes(theme)
   return {
     categoryColor: (category) => categoryColor(category),
     labelColorOn: (background) =>
@@ -32,8 +34,10 @@ function graphTokens(theme: Theme): CodeGraphTokens {
     nodeHoverStroke: linking.svg.nodeHoverStroke,
     labelFontFamily: String(theme.typography.chartValue.fontFamily),
     centerFontFamily: String(theme.typography.chartValueLarge.fontFamily),
-    centerFontSize: String(theme.typography.chartValueLarge.fontSize),
+    centerFontSize: sizes.center,
     centerFontWeight: theme.typography.chartValueLarge.fontWeight ?? 'normal',
+    labelMinSize: sizes.min,
+    labelMaxSize: sizes.label,
   }
 }
 

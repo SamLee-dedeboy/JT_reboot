@@ -10,6 +10,7 @@ import { EXPLORER_BOUNDS } from '@/map/cameras'
 import { SALINITY_MAP_STYLE } from '@/map/mapStyles'
 import { explorerControl, palette } from '@/theme'
 import { useCompactExplorer } from '../explorerType'
+import BoundaryFlowArrows from './BoundaryFlowArrows'
 import { smallIconSx } from './controlStyles'
 import type { FeatureCollection, Point } from 'geojson'
 import type { GeoJSONSource } from 'mapbox-gl'
@@ -159,6 +160,8 @@ function MapCanvas({
   const [lassoActive, setLassoActive] = useState(false)
   const [lassoPath, setLassoPath] = useState<[number, number][]>([])
   const [lassoMissed, setLassoMissed] = useState(false)
+  // The loaded map, for overlays that place themselves on it.
+  const [loadedMap, setLoadedMap] = useState<mapboxgl.Map | null>(null)
   const selectedScenario = data.scenarios.find((item) => item.key === scenario)!
   const baseScenarioLabel =
     data.scenarios.find((item) => item.key === baseScenario)?.label ?? 'Base scenario'
@@ -613,6 +616,7 @@ function MapCanvas({
       map.on('mouseleave', 'stations', () => {
         map.getCanvas().style.cursor = ''
       })
+      setLoadedMap(map)
     })
     return () => {
       const popup = popupRef.current
@@ -836,6 +840,15 @@ function MapCanvas({
           '& .station-popup-value-neutral': { color: 'text.primary' },
         }}
       />
+      {loadedMap && (
+        <BoundaryFlowArrows
+          map={loadedMap}
+          scenario={scenario}
+          baseScenario={baseScenario}
+          baseScenarioLabel={baseScenarioLabel}
+          date={data.dates[dateIndex]}
+        />
+      )}
       {lassoActive && (
         <Box
           component="svg"

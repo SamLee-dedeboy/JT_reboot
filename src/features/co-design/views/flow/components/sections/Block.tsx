@@ -12,6 +12,8 @@ import type { tBlock } from '../../types'
 interface Props {
   block: tBlock
   total_participants: number
+  /** Everyone who answered this block's column; the fairness share's denominator. */
+  column_total?: number
   base_space: number
   grow?: boolean
   show_icon_list?: boolean
@@ -29,6 +31,7 @@ function update_blocks(existing_blocks: tBlock[], new_block: tBlock) {
 export default function Block({
   block,
   total_participants,
+  column_total = 0,
   base_space,
   grow = false,
   show_icon_list = true,
@@ -53,7 +56,12 @@ export default function Block({
       : 0) + '%'
   // Categories nobody mentioned collapse to a faded, non-interactive stub.
   const missing = block_combinations.length === 0
-  const dense = block.participants.length > 5
+  const count = block.participants.length
+  // The fairness column also gives each answer's share of everyone who answered it.
+  const share =
+    block.column_id === Constants.fairness_column_id && column_total > 0
+      ? ` · ${Math.round((count / column_total) * 100)}%`
+      : ''
 
   const data_json = JSON.stringify({
     column: block.column_id,
@@ -80,8 +88,10 @@ export default function Block({
           position: 'relative',
           display: 'flex',
           justifyContent: 'center',
-          width: 128,
+          width: theme.coDesign.flow.block.width,
           flex: grow ? '1 1 auto' : 'none',
+          // Room for the label's first line and the count, however few people gave it.
+          minHeight: missing ? undefined : '3.25rem',
           pointerEvents: 'auto',
           color: clicked ? tokens.clickedText : undefined,
           outline: clicked ? tokens.clickedOutline : tokens.outline,
@@ -100,6 +110,7 @@ export default function Block({
         }
       }}
       data-json={data_json}
+      title={`${block.title}: ${count} ${count === 1 ? 'person' : 'people'}`}
     >
       {view_mode && show_icon_list && (
         // Expand toggle; hidden in the original too.
@@ -134,27 +145,38 @@ export default function Block({
           position: 'relative',
           display: 'flex',
           width: '100%',
+          // Short blocks clip their text rather than spill over the next one.
+          overflow: 'hidden',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          p: 0.5,
-          textAlign: 'center',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          gap: 0.25,
+          px: 1.25,
+          py: 1,
+          textAlign: 'left',
           color: theme.coDesign.flow.block.text,
           bgcolor: theme.coDesign.flow.block.background,
         })}
         data-json={data_json}
       >
+        {/* Every block: the same label and count styles, whatever its size */}
         <Typography
-          variant={dense ? 'controlLabel' : 'chartAxis'}
+          variant="chipLabel"
           component="div"
           sx={{ width: '100%', userSelect: 'none', color: 'inherit' }}
         >
-          {block.title}{' '}
-          {block.column_id !== Constants.fairness_column_id && (
-            <Typography variant="chartAxis" component="div" sx={{ opacity: 0.7, color: 'inherit' }}>
-              ({block.participants.length})
-            </Typography>
-          )}
+          {block.title}
+        </Typography>
+        <Typography
+          variant="captionSmall"
+          component="div"
+          sx={(theme) => ({ userSelect: 'none', color: theme.coDesign.flow.block.count })}
+        >
+          <Box component="strong" sx={(theme) => ({ color: theme.coDesign.flow.block.text })}>
+            {count}
+          </Box>{' '}
+          {count === 1 ? 'person' : 'people'}
+          {share}
         </Typography>
       </Box>
     </Box>

@@ -156,7 +156,11 @@ function ScenarioButton({
         '&.Mui-focusVisible': focusRing,
       })}
     >
-      <Typography component="span" variant="chartLabel" sx={{ minWidth: 0 }}>
+      <Typography
+        component="span"
+        variant={active ? 'controlValueSelected' : 'controlValue'}
+        sx={{ minWidth: 0 }}
+      >
         {children}
       </Typography>
       {active && <CheckRoundedIcon aria-hidden sx={{ flexShrink: 0, width: 18, height: 18 }} />}

@@ -79,6 +79,7 @@ export const typeGroups: Array<{ label: string; variants: Record<string, TypeSam
       controlValueSelected: { sample: 'Business as Usual', use: 'The chosen option in a select' },
       chipLabel: { sample: 'Ecology', use: 'Filled tag chip labels' },
       chipQualifier: { sample: 'juvenile', use: 'Lighter qualifier after a chip label' },
+      mapLabelStrong: { sample: 'Tunnel intakes', use: 'A map label that must stand out' },
     },
   },
   {

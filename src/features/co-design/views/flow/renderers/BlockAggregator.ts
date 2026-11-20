@@ -345,7 +345,7 @@ export class BlockAggregator {
         fairness_blocks.push({
           id: Constants.fairness_column_id + key,
           column_id: Constants.fairness_column_id,
-          title: key + ': ' + value.length,
+          title: key.charAt(0).toUpperCase() + key.slice(1),
           participants: value,
           content: value.map((p) => [p, key]),
         })

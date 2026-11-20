@@ -60,6 +60,8 @@ export default function Column({
   const leading_column = useFlowState((s) => s.leading_column)
   const base_blocks = useFlowState((s) => s.base_blocks)
   const sorted_blocks = _sorted_blocks(column, blocks, leading_column, base_blocks)
+  // Everyone who answered this column, for a block's share of its own question.
+  const column_total = sorted_blocks.reduce((sum, block) => sum + block.participants.length, 0)
 
   return (
     <Box
@@ -90,6 +92,7 @@ export default function Column({
             key={block.id}
             block={block}
             total_participants={total_participants}
+            column_total={column_total}
             base_space={95}
           />
         ))}

@@ -185,7 +185,7 @@ export const WORK_STEPS: WorkStep[] = [
   {
     title: 'Scenario Co-Design',
     text: 'Interviews and workshops surfaced public values and concerns about Delta salinity, which guided how each future scenario was designed.',
-    links: [{ label: 'Explore the co-design dashboard', href: '/pages/co-design-dashboard' }],
+    links: [{ label: 'Explore the co-design experience', href: '/pages/co-design-dashboard' }],
   },
   {
     title: 'Scenario Adaptations',
@@ -202,7 +202,7 @@ export const WORK_STEPS: WorkStep[] = [
   },
   {
     title: 'Scenario Ranking',
-    text: 'Compare how the futures perform across five criteria. Rank them with equal weight, test how different priorities change the order, or trace each score back to its underlying evidence.',
+    text: 'Compare how the futures perform across six criteria. Rank them with equal weight, test how different priorities change the order, or trace each score back to its underlying evidence.',
     links: [{ label: 'Rank the futures', href: '/scenarios/ranking' }],
   },
   {

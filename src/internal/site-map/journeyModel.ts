@@ -127,7 +127,7 @@ export function buildJourney(
       route: '/',
       status: status('/'),
       sees: ['Map hero', 'What if… editorial panel', 'Futures panels'],
-      branches: [{ label: 'Co-Design Dashboard', to: '/pages/co-design-dashboard' }],
+      branches: [{ label: 'Co-Design Experience', to: '/pages/co-design-dashboard' }],
     },
     {
       id: 'choose',

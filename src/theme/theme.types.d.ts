@@ -38,6 +38,7 @@ declare module '@mui/material/styles' {
     controlValueSelected: CSSProperties
     chipLabel: CSSProperties
     chipQualifier: CSSProperties
+    mapLabelStrong: CSSProperties
     factDate: CSSProperties
     citationMark: CSSProperties
     statNumberCompact: CSSProperties
@@ -153,6 +154,7 @@ declare module '@mui/material/Typography' {
     controlValueSelected: true
     chipLabel: true
     chipQualifier: true
+    mapLabelStrong: true
     factDate: true
     citationMark: true
     statNumberCompact: true

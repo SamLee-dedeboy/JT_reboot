@@ -10,7 +10,9 @@ Keep it synchronized when an asset is added, moved, tiled, or retired.
 - `geospatial-assets/subteams/`: subteam or criterion geography.
 - `salinity/`: modeled salinity outputs, grouped by consuming experience.
 - `patterns/`: curated regional-pattern findings, evidence, and chart series.
-- `operations/`: scenario operating schedules shared across features.
+- `operations/`: scenario operating schedules shared across features, and the monthly CalSim
+  boundary flows the scenario explorer draws on its map (`boundary-flows-monthly.json`, from
+  `scripts/scenario-explorer/build_boundary_flows.py`).
 - `watershed/`: public upstream-restoration metrics and change summaries.
 - `co-design/`: public co-design dashboard snapshots.
 - `internal/`: data used only by routes under `src/internal/`. This is intentionally

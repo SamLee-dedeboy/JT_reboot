@@ -1,4 +1,8 @@
-import { bolsterGateClosures, callingOnReservesReleasePeriods } from '@/content/modelRuns'
+import {
+  aTunnelDiversionPeriods,
+  bolsterGateClosures,
+  callingOnReservesReleasePeriods,
+} from '@/content/modelRuns'
 import type { DashboardMode } from './types'
 
 export interface ScenarioAnnotation {
@@ -39,6 +43,18 @@ export const getScenarioAnnotation = (
         note: `${period.monthlyDifferenceCfs
           .map((cfs) => `+${cfs.toLocaleString('en-US')}`)
           .join(' / ')} cfs at Shasta Dam compared with Business as Usual.`,
+      })),
+    }
+  if (scenarioKey === 'tunnel')
+    return {
+      label: 'Tunnel on',
+      legend: 'Tunnel diverting',
+      note: 'North Delta intakes diverting into the tunnel; it is off between these periods.',
+      periods: aTunnelDiversionPeriods.map((period) => ({
+        ...period,
+        note: `${period.monthlyDiversionCfs
+          .map((cfs) => cfs.toLocaleString('en-US'))
+          .join(' / ')} cfs diverted into the tunnel, by month.`,
       })),
     }
   return null

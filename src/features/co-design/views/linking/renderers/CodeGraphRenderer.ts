@@ -43,9 +43,16 @@ export type CodeGraphTokens = {
   nodeHoverStroke: string
   labelFontFamily: string
   centerFontFamily: string
-  centerFontSize: string
+  /** Center label size in px. */
+  centerFontSize: number
   centerFontWeight: string | number
+  /** Smallest and largest node label, in px (see shared/visText.ts). */
+  labelMinSize: number
+  labelMaxSize: number
 }
+
+// Zoom the graph opens at (and returns to on reset).
+const DEFAULT_ZOOM = 0.6
 
 export class CodeGraphRenderer {
   svgElement: SVGSVGElement
@@ -77,6 +84,29 @@ export class CodeGraphRenderer {
     return d3.select<SVGSVGElement, unknown>(this.svgElement)
   }
 
+  // Screen px per graph unit at the default zoom, so sizes given in screen px
+  // (tokens) read at that size when the graph first opens.
+  private defaultScreenScale() {
+    const { width, height } = this.svgElement.getBoundingClientRect()
+    const fit = width && height ? Math.min(width / this.width, height / this.height) : 1
+    return fit * DEFAULT_ZOOM
+  }
+
+  // A label shows only while its fitted size reads at least the smallest label
+  // size on screen, so zooming in brings back the small bubbles' names.
+  private showLabelsThatFit(k: number) {
+    const { width, height } = this.svgElement.getBoundingClientRect()
+    const fit = width && height ? Math.min(width / this.width, height / this.height) : 1
+    const minSize = this.tokens.labelMinSize
+    this.svg()
+      .select('.label-group')
+      .selectAll<SVGTextElement, GraphNode>('text')
+      .attr('display', function () {
+        const size = parseFloat(this.getAttribute('font-size') ?? '') || 0
+        return size * k * fit + 0.01 < minSize ? 'none' : null
+      })
+  }
+
   init() {
     const svg = this.svg().attr('viewBox', `0 0 ${this.width} ${this.height}`)
 
@@ -93,9 +123,10 @@ export class CodeGraphRenderer {
       .on('zoom', (event) => {
         zoomGroup.attr('transform', event.transform.toString())
         this.onZoomChange(event.transform.k)
+        this.showLabelsThatFit(event.transform.k)
       })
     svg.call(this.zoomBehavior)
-    const k0 = 0.6
+    const k0 = DEFAULT_ZOOM
     const cx = this.width / 2,
       cy = this.height / 2
     svg.call(
@@ -131,7 +162,7 @@ export class CodeGraphRenderer {
 
   resetZoom() {
     if (!this.zoomBehavior) return
-    const k0 = 0.6
+    const k0 = DEFAULT_ZOOM
     const cx = this.width / 2,
       cy = this.height / 2
     this.svg()
@@ -477,7 +508,7 @@ export class CodeGraphRenderer {
       .attr('dominant-baseline', 'middle')
       .style('font-family', tokens.centerFontFamily)
       .style('font-weight', tokens.centerFontWeight)
-      .style('font-size', tokens.centerFontSize)
+      .style('font-size', tokens.centerFontSize / this.defaultScreenScale() + 'px')
       .attr('fill', tokens.centerText)
       .attr('pointer-events', 'none')
       .text('SALINITY')
@@ -565,19 +596,23 @@ export class CodeGraphRenderer {
     // breaks it over multiple lines using the node's diameter as the line
     // width, and a final shrink pass catches anything that still overflows
     // (e.g. a single long word that wrap can't split).
+    const screenScale = this.defaultScreenScale()
+    const labelMin = tokens.labelMinSize / screenScale
+    const labelMax = tokens.labelMaxSize / screenScale
     const label = svg
       .select('.label-group')
       .selectAll<SVGTextElement, GraphNode>('text')
       .data(visibleNodes)
       .join('text')
       .text((d) => (d.depth <= 1 ? d.name.toUpperCase() : d.name))
-      .attr('font-size', (d) => Math.max(6, Math.min(14, d.radius * 0.35)) + 'px')
+      .attr('font-size', (d) => Math.max(labelMin, Math.min(labelMax, d.radius * 0.35)) + 'px')
       .attr('font-family', tokens.labelFontFamily)
       .attr('text-anchor', 'middle')
       .attr('dy', '.35em')
       .style('pointer-events', 'none')
       .style('fill', (d) => tokens.labelColorOn(d.color))
       .call(wrap)
+    this.showLabelsThatFit(d3.zoomTransform(svg.node()!).k)
 
     // Add drag behavior
     const drag = d3
@@ -677,7 +712,9 @@ function wrap(text: d3.Selection<SVGTextElement, GraphNode, d3.BaseType, unknown
     }
     // Post-fit: if any single line (e.g. an unsplittable long word) or
     // the total stack height still overflows the circle, shrink the
-    // font-size uniformly to make it fit.
+    // font-size uniformly to make it fit. A label that ends up below the
+    // smallest label size on screen is hidden by showLabelsThatFit until the
+    // graph is zoomed in far enough (the bubble's tooltip still names it).
     const currentSize = parseFloat(textSel.attr('font-size')) || 10
     let maxLen = 0
     textSel.selectAll<SVGTSpanElement, unknown>('tspan').each(function () {
@@ -688,8 +725,6 @@ function wrap(text: d3.Selection<SVGTextElement, GraphNode, d3.BaseType, unknown
     const widthRatio = maxLen > width ? width / maxLen : 1
     const heightRatio = stackHeight > availableHeight ? availableHeight / stackHeight : 1
     const shrink = Math.min(widthRatio, heightRatio)
-    if (shrink < 1) {
-      textSel.attr('font-size', currentSize * shrink + 'px')
-    }
+    if (shrink < 1) textSel.attr('font-size', currentSize * shrink + 'px')
   })
 }

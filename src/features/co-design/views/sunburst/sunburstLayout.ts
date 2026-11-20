@@ -67,6 +67,8 @@ export interface SunburstLayout {
   outerArcs: OuterArcItem[]
   labels: LabelItem[]
   callouts: CalloutItem[]
+  /** Font size of the callout labels, in viewBox units. */
+  calloutSize: number
 }
 
 // Theme colours for text drawn on slices (theme.coDesign.sunburst.wheel).
@@ -92,6 +94,9 @@ export interface LayoutOptions {
   showAllLabels: boolean
   outerCallouts: boolean
   sortBySize: boolean
+  /** Smallest and largest label, in viewBox units (shared/visText.ts sizes
+   * converted at the chart's on-screen scale). */
+  labelSizes: { min: number; max: number }
 }
 
 type MeasureText = (text: string, textSize: string) => number
@@ -202,6 +207,7 @@ export function computeSunburstLayout(
     showAllLabels,
     outerCallouts,
     sortBySize,
+    labelSizes,
   }: LayoutOptions,
   // null until the chart's <svg> has been measured; labels are skipped then.
   measure: MeasureText | null,
@@ -404,9 +410,14 @@ export function computeSunburstLayout(
   const fontScale = d3
     .scaleLinear()
     .domain([0, Math.PI * 2])
-    .range([8, 16])
+    .range([labelSizes.min, labelSizes.max])
     .clamp(true)
   const inRingFontSize = (d: SunburstNode) => `${fontScale(d.x1 - d.x0)}px`
+  // Whether a label's stacked lines fit across its slice at mid-radius.
+  const fitsSlice = (d: SunburstNode, label: LabelItem) => {
+    const across = (d.x1 - d.x0) * ((d.y0 + d.y1) / 2)
+    return label.lines.length * parseFloat(label.textSize) * 1.1 <= across
+  }
   // Halo colour: opposite of the text fill, so labels stay legible even when
   // they overrun their slice onto a neighbour.
   const haloFor = (d: SunburstNode) =>
@@ -442,7 +453,7 @@ export function computeSunburstLayout(
     // with per-side vertical collision avoidance.
     const elbowGap = 12 // radial gap from wheel edge to the leader elbow
     const labelGap = 44 // horizontal gap from wheel edge to the label column
-    const lineH = 13 // minimum vertical spacing between stacked labels
+    const lineH = Math.ceil(labelSizes.min * 1.2) // minimum vertical spacing between stacked labels
     const bound = 236 // max |y| of the label column
 
     const leaves = descendants.filter((d) => d.depth === 2 && !!d.parent?.data.name && !isHidden(d))
@@ -498,7 +509,13 @@ export function computeSunburstLayout(
         // In zoomed mode, show labels for the zoomed parent and its children
         zoomed ? inZoom(d) : d.depth > 0 && d.depth <= 2 && (showAllLabels || d.x1 - d.x0 > 0.1),
       )
-      .map((d) => makeLabel(d, isZoomed ? 100 : 60, false, measure))
+      .map((d) => {
+        const label = makeLabel(d, isZoomed ? 100 : 60, false, measure)
+        // Unless every label was asked for, a slice too thin for its name at the
+        // smallest label size keeps no label; its tooltip still names it.
+        if (!zoomed && !showAllLabels && !fitsSlice(d, label)) label.display = 'none'
+        return label
+      })
   }
 
   return {
@@ -508,5 +525,6 @@ export function computeSunburstLayout(
     outerArcs,
     labels,
     callouts,
+    calloutSize: labelSizes.min,
   }
 }

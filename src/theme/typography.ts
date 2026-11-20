@@ -211,6 +211,13 @@ export const typography = {
     fontWeight: 700,
     lineHeight: 1.2,
   },
+  // A map label that has to stand out from its neighbours: captionSmall's size, bold.
+  mapLabelStrong: {
+    fontFamily: fontBody,
+    fontSize: 'clamp(0.9rem, 0.7rem + 0.16vw, 1.05rem)',
+    fontWeight: 700,
+    lineHeight: 1.2,
+  },
   // A lighter qualifier after a TagChip's bold label ("Salmon · juvenile").
   chipQualifier: {
     fontFamily: fontBody,
