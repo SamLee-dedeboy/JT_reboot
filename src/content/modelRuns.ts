@@ -3,6 +3,7 @@
 // schedules (the dates themselves are in public/data/operations/).
 import gateSchedule from '../../public/data/operations/bolster-and-fortify-gate-schedule.json'
 import releaseSchedule from '../../public/data/operations/calling-on-reserves-release-schedule.json'
+import diversionSchedule from '../../public/data/operations/a-tunnel-diversion-schedule.json'
 
 // The water years the salinity runs cover, by the date each begins. A water year runs from
 // 1 October to 30 September and is named for the year it ends in.
@@ -57,4 +58,26 @@ export const callingOnReservesReleasePeriods: readonly CallingOnReservesReleaseP
     startDate,
     endDate,
     monthlyDifferenceCfs,
+  }))
+
+export interface ATunnelDiversionPeriod {
+  id: string
+  label: string
+  startDate: string
+  endDate: string
+  /** Mean diversion into the tunnel, one value per calendar month. */
+  monthlyDiversionCfs: readonly number[]
+}
+
+/**
+ * Periods when A Tunnel diverts water at the north Delta intakes, from the schedule in
+ * `public/data/operations/`; the tunnel is off between them. Change the dates there.
+ */
+export const aTunnelDiversionPeriods: readonly ATunnelDiversionPeriod[] =
+  diversionSchedule.diverting.map(({ id, startDate, endDate, monthlyDiversionCfs }) => ({
+    id,
+    label: 'Tunnel on',
+    startDate,
+    endDate,
+    monthlyDiversionCfs,
   }))

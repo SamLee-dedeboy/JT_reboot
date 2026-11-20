@@ -5,27 +5,28 @@ import { palette } from '../palette'
 
 export const flow = {
   // View surface behind the interview flow and the combinations panel.
-  surface: palette.surfaceStrong,
+  surface: palette.brand.base,
   text: palette.common.white,
   loading: {
     text: palette.base[50],
     track: palette.border.subtle,
-    indicator: palette.brand.primaryBlue,
+    indicator: palette.brand.primaryGreen,
     size: '2.5rem',
     thickness: 3,
   },
   // Right-hand "Shared Values and Concerns" panel; widths in px per breakpoint.
   controlPanel: {
     width: { xs: 320, md: 288, lg: 352, xl: 448 },
-    outline: `2px solid ${palette.translucent.primaryGreen}`,
-    background: palette.translucent[50],
-    radius: '8px',
+    outline: `1px solid ${palette.border.default}`,
+    background: palette.translucent[100],
+    radius: '6px',
   },
   sectionHeader: {
     background: palette.brand.primaryGreen,
     text: palette.common.black,
     shadow: `0 0 1px ${palette.translucent.blackShadow}`,
-    titleHeight: '4.5rem',
+    // Tall enough for the longest question (five lines at 1440px) so every band matches.
+    titleHeight: '9.5rem',
   },
   columnHeader: {
     text: palette.common.white,
@@ -37,12 +38,16 @@ export const flow = {
     hoverBackground: palette.base[300],
   },
   block: {
-    background: palette.base[400],
+    width: 200,
+    background: palette.surfaceStrong,
     text: palette.common.white,
-    outline: `1px solid ${palette.brand.primaryBlue}`,
-    clickedOutline: `4px solid ${palette.brand.primaryBlue}`,
-    clickedShadow: `0 0 2px 2px ${palette.base[300]}`,
-    clickedText: palette.brand.primaryBlue,
+    // "people" after the count; the number itself is `text`.
+    count: palette.base[100],
+    outline: `1px solid ${palette.border.strong}`,
+    // Chosen blocks take the site's selection green.
+    clickedOutline: `3px solid ${palette.brand.primaryGreen}`,
+    clickedShadow: `0 0 0 6px ${palette.translucent.primaryGreen}`,
+    clickedText: palette.brand.primaryGreen,
     focusOutline: `2px solid ${palette.accent.blue}`,
     radius: '4px',
     iconHoverBackground: palette.base[300],
@@ -50,7 +55,7 @@ export const flow = {
   // d3 sankey paths between blocks (fill comes from combinationPalette).
   path: { opacity: 0.7 },
   combinations: {
-    subtitle: palette.brand.primaryBlue,
+    subtitle: palette.brand.primaryGreen,
     optionLabel: palette.base[200],
     optionLabelActive: palette.common.white,
     connector: `2px dotted ${palette.base[200]}`,
@@ -75,23 +80,17 @@ export const flow = {
     swatchBorderUnselected: palette.base[100],
     swatchSize: '1.1rem',
   },
-  // Data-only: categorical hues for strategy combinations (sankey paths and
-  // combination rows); the site palette has no 15 mutually distinct hues.
+  // Data-only: hues for strategy combinations (sankey bands and combination rows).
+  // Muted, mid-light colors that sit calmly on the dark ground, each >= 4.5:1 on
+  // base.700. Every combination gets one, largest group first; they repeat.
   combinationPalette: [
-    '#e6194b',
-    '#f58231',
-    '#ffe119',
-    '#bfef45',
-    '#3cb44b',
-    '#42d4f4',
-    '#4363d8',
-    '#911eb4',
-    '#f032e6',
-    '#fabed4',
-    '#469990',
-    '#dcbeff',
-    '#9a6324',
-    '#aaffc3',
-    '#ffd8b1',
+    '#6fb8d0', // river
+    '#e3a857', // ochre
+    '#5a8fd8', // bay
+    '#a497e8', // lavender
+    '#63b98c', // tule
+    '#e8806f', // coral
+    '#d8cb72', // straw
+    '#cc8dbc', // mauve
   ],
 } as const

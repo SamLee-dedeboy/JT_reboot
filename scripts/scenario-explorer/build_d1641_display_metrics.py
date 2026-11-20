@@ -33,7 +33,16 @@ DISPLAY_HEADER = [
     "scenario", "station_id", "objective", "date", "window_days",
     "metric", "calculated_value_us_cm", "data_status",
 ]
-UPDATE_PREFIX = {"reserve": "COR_", "tunnel": "DCP_", "newgreen": "NGW_"}
+UPDATE_PREFIX = {
+    "reserve": "COR_",
+    "tunnel": "DCP_",
+    "newgreen": "NGW_",
+    "baseline_calsim": "BaseCalSim_",
+}
+# Scenarios added on top of the sibling processor's own list. BAU (CalSim) is the base that
+# Calling on Reserves and A Tunnel are compared with in the explorer, so it needs its own
+# compliance record there too.
+EXTRA_SCENARIOS = {"baseline-calsim": "baseline_calsim"}
 
 
 def load_processor(path: Path):
@@ -113,6 +122,7 @@ def main() -> None:
     processor = load_processor(args.processor)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     processor.OUT = args.output_dir
+    processor.SCENARIOS = {**processor.SCENARIOS, **EXTRA_SCENARIOS}
 
     def overlaid_scenario_files(folder: str):
         paths = {

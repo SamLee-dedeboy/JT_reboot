@@ -3,6 +3,7 @@
 import { Box } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import { useEffect, useMemo, useRef } from 'react'
+import { visTextSizes } from '../../shared/visText'
 import type { CodebookEntry } from './constants'
 import { MentalModelRenderer } from './renderers/MentalModelRenderer'
 import type { HoverHandler, MentalModelRendererTokens } from './renderers/MentalModelRenderer'
@@ -25,6 +26,7 @@ export default function AllMMs({ codebook, codeTsne, svgId, serverData, onHover 
   const theme = useTheme()
   const tokens = useMemo<MentalModelRendererTokens>(() => {
     const mm = theme.coDesign.mentalModel
+    const sizes = visTextSizes(theme)
     return {
       nodeColors: mm.node,
       centerFill: mm.node.center,
@@ -42,6 +44,9 @@ export default function AllMMs({ codebook, codeTsne, svgId, serverData, onHover 
       labelFontWeight: theme.typography.fontWeightRegular ?? 'normal',
       centerFontFamily: theme.typography.chartTitle.fontFamily ?? '',
       centerFontWeight: theme.typography.fontWeightRegular ?? 'normal',
+      labelMinSize: sizes.min,
+      labelMaxSize: sizes.max,
+      centerFontSize: sizes.center,
     }
   }, [theme])
 

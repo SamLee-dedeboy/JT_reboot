@@ -53,7 +53,9 @@ export const combination_controller = {
     participantState.participant_combinations = local_participant_combinations
     participantState.mentioned_participants = Object.keys(local_participant_combinations)
   },
-  // `colors` is the data-only combination palette (theme.coDesign.flow.combinationPalette).
+  // Colors from theme.coDesign.flow.combinationPalette. Every combination gets a
+  // hue, largest group first, so a group keeps its color however the flow is
+  // filtered. There are more combinations than hues, so the hues repeat.
   setParticipantColor(
     combinations: string[],
     participant_combinations: { [key: string]: string },
@@ -67,22 +69,16 @@ export const combination_controller = {
       },
       {} as { [key: string]: string[] },
     )
+    const ranked = Object.entries(combination_to_participants)
+      .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+      .map(([combination]) => combination)
     const local_combination_colors: { [key: string]: string } = {}
     const local_participant_colors: { [key: string]: string } = {}
-    const existing_combination_number = Object.keys(combinationState.combination_colors).length
-    let new_combination_number = 0
     combinations.forEach((combination) => {
-      let color = ''
-      if (combinationState.combination_colors[combination]) {
-        color = combinationState.combination_colors[combination]
-      } else {
-        new_combination_number++
-        // set combinations colors by index
-        color = colors[(existing_combination_number + new_combination_number) % colors.length]
-      }
+      const rank = Math.max(0, ranked.indexOf(combination))
+      const color = colors[rank % colors.length]
       local_combination_colors[combination] = color
-      const participants = combination_to_participants[combination]
-      participants.forEach((participant) => {
+      ;(combination_to_participants[combination] ?? []).forEach((participant) => {
         local_participant_colors[participant] = color
       })
     })

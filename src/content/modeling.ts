@@ -46,8 +46,8 @@ export const implementationDetails = [
     group: 'flow',
     slug: scenarioSlug('tunnel'),
     label: scenarioName('tunnel', 'scenarioStory'),
-    detailTitle: 'A new route beneath the Delta',
-    lead: 'A Tunnel is based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project.',
+    detailTitle: 'When the tunnel draws water',
+    lead: 'A Tunnel is based on the Bethany Reservoir Alignment of the proposed Delta Conveyance Project. Each bar is one month’s diversion into the tunnel at the north Delta intakes, in cubic feet per second (cfs), drawn below the line because that water leaves the river. CalSim Baseline has no tunnel, so every bar is also the change from it.',
   },
   {
     id: 'reserves',
@@ -80,6 +80,26 @@ export const ecoMachineAreas = [
   {
     name: 'Franks Tract',
     body: 'Landforms built inside the tract, following the Franks Tract Futures design, mostly block salty water from moving farther into the Delta.',
+  },
+] as const
+
+// Distilled from the CalSim modelers' description of run s0065 and the DCP Operations Plan (Aug 2024).
+export const tunnelDiversionRules = [
+  {
+    name: 'Enough river flow to bypass',
+    body: 'The intakes divert only while the Sacramento River carries more than a required bypass flow past them. The bypass flow and the diversion limit change by month and with upstream river flow, mainly at Wilkins Slough.',
+  },
+  {
+    name: 'Salinity in the western Delta',
+    body: 'When there is room to divert and doing so helps keep Jersey Point and Emmaton fresh, or takes less water to do it, the model draws that water through the tunnel instead of the south Delta pumps.',
+  },
+  {
+    name: 'Summer flow through the Delta',
+    body: 'From July to September, low total exports usually switch the tunnel off so that water keeps moving through the south Delta. The model treats this as a preference, not a fixed rule.',
+  },
+  {
+    name: 'Healthy Rivers and Landscapes flows',
+    body: 'The run also carries the tributary flow targets from the same 2025 climate adaptation study, which could not be separated from the tunnel in the time available.',
   },
 ] as const
 

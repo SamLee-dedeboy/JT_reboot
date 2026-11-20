@@ -1,4 +1,4 @@
-// Round "about this section" toggle shared by the dashboard shell and views.
+// Round "about this panel" toggle used inside the dashboard's views.
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { IconButton } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
@@ -21,10 +21,13 @@ export default function InfoButton({ onClick, label = 'Toggle info panel', sx }:
           flexShrink: 0,
           p: 0,
           color: 'common.white',
-          bgcolor: theme.coDesign.shell.infoButton.background,
           border: theme.coDesign.shell.infoButton.border,
-          boxShadow: theme.coDesign.shell.infoButton.shadow,
-          '&:hover': { bgcolor: 'translucent.primaryBlue' },
+          transition: 'background-color 180ms ease, border-color 180ms ease, color 180ms ease',
+          '&:hover, &.Mui-focusVisible': {
+            color: 'primary.main',
+            bgcolor: theme.coDesign.shell.infoButton.hoverBackground,
+            borderColor: theme.coDesign.shell.infoButton.hoverBorder,
+          },
         }),
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}

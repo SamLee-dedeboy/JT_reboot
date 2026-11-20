@@ -13,13 +13,18 @@ export const PLACEHOLDER = UI.awaiting
 /**
  * Measures where less is better, so a fall reads blue: days under salinity or
  * temperature stress (Recreation), and water age and salinity in drinking water
- * (Environmental Justice). Every other measure reads blue when it rises.
+ * (Environmental Justice), and salinity and exceedance days (Water Quality). Every other
+ * measure reads blue when it rises.
  */
 const LOWER_IS_BETTER = [
   'bk-rec-salinity',
   'bk-rec-temperature',
   'bk-ej-drinking',
   'bk-ej-waterage',
+  'bk-wq-salinity',
+  'bk-wq-d1641',
+  'of-wq-salinity',
+  'of-wq-d1641',
 ]
 
 export function lowerIsBetter(id: string) {
@@ -107,6 +112,8 @@ export function unitWord(node: CriterionNode): string {
       return 'dollars'
     case 'ladder':
       return 'change in water age'
+    case 'percent':
+      return 'percent change in average EC'
     default:
       return node.unit
   }

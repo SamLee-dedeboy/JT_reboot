@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "scenario": "a-tunnel",
+  "title": "A Tunnel - North Delta Diversion Schedule",
+  "source": "COEQWAL CalSim3 run s0065 (Delta Conveyance Project, DWR 2025 climate adaptation version), north-Delta diversion boundary series as delivered for the RMA runs in October 2026. Monthly means of the daily boundary series, which is a rational-histospline interpolation of CalSim monthly volumes, rounded to the nearest 10 cfs.",
+  "comparison": "Water diverted at the north Delta intakes into the tunnel. CalSim Baseline (s0020) has no tunnel, so every value is also the difference from CalSim Baseline.",
+  "units": "cfs",
+  "offThresholdCfs": 100,
+  "analysisPeriod": { "startDate": "2018-10-01", "endDate": "2020-11-29" },
+  "diverting": [
+    {
+      "id": "diverting-2018-10",
+      "startDate": "2018-10-01",
+      "endDate": "2019-06-30",
+      "monthlyDiversionCfs": [670, 1410, 900, 3330, 4490, 3160, 1940, 2630, 3030]
+    },
+    {
+      "id": "diverting-2019-12",
+      "startDate": "2019-12-01",
+      "endDate": "2020-01-31",
+      "monthlyDiversionCfs": [1370, 850]
+    }
+  ],
+  "off": [
+    { "startDate": "2019-07-01", "endDate": "2019-11-30" },
+    { "startDate": "2020-02-01", "endDate": "2020-11-30" }
+  ],
+  "notes": [
+    "monthlyDiversionCfs lists one value per calendar month of the period, in order.",
+    "August 2019 averages about 25 cfs, below offThresholdCfs, so it counts as off.",
+    "Diversions follow the Delta Conveyance Project bypass flow rules (DCP Operations Plan, August 2024, Table 3.1-1 and Sub Table A), which depend on month and on Sacramento River flow, mainly at Wilkins Slough.",
+    "Salinity data ends 2020-11-29, so charts clip the last period to that date."
+  ]
+}

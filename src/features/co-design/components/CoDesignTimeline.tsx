@@ -2,12 +2,19 @@
 // shown on the dashboard landing page and the internal timeline page. Steps
 // with a `view` open that dashboard view; others are plain cards. Steps can be
 // grouped (one heading per run of steps) and toned to set their emphasis.
+// Below lg the views are not offered (see useViewsAvailable), so every card is
+// a plain card there.
 import { Box, ButtonBase, Typography } from '@mui/material'
+import type { BoxProps } from '@mui/material'
 import { keyframes } from '@mui/material/styles'
 import type { SxProps, Theme } from '@mui/material/styles'
-import type { ReactNode } from 'react'
+import { motion, useReducedMotion, useScroll, useSpring, type MotionProps } from 'framer-motion'
+import { useRef, type ComponentType, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Icon } from '@/ui'
+import { focusRing } from '@/ui/focusRing'
 import { coDesignPath } from '../shared/paths'
+import { useViewsAvailable } from '../shared/useViewsAvailable'
 import { dashboardSteps } from './timelineSteps'
 import type { TimelineStatus, TimelineStep, TimelineTone } from './timelineSteps'
 
@@ -45,8 +52,18 @@ function groupRuns(steps: TimelineStep[]): StepRun[] {
   return runs
 }
 
+type MotionBoxProps = Omit<BoxProps, keyof MotionProps> & MotionProps
+const MotionBox = motion.create(Box) as ComponentType<MotionBoxProps>
+
 const toneOf = (theme: Theme, tone: TimelineTone = 'default') =>
   theme.coDesign.shell.timeline.tones[tone]
+
+// A soft ring breathing out of the dot of a step that opens a view, as on the
+// documentation timeline's newest workshop.
+const dotPulse = keyframes`
+  from { transform: scale(1); opacity: 0.55; }
+  to { transform: scale(2.4); opacity: 0; }
+`
 
 // Vertical timeline: cards alternate sides of a centred rail from md, and sit
 // to the right of a left-hand rail below md.
@@ -56,11 +73,36 @@ export default function CoDesignTimeline({
   sx,
 }: CoDesignTimelineProps) {
   const onSelect = useSelectView()
-  const steps = allSteps.filter((step) => !step.hidden)
+  const viewsAvailable = useViewsAvailable()
+  // Without the views a step is informational: no link, and no hint that says to click.
+  const steps = allSteps
+    .filter((step) => !step.hidden)
+    .map((step) => (viewsAvailable ? step : { ...step, view: undefined, action: undefined }))
   const runs = groupRuns(steps)
+  // The rail fills green as the reader scrolls past it, like the documentation timeline.
+  const railRef = useRef<HTMLDivElement>(null)
+  const reduceMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({ target: railRef, offset: ['start 65%', 'end 65%'] })
+  const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 })
+  const railSx = (theme: Theme) => {
+    const { railColumn, railWidth } = theme.coDesign.shell.timeline
+    return {
+      position: 'absolute',
+      top: 0,
+      bottom: 0,
+      // Not a translate: the fill's scale owns the transform.
+      left: {
+        xs: `calc(${theme.spacing(2)} + ${railColumn / 2 - railWidth / 2}px)`,
+        md: `calc(50% - ${railWidth / 2}px)`,
+      },
+      width: railWidth,
+      zIndex: 1,
+    } as const
+  }
 
   return (
     <Box
+      ref={railRef}
       sx={[
         (theme) => ({
           position: 'relative',
@@ -75,20 +117,22 @@ export default function CoDesignTimeline({
     >
       {/* Vertical rail: centred on desktop, hugging the left edge below md */}
       <Box
-        sx={(theme) => ({
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: {
-            xs: `calc(${theme.spacing(2)} + ${theme.coDesign.shell.timeline.railColumn / 2}px)`,
-            md: '50%',
-          },
-          width: theme.coDesign.shell.timeline.railWidth,
-          bgcolor: theme.coDesign.shell.timeline.rail,
-          transform: 'translateX(-50%)',
-          zIndex: 1,
-        })}
+        aria-hidden
+        sx={[railSx, (theme) => ({ bgcolor: theme.coDesign.shell.timeline.rail })]}
       />
+      {!reduceMotion && (
+        <MotionBox
+          aria-hidden
+          style={{ scaleY: fill }}
+          sx={[
+            railSx,
+            (theme) => ({
+              bgcolor: theme.coDesign.shell.timeline.railFill,
+              transformOrigin: 'top',
+            }),
+          ]}
+        />
+      )}
       {runs.map((run, runIndex) => (
         <Box key={run.start} sx={{ display: 'contents' }}>
           {run.group && (
@@ -150,7 +194,7 @@ export function HorizontalCoDesignTimeline({ steps = dashboardSteps, sx }: Timel
                   mb: 5,
                   pb: 1,
                   textAlign: 'center',
-                  borderBottom: `2px solid ${toneOf(theme, run.tone).rail}`,
+                  borderBottom: `1px solid ${toneOf(theme, run.tone).rail}`,
                   visibility: run.hidden ? 'hidden' : 'visible',
                 })}
               >
@@ -240,8 +284,8 @@ function VerticalGroupHeading({
           py: 0.75,
           color: toneOf(theme, tone).label,
           bgcolor: theme.coDesign.shell.pageBackground,
-          border: `2px solid ${toneOf(theme, tone).rail}`,
-          borderRadius: theme.coDesign.shell.timeline.card.radius,
+          border: `1px solid ${toneOf(theme, tone).rail}`,
+          borderRadius: 999,
         })}
       >
         {label}
@@ -293,7 +337,6 @@ function VerticalItem({
       >
         <TimelineCard
           step={step}
-          index={index}
           compact={compact}
           onSelect={onSelect}
           sx={(theme) => ({
@@ -312,7 +355,12 @@ function VerticalItem({
           </Typography>
         </TimelineCard>
       </Box>
-      <Dot tone={step.tone} sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}>
+      <Dot
+        tone={step.tone}
+        pulse={Boolean(step.view) && step.tone !== 'muted'}
+        pulseDelay={index * 0.55}
+        sx={{ gridRow: 1, gridColumn: { xs: 1, md: 2 } }}
+      >
         <Typography
           variant="numberArticle"
           sx={(theme) => ({
@@ -368,12 +416,14 @@ function HorizontalItem({
           visibility: step.hidden ? 'hidden' : 'visible',
         })}
       >
-        <TimelineCard step={step} index={index} compact onSelect={onSelect} sx={{ flexGrow: 1 }} />
+        <TimelineCard step={step} compact onSelect={onSelect} sx={{ flexGrow: 1 }} />
         {stem}
       </Box>
       {/* Dot on the rail, with the date on the side away from the card */}
       <Dot
         tone={step.tone}
+        pulse={Boolean(step.view) && step.tone !== 'muted'}
+        pulseDelay={index * 0.55}
         sx={{ gridRow: 3, gridColumn: index + 1, visibility: step.hidden ? 'hidden' : 'visible' }}
       >
         <Typography
@@ -396,33 +446,56 @@ function HorizontalItem({
 
 function Dot({
   tone,
+  pulse = false,
+  pulseDelay = 0,
   children,
   sx,
 }: {
   tone?: TimelineTone
+  /** Breathe a soft ring: the step opens a view. */
+  pulse?: boolean
+  /** Seconds to hold the ring back, so neighbouring dots don't breathe in unison. */
+  pulseDelay?: number
   children: ReactNode
   sx?: SxProps<Theme>
 }) {
   return (
     <Box
       sx={[
-        (theme) => ({
-          justifySelf: 'center',
-          alignSelf: 'center',
-          position: 'relative',
-          width: theme.coDesign.shell.timeline.dotSize,
-          height: theme.coDesign.shell.timeline.dotSize,
-          borderRadius: '50%',
-          zIndex: 2,
-          // Hollow dots (planned steps) show the page through a ring.
-          ...(toneOf(theme, tone).hollowDot
-            ? {
-                bgcolor: theme.coDesign.shell.pageBackground,
-                border: `2px solid ${toneOf(theme, tone).dot}`,
-                boxSizing: 'border-box',
-              }
-            : { bgcolor: toneOf(theme, tone).dot }),
-        }),
+        (theme) => {
+          const { dotSize, dotHalo } = theme.coDesign.shell.timeline
+          return {
+            justifySelf: 'center',
+            alignSelf: 'center',
+            position: 'relative',
+            width: dotSize,
+            height: dotSize,
+            borderRadius: '50%',
+            zIndex: 2,
+            boxShadow: `0 0 0 ${dotHalo}px ${theme.coDesign.shell.pageBackground}`,
+            // Hollow dots (planned steps) show the page through a ring.
+            ...(toneOf(theme, tone).hollowDot
+              ? {
+                  bgcolor: theme.coDesign.shell.pageBackground,
+                  border: `2px solid ${toneOf(theme, tone).dot}`,
+                  boxSizing: 'border-box',
+                }
+              : { bgcolor: toneOf(theme, tone).dot }),
+            ...(pulse && {
+              '&::before': {
+                content: '""',
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '50%',
+                bgcolor: toneOf(theme, tone).dot,
+                opacity: 0,
+                animation: `${dotPulse} 2.2s ease-out ${pulseDelay}s infinite`,
+                pointerEvents: 'none',
+                '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+              },
+            }),
+          }
+        },
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
     >
@@ -433,14 +506,12 @@ function Dot({
 
 function TimelineCard({
   step,
-  index,
   compact,
   onSelect,
   sx,
   children,
 }: {
   step: TimelineStep
-  index: number
   compact: boolean
   onSelect: (view: string) => void
   sx?: SxProps<Theme>
@@ -448,47 +519,110 @@ function TimelineCard({
 }) {
   const view = step.view
   const tone = step.tone ?? 'default'
-  const content = (
+  const subtitle = step.subtitle.join(' ')
+  const content = compact ? (
     <>
       {step.status && <StatusTag status={step.status} tone={tone} />}
       {children}
       <Typography
-        variant={compact ? 'chartTitle' : 'h4'}
+        variant="chartTitle"
         component="h3"
         sx={(theme) => ({ color: toneOf(theme, tone).title })}
       >
         {step.title}
       </Typography>
-      {/* Full cards keep the authored line breaks; compact cards wrap to fit */}
       <Typography
-        variant={compact ? 'controlLabel' : 'eyebrow'}
+        variant="controlLabel"
         component="p"
-        sx={compact ? (theme) => ({ color: toneOf(theme, tone).subtitle }) : undefined}
+        sx={(theme) => ({ color: toneOf(theme, tone).subtitle })}
       >
-        {compact
-          ? step.subtitle.join(' ')
-          : step.subtitle.map((line, i) => (
-              <Box component="span" key={line} sx={{ display: 'block' }}>
-                {line}
-                {i < step.subtitle.length - 1 ? ' ' : ''}
-              </Box>
-            ))}
+        {subtitle}
       </Typography>
-      {!compact && step.body && (
-        <Typography variant="cardBody" sx={{ color: 'base.50' }}>
+    </>
+  ) : (
+    // Full card: Hammersmith only for the title; everything else in the body face.
+    <>
+      {step.status && <StatusTag status={step.status} tone={tone} />}
+      {children}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+        <Typography
+          variant="h4"
+          component="h3"
+          sx={(theme) => ({ color: toneOf(theme, tone).title })}
+        >
+          {step.title}
+        </Typography>
+        <Typography
+          variant="takeawayLead"
+          component="p"
+          sx={(theme) => ({ color: toneOf(theme, tone).subtitle })}
+        >
+          {subtitle}
+        </Typography>
+      </Box>
+      {step.body && (
+        <Typography
+          variant="cardBody"
+          sx={(theme) => ({ color: theme.coDesign.shell.timeline.card.body })}
+        >
           {step.body}
         </Typography>
       )}
-      {!compact && step.hint && (
-        <Typography variant="meta" sx={{ color: 'secondary.main', fontStyle: 'italic' }}>
-          {step.hint}
-        </Typography>
+      {step.details && (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography
+            variant="takeawayLabel"
+            component="p"
+            sx={(theme) => ({ color: theme.coDesign.shell.timeline.card.label })}
+          >
+            {step.details.label}
+          </Typography>
+          <Box component="ul" sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, m: 0, p: 0 }}>
+            {step.details.items.map((item) => (
+              <Typography
+                key={item}
+                component="li"
+                variant="chipQualifier"
+                sx={(theme) => ({
+                  listStyle: 'none',
+                  px: 1.5,
+                  py: 0.625,
+                  borderRadius: 999,
+                  color: theme.coDesign.shell.timeline.card.chipText,
+                  bgcolor: theme.coDesign.shell.timeline.card.chipBackground,
+                })}
+              >
+                {item}
+              </Typography>
+            ))}
+          </Box>
+        </Box>
+      )}
+      {/* The whole card is the link; this row names where it goes */}
+      {view && step.action && (
+        <Box
+          sx={(theme) => ({
+            display: 'flex',
+            alignItems: 'center',
+            gap: theme.jtSpacing.gap.xs,
+            mt: theme.jtSpacing.component.xs,
+            pt: theme.jtSpacing.component.sm,
+            borderTop: `1px solid ${theme.coDesign.shell.timeline.card.divider}`,
+            color: theme.coDesign.shell.timeline.card.action,
+            '& svg': { transition: 'transform 180ms ease' },
+          })}
+        >
+          <Typography variant="tableValueStrong" component="span" sx={{ color: 'inherit' }}>
+            {step.action}
+          </Typography>
+          <Icon name="arrow-right" size={18} />
+        </Box>
       )}
     </>
   )
 
   const extraSx = Array.isArray(sx) ? sx : [sx]
-  // Steps without a dashboard view are informational: no link, pulse or hover.
+  // Steps without a dashboard view are informational: no link or hover.
   if (!view) {
     return <Box sx={[cardBaseSx(compact, tone), ...extraSx]}>{content}</Box>
   }
@@ -500,27 +634,19 @@ function TimelineCard({
         cardBaseSx(compact, tone),
         (theme) => {
           const card = theme.coDesign.shell.timeline.card
-          const pulse = keyframes`
-            0%, 100% { box-shadow: ${card.shadow}; }
-            50% { box-shadow: ${card.pulseShadow}; }
-          `
           return {
-            transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-            // Stagger the pulse so the cards don't breathe in unison; muted
-            // steps stay still so they don't compete for attention.
-            ...(tone !== 'muted' && {
-              animation: `${pulse} 3s ease-in-out infinite`,
-              animationDelay: `${index * 0.75}s`,
-            }),
-            '&:hover': {
-              transform: 'translateY(-2px)',
+            transition: 'transform 240ms ease, border-color 240ms ease, box-shadow 240ms ease',
+            '&:hover, &.Mui-focusVisible': {
+              transform: `translateY(-${card.hoverLift}px)`,
               borderColor: card.hoverBorder,
               boxShadow: card.hoverShadow,
             },
+            '&:hover svg, &.Mui-focusVisible svg': { transform: 'translateX(2px)' },
             '&:active': { transform: 'translateY(0)' },
-            '&:focus-visible': {
-              outline: `2px solid ${theme.palette.primary.main}`,
-              outlineOffset: 2,
+            '&.Mui-focusVisible': focusRing,
+            '@media (prefers-reduced-motion: reduce)': {
+              transition: 'none',
+              '&:hover, &.Mui-focusVisible': { transform: 'none' },
             },
           }
         },
@@ -532,16 +658,19 @@ function TimelineCard({
   )
 }
 
+// Full cards read left to right like the site's document cards; compact cards
+// stay centred on their dot.
 function cardBaseSx(compact: boolean, tone: TimelineTone) {
   return (theme: Theme) => ({
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'stretch',
     justifyContent: 'center',
-    gap: compact ? 1 : 1.25,
-    px: { xs: 3, md: compact ? 2 : 4.5 },
-    py: compact ? 2.5 : { xs: 3, md: 4 },
-    textAlign: 'center',
+    gap: compact ? 1 : 2,
+    px: compact ? { xs: 3, md: 2 } : theme.jtSpacing.component.md,
+    py: compact ? 2.5 : theme.jtSpacing.component.md,
+    textAlign: compact ? 'center' : 'left',
     color: 'common.white',
     bgcolor: toneOf(theme, tone).cardBackground,
     border: toneOf(theme, tone).border,
@@ -556,7 +685,7 @@ const statusLabels: Record<TimelineStatus, string> = { ongoing: 'Ongoing', upcom
 function StatusTag({ status, tone }: { status: TimelineStatus; tone: TimelineTone }) {
   return (
     <Typography
-      variant="chartLabel"
+      variant="columnHead"
       component="span"
       sx={(theme) => {
         const toneTokens = toneOf(theme, tone)
@@ -569,13 +698,9 @@ function StatusTag({ status, tone }: { status: TimelineStatus; tone: TimelineTon
           py: 0.25,
           whiteSpace: 'nowrap',
           color: toneTokens.date,
-          // See-through cards show the page behind the tag instead.
-          bgcolor:
-            toneTokens.cardBackground === 'transparent'
-              ? theme.coDesign.shell.pageBackground
-              : toneTokens.cardBackground,
+          bgcolor: toneTokens.tagBackground,
           border: `1px solid ${toneTokens.rail}`,
-          borderRadius: theme.coDesign.shell.timeline.card.radius,
+          borderRadius: 999,
         }
       }}
     >

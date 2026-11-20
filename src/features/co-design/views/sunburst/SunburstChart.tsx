@@ -6,6 +6,7 @@ import { keyframes, useTheme } from '@mui/material/styles'
 import { useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { ReactNode } from 'react'
 import { getSunburstCode } from '../../api'
+import { visTextSizes } from '../../shared/visText'
 import type { CategoryPalette, SunburstData } from './sunburstData'
 import {
   computeSunburstLayout,
@@ -145,6 +146,12 @@ export default function SunburstChart({
     void fontsReady
     const measurer =
       svgSize && createTextMeasurer(viewBox, svgSize.width, svgSize.height, labelFont)
+    // Screen px per viewBox unit (the default preserveAspectRatio fits the viewBox).
+    const [, , vbWidth, vbHeight] = viewBox.split(' ').map(Number)
+    const pxPerUnit = svgSize
+      ? Math.min(svgSize.width / vbWidth, svgSize.height / vbHeight) || 1
+      : 1
+    const sizes = visTextSizes(theme)
     try {
       return computeSunburstLayout(
         {
@@ -156,6 +163,7 @@ export default function SunburstChart({
           showAllLabels,
           outerCallouts,
           sortBySize,
+          labelSizes: { min: sizes.min / pxPerUnit, max: sizes.label / pxPerUnit },
         },
         measurer ? measurer.measure : null,
       )
@@ -174,6 +182,7 @@ export default function SunburstChart({
     showAllLabels,
     outerCallouts,
     sortBySize,
+    theme,
     fontsReady,
   ])
 
@@ -378,7 +387,7 @@ export default function SunburstChart({
               x={callout.x}
               y={callout.y}
               dy="0.32em"
-              fontSize={tokens.wheel.calloutFontSize}
+              fontSize={layout.calloutSize}
               style={{
                 fill: tokens.wheel.calloutText,
                 textAnchor: callout.anchor,

@@ -667,16 +667,22 @@ export default function ScenarioExplorerPage({
       }
     })
   }
-  const selectMapScenario = (nextMapScenario: string) => {
-    if (nextMapScenario === baseScenario) return
+  // The base a selected scenario brings with it: CalSim-family scenarios need the CalSim baseline,
+  // and leaving that family returns to the RMA one.
+  const baseForSelected = (nextMapScenario: string) => {
     const requiredBase = requiredComparisonBaseline(dashboardMode, nextMapScenario)
-    const leavingCalsimFamily =
-      !requiredBase &&
-      (baseScenario === 'baseline-calsim' || baseScenario === 'baseline-calsim-slr')
+    if (requiredBase) return requiredBase
+    if (baseScenario === 'baseline-calsim' || baseScenario === 'baseline-calsim-slr')
+      return dashboardMode === 'slr-scenarios' ? 'baseline-slr' : 'baseline'
+    return baseScenario
+  }
+  // A selected scenario is unavailable when it would be compared with itself.
+  const isSelectedUnavailable = (key: string) => baseForSelected(key) === key
+  const selectMapScenario = (nextMapScenario: string) => {
+    if (isSelectedUnavailable(nextMapScenario)) return
+    const nextBase = baseForSelected(nextMapScenario)
     startTransition(() => {
-      if (requiredBase) setBaseScenario(requiredBase)
-      else if (leavingCalsimFamily)
-        setBaseScenario(dashboardMode === 'slr-scenarios' ? 'baseline-slr' : 'baseline')
+      if (nextBase !== baseScenario) setBaseScenario(nextBase)
       setScenario(nextMapScenario)
       setActiveKeys([nextMapScenario])
       setHistogramBrush(null)
@@ -1141,7 +1147,7 @@ export default function ScenarioExplorerPage({
                       scenarioOptions,
                       dashboardMode,
                       publicModesOnly,
-                      (key) => key === baseScenario,
+                      isSelectedUnavailable,
                     )}
                   </LabeledSelect>
                 </>
@@ -1188,7 +1194,7 @@ export default function ScenarioExplorerPage({
                       scenarioOptions.filter((item) => item.key !== hiddenScenarioKey),
                       dashboardMode,
                       publicModesOnly,
-                      (key) => key === baseScenario,
+                      isSelectedUnavailable,
                     )}
                   </LabeledSelect>
                 </>

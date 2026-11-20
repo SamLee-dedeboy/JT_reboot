@@ -37,6 +37,10 @@ export type MentalModelRendererTokens = {
   labelFontWeight: string | number
   centerFontFamily: string
   centerFontWeight: string | number
+  /** Smallest and largest bubble label, and the center label, in px (see shared/visText.ts). */
+  labelMinSize: number
+  labelMaxSize: number
+  centerFontSize: number
 }
 
 export class MentalModelRenderer {
@@ -121,7 +125,7 @@ export class MentalModelRenderer {
       .attr('dominant-baseline', 'middle')
       .attr('font-family', t.centerFontFamily)
       .attr('font-weight', t.centerFontWeight)
-      .attr('font-size', Math.max(8, Math.min(16, 65 * 0.3)))
+      .attr('font-size', t.centerFontSize)
       .attr('pointer-events', 'none')
       .attr('fill', this.textOn(t.centerFill))
       .text('SALINITY')
@@ -224,7 +228,7 @@ export class MentalModelRenderer {
       .attr('font-weight', t.labelFontWeight)
       .attr('font-size', (d) => {
         const r = d[0] === 'Salinity' ? 55 : radiusScale(d[1])
-        return Math.max(8, Math.min(20, r * 0.25)) + 'px'
+        return Math.max(t.labelMinSize, Math.min(t.labelMaxSize, r * 0.25)) + 'px'
       })
       .attr('fill', (d) =>
         this.textOn(
@@ -234,7 +238,11 @@ export class MentalModelRenderer {
       .attr('pointer-events', 'none')
       .text((d) => d[0])
       .each(function (d) {
-        wrap(d3.select(this), d.r!)
+        // A bubble too small to hold its name at the smallest label size keeps
+        // no label; its tooltip still names it.
+        const fits = wrap(d3.select(this), d.r!)
+        d3.select(this).attr('display', fits ? null : 'none')
+        if (!fits) return
         const line_num = d3.select(this).selectAll('tspan').nodes().length
         d3.select(this)
           .append('tspan')
@@ -390,7 +398,10 @@ function clip(x: number, range: [number, number]) {
   return Math.max(Math.min(x, range[1]), range[0])
 }
 
+// Wraps the label inside its circle. Returns false when the name does not fit
+// whole (it would need a word broken or lines dropped).
 function wrap(text: d3.Selection<SVGTextElement, MMNode, null, undefined>, radius: number) {
+  let fits = true
   text.each(function (d) {
     const node = d3.select(this)
     const fullText = node.text()
@@ -453,6 +464,7 @@ function wrap(text: d3.Selection<SVGTextElement, MMNode, null, undefined>, radiu
             remaining.shift()
           } else if (!line) {
             // Single word exceeds chord width — break it character-wise
+            fits = false
             const chunks = breakWord(next, maxWidth)
             line = chunks[0]
             const leftover = next.slice(chunks[0].length)
@@ -476,6 +488,7 @@ function wrap(text: d3.Selection<SVGTextElement, MMNode, null, undefined>, radiu
     }
     // Fallback: take whatever fits in maxLines, dropping any leftover
     if (!lines) {
+      fits = false
       lines = tryLayout(maxLines) || [fullText]
     }
 
@@ -494,4 +507,5 @@ function wrap(text: d3.Selection<SVGTextElement, MMNode, null, undefined>, radiu
         .text(line)
     })
   })
+  return fits
 }

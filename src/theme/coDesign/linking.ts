@@ -16,22 +16,14 @@ export const linking = {
   },
   // Text drawn on category / centre colours; readableTextOn picks one.
   onColor: { light: palette.common.white, dark: palette.common.black },
-  // Scenario picker buttons: resting pulse, hover lift and green active glow.
+  // Scenario picker: the site's choice cards (choiceCardSx), sized for one column.
   scenarioButton: {
     width: '9rem',
     minHeight: '4rem',
-    background: palette.surfaceStrong,
-    text: palette.common.white,
-    border: palette.brand.primaryBlue,
-    activeBorder: palette.brand.primaryGreen,
-    shadow: `0 2px 10px ${alpha(palette.brand.primaryBlue, 0.35)}`,
-    hoverShadow: `0 8px 24px ${alpha(palette.brand.primaryBlue, 0.45)}`,
-    pulseShadow: `0 4px 20px ${alpha(palette.brand.primaryBlue, 0.55)}, 0 0 15px ${alpha(palette.brand.primaryGreen, 0.25)}`,
-    activeShadow: `0 4px 20px ${alpha(palette.brand.primaryGreen, 0.5)}, 0 0 15px ${alpha(palette.brand.primaryGreen, 0.35)}`,
   },
   // Frame around the scenario description and the code detail panel.
   descriptions: {
-    border: `1px solid ${alpha(palette.brand.primaryGreen, 0.6)}`,
+    border: `1px solid ${palette.border.default}`,
     radius: panelRadius,
     minWidth: '18rem',
     // Scenario name + narrative card.

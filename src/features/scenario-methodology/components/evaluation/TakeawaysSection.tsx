@@ -22,7 +22,11 @@ export default function TakeawaysSection() {
       >
         Choose a scenario to see key takeaways from all five evaluation criteria in one place.
       </Typography>
-      <ActionButton label="Explore scenario takeaways" sx={{ mt: jtSpacing.component.lg }} />
+      <ActionButton
+        label="Explore scenario takeaways"
+        href="/scenarios/evaluation/takeaways"
+        sx={{ mt: jtSpacing.component.lg }}
+      />
     </Box>
   )
 }

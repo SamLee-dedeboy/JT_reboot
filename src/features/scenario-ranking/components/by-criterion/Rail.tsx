@@ -21,7 +21,7 @@ import type { TableState } from './useCriterionTable'
  * Teams whose rail offers no place to pick: Eco-cultural's In-Delta / upper
  * watershed split is a note on restored acres, not a place to filter the table by.
  */
-const NO_PLACES: TeamKey[] = ['ecoCultural']
+const NO_PLACES: TeamKey[] = ['ecoCultural', 'waterQuality']
 
 export function Rail({
   state,

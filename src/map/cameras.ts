@@ -167,6 +167,19 @@ export const STORY_BOUNDS = {
 } satisfies Record<string, MapBounds>
 
 /* ---------------------------------------------------------------------------------- */
+/* Evaluation page: the Scenario takeaways map (/scenarios/evaluation)                 */
+/* ---------------------------------------------------------------------------------- */
+
+/** Suisun Marsh to Stockton, with room at the top for the upper-watershed pin. */
+export const EVALUATION_TAKEAWAYS_BOUNDS: MapBounds = [
+  [-122.1, 37.88],
+  [-121.32, 38.41],
+]
+
+/** Space kept clear of the bounds' edge, so a pin there is never cut off. */
+export const EVALUATION_TAKEAWAYS_PADDING = 28
+
+/* ---------------------------------------------------------------------------------- */
 /* Modeling overview (/scenarios/modeling)                                             */
 /* ---------------------------------------------------------------------------------- */
 

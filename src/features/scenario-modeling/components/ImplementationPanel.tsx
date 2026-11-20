@@ -1,7 +1,12 @@
 import { Box, Typography } from '@mui/material'
 import { jtSpacing } from '@/theme'
-import { GateTimeline, ReleaseTimeline } from './OperationSchedules'
-import { type Implementation, ecoMachineAreas, newGreenWatershedAreas } from '@/content/modeling'
+import { DiversionTimeline, GateTimeline, ReleaseTimeline } from './OperationSchedules'
+import {
+  type Implementation,
+  ecoMachineAreas,
+  newGreenWatershedAreas,
+  tunnelDiversionRules,
+} from '@/content/modeling'
 import { textMaxWidth } from './sectionStyles'
 import ScenarioMap from './ScenarioMap'
 
@@ -134,6 +139,34 @@ export default function ImplementationPanel({
     )
   }
 
+  if (id === 'tunnel') {
+    return (
+      <Box sx={{ mt: jtSpacing.component.lg }}>
+        {heading}
+        <Box sx={{ mt: jtSpacing.component.md }}>
+          <DiversionTimeline />
+        </Box>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
+            gap: jtSpacing.gap.xl,
+            alignItems: 'start',
+            mt: jtSpacing.component.lg,
+          }}
+        >
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="columnHead" component="p">
+              What sets the diversions
+            </Typography>
+            <NamedList items={tunnelDiversionRules} />
+          </Box>
+          <ScenarioMap implementation={implementation} />
+        </Box>
+      </Box>
+    )
+  }
+
   if (id === 'bolster') {
     return (
       <Box sx={{ mt: jtSpacing.component.lg }}>
@@ -162,7 +195,7 @@ export default function ImplementationPanel({
         display: 'grid',
         gridTemplateColumns: { xs: 'minmax(0, 1fr)', lg: 'repeat(2, minmax(0, 1fr))' },
         gap: jtSpacing.gap.xl,
-        alignItems: id === 'tunnel' ? 'stretch' : 'start',
+        alignItems: 'start',
         mt: jtSpacing.component.lg,
       }}
     >
@@ -175,25 +208,6 @@ export default function ImplementationPanel({
           </>
         )}
         {id === 'ngw' && <NewGreenWatershedAreas />}
-        {id === 'tunnel' && (
-          <Box
-            sx={{
-              flex: 1,
-              minHeight: 200,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mt: jtSpacing.component.md,
-              p: jtSpacing.component.md,
-              border: '1px dashed',
-              borderColor: 'base.100',
-              borderRadius: 1,
-              textAlign: 'center',
-            }}
-          >
-            <Typography variant="placeholderNote">Simulation details forthcoming</Typography>
-          </Box>
-        )}
       </Box>
       <ScenarioMap implementation={implementation} />
     </Box>

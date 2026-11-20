@@ -28,7 +28,8 @@ export const selectMenuProps = {
 
 /**
  * One option in an explorer dropdown: white on the panel, whatever role the field has. The chosen
- * option is bold with a green check at the end, not a filled row; hover is a light green tint.
+ * option is bold with a green check at the end, not a filled row; hover is a soft neutral lift
+ * that keeps the text white (the theme's default menu hover turns it blue on green).
  */
 export const menuItemSx = {
   typography: 'controlValue',
@@ -41,13 +42,13 @@ export const menuItemSx = {
   justifyContent: 'space-between',
   gap: 1.5,
   transition: 'background-color 160ms ease',
-  '&&:hover': { bgcolor: 'translucent.primaryGreenSubtle' },
-  '&.Mui-focusVisible': { ...focusRing, bgcolor: 'translucent.primaryGreenSubtle' },
+  '&&:hover': { bgcolor: 'translucent.200', color: 'common.white' },
+  '&.Mui-focusVisible': { ...focusRing, bgcolor: 'translucent.200' },
   '&&.Mui-selected, &&.Mui-selected:hover, &&.Mui-selected.Mui-focusVisible': {
     bgcolor: 'transparent',
     typography: 'controlValueSelected',
   },
-  '&&.Mui-selected:hover': { bgcolor: 'translucent.primaryGreenSubtle' },
+  '&&.Mui-selected:hover': { bgcolor: 'translucent.200' },
   // The check: an L of two borders turned 45°.
   '&.Mui-selected::after': {
     content: '""',

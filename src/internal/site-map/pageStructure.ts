@@ -114,9 +114,12 @@ export const currentSections: Record<string, UISection[]> = {
       })),
     },
     {
-      label: 'Scenario results',
+      label: 'Scenario takeaways',
       detail: 'Each scenario across every criterion',
-      children: [{ label: 'The three families at a glance', to: '/scenarios/evaluation/families' }],
+      children: [
+        { label: 'Explore scenario takeaways', to: '/scenarios/evaluation/takeaways' },
+        { label: 'The three families at a glance', to: '/scenarios/evaluation/families' },
+      ],
     },
     {
       label: 'How are scenarios compared?',
@@ -138,6 +141,13 @@ export const currentSections: Record<string, UISection[]> = {
     {
       label: '03 With two feet of sea-level rise',
       detail: 'Scenarios with +2 ft runs; criteria still reporting',
+    },
+  ],
+  '/scenarios/evaluation/takeaways': [
+    { label: 'Hero', detail: 'Scenario takeaways' },
+    {
+      label: 'Findings map',
+      detail: 'Pick a scenario; each team pins the places it measured, the rest across the Delta',
     },
   ],
   '/scenarios/evaluation/:teamId': [

@@ -51,7 +51,7 @@ export const WEIGHT_MAX = 3
 export const WEIGHT_STEP = 0.5
 /** Quick-pick values for the per-team stepper chips (2b). */
 export const WEIGHT_CHIPS = [0, 0.5, 1, 2]
-export const EQUAL_WEIGHTS: Weights = [1, 1, 1, 1, 1]
+export const EQUAL_WEIGHTS: Weights = [1, 1, 1, 1, 1, 1]
 
 /** The ranking's team order: score arrays follow it. */
 const RANKING_ORDER: TeamKey[] = [
@@ -60,6 +60,8 @@ const RANKING_ORDER: TeamKey[] = [
   'environmentalJustice',
   'economy',
   'ecoCultural',
+  // Water Quality: the proposed sixth criterion (draft for team review, Nov 2026).
+  'waterQuality',
 ]
 
 export const TEAMS: Team[] = RANKING_ORDER.map((key) => ({
@@ -85,7 +87,7 @@ export const ADAPTATION_SCENARIOS: ScenarioIdentity[] = [
   { name: scenarioName('bau'), color: voting.scenario.businessAsUsual },
 ]
 
-const NOT_INFERRED = [false, false, false, false, false]
+const NOT_INFERRED = [false, false, false, false, false, false]
 
 /**
  * The tiered outflow runs (SCHISM runs 16 and 17) beside their own Historic
@@ -103,21 +105,22 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     // Recreation: +1, the average of its regions (ranking table workbook, Nov 2026).
     // EJ: +4, the team's own score in that workbook.
     // Economy: 0 (v20, 3 Nov 2026): a gain of about $20,000 a year, about 0.002%.
-    scores: [null, 1, 4, 0, 3],
-    provisional: [false, false, false, false, false],
+    // Water Quality: +5 for water year 2021 against the Historical Baseline (draft).
+    scores: [null, 1, 4, 0, 3, 5],
+    provisional: NOT_INFERRED,
   },
   {
     // EJ publishes −1 for the whole run and both seasons, then an "average" of −1.5
     // rounded to −2; −2 is the overall score it states, so it is the one used.
     name: scenarioName('less'),
     color: voting.scenario.lessOutflow,
-    scores: [null, null, -2, null, -2],
+    scores: [null, null, -2, null, -2, null],
     provisional: NOT_INFERRED,
   },
   {
     name: scenarioName('hist'),
     color: voting.scenario.businessAsUsual,
-    scores: [null, null, 0, null, 0],
+    scores: [null, null, 0, null, 0, 0],
     provisional: NOT_INFERRED,
   },
 ]

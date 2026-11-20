@@ -251,7 +251,7 @@ function LegendChip({
 }) {
   return (
     <Typography
-      variant="chartLabel"
+      variant="columnHead"
       sx={(theme) => {
         const mm = theme.coDesign.mentalModel
         const fill = colorForNode(type, mm.node)

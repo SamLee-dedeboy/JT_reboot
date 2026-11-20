@@ -3,6 +3,7 @@ import { Box, Tooltip, Typography } from '@mui/material'
 import type { ReactNode } from 'react'
 import gateSchedule from '../../../../public/data/operations/bolster-and-fortify-gate-schedule.json'
 import releaseSchedule from '../../../../public/data/operations/calling-on-reserves-release-schedule.json'
+import diversionSchedule from '../../../../public/data/operations/a-tunnel-diversion-schedule.json'
 import { waterYearColor } from './styles'
 import { WATER_YEAR_START } from '@/content/modelRuns'
 
@@ -161,6 +162,49 @@ const releaseMonthName = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
   timeZone: 'UTC',
 })
+
+const plainCfs = new Intl.NumberFormat('en-US')
+
+const diversionMonths = diversionSchedule.diverting
+  .flatMap(({ startDate, monthlyDiversionCfs }) =>
+    monthlyDiversionCfs.map((cfs, index) => ({
+      start: monthStart(startDate, index),
+      end: Math.min(monthStart(startDate, index + 1), periodEnd),
+      cfs,
+    })),
+  )
+  .filter(({ start }) => start < periodEnd)
+
+/** Each stretch of the run with the tunnel on or off, in time order. */
+const tunnelStatus = [
+  ...diversionSchedule.diverting.map(({ id, startDate, endDate }) => ({
+    id,
+    startDate,
+    endDate,
+    on: true,
+  })),
+  ...diversionSchedule.off.map(({ startDate, endDate }) => ({
+    id: startDate,
+    startDate,
+    endDate,
+    on: false,
+  })),
+]
+  .map(({ id, startDate, endDate, on }) => ({
+    id,
+    on,
+    start: toTime(startDate),
+    end: Math.min(toTime(endDate, '24:00'), periodEnd),
+  }))
+  .sort((a, b) => a.start - b.start)
+
+// Just enough footroom for the label under the longest bar (4,490).
+const DIVERSION_CFS_MAX = 5200
+const DIVERSION_PLOT_HEIGHT = 200
+const DIVERSION_STATUS_HEIGHT = 32
+const DIVERSION_LABELED_CFS = 600
+
+const diversionHeight = (cfs: number) => (cfs / DIVERSION_CFS_MAX) * 100
 
 /** The results period: water-year bands above and month ticks below the plot, on one time axis. */
 function ScheduleTimeline({
@@ -457,6 +501,111 @@ export function ReleaseTimeline() {
           sx={{
             position: 'absolute',
             top: `${zero}%`,
+            left: 0,
+            right: 0,
+            borderTop: 2,
+            borderColor: 'base.200',
+          }}
+        />
+      </Box>
+    </ScheduleTimeline>
+  )
+}
+
+/** One bar per month of water drawn into the tunnel, hanging below the line because it leaves the river. */
+export function DiversionTimeline() {
+  const description = diversionMonths
+    .map(
+      ({ start, cfs }) => `${releaseMonthName.format(new Date(start))} ${plainCfs.format(cfs)} cfs`,
+    )
+    .join('; ')
+
+  const onShading = tunnelStatus
+    .filter(({ on }) => on)
+    .map(({ id, start, end }) => (
+      <Box
+        key={id}
+        aria-hidden="true"
+        sx={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: `${position(start)}%`,
+          width: `${position(end) - position(start)}%`,
+          bgcolor: 'translucent.100',
+        }}
+      />
+    ))
+
+  return (
+    <ScheduleTimeline
+      monthGridlines={false}
+      ariaLabel={`Monthly tunnel diversion at the north Delta intakes, October 2018 to November 2020: ${description}. The tunnel is off in all other months.`}
+    >
+      <Box aria-hidden="true" sx={{ position: 'relative', height: DIVERSION_STATUS_HEIGHT }}>
+        {onShading}
+        {tunnelStatus.map(({ id, on, start, end }) => (
+          <Typography
+            key={id}
+            variant="meta"
+            component={on ? 'strong' : 'span'}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: `${(position(start) + position(end)) / 2}%`,
+              transform: 'translate(-50%, -50%)',
+              color: on ? 'primary.main' : 'base.100',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {on ? 'Tunnel on' : 'Tunnel off'}
+          </Typography>
+        ))}
+      </Box>
+      <Box sx={{ position: 'relative', height: DIVERSION_PLOT_HEIGHT }}>
+        {onShading}
+        {diversionMonths.map(({ start, end, cfs }) => (
+          <Tooltip
+            key={start}
+            placement="bottom"
+            title={`${releaseMonthName.format(new Date(start))}: ${plainCfs.format(cfs)} cfs into the tunnel`}
+          >
+            <Box
+              sx={{
+                position: 'absolute',
+                left: `calc(${position(start)}% + 1px)`,
+                width: `calc(${position(end) - position(start)}% - 2px)`,
+                top: 0,
+                height: `${diversionHeight(cfs)}%`,
+                bgcolor: 'visualization.neutral',
+              }}
+            />
+          </Tooltip>
+        ))}
+        {diversionMonths
+          .filter(({ cfs }) => cfs >= DIVERSION_LABELED_CFS)
+          .map(({ start, end, cfs }) => (
+            <Typography
+              key={start}
+              variant="meta"
+              component="strong"
+              aria-hidden="true"
+              sx={{
+                position: 'absolute',
+                top: `${diversionHeight(cfs)}%`,
+                left: `${(position(start) + position(end)) / 2}%`,
+                transform: 'translateX(-50%)',
+                pt: 0.5,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {plainCfs.format(cfs)}
+            </Typography>
+          ))}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
             left: 0,
             right: 0,
             borderTop: 2,

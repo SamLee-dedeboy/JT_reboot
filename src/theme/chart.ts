@@ -22,6 +22,7 @@ export const chart = {
       environmentalJustice: palette.teams.envJustice,
       economy: palette.teams.economy,
       ecoCultural: palette.teams.ecoCultural,
+      waterQuality: palette.teams.waterQuality,
     },
     // Selectable team palettes; each is validated against the score pair below.
     teamPalettes: {
@@ -31,8 +32,10 @@ export const chart = {
         palette.teams.envJustice,
         palette.teams.economy,
         palette.teams.ecoCultural,
+        palette.teams.waterQuality,
       ],
       neutral: [
+        palette.visualization.neutral,
         palette.visualization.neutral,
         palette.visualization.neutral,
         palette.visualization.neutral,

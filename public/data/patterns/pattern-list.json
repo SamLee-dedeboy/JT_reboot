@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-03T02:12:06.567Z",
-  "sourceRecordCount": 46,
+  "generatedAt": "2026-11-20T19:59:24.739Z",
+  "sourceRecordCount": 50,
   "scenarios": {
     "bolster": {
       "label": "Bolster & Fortify",
@@ -4513,449 +4513,6 @@
       ],
       "places": [
         {
-          "id": "lindsey_cache_slough",
-          "name": "Lindsey–Cache Slough",
-          "coordinates": [
-            -121.694576,
-            38.246836
-          ],
-          "geographyScale": "region",
-          "geometryStatus": "reviewed_polygon",
-          "geometryNote": "Uses the reviewed Lindsey–Cache Slough geometry from inputs/waterway_regions.",
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": [
-              [
-                [
-                  -121.776972,
-                  38.284926
-                ],
-                [
-                  -121.790031,
-                  38.284688
-                ],
-                [
-                  -121.805453,
-                  38.285113
-                ],
-                [
-                  -121.805608,
-                  38.262481
-                ],
-                [
-                  -121.806111,
-                  38.259895
-                ],
-                [
-                  -121.809134,
-                  38.259165
-                ],
-                [
-                  -121.810993,
-                  38.257339
-                ],
-                [
-                  -121.805336,
-                  38.253871
-                ],
-                [
-                  -121.805642,
-                  38.249363
-                ],
-                [
-                  -121.787368,
-                  38.249168
-                ],
-                [
-                  -121.787177,
-                  38.246621
-                ],
-                [
-                  -121.773123,
-                  38.246171
-                ],
-                [
-                  -121.770516,
-                  38.244673
-                ],
-                [
-                  -121.768926,
-                  38.244823
-                ],
-                [
-                  -121.768887,
-                  38.241862
-                ],
-                [
-                  -121.761955,
-                  38.233964
-                ],
-                [
-                  -121.752723,
-                  38.22707
-                ],
-                [
-                  -121.745522,
-                  38.226997
-                ],
-                [
-                  -121.741465,
-                  38.222671
-                ],
-                [
-                  -121.741447,
-                  38.219549
-                ],
-                [
-                  -121.732039,
-                  38.219579
-                ],
-                [
-                  -121.732077,
-                  38.208925
-                ],
-                [
-                  -121.70952,
-                  38.208084
-                ],
-                [
-                  -121.703235,
-                  38.206289
-                ],
-                [
-                  -121.701712,
-                  38.204942
-                ],
-                [
-                  -121.699655,
-                  38.205391
-                ],
-                [
-                  -121.698246,
-                  38.207336
-                ],
-                [
-                  -121.696499,
-                  38.207854
-                ],
-                [
-                  -121.693853,
-                  38.211879
-                ],
-                [
-                  -121.69338,
-                  38.212214
-                ],
-                [
-                  -121.683374,
-                  38.197797
-                ],
-                [
-                  -121.682261,
-                  38.183654
-                ],
-                [
-                  -121.675726,
-                  38.172107
-                ],
-                [
-                  -121.672943,
-                  38.174579
-                ],
-                [
-                  -121.670777,
-                  38.177011
-                ],
-                [
-                  -121.66725,
-                  38.181661
-                ],
-                [
-                  -121.665858,
-                  38.182431
-                ],
-                [
-                  -121.661293,
-                  38.18836
-                ],
-                [
-                  -121.659135,
-                  38.192683
-                ],
-                [
-                  -121.658177,
-                  38.197215
-                ],
-                [
-                  -121.659262,
-                  38.201966
-                ],
-                [
-                  -121.661819,
-                  38.206229
-                ],
-                [
-                  -121.663059,
-                  38.207629
-                ],
-                [
-                  -121.664299,
-                  38.208543
-                ],
-                [
-                  -121.671506,
-                  38.215545
-                ],
-                [
-                  -121.673473,
-                  38.218257
-                ],
-                [
-                  -121.675409,
-                  38.225259
-                ],
-                [
-                  -121.675918,
-                  38.22878
-                ],
-                [
-                  -121.676835,
-                  38.23174
-                ],
-                [
-                  -121.676122,
-                  38.23278
-                ],
-                [
-                  -121.675154,
-                  38.23342
-                ],
-                [
-                  -121.653105,
-                  38.315085
-                ],
-                [
-                  -121.648215,
-                  38.338362
-                ],
-                [
-                  -121.642202,
-                  38.353583
-                ],
-                [
-                  -121.641566,
-                  38.354929
-                ],
-                [
-                  -121.614754,
-                  38.413043
-                ],
-                [
-                  -121.587593,
-                  38.471343
-                ],
-                [
-                  -121.587622,
-                  38.53502
-                ],
-                [
-                  -121.583149,
-                  38.551937
-                ],
-                [
-                  -121.583479,
-                  38.5727
-                ],
-                [
-                  -121.583159,
-                  38.573413
-                ],
-                [
-                  -121.582049,
-                  38.574234
-                ],
-                [
-                  -121.568396,
-                  38.583076
-                ],
-                [
-                  -121.638438,
-                  38.565629
-                ],
-                [
-                  -121.638434,
-                  38.558112
-                ],
-                [
-                  -121.633642,
-                  38.552474
-                ],
-                [
-                  -121.633628,
-                  38.520248
-                ],
-                [
-                  -121.646331,
-                  38.518636
-                ],
-                [
-                  -121.657673,
-                  38.51407
-                ],
-                [
-                  -121.65766,
-                  38.486667
-                ],
-                [
-                  -121.667563,
-                  38.486664
-                ],
-                [
-                  -121.667557,
-                  38.472687
-                ],
-                [
-                  -121.675183,
-                  38.473494
-                ],
-                [
-                  -121.67517,
-                  38.444191
-                ],
-                [
-                  -121.693709,
-                  38.423483
-                ],
-                [
-                  -121.693686,
-                  38.372248
-                ],
-                [
-                  -121.712506,
-                  38.372394
-                ],
-                [
-                  -121.712678,
-                  38.358463
-                ],
-                [
-                  -121.740377,
-                  38.358671
-                ],
-                [
-                  -121.741229,
-                  38.357677
-                ],
-                [
-                  -121.745303,
-                  38.357602
-                ],
-                [
-                  -121.745294,
-                  38.350942
-                ],
-                [
-                  -121.749651,
-                  38.350939
-                ],
-                [
-                  -121.74987,
-                  38.343534
-                ],
-                [
-                  -121.758274,
-                  38.343527
-                ],
-                [
-                  -121.758881,
-                  38.324816
-                ],
-                [
-                  -121.763018,
-                  38.326193
-                ],
-                [
-                  -121.764021,
-                  38.327472
-                ],
-                [
-                  -121.766696,
-                  38.329111
-                ],
-                [
-                  -121.770666,
-                  38.329537
-                ],
-                [
-                  -121.773132,
-                  38.32934
-                ],
-                [
-                  -121.773048,
-                  38.314685
-                ],
-                [
-                  -121.786559,
-                  38.314686
-                ],
-                [
-                  -121.787028,
-                  38.299155
-                ],
-                [
-                  -121.780341,
-                  38.293481
-                ],
-                [
-                  -121.777625,
-                  38.291939
-                ],
-                [
-                  -121.777006,
-                  38.29026
-                ],
-                [
-                  -121.77693,
-                  38.288695
-                ],
-                [
-                  -121.776972,
-                  38.284926
-                ]
-              ]
-            ]
-          },
-          "trend": "fresher",
-          "patterns": [
-            {
-              "id": "COR-LCS-10",
-              "candidateType": "approved_curated_pattern",
-              "direction": "fresher",
-              "patternType": "episode",
-              "startDate": "2019-12-03",
-              "endDate": "2020-06-05",
-              "durationDays": 186,
-              "qualifyingDays": 186,
-              "baselineEc": 316.8,
-              "scenarioEc": 193,
-              "differenceEc": -123.8,
-              "differencePct": -39.078,
-              "stationCount": 24,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-LCS-10; During and after the December 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Lindsey–Cache Slough",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            }
-          ]
-        },
-        {
           "id": "suisun_marsh",
           "name": "Suisun Marsh",
           "coordinates": [
@@ -9244,139 +8801,61 @@
               ]
             ]
           },
-          "trend": "flipping",
           "patterns": [
             {
-              "id": "COR-SM-01",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2018-10-07",
-              "endDate": "2019-01-07",
-              "durationDays": 93,
-              "qualifyingDays": 93,
-              "baselineEc": 12767.3,
-              "scenarioEc": 15562.1,
-              "differenceEc": 2794.8,
-              "differencePct": 21.89,
-              "stationCount": 12,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Marsh",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SM-02",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|suisun_marsh|2019-01-11|2019-02-25|fresher",
+              "candidateType": "provisional_curated_pattern",
               "direction": "fresher",
               "patternType": "episode",
-              "startDate": "2019-01-14",
-              "endDate": "2019-03-08",
-              "durationDays": 54,
-              "qualifyingDays": 54,
-              "baselineEc": 2416.8,
-              "scenarioEc": 1744,
-              "differenceEc": -672.8,
-              "differencePct": -27.838,
+              "startDate": "2019-01-11",
+              "endDate": "2019-02-25",
+              "durationDays": 46,
+              "qualifyingDays": 46,
+              "baselineEc": 2624.44,
+              "scenarioEc": 2356.051,
+              "differenceEc": -268.39,
+              "differencePct": -10.994,
               "stationCount": 12,
-              "stationAgreement": null,
+              "stationAgreement": 0.9583,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-02; During and after the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             },
             {
-              "id": "COR-SM-05",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2019-05-21",
-              "endDate": "2019-07-20",
-              "durationDays": 61,
-              "qualifyingDays": 61,
-              "baselineEc": 1262.8,
-              "scenarioEc": 2070,
-              "differenceEc": 807.2,
-              "differencePct": 63.921,
-              "stationCount": 12,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-05; Between the January–February 2019 and September–October 2019 releases; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Marsh",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SM-06",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2019-07-31",
-              "endDate": "2019-12-23",
-              "durationDays": 146,
-              "qualifyingDays": 146,
-              "baselineEc": 7556.7,
-              "scenarioEc": 12376.8,
-              "differenceEc": 4820.1,
-              "differencePct": 63.786,
-              "stationCount": 12,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-06; Before and into the September–October 2019 and December 2019 releases; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Marsh",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SM-07",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|suisun_marsh|2019-11-08|2020-03-03|fresher",
+              "candidateType": "provisional_curated_pattern",
               "direction": "fresher",
               "patternType": "episode",
-              "startDate": "2019-12-27",
-              "endDate": "2020-01-28",
-              "durationDays": 33,
-              "qualifyingDays": 33,
-              "baselineEc": 8273.7,
-              "scenarioEc": 6645.7,
-              "differenceEc": -1628,
-              "differencePct": -19.677,
+              "startDate": "2019-11-08",
+              "endDate": "2020-03-03",
+              "durationDays": 117,
+              "qualifyingDays": 117,
+              "baselineEc": 10342.501,
+              "scenarioEc": 9493.277,
+              "differenceEc": -849.225,
+              "differencePct": -8.825,
               "stationCount": 12,
-              "stationAgreement": null,
+              "stationAgreement": 0.9537,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SM-07; During and after the December 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Suisun Marsh",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             }
-          ]
+          ],
+          "trend": "fresher"
         },
         {
           "id": "montezuma_slough",
@@ -10556,113 +10035,87 @@
               ]
             ]
           },
-          "trend": "flipping",
           "patterns": [
             {
-              "id": "COR-MS-01",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|montezuma_slough|2018-10-14|2019-01-02|saltier",
+              "candidateType": "provisional_curated_pattern",
               "direction": "saltier",
               "patternType": "episode",
-              "startDate": "2018-10-07",
-              "endDate": "2019-01-05",
-              "durationDays": 91,
-              "qualifyingDays": 91,
-              "baselineEc": 8729.1,
-              "scenarioEc": 11041.3,
-              "differenceEc": 2312.2,
-              "differencePct": 26.488,
+              "startDate": "2018-10-14",
+              "endDate": "2019-01-02",
+              "durationDays": 81,
+              "qualifyingDays": 81,
+              "baselineEc": 10506.279,
+              "scenarioEc": 10754.536,
+              "differenceEc": 248.256,
+              "differencePct": 2.79,
               "stationCount": 8,
-              "stationAgreement": null,
+              "stationAgreement": 0.9892,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             },
             {
-              "id": "COR-MS-02",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|montezuma_slough|2019-01-06|2019-02-12|fresher",
+              "candidateType": "provisional_curated_pattern",
               "direction": "fresher",
               "patternType": "episode",
-              "startDate": "2019-01-07",
-              "endDate": "2019-01-27",
-              "durationDays": 21,
-              "qualifyingDays": 21,
-              "baselineEc": 2952.8,
-              "scenarioEc": 1602.1,
-              "differenceEc": -1350.7,
-              "differencePct": -45.743,
+              "startDate": "2019-01-06",
+              "endDate": "2019-02-12",
+              "durationDays": 38,
+              "qualifyingDays": 38,
+              "baselineEc": 1430.538,
+              "scenarioEc": 1227.668,
+              "differenceEc": -202.87,
+              "differencePct": -17.107,
               "stationCount": 8,
-              "stationAgreement": null,
+              "stationAgreement": 1,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-02; During the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             },
             {
-              "id": "COR-MS-07",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2019-07-29",
-              "endDate": "2019-12-19",
-              "durationDays": 144,
-              "qualifyingDays": 144,
-              "baselineEc": 5146.8,
-              "scenarioEc": 9266,
-              "differenceEc": 4119.2,
-              "differencePct": 80.034,
-              "stationCount": 8,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-07; Before and into the September–October 2019 and December 2019 releases; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Montezuma Slough",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-MS-08",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|montezuma_slough|2019-11-07|2020-02-08|fresher",
+              "candidateType": "provisional_curated_pattern",
               "direction": "fresher",
               "patternType": "episode",
-              "startDate": "2019-12-27",
-              "endDate": "2020-01-23",
-              "durationDays": 28,
-              "qualifyingDays": 28,
-              "baselineEc": 5325,
-              "scenarioEc": 3752.4,
-              "differenceEc": -1572.6,
-              "differencePct": -29.532,
+              "startDate": "2019-11-07",
+              "endDate": "2020-02-08",
+              "durationDays": 94,
+              "qualifyingDays": 94,
+              "baselineEc": 7388.888,
+              "scenarioEc": 6543.137,
+              "differenceEc": -845.751,
+              "differencePct": -12.857,
               "stationCount": 8,
-              "stationAgreement": null,
+              "stationAgreement": 0.9814,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-MS-08; During and after the December 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Montezuma Slough",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             }
-          ]
+          ],
+          "trend": "flipping"
         },
         {
           "id": "suisun_bay",
@@ -12933,165 +12386,61 @@
               ]
             ]
           },
-          "trend": "flipping",
           "patterns": [
             {
-              "id": "COR-SB-01",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2018-10-07",
-              "endDate": "2019-01-03",
-              "durationDays": 89,
-              "qualifyingDays": 89,
-              "baselineEc": 18975.3,
-              "scenarioEc": 22102.2,
-              "differenceEc": 3126.9,
-              "differencePct": 16.479,
-              "stationCount": 17,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Bay",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SB-02",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|suisun_bay|2019-01-03|2019-02-15|fresher",
+              "candidateType": "provisional_curated_pattern",
               "direction": "fresher",
               "patternType": "episode",
-              "startDate": "2019-01-05",
-              "endDate": "2019-01-25",
-              "durationDays": 21,
-              "qualifyingDays": 21,
-              "baselineEc": 10622.4,
-              "scenarioEc": 6244.7,
-              "differenceEc": -4377.7,
-              "differencePct": -41.212,
+              "startDate": "2019-01-03",
+              "endDate": "2019-02-15",
+              "durationDays": 44,
+              "qualifyingDays": 44,
+              "baselineEc": 5037.462,
+              "scenarioEc": 4287.893,
+              "differenceEc": -749.569,
+              "differencePct": -19.08,
               "stationCount": 17,
-              "stationAgreement": null,
+              "stationAgreement": 0.9947,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-02; During the January–February 2019 release; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             },
             {
-              "id": "COR-SB-03",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|suisun_bay|2019-11-02|2020-02-22|fresher",
+              "candidateType": "provisional_curated_pattern",
               "direction": "fresher",
               "patternType": "episode",
-              "startDate": "2019-01-30",
-              "endDate": "2019-03-04",
-              "durationDays": 34,
-              "qualifyingDays": 34,
-              "baselineEc": 1473,
-              "scenarioEc": 513.9,
-              "differenceEc": -959.1,
-              "differencePct": -65.112,
+              "startDate": "2019-11-02",
+              "endDate": "2020-02-22",
+              "durationDays": 113,
+              "qualifyingDays": 113,
+              "baselineEc": 14622.066,
+              "scenarioEc": 13564.995,
+              "differenceEc": -1057.071,
+              "differencePct": -8.576,
               "stationCount": 17,
-              "stationAgreement": null,
+              "stationAgreement": 1,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-03; During and after the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Suisun Bay",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SB-06",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2019-05-20",
-              "endDate": "2019-07-07",
-              "durationDays": 49,
-              "qualifyingDays": 49,
-              "baselineEc": 1855.7,
-              "scenarioEc": 3519.6,
-              "differenceEc": 1663.9,
-              "differencePct": 89.664,
-              "stationCount": 17,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-06; Between the January–February 2019 and September–October 2019 releases; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Bay",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SB-08",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2019-08-01",
-              "endDate": "2019-12-14",
-              "durationDays": 136,
-              "qualifyingDays": 136,
-              "baselineEc": 10198.9,
-              "scenarioEc": 16014.5,
-              "differenceEc": 5815.6,
-              "differencePct": 57.022,
-              "stationCount": 17,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-08; Before and into the September–October 2019 and December 2019 releases; provenance: older exploratory pattern and Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Bay",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-SB-09",
-              "candidateType": "approved_curated_pattern",
-              "direction": "fresher",
-              "patternType": "episode",
-              "startDate": "2019-12-17",
-              "endDate": "2020-01-22",
-              "durationDays": 37,
-              "qualifyingDays": 37,
-              "baselineEc": 10988.7,
-              "scenarioEc": 7693,
-              "differenceEc": -3295.7,
-              "differencePct": -29.992,
-              "stationCount": 17,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-SB-09; During and after the December 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Suisun Bay",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             }
-          ]
+          ],
+          "trend": "fresher"
         },
         {
           "id": "confluence_zone",
@@ -14490,113 +13839,61 @@
               ]
             ]
           },
-          "trend": "flipping",
           "patterns": [
             {
-              "id": "COR-CZ-01",
-              "candidateType": "approved_curated_pattern",
+              "id": "refresh|current|reserve|confluence_zone|2018-10-07|2018-12-31|saltier",
+              "candidateType": "provisional_curated_pattern",
               "direction": "saltier",
               "patternType": "episode",
               "startDate": "2018-10-07",
-              "endDate": "2019-01-03",
+              "endDate": "2018-12-31",
+              "durationDays": 86,
+              "qualifyingDays": 86,
+              "baselineEc": 5264.308,
+              "scenarioEc": 5430.431,
+              "differenceEc": 166.123,
+              "differencePct": 3.486,
+              "stationCount": 24,
+              "stationAgreement": 0.9898,
+              "stationCoverage": 1,
+              "thresholdEc": null,
+              "additionalThresholdDays": null,
+              "sustainedReversals": null,
+              "reversalsPerYear": null,
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
+              "proposedDisplayRegion": "Confluence Zone",
+              "broaderStoryGroup": "Calling on Reserves",
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
+            },
+            {
+              "id": "refresh|current|reserve|confluence_zone|2019-11-05|2020-02-01|fresher",
+              "candidateType": "provisional_curated_pattern",
+              "direction": "fresher",
+              "patternType": "episode",
+              "startDate": "2019-11-05",
+              "endDate": "2020-02-01",
               "durationDays": 89,
               "qualifyingDays": 89,
-              "baselineEc": 3953.9,
-              "scenarioEc": 5339,
-              "differenceEc": 1385.1,
-              "differencePct": 35.031,
+              "baselineEc": 2448.39,
+              "scenarioEc": 2048.412,
+              "differenceEc": -399.978,
+              "differencePct": -19.483,
               "stationCount": 24,
-              "stationAgreement": null,
+              "stationAgreement": 0.9644,
               "stationCoverage": 1,
               "thresholdEc": null,
               "additionalThresholdDays": null,
               "sustainedReversals": null,
               "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-01; Before and into the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
+              "reviewStatus": "provisional",
+              "reviewNote": "Provisional selection from regional_pattern_refresh_2026-10-29; passes the approved-pattern rules but has not been reviewed by the team.",
               "proposedDisplayRegion": "Confluence Zone",
               "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-CZ-02",
-              "candidateType": "approved_curated_pattern",
-              "direction": "fresher",
-              "patternType": "episode",
-              "startDate": "2019-01-05",
-              "endDate": "2019-01-22",
-              "durationDays": 18,
-              "qualifyingDays": 18,
-              "baselineEc": 1545.3,
-              "scenarioEc": 800.8,
-              "differenceEc": -744.5,
-              "differencePct": -48.178,
-              "stationCount": 24,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-02; During the January–February 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Confluence Zone",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-CZ-07",
-              "candidateType": "approved_curated_pattern",
-              "direction": "saltier",
-              "patternType": "episode",
-              "startDate": "2019-08-02",
-              "endDate": "2019-12-12",
-              "durationDays": 133,
-              "qualifyingDays": 133,
-              "baselineEc": 991.3,
-              "scenarioEc": 2389.9,
-              "differenceEc": 1398.6,
-              "differencePct": 141.087,
-              "stationCount": 24,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-07; Before and into the September–October 2019 and December 2019 releases; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Confluence Zone",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
-            },
-            {
-              "id": "COR-CZ-08",
-              "candidateType": "approved_curated_pattern",
-              "direction": "fresher",
-              "patternType": "episode",
-              "startDate": "2019-12-22",
-              "endDate": "2020-01-19",
-              "durationDays": 29,
-              "qualifyingDays": 29,
-              "baselineEc": 1151.1,
-              "scenarioEc": 617.8,
-              "differenceEc": -533.3,
-              "differencePct": -46.33,
-              "stationCount": 24,
-              "stationAgreement": null,
-              "stationCoverage": 1,
-              "thresholdEc": null,
-              "additionalThresholdDays": null,
-              "sustainedReversals": null,
-              "reversalsPerYear": null,
-              "reviewStatus": "selected",
-              "reviewNote": "Pattern ID COR-CZ-08; During and after the December 2019 release; provenance: Claude latest complete-set analysis; release windows from public/data/operations/calling-on-reserves-release-schedule.json.",
-              "proposedDisplayRegion": "Confluence Zone",
-              "broaderStoryGroup": "Calling on Reserves",
-              "analysisProvenance": "approved_patterns.csv"
+              "analysisProvenance": "regional_pattern_refresh_2026-10-29"
             }
-          ]
+          ],
+          "trend": "flipping"
         }
       ]
     },
