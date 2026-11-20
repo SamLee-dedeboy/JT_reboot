@@ -25,7 +25,8 @@ interface Names {
 // ---------- teams ----------
 
 /** Stable id per team: keys icons, colors and data, independent of display name. */
-export type TeamKey = 'ecology' | 'recreation' | 'environmentalJustice' | 'economy' | 'ecoCultural'
+export type TeamKey =
+  'ecology' | 'recreation' | 'environmentalJustice' | 'economy' | 'ecoCultural' | 'waterQuality'
 
 export interface TeamNames extends Names {
   key: TeamKey
@@ -71,6 +72,15 @@ export const TEAM_NAMES: Record<TeamKey, TeamNames> = {
     number: '05',
     name: 'Economy',
     shortName: 'Economy',
+  },
+  // A proposed sixth criterion (draft): ranked with the others, with no evaluation
+  // page yet.
+  waterQuality: {
+    key: 'waterQuality',
+    slug: 'water-quality',
+    number: '06',
+    name: 'Water Quality',
+    shortName: 'Water Quality',
   },
 }
 

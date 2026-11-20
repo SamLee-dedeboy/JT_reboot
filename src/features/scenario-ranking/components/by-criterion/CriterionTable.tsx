@@ -46,7 +46,7 @@ import type { ScenarioSetId, View } from './useCriterionTable'
 const TEAM_KEYS = TEAMS.map((team) => team.key)
 
 /** Each table's criterion page, whose route ids differ from the ranking's team keys. */
-const CRITERION_IDS: Record<TeamKey, string> = {
+const CRITERION_IDS: Partial<Record<TeamKey, string>> = {
   ecology: 'ecology',
   recreation: 'recreation',
   environmentalJustice: 'environmental-justice',
@@ -150,14 +150,17 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
                   {UI.takeaway}
                 </Typography>
                 <HostIntro team={team} />
-                <Button
-                  component={Link}
-                  to={methodologyPath(CRITERION_IDS[team])}
-                  variant="outlined"
-                  sx={{ alignSelf: 'flex-start', borderColor: 'primary.main' }}
-                >
-                  {UI.learnMoreCriterion}
-                </Button>
+                {/* A draft criterion has no evaluation page to point to yet. */}
+                {CRITERION_IDS[team] && (
+                  <Button
+                    component={Link}
+                    to={methodologyPath(CRITERION_IDS[team])}
+                    variant="outlined"
+                    sx={{ alignSelf: 'flex-start', borderColor: 'primary.main' }}
+                  >
+                    {UI.learnMoreCriterion}
+                  </Button>
+                )}
               </Stack>
               <Caveats team={team} />
             </Box>

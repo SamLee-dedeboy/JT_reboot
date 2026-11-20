@@ -67,6 +67,15 @@ const ICONS: Record<TeamKey, { art: ReactNode }> = {
       </>
     ),
   },
+  // Water quality: a drop with a salinity line across it (salinity at the intakes).
+  waterQuality: {
+    art: (
+      <>
+        <path d="M12 3.2c3.4 4.1 5.7 7.4 5.7 10.3a5.7 5.7 0 0 1-11.4 0c0-2.9 2.3-6.2 5.7-10.3Z" />
+        <path d="M8.6 14.4c1.1-.8 2.3-.8 3.4 0s2.3.8 3.4 0" />
+      </>
+    ),
+  },
 }
 
 interface TeamIconProps {

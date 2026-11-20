@@ -12,7 +12,8 @@ This folder is standalone: nothing in it imports from `src/internal/`.
 ## Changing numbers and team text: `data/`
 
 There is one file per criterion: `ecology.ts`, `recreation.ts`, `environmentalJustice.ts`,
-`economy.ts` and `ecoCultural.ts`. Every file has the same shape (`data/types.ts`):
+`economy.ts` and `ecoCultural.ts`, plus `waterQuality.ts`, a proposed sixth criterion (draft) that
+is ranked with the others but has no evaluation page yet. Every file has the same shape (`data/types.ts`):
 
 | Field                | What it holds                                                                      |
 | -------------------- | ---------------------------------------------------------------------------------- |

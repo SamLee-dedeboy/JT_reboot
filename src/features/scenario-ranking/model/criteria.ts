@@ -91,6 +91,8 @@ export type Unit =
   | 'score'
   /** 0–1 proportion, shown as a percentage. */
   | 'share'
+  /** A percent change, already in percent (−5.2 is 5.2% lower). */
+  | 'percent'
   | 'acres'
   /** Millions of US dollars per year. */
   | 'dollars'
@@ -377,6 +379,10 @@ export function fmtValue(value: number, unit: Unit): string {
   switch (unit) {
     case 'share':
       return `${Math.round(value * 1000) / 10}%`
+    case 'percent': {
+      const percent = Math.round(Math.abs(value) * 10) / 10
+      return percent === 0 ? '0%' : `${value < 0 ? '−' : '+'}${percent}%`
+    }
     case 'acres':
       return `${Math.round(value).toLocaleString('en-US')} ac`
     case 'dollars':

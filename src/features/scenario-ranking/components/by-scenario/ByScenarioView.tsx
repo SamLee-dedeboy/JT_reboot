@@ -34,12 +34,12 @@ export default function ByScenarioView() {
           sx={{ maxWidth: jtSpacing.paragraphMaxWidth.default, alignItems: 'flex-start' }}
         >
           <Typography variant="body1">
-            Every future is scored on five criteria: ecology, recreation, environmental justice,
-            economy, and eco-cultural outcomes. Each criterion scores the futures from −5 to +5{' '}
-            {scenarioSet.baseline}
+            Every future is scored on six criteria: ecology, recreation, environmental justice,
+            economy, eco-cultural outcomes, and water quality. Each criterion scores the futures
+            from −5 to +5 {scenarioSet.baseline}
           </Typography>
           <Typography variant="body1">
-            The ranking below combines those five scores. By default every criterion counts equally;
+            The ranking below combines those six scores. By default every criterion counts equally;
             further down the page, you can change that balance and watch the order shift.
           </Typography>
           <Typography variant="body2">
@@ -86,7 +86,7 @@ export default function ByScenarioView() {
             )}
           </>
         }
-        introduction="Every criterion counts equally here. Scores above zero beat today’s baseline; scores below zero fall short of it. Open a future to see the five scores behind its rank."
+        introduction="Every criterion counts equally here. Scores above zero beat today’s baseline; scores below zero fall short of it. Open a future to see the six scores behind its rank."
         background="base.700"
       >
         <OverallRankingChart

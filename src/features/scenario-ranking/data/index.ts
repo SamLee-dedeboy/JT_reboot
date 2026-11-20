@@ -1,4 +1,4 @@
-// The five criteria's data files, and the lookups the table and its cards read.
+// The six criteria's data files (Water Quality is a draft), and the lookups the table and its cards read.
 import type { ScenarioKey } from '../model/criteria'
 import type { TeamKey } from '../model/teams'
 import { ECO_CULTURAL } from './ecoCultural'
@@ -6,6 +6,7 @@ import { ECOLOGY } from './ecology'
 import { ECONOMY } from './economy'
 import { ENVIRONMENTAL_JUSTICE } from './environmentalJustice'
 import { RECREATION } from './recreation'
+import { WATER_QUALITY } from './waterQuality'
 import type { ScenarioTakeaway, TeamData, TeamText } from './types'
 
 export const TEAM_DATA: Record<TeamKey, TeamData> = {
@@ -14,6 +15,7 @@ export const TEAM_DATA: Record<TeamKey, TeamData> = {
   environmentalJustice: ENVIRONMENTAL_JUSTICE,
   economy: ECONOMY,
   ecoCultural: ECO_CULTURAL,
+  waterQuality: WATER_QUALITY,
 }
 
 /** The criterion's own words: takeaways, caveats, info cards. */

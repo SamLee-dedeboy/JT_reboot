@@ -86,6 +86,9 @@ export const palette = {
     // and always-present labels cover as secondary encoding.
     ecoCultural: '#ffe6b0',
     ecology: '#ffb347',
+    // Sixth team (water quality, draft criterion). A mint kept apart from the score
+    // blue by hue; its separations from the set above are not yet measured.
+    waterQuality: '#86d9a8',
   },
   // Governance page. The four Delta Adapts strategy areas (flood risk, ecosystems,
   // agriculture, water supply reliability) and the lead organizations' rose. On the
