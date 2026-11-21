@@ -74,8 +74,15 @@ const scenarios = flows.scenarios as Record<string, FlowSeries>
  * What each scenario changes, by boundary: that one is drawn in the brand green with a bold label,
  * and boundaries the scenario doesn't have are left off (Calling on Reserves has no tunnel).
  */
-const SCENARIO_FOCUS: Record<string, { emphasized: BoundaryKey; hidden: BoundaryKey[] }> = {
-  reserve: { emphasized: 'sacramento', hidden: ['tunnelDiversion'] },
+const SCENARIO_FOCUS: Record<
+  string,
+  { emphasized: BoundaryKey; hidden: BoundaryKey[]; note?: string }
+> = {
+  reserve: {
+    emphasized: 'sacramento',
+    hidden: ['tunnelDiversion'],
+    note: '*through reduced demand',
+  },
   tunnel: { emphasized: 'tunnelDiversion', hidden: [] },
 }
 
@@ -89,6 +96,8 @@ export interface BoundaryFlowChange {
   change: number
   /** The boundary this scenario acts on, drawn to stand out. */
   emphasized: boolean
+  /** How the scenario changes this boundary, shown under its label (emphasized boundary only). */
+  note?: string
 }
 
 /**
@@ -116,6 +125,7 @@ export function boundaryFlowChanges(
       scenario,
       change: scenario - base,
       emphasized: focus?.emphasized === boundary.key,
+      note: focus?.emphasized === boundary.key ? focus.note : undefined,
     }
   })
 }

@@ -86,7 +86,7 @@ export const palette = {
     // and always-present labels cover as secondary encoding.
     ecoCultural: '#ffe6b0',
     ecology: '#ffb347',
-    // Sixth team (water quality, draft criterion). A mint kept apart from the score
+    // Sixth team (water quality & regulation, draft criterion). A mint kept apart from the score
     // blue by hue; its separations from the set above are not yet measured.
     waterQuality: '#86d9a8',
   },

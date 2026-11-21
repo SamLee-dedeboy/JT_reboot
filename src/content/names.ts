@@ -49,7 +49,7 @@ export const TEAM_NAMES: Record<TeamKey, TeamNames> = {
     slug: 'environmental-justice',
     number: '02',
     name: 'Environmental Justice & Vulnerable Communities',
-    shortName: 'Env. Justice',
+    shortName: 'Environmental Justice',
     variants: { weightPresets: 'Justice' },
   },
   ecoCultural: {
@@ -77,10 +77,10 @@ export const TEAM_NAMES: Record<TeamKey, TeamNames> = {
   // page yet.
   waterQuality: {
     key: 'waterQuality',
-    slug: 'water-quality',
+    slug: 'water-quality-regulation',
     number: '06',
-    name: 'Water Quality',
-    shortName: 'Water Quality',
+    name: 'Water Quality & Regulation',
+    shortName: 'Water Quality & Regulation',
   },
 }
 

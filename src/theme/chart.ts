@@ -27,12 +27,12 @@ export const chart = {
     // Selectable team palettes; each is validated against the score pair below.
     teamPalettes: {
       color: [
+        palette.teams.waterQuality,
         palette.teams.ecology,
         palette.teams.recreation,
         palette.teams.envJustice,
         palette.teams.economy,
         palette.teams.ecoCultural,
-        palette.teams.waterQuality,
       ],
       neutral: [
         palette.visualization.neutral,

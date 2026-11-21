@@ -21,6 +21,15 @@ import ComponentsSection from './components/criterion/ComponentsSection'
 import ConstructionSection from './components/criterion/ConstructionSection'
 import ReferencesSection from './components/criterion/ReferencesSection'
 
+const criterionHeroImage = {
+  ecology: '/images/banners/evaluation/criterion-ecology.webp',
+  'environmental-justice': '/images/banners/evaluation/criterion-environmental-justice.webp',
+  'ecocultural-restoration':
+    '/images/banners/evaluation/criterion-ecocultural-restoration.webp',
+  recreation: '/images/banners/evaluation/criterion-recreation.webp',
+  economy: '/images/banners/evaluation/criterion-economy.webp',
+} as const
+
 export default function CriterionPage() {
   const { teamId } = useParams()
   const team = findTeam(teamId)
@@ -35,7 +44,7 @@ export default function CriterionPage() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <PageHero
-          image="/images/scenarios/web/cover.webp"
+          image={criterionHeroImage[team.id]}
           title={team.label}
           summary={story.brief.what}
           summaryVariant="body1"

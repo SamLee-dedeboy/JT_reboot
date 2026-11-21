@@ -83,7 +83,7 @@ export default function BoundaryFlowArrows({
   const changes = boundaryFlowChanges(scenario, baseScenario, month)
   if (!changes) return null
 
-  const arrows = changes.map(({ boundary, base, change, emphasized }) => {
+  const arrows = changes.map(({ boundary, base, change, emphasized, note }) => {
     const from = map.project(boundary.from)
     const to = map.project(boundary.to)
     const moved = Math.abs(change) >= MIN_CHANGE_CFS
@@ -110,12 +110,15 @@ export default function BoundaryFlowArrows({
       key: boundary.key,
       label: boundary.label,
       emphasized,
+      note,
       path: moved ? arrowPath(from, to, width) : null,
       increase: change > 0,
       value: moved ? `${signed(change)}${share}` : 'No change',
       x: ax + dx * offset,
       y: ay + dy * offset,
       transform: `translate(${shiftX}, ${shiftY})`,
+      // A label left of its arrow lines its note up on the right, so the note runs away from it.
+      noteAnchor: shiftX === '-100%' ? 'right' : 'left',
     }
   })
 
@@ -182,6 +185,25 @@ export default function BoundaryFlowArrows({
           >
             {arrow.value}
           </Typography>
+          {/* Hangs under the label box, so the box itself stays where it is. */}
+          {arrow.note && (
+            <Typography
+              variant="captionSmall"
+              sx={{
+                bgcolor: 'translucent.800',
+                borderRadius: 0.5,
+                color: 'common.white',
+                [arrow.noteAnchor]: 0,
+                mt: 0.5,
+                position: 'absolute',
+                px: 0.75,
+                py: 0.25,
+                top: '100%',
+              }}
+            >
+              {arrow.note}
+            </Typography>
+          )}
         </Box>
       ))}
     </>

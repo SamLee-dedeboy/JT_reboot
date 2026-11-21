@@ -67,7 +67,7 @@ const ICONS: Record<TeamKey, { art: ReactNode }> = {
       </>
     ),
   },
-  // Water quality: a drop with a salinity line across it (salinity at the intakes).
+  // Water quality & regulation: a drop with a salinity line across it (salinity at the intakes).
   waterQuality: {
     art: (
       <>

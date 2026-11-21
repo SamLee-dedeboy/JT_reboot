@@ -34,9 +34,9 @@ export default function ByScenarioView() {
           sx={{ maxWidth: jtSpacing.paragraphMaxWidth.default, alignItems: 'flex-start' }}
         >
           <Typography variant="body1">
-            Every future is scored on six criteria: ecology, recreation, environmental justice,
-            economy, eco-cultural outcomes, and water quality. Each criterion scores the futures
-            from −5 to +5 {scenarioSet.baseline}
+            Every future is scored on six criteria: water quality and regulation, ecology,
+            recreation, environmental justice, economy, and eco-cultural outcomes. Each criterion
+            scores the futures from −5 to +5 {scenarioSet.baseline}
           </Typography>
           <Typography variant="body1">
             The ranking below combines those six scores. By default every criterion counts equally;

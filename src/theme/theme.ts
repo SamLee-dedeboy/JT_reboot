@@ -186,8 +186,14 @@ export const ranking = {
     overall: {
       xs: `${rankWidth.xs} minmax(120px, .8fr) 64px`,
       md: `${rankWidth.sm} 300px minmax(260px, 1fr) 72px`,
+      // From xl the labels set larger; 340px keeps "Water Quality & Regulation" on one line.
+      xl: `${rankWidth.sm} 340px minmax(260px, 1fr) 72px`,
     },
-    team: { xs: 'minmax(130px, 1fr) 72px', md: '300px minmax(260px, 1fr) 72px' },
+    team: {
+      xs: 'minmax(130px, 1fr) 72px',
+      md: '300px minmax(260px, 1fr) 72px',
+      xl: '340px minmax(260px, 1fr) 72px',
+    },
     current: {
       xs: `${rankWidth.xs} minmax(0, 1fr) 56px`,
       sm: `${rankWidth.sm} minmax(190px, 220px) minmax(50px, 1fr) 56px`,

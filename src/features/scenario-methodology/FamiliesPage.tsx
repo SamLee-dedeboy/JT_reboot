@@ -11,6 +11,7 @@ export default function FamiliesPage() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <PageHero
+          image="/images/banners/evaluation/scenario-families.webp"
           title="The three families at a glance"
           summary="Before looking at one scenario through every criterion, see how the criteria judged each family of futures: the outflow variations, the adaptation scenarios, and the adaptation scenarios with two feet of sea-level rise."
         />
