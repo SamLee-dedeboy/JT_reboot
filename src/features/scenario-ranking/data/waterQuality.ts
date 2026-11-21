@@ -1,4 +1,4 @@
-// Water Quality: everything the ranking shows for this criterion, in one place.
+// Water Quality & Regulation: everything the ranking shows for this criterion, in one place.
 // Change a number or a sentence here and the By criterion table and its info cards
 // follow. See ./types.ts for how to read it.
 //
@@ -89,7 +89,7 @@ const forthcomingFor = (row: Row, scenarios: Row['forthcomingFor']): Row => ({
 function criterionRows(note: string): Row {
   return {
     id: 'waterQuality',
-    label: 'Water Quality',
+    label: 'Water Quality & Regulation',
     level: 'team',
     provenance: 'reported',
     unit: 'score',
@@ -221,7 +221,7 @@ export const WATER_QUALITY: TeamData = {
   seaLevelRiseStatus: 'loaded',
   text: {
     takeaways: [
-      'The Water Quality score links the salinity modeling to each scenario at nine D-1641 compliance stations, grouped by what they protect: **Delta outflow, municipal intakes, export intakes and West Delta agriculture.** It asks two questions: how much fresher or saltier each place gets compared with the scenario’s own Business as Usual, and whether the scenario changes how often the D-1641 water quality objectives are exceeded.',
+      'The Water Quality & Regulation score links the salinity modeling to each scenario at nine D-1641 compliance stations, grouped by what they protect: **Delta outflow, municipal intakes, export intakes and West Delta agriculture.** It asks two questions: how much fresher or saltier each place gets compared with the scenario’s own Business as Usual, and whether the scenario changes how often the D-1641 water quality objectives are exceeded.',
       'Under the current climate, ++Eco Machine++ and ++New Green Watershed++ are fresher at every group (+2); ++Bolster & Fortify++ and ++Calling on Reserves++ score +1. ++A Tunnel++ is saltier on average (−1 on salinity change) yet has fewer exceedance days in spring, when most objectives apply (+2). **With sea level rise, exceedance days separate the scenarios much more**, lifting Eco Machine and New Green Watershed to +4.',
     ],
     caveats: [
@@ -291,7 +291,7 @@ export const WATER_QUALITY: TeamData = {
     // Eco Machine
     em: {
       takeaway: {
-        lead: '++Eco Machine++ is **fresher at every station group** than Business as Usual. Its water quality score, +2, is the rounded mean of its salinity change (+2) and D-1641 (+1) scores.',
+        lead: '++Eco Machine++ is **fresher at every station group** than Business as Usual. Its Water Quality & Regulation score, +2, is the rounded mean of its salinity change (+2) and D-1641 (+1) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -339,7 +339,7 @@ export const WATER_QUALITY: TeamData = {
     // New Green Watershed
     ngw: {
       takeaway: {
-        lead: '++New Green Watershed++ is **fresher at every station group** than Business as Usual. Its water quality score, +2, is the rounded mean of its salinity change (+2) and D-1641 (+1) scores.',
+        lead: '++New Green Watershed++ is **fresher at every station group** than Business as Usual. Its Water Quality & Regulation score, +2, is the rounded mean of its salinity change (+2) and D-1641 (+1) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -387,7 +387,7 @@ export const WATER_QUALITY: TeamData = {
     // Bolster & Fortify
     bf: {
       takeaway: {
-        lead: '++Bolster & Fortify++ is **fresher at the municipal intakes and export intakes** and saltier at the West Delta agriculture stations than Business as Usual. Its water quality score, +1, is the rounded mean of its salinity change (+1) and D-1641 (0) scores.',
+        lead: '++Bolster & Fortify++ is **fresher at the municipal intakes and export intakes** and saltier at the West Delta agriculture stations than Business as Usual. Its Water Quality & Regulation score, +1, is the rounded mean of its salinity change (+1) and D-1641 (0) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -435,7 +435,7 @@ export const WATER_QUALITY: TeamData = {
     // Calling on Reserves
     cor: {
       takeaway: {
-        lead: '++Calling on Reserves++ is **fresher at the municipal intakes, export intakes and West Delta agriculture stations** than CalSim’s Business as Usual. Its water quality score, +1, is the rounded mean of its salinity change (+1) and D-1641 (0) scores.',
+        lead: '++Calling on Reserves++ is **fresher at the municipal intakes, export intakes and West Delta agriculture stations** than CalSim’s Business as Usual. Its Water Quality & Regulation score, +1, is the rounded mean of its salinity change (+1) and D-1641 (0) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -483,7 +483,7 @@ export const WATER_QUALITY: TeamData = {
     // A Tunnel
     tunnel: {
       takeaway: {
-        lead: '++A Tunnel++ is **saltier at every station group** than CalSim’s Business as Usual. Its water quality score, +1, is the rounded mean of its salinity change (−1) and D-1641 (+2) scores.',
+        lead: '++A Tunnel++ is **saltier at every station group** than CalSim’s Business as Usual. Its Water Quality & Regulation score, +1, is the rounded mean of its salinity change (−1) and D-1641 (+2) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -553,7 +553,7 @@ export const WATER_QUALITY: TeamData = {
     // Increased Delta Outflow
     more: {
       takeaway: {
-        lead: '++Increased Delta Outflow++ is **fresher at every station group** than the Historical Baseline. Its water quality score, +5, is the rounded mean of its salinity change (+5) and D-1641 (+4) scores.',
+        lead: '++Increased Delta Outflow++ is **fresher at every station group** than the Historical Baseline. Its Water Quality & Regulation score, +5, is the rounded mean of its salinity change (+5) and D-1641 (+4) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -638,7 +638,7 @@ export const WATER_QUALITY: TeamData = {
     // Eco Machine
     em: {
       takeaway: {
-        lead: '++Eco Machine++ is **fresher at every station group** than Business as Usual. Its water quality score, +4, is the rounded mean of its salinity change (+2) and D-1641 (+5) scores.',
+        lead: '++Eco Machine++ is **fresher at every station group** than Business as Usual. Its Water Quality & Regulation score, +4, is the rounded mean of its salinity change (+2) and D-1641 (+5) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -686,7 +686,7 @@ export const WATER_QUALITY: TeamData = {
     // New Green Watershed
     ngw: {
       takeaway: {
-        lead: '++New Green Watershed++ is **fresher at every station group** than Business as Usual. Its water quality score, +4, is the rounded mean of its salinity change (+2) and D-1641 (+5) scores.',
+        lead: '++New Green Watershed++ is **fresher at every station group** than Business as Usual. Its Water Quality & Regulation score, +4, is the rounded mean of its salinity change (+2) and D-1641 (+5) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -734,7 +734,7 @@ export const WATER_QUALITY: TeamData = {
     // Bolster & Fortify
     bf: {
       takeaway: {
-        lead: '++Bolster & Fortify++ is **fresher at the municipal intakes and export intakes** and saltier at the West Delta agriculture stations than Business as Usual. Its water quality score, +2, is the rounded mean of its salinity change (+1) and D-1641 (+3) scores.',
+        lead: '++Bolster & Fortify++ is **fresher at the municipal intakes and export intakes** and saltier at the West Delta agriculture stations than Business as Usual. Its Water Quality & Regulation score, +2, is the rounded mean of its salinity change (+1) and D-1641 (+3) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -782,7 +782,7 @@ export const WATER_QUALITY: TeamData = {
     // Calling on Reserves
     cor: {
       takeaway: {
-        lead: '++Calling on Reserves++ is **fresher at the municipal intakes, export intakes and West Delta agriculture stations** than CalSim’s Business as Usual. Its water quality score, +1, is the rounded mean of its salinity change (+1) and D-1641 (0) scores.',
+        lead: '++Calling on Reserves++ is **fresher at the municipal intakes, export intakes and West Delta agriculture stations** than CalSim’s Business as Usual. Its Water Quality & Regulation score, +1, is the rounded mean of its salinity change (+1) and D-1641 (0) scores.',
         points: [
           {
             label: 'Salinity change',
@@ -830,7 +830,7 @@ export const WATER_QUALITY: TeamData = {
     // A Tunnel
     tunnel: {
       takeaway: {
-        lead: '++A Tunnel++ is **saltier at every station group** than CalSim’s Business as Usual. Its water quality score, +1, is the rounded mean of its salinity change (−1) and D-1641 (+2) scores.',
+        lead: '++A Tunnel++ is **saltier at every station group** than CalSim’s Business as Usual. Its Water Quality & Regulation score, +1, is the rounded mean of its salinity change (−1) and D-1641 (+2) scores.',
         points: [
           {
             label: 'Salinity change',

@@ -1,4 +1,4 @@
-// The six criteria's data files (Water Quality is a draft), and the lookups the table and its cards read.
+// The six criteria's data files (Water Quality & Regulation is a draft), and the lookups the table and its cards read.
 import type { ScenarioKey } from '../model/criteria'
 import type { TeamKey } from '../model/teams'
 import { ECO_CULTURAL } from './ecoCultural'

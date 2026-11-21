@@ -55,13 +55,14 @@ export const EQUAL_WEIGHTS: Weights = [1, 1, 1, 1, 1, 1]
 
 /** The ranking's team order: score arrays follow it. */
 const RANKING_ORDER: TeamKey[] = [
+  // Water Quality & Regulation: the proposed sixth criterion (draft for team review,
+  // Nov 2026), listed first.
+  'waterQuality',
   'ecology',
   'recreation',
   'environmentalJustice',
   'economy',
   'ecoCultural',
-  // Water Quality: the proposed sixth criterion (draft for team review, Nov 2026).
-  'waterQuality',
 ]
 
 export const TEAMS: Team[] = RANKING_ORDER.map((key) => ({
@@ -105,8 +106,8 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     // Recreation: +1, the average of its regions (ranking table workbook, Nov 2026).
     // EJ: +4, the team's own score in that workbook.
     // Economy: 0 (v20, 3 Nov 2026): a gain of about $20,000 a year, about 0.002%.
-    // Water Quality: +5 for water year 2021 against the Historical Baseline (draft).
-    scores: [null, 1, 4, 0, 3, 5],
+    // Water Quality & Regulation: +5 for water year 2021 against the Historical Baseline (draft).
+    scores: [5, null, 1, 4, 0, 3],
     provisional: NOT_INFERRED,
   },
   {
@@ -114,13 +115,13 @@ export const OUTFLOW_SCENARIOS: Scenario[] = [
     // rounded to −2; −2 is the overall score it states, so it is the one used.
     name: scenarioName('less'),
     color: voting.scenario.lessOutflow,
-    scores: [null, null, -2, null, -2, null],
+    scores: [null, null, null, -2, null, -2],
     provisional: NOT_INFERRED,
   },
   {
     name: scenarioName('hist'),
     color: voting.scenario.businessAsUsual,
-    scores: [null, null, 0, null, 0, 0],
+    scores: [0, null, null, 0, null, 0],
     provisional: NOT_INFERRED,
   },
 ]

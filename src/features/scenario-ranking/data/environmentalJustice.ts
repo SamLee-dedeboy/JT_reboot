@@ -1,4 +1,4 @@
-// Env. Justice: everything the ranking shows for this criterion, in one place.
+// Environmental Justice: everything the ranking shows for this criterion, in one place.
 // Change a number or a sentence here and the By criterion table, its info cards, its
 // maps and the By scenario rankings all follow. See ./types.ts for how to read it.
 import type { Facet, Source, TeamData } from './types'

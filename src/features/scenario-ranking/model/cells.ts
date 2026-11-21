@@ -13,7 +13,7 @@ export const PLACEHOLDER = UI.awaiting
 /**
  * Measures where less is better, so a fall reads blue: days under salinity or
  * temperature stress (Recreation), and water age and salinity in drinking water
- * (Environmental Justice), and salinity and exceedance days (Water Quality). Every other
+ * (Environmental Justice), and salinity and exceedance days (Water Quality & Regulation). Every other
  * measure reads blue when it rises.
  */
 const LOWER_IS_BETTER = [
