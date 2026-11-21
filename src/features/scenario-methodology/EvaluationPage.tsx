@@ -33,6 +33,7 @@ export default function EvaluationPage() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <PageHero
+          image="/images/banners/evaluation/evaluation-overview.webp"
           title="Comparative Scenario Evaluation"
           summary="Five criteria examine the ecological, eco-cultural, community, recreational, and economic effects of every future scenario. Explore what each criterion measures, then compare results across scenarios."
         />

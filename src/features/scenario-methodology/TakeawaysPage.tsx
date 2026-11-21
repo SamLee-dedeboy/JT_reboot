@@ -10,6 +10,7 @@ export default function TakeawaysPage() {
       <Navbar />
       <Box component="main" sx={{ bgcolor: 'base.800', color: 'common.white' }}>
         <PageHero
+          image="/images/banners/evaluation/scenario-takeaways.webp"
           title="Scenario takeaways"
           summary="Choose a scenario to see what all five criteria found, and where. Each pin is a place a team named, in its color, with what it measured there."
         />
