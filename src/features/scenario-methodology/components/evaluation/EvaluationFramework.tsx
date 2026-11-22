@@ -9,6 +9,7 @@ import { teamStyle, type EvaluationTeamId } from '@/ui/teamStyle'
 
 // The chip group shown under each criterion's summary.
 const visibleEntityGroup: Record<CriterionId, string> = {
+  'water-quality-regulation': 'Water quality objectives',
   ecology: 'Selected Species of Interest',
   'environmental-justice': 'People and communities',
   'ecocultural-restoration': 'People and communities',
@@ -52,9 +53,9 @@ export default function EvaluationFramework({
             variant="body1"
             sx={{ mt: jtSpacing.gap.md, color: 'base.100', maxWidth: '78ch' }}
           >
-            Five criteria examine each future from ecological, cultural, community, recreational,
-            and economic perspectives. Each criterion uses its own metrics and evidence to identify
-            benefits, burdens, and trade-offs across the Delta.
+            Six criteria examine each future from water quality, ecological, cultural, community,
+            recreational, and economic perspectives. Each criterion uses its own metrics and
+            evidence to identify benefits, burdens, and trade-offs across the Delta.
           </Typography>
         </>
       )}

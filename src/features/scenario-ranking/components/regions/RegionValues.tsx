@@ -280,6 +280,8 @@ export function RegionValues({
   const number = (region: string) => listed.findIndex((shape) => shape.name === region) + 1
   const columns = `repeat(${scenarios.length}, minmax(0, 1fr))`
   const tableColumns = `${ranking.mapRegionLabel}px ${columns}`
+  // One scenario's map (a phone's) takes the whole width, centred above its table.
+  const solo = scenarios.length === 1
   /** A region's value in the table: blue where better, red where worse, as the table. */
   const toneFor = (value: number | null) =>
     value === null || value === 0 || reading !== 'change'
@@ -330,14 +332,14 @@ export function RegionValues({
           gap: 1.5,
           ...(fit
             ? {
-                gridTemplateColumns: regionTable ? tableColumns : columns,
+                gridTemplateColumns: regionTable && !solo ? tableColumns : columns,
                 gridTemplateRows: 'minmax(0, 1fr)',
                 minHeight: 0,
               }
             : {}),
         }}
       >
-        {regionTable && <Box aria-hidden />}
+        {regionTable && !solo && <Box aria-hidden />}
         {scenarios.map((scenario) => (
           <Box
             key={scenario}
@@ -354,7 +356,11 @@ export function RegionValues({
             {/* A fitted panel has the width for the table's own column heads. */}
             <Typography
               variant={fit ? 'chartTitle' : 'chartLabel'}
-              sx={{ color: 'base.50', minHeight: fit ? undefined : 30 }}
+              sx={{
+                color: 'base.50',
+                minHeight: fit ? undefined : 30,
+                textAlign: solo ? 'center' : undefined,
+              }}
               noWrap={fit}
             >
               {SCENARIO_NAME[scenario]}

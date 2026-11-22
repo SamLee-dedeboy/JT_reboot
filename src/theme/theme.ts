@@ -120,24 +120,56 @@ export const ranking = {
   controlHeight: 44,
   /** Helper/legend row beneath the weighted-ranking column headings. */
   weightedSubheadHeight: 44,
-  priorityButton: { minWidth: 48, height: 34, radius: 999 },
+  priorityButton: { minWidth: 48, height: 34, compactHeight: 28, radius: 999 },
   /** Pill-shaped controls (the place menu): inset in spacing units, and radius. */
   setToggle: { inset: 0.5, radius: 999 },
   /** Compact controls in the breakout table; the outer tray adds its inset around them. */
   breakoutControl: { minHeight: 38, inset: 0.25 },
   /** By scenario / By criterion choices in the hero. */
   viewCard: { columns: 'repeat(2, minmax(0, 360px))' },
-  /** Numbered heads-up points before the weighting tool. */
-  headsUp: { columns: '56px minmax(0, 1fr)' },
+  /**
+   * Numbered heads-up points before the weighting tool: the numeral column, and from sm to
+   * md each point's title and body side by side.
+   */
+  headsUp: {
+    columns: { xs: '2rem minmax(0, 1fr)', sm: '3rem minmax(0, 1fr)', md: '56px minmax(0, 1fr)' },
+    titleBody: { sm: '11.25rem minmax(0, 1fr)', md: 'minmax(0, 1fr)' },
+  },
+  /** The six criteria named in the By scenario intro: the key's columns, and the md split. */
+  criteriaKey: {
+    columns: { xs: 'repeat(2, minmax(0, 1fr))', sm: 'repeat(3, minmax(0, 1fr))', md: '1fr' },
+    layout: { md: 'minmax(0, 7fr) minmax(0, 5fr)' },
+  },
+  /** The −5…+5 strip that previews the score scale before the charts. */
+  scaleStrip: { height: 10, tickOverhang: 4, fillOpacity: { edge: 0.6, center: 0.12 } },
+  /** How far a scenario moved against equal weights (▲2 / ▼2), in the weighted ranking. */
+  moveChip: { minWidth: 32, height: 22 },
+  /** The priorities bottom sheet on phones: its top corners and its tallest share of the screen. */
+  prioritySheet: { radius: 16, maxHeight: '88dvh', handle: { width: 40, height: 4 } },
+  /** The phone's floating "Set your priorities" pill, pinned over the ranking's foot. */
+  priorityTrigger: { radius: 999, elevation: 8 },
   bar: { height: 16 },
   /** A criterion's score inside an expanded scenario: a dot on a hairline stem from zero. */
   dot: { size: 12, stemWidth: 2, stemOpacity: 0.55, rowHeight: 22 },
-  /** A scenario's own row in the overall ranking (the weighted chart keeps rowHeight). */
-  overallRowHeight: 46,
+  /**
+   * A scenario's own row in the overall ranking (the weighted chart keeps rowHeight): tall
+   * enough for a name on two lines, so every row is the same height.
+   */
+  overallRowHeight: 60,
+  /** A criterion's row inside an opened scenario: room for a two-line name. */
+  breakdownRowHeight: 40,
   /** The breakout table's rail of controls, beside the table. */
   breakoutRail: { md: '240px minmax(0, 1fr)', xl: '260px minmax(0, 1fr)' },
   /** The breakout table's least row heights on the site (px): a score, and a measure under it. */
   breakoutRow: { score: 52, entity: 38 },
+  /** Below md the breakout table shows one scenario: its column, beside the metric names. */
+  singleColumn: { xs: '5.75rem', sm: '10rem' },
+  /** …and the width a detail's bar takes there, reaching into the names' column. */
+  singleBarColumn: { xs: '8rem', sm: '10.5rem' },
+  /** The criterion's score tile at the head of the one-scenario card (px). */
+  singleScore: { width: 72 },
+  /** The scenario stepper's dots below md (px): the tap area, a dot, and the current one. */
+  scenarioDots: { hit: 28, dot: 8, current: 22 },
   /** The pill after New Green Watershed's name that opens its restoration levels (px). */
   levelsPill: { height: 24 },
   /** The 25% and 100% wetland columns: never so narrow that −$212M is cut off (px). */
@@ -181,28 +213,42 @@ export const ranking = {
   },
   motion: { rerankSeconds: 0.25, expandMs: 180 },
   columns: {
-    /** Priorities beside the linked rankings. */
-    layout: { xs: '1fr', lg: '330px minmax(0, 1fr)' },
+    /** The six priority groups: one column, two side by side above the ranking on sm. */
+    priorities: {
+      xs: 'minmax(0, 1fr)',
+      sm: 'repeat(2, minmax(0, 1fr))',
+      md: 'minmax(0, 1fr)',
+    },
+    /** Priorities beside the ranking from md; above it on phones (sm) or in a sheet (xs). */
+    layout: { xs: '1fr', md: '280px minmax(0, 1fr)', lg: '330px minmax(0, 1fr)' },
+    /**
+     * Rank · scenario · bar · score · chevron. Below md the name column is fixed and names
+     * wrap to two lines, so every bar starts at the same x; an opened scenario's criteria
+     * use the same tracks, so their dots sit on the scenario bar's scale.
+     */
     overall: {
-      xs: `${rankWidth.xs} minmax(120px, .8fr) 64px`,
-      md: `${rankWidth.sm} 300px minmax(260px, 1fr) 72px`,
+      xs: `1.75rem 6.5rem minmax(0, 1fr) 2rem 1rem`,
+      sm: `${rankWidth.sm} 9.5rem minmax(0, 1fr) 3rem 1.25rem`,
+      md: `${rankWidth.sm} 300px minmax(220px, 1fr) 72px 24px`,
       // From xl the labels set larger; 340px keeps "Water Quality & Regulation" on one line.
-      xl: `${rankWidth.sm} 340px minmax(260px, 1fr) 72px`,
+      xl: `${rankWidth.sm} 340px minmax(260px, 1fr) 72px 24px`,
     },
-    team: {
-      xs: 'minmax(130px, 1fr) 72px',
-      md: '300px minmax(260px, 1fr) 72px',
-      xl: '340px minmax(260px, 1fr) 72px',
-    },
+    /**
+     * Your ranking: rank (with its move chip under it on xs) · scenario · bar · score; from
+     * sm a move column before the score; from lg the link lines show the move instead.
+     */
     current: {
-      xs: `${rankWidth.xs} minmax(0, 1fr) 56px`,
-      sm: `${rankWidth.sm} minmax(190px, 220px) minmax(50px, 1fr) 56px`,
+      xs: `2.25rem 6.5rem minmax(0, 1fr) 2rem`,
+      sm: `${rankWidth.sm} 9.5rem minmax(0, 1fr) 3rem 3rem`,
+      lg: `${rankWidth.sm} minmax(190px, 220px) minmax(50px, 1fr) 56px`,
     },
     linked: {
       xs: 'minmax(0, 1fr)',
-      md: `minmax(0, 1fr) ${linkWidth}px minmax(210px, 250px)`,
+      lg: `minmax(0, 1fr) ${linkWidth}px minmax(210px, 250px)`,
     },
     equal: `${rankWidth.sm} minmax(0, 1fr)`,
+    /** The phone sheet's top three: rank · scenario · move · score, one track for every row. */
+    topThree: `2.25rem minmax(0, 1fr) 2.5rem 2rem`,
   },
 } as const
 

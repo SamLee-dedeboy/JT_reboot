@@ -2,8 +2,21 @@
 // numbered tab bar, a filled-primary active state, outlined chips for a set, and
 // hairline-ruled rows for a list. Sized for a trackpad in a hurry and a projector.
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-import { Box, ButtonBase, Chip, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  ButtonBase,
+  Chip,
+  Menu,
+  MenuItem,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from '@mui/material'
+import type { Theme } from '@mui/material/styles'
+import { useId, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { jtSpacing, ranking } from '@/theme'
@@ -11,6 +24,7 @@ import { TeamIcon } from '@/ui'
 import { TEAMS } from '../../model/teams'
 import type { TeamKey } from '../../model/teams'
 import { focusRing } from '@/ui/focusRing'
+import { UI } from '../../tableText'
 import { pageX } from './styles'
 
 /** The team switcher: the evaluation pages' numbered bar, stuck to the top of the screen. */
@@ -26,6 +40,8 @@ export function TableTabs({
   search?: string
   stickyTop?: number | { xs: number; md: number }
 }) {
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const href = (team: TeamKey) => ({ pathname, search: `?team=${team}${search}` })
   return (
     <Box
       component="nav"
@@ -41,32 +57,34 @@ export function TableTabs({
         boxShadow: (theme) => theme.navigation.dropdownShadow,
       }}
     >
-      <Box
-        sx={{
-          px: pageX,
-          display: 'flex',
-          justifyContent: 'center',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-          '&::-webkit-scrollbar': { display: 'none' },
-        }}
-      >
-        <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ flex: '0 0 auto' }}>
+      {mdUp ? (
+        // All six at once, in equal tabs: a long name takes two lines rather than
+        // pushing a criterion off the edge, where nobody would know to scroll for it.
+        <Box
+          sx={{
+            px: pageX,
+            display: 'grid',
+            gridTemplateColumns: `repeat(${TEAMS.length}, minmax(0, 1fr))`,
+            gap: jtSpacing.gap.xs,
+          }}
+        >
           {TEAMS.map((team) => {
             const active = team.key === current
             return (
               <Box
                 key={team.key}
                 component={Link}
-                to={{ pathname, search: `?team=${team.key}${search}` }}
+                to={href(team.key)}
                 aria-current={active ? 'page' : undefined}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: 'center',
                   gap: jtSpacing.gap.xs,
-                  px: jtSpacing.component.md,
+                  px: jtSpacing.component.sm,
                   py: jtSpacing.component.sm,
                   borderRadius: 1,
+                  textAlign: 'center',
                   textDecoration: 'none',
                   color: active ? 'common.black' : team.color,
                   bgcolor: active ? team.color : 'transparent',
@@ -76,15 +94,118 @@ export function TableTabs({
                   },
                 }}
               >
-                <TeamIcon team={team.key} size={18} />
-                <Typography component="span" variant="chartTitle" sx={{ whiteSpace: 'nowrap' }}>
+                <Box sx={{ flex: 'none', display: 'inline-flex' }}>
+                  <TeamIcon team={team.key} size={18} />
+                </Box>
+                <Typography component="span" variant="chartTitle">
                   {team.name}
                 </Typography>
               </Box>
             )
           })}
-        </Stack>
-      </Box>
+        </Box>
+      ) : (
+        <CriterionPicker current={current} href={href} />
+      )}
+    </Box>
+  )
+}
+
+/**
+ * Below md, the six criteria as one picker: which one is on screen, that it is one of
+ * six, and a menu of all of them. A row of tabs that scrolls sideways hides the rest.
+ */
+function CriterionPicker({
+  current,
+  href,
+}: {
+  current: TeamKey
+  href: (team: TeamKey) => { pathname: string; search: string }
+}) {
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const team = TEAMS.find((entry) => entry.key === current) ?? TEAMS[0]
+  const menuId = useId()
+  return (
+    <Box sx={{ px: pageX, py: jtSpacing.component.sm }}>
+      <ButtonBase
+        onClick={(event) => setAnchor(event.currentTarget)}
+        aria-haspopup="menu"
+        aria-expanded={anchor ? true : undefined}
+        aria-controls={anchor ? menuId : undefined}
+        sx={{
+          width: 1,
+          minHeight: ranking.breakoutRow.score,
+          display: 'flex',
+          alignItems: 'center',
+          gap: jtSpacing.gap.sm,
+          px: jtSpacing.component.sm,
+          textAlign: 'left',
+          bgcolor: 'base.800',
+          border: 1,
+          borderColor: team.color,
+          borderRadius: 1,
+          '&.Mui-focusVisible': focusRing,
+        }}
+      >
+        <Box sx={{ flex: 'none', display: 'inline-flex', color: team.color }}>
+          <TeamIcon team={team.key} size={18} />
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="chartTitle" component="span" sx={{ color: team.color }}>
+            {team.name}
+          </Typography>
+        </Box>
+        <Typography variant="body2" component="span" sx={{ color: 'common.white' }}>
+          {UI.changeCriterion}
+        </Typography>
+        <ExpandMoreRoundedIcon
+          sx={{
+            color: 'common.white',
+            transform: anchor ? 'rotate(180deg)' : 'none',
+            transition: 'transform 150ms ease',
+          }}
+        />
+      </ButtonBase>
+      <Menu
+        id={menuId}
+        anchorEl={anchor}
+        open={!!anchor}
+        onClose={() => setAnchor(null)}
+        slotProps={{
+          paper: {
+            sx: (theme) => ({
+              width: anchor?.offsetWidth,
+              bgcolor: 'base.700',
+              border: 1,
+              borderColor: 'border.default',
+              mt: theme.jtSpacing.gap.xs,
+            }),
+          },
+        }}
+      >
+        {TEAMS.map((entry) => {
+          const active = entry.key === current
+          return (
+            <MenuItem
+              key={entry.key}
+              component={Link}
+              to={href(entry.key)}
+              selected={active}
+              aria-current={active ? 'page' : undefined}
+              onClick={() => setAnchor(null)}
+              sx={{ minHeight: ranking.breakoutRow.score, gap: jtSpacing.gap.sm }}
+            >
+              <Box sx={{ flex: 'none', display: 'inline-flex', color: entry.color }}>
+                <TeamIcon team={entry.key} size={18} />
+              </Box>
+              <Typography variant="body2" component="span" sx={{ flex: 1, color: 'common.white' }}>
+                {entry.name}
+              </Typography>
+              {active && <CheckRoundedIcon fontSize="small" sx={{ color: 'primary.main' }} />}
+            </MenuItem>
+          )
+        })}
+      </Menu>
     </Box>
   )
 }

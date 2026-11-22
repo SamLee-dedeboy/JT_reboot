@@ -4,7 +4,7 @@ import { fullBleedBand } from '@/ui/surfaceStyles'
 import EvaluationFramework from './EvaluationFramework'
 import { sectionSx } from './evaluationLayout'
 
-/** Why five criteria, then a card per criterion: what it measures and who it looks at. */
+/** Why six criteria, then a card per criterion: what it measures and who it looks at. */
 export default function HowEvaluatedSection() {
   return (
     <Box
@@ -23,7 +23,7 @@ export default function HowEvaluatedSection() {
         No single model or criterion can adequately assess all that a potential future adaptation
         scenario might mean for the Delta. A change that improves water quality in one place may
         affect habitat, recreation, Tribal relationships, or agricultural livelihoods somewhere
-        else. To capture these different values and concerns, all scenarios are evaluated by five
+        else. To capture these different values and concerns, all scenarios are evaluated by six
         criteria. Each criterion uses a distinct set of metrics, evidence, and methods, and in
         combination shows how scenarios compare in terms of benefits, drawbacks, and trade-offs.
       </Typography>

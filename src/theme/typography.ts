@@ -308,6 +308,15 @@ export const typography = {
     letterSpacing: '0.02em',
     textTransform: 'uppercase',
   },
+  // A chart title in a phone's narrow column: a metric's name beside its info button.
+  chartTitleCompact: {
+    fontFamily: fontHeading,
+    fontSize: '0.95rem',
+    fontWeight: 400,
+    lineHeight: 1.2,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+  },
   // A unit beside a chart title. Units keep their case (µS/cm), so this is the body face.
   chartUnit: {
     fontFamily: fontBody,

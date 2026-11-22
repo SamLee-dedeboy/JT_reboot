@@ -1,15 +1,15 @@
 import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
-import { Box, Button, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Collapse, Stack, Typography, useMediaQuery } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { jtSpacing, numbering, ranking } from '@/theme'
-import { RANK_LABEL } from '../../styles'
+import { jtSpacing, ranking } from '@/theme'
 import { TeamIcon } from '@/ui'
 import { EQUAL_WEIGHTS, TEAMS, fmtScore, BASELINES, weightedRanking } from '../../model/teams'
 import type { Scenario } from '../../model/teams'
 import { UNRANKED, rankLabel } from './scoreFormat'
-import { NOT_SCORED, SCORE_MAX, SCORE_MIN, TICKS, TODAY, scorePosition } from './scoreFormat'
-import { Legend, ScaleGuide, ScoreBar, ScoreValue } from './ScoreScale'
+import { SCORE_MAX, SCORE_MIN, TICKS, TODAY, scorePosition } from './scoreFormat'
+import { Legend, NotScoredNote, ScaleGuide, ScoreBar, ScoreValue } from './ScoreScale'
 
 /** Words beside the number at the ends and at zero; every other point is just its number. */
 const SCALE_WORDS: Record<number, string> = {
@@ -17,11 +17,34 @@ const SCALE_WORDS: Record<number, string> = {
   [SCORE_MAX]: 'better',
 }
 
+/** Below this track width the end and zero labels drop their words and keep their numbers. */
+const SCALE_WORDS_MIN_WIDTH = 200
+
+/** Between the columns, and the rows' own inline padding off their shaded edges. */
+const OVERALL_GAP = { xs: jtSpacing.gap.xs, sm: jtSpacing.gap.sm, md: jtSpacing.gap.md }
+const ROW_INSET = {
+  xs: jtSpacing.component.xs,
+  sm: jtSpacing.component.sm,
+  md: jtSpacing.component.md,
+}
+
+/** Every row of the chart (head, scenario, criterion) on the same tracks. */
+const rowGridSx = {
+  display: 'grid',
+  gridTemplateColumns: ranking.columns.overall,
+  columnGap: OVERALL_GAP,
+  alignItems: 'center',
+  px: ROW_INSET,
+} as const
+
+/** The rows carry their own inset, so the rank sits flush with it. */
+const RANK_SX = { color: 'primary.main' } as const
+
 /**
  * Whole-point labels over the track. The ends sit flush with the track's edges so their
  * words stay inside it; the rest center on their gridlines. ±4 and ±1 sit beside the
  * worded labels (the ends, and zero), so they drop out first when the track narrows,
- * then ±2…3 below that.
+ * then ±2…3 below that, and on a phone's narrow track the words go too.
  */
 function Scale({ zeroWord = TODAY }: { zeroWord?: string }) {
   return (
@@ -44,6 +67,7 @@ function Scale({ zeroWord = TODAY }: { zeroWord?: string }) {
             sx={{
               position: 'absolute',
               whiteSpace: 'nowrap',
+              ...(tick === 0 && { color: 'primary.main' }),
               ...(tick === SCORE_MIN
                 ? { left: 0 }
                 : tick === SCORE_MAX
@@ -52,7 +76,17 @@ function Scale({ zeroWord = TODAY }: { zeroWord?: string }) {
               ...(hideBelow && { [`@container (max-width: ${hideBelow}px)`]: { display: 'none' } }),
             }}
           >
-            {word ? `${fmtScore(tick)} ${word}` : fmtScore(tick)}
+            {fmtScore(tick)}
+            {word && (
+              <Box
+                component="span"
+                sx={{
+                  [`@container (max-width: ${SCALE_WORDS_MIN_WIDTH}px)`]: { display: 'none' },
+                }}
+              >
+                {` ${word}`}
+              </Box>
+            )}
           </Typography>
         )
       })}
@@ -61,8 +95,7 @@ function Scale({ zeroWord = TODAY }: { zeroWord?: string }) {
 }
 
 /** One criterion's score as a dot, on a stem from zero so its direction still reads. */
-function ScoreDot({ score, color }: { score: number | null; color: string }) {
-  if (score === null) return <Box sx={{ height: ranking.dot.rowHeight }} />
+function ScoreDot({ score, color }: { score: number; color: string }) {
   const from = score < 0 ? scorePosition(score) : '50%'
   const to = score < 0 ? '50%' : scorePosition(score)
 
@@ -96,72 +129,67 @@ function ScoreDot({ score, color }: { score: number | null; color: string }) {
   )
 }
 
+/**
+ * An opened scenario's six criteria, on the scenario rows' own tracks. On a phone a name
+ * takes the empty rank column too, so the longest names still fit beside their icon.
+ */
 function TeamBreakdown({ scenario }: { scenario: Scenario }) {
   return (
-    <Stack sx={{ py: jtSpacing.component.sm }}>
+    <Box sx={{ py: jtSpacing.component.xs, borderTop: 1, borderColor: 'border.subtle' }}>
       {TEAMS.map((team, index) => {
         const score = scenario.scores[index]
 
         return (
-          <Box
-            key={team.key}
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: ranking.columns.team,
-              gap: jtSpacing.gap.md,
-              alignItems: 'center',
-              minHeight: ranking.dot.rowHeight,
-            }}
-          >
+          <Box key={team.key} sx={{ ...rowGridSx, minHeight: ranking.breakdownRowHeight }}>
             <Stack
               direction="row"
               spacing={jtSpacing.gap.xs}
-              sx={{ alignItems: 'center', color: team.color }}
+              sx={{
+                gridColumn: { xs: '1 / 3', sm: 2 },
+                pl: { xs: jtSpacing.gap.sm, sm: 0 },
+                alignItems: 'flex-start',
+                color: team.color,
+              }}
             >
               <TeamIcon team={team.key} size={ranking.teamIconSize} />
-              <Typography variant="navigationLabel" sx={{ color: 'inherit' }}>
+              <Typography variant="chipLabel" sx={{ color: 'inherit' }}>
                 {team.name}
               </Typography>
             </Stack>
-            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <ScoreDot score={score} color={team.color} />
-            </Box>
+            {score === null ? <NotScoredNote /> : <ScoreDot score={score} color={team.color} />}
             <Typography
-              variant={score === null ? 'captionSmall' : 'chartValueLarge'}
+              variant="chartValueLarge"
               sx={{
                 color: score === null ? 'base.200' : team.color,
-                textAlign: { md: 'right' },
+                textAlign: 'right',
                 whiteSpace: 'nowrap',
               }}
             >
-              {score === null ? NOT_SCORED : fmtScore(score)}
+              {score === null ? UNRANKED : fmtScore(score)}
             </Typography>
           </Box>
         )
       })}
-    </Stack>
+    </Box>
   )
 }
 
-const OVERALL_GAP = { xs: jtSpacing.gap.xs, md: jtSpacing.gap.md }
-
-/** The run every other scenario is scored against: 0 on every criterion. */
-
-/** Beside the baseline's zero line: which side is better and which worse than today. */
-function BaselineSides({ zeroWord }: { zeroWord: string }) {
+/** Beside the baseline's zero line: which side is better and which worse than it. */
+function BaselineSides({ zeroWord, short }: { zeroWord: string; short: boolean }) {
   const side = {
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
     color: 'common.white',
+    whiteSpace: 'nowrap',
   } as const
   return (
     <Box sx={{ position: 'relative', height: ranking.trackHeight }}>
       <Typography variant="captionSmall" sx={{ ...side, right: 'calc(50% + 10px)' }}>
-        Above: better than {zeroWord}
+        {short ? 'Better ↑' : `Above: better than ${zeroWord}`}
       </Typography>
       <Typography variant="captionSmall" sx={{ ...side, left: 'calc(50% + 10px)' }}>
-        Below: worse than {zeroWord}
+        {short ? '↓ Worse' : `Below: worse than ${zeroWord}`}
       </Typography>
     </Box>
   )
@@ -184,6 +212,8 @@ export default function OverallRankingChart({
   zeroWord?: string
   baselineNote?: string
 }) {
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const expandableScenarios = useMemo(
     () => scenarios.filter(({ name }) => !BASELINES.has(name)),
     [scenarios],
@@ -194,10 +224,11 @@ export default function OverallRankingChart({
 
   return (
     <Stack spacing={jtSpacing.component.lg}>
+      {/* Toolbar: the sea-level switch, then the legend and Expand all (one row from md). */}
       <Stack
-        direction={{ xs: 'column', lg: 'row' }}
+        direction={{ xs: 'column', md: 'row' }}
         spacing={jtSpacing.gap.md}
-        sx={{ alignItems: { lg: 'center' }, justifyContent: 'space-between' }}
+        sx={{ alignItems: { md: 'center' }, justifyContent: 'space-between' }}
       >
         {heading}
         <Stack
@@ -207,13 +238,14 @@ export default function OverallRankingChart({
           sx={{
             alignItems: 'center',
             justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            ml: { lg: heading ? 0 : 'auto' },
+            flexWrap: { sm: 'wrap' },
+            ml: { md: heading ? 0 : 'auto' },
           }}
         >
-          <Legend zeroWord={zeroWord} />
+          <Legend zeroWord={zeroWord} stacked={!smUp} />
           <Button
             variant="outlined"
+            sx={{ flex: 'none' }}
             onClick={() =>
               setExpanded(
                 allExpanded ? new Set() : new Set(expandableScenarios.map(({ name }) => name)),
@@ -227,9 +259,7 @@ export default function OverallRankingChart({
       <Box>
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: ranking.columns.overall,
-            columnGap: OVERALL_GAP,
+            ...rowGridSx,
             alignItems: 'end',
             pt: jtSpacing.component.md,
             pb: jtSpacing.component.sm,
@@ -237,22 +267,21 @@ export default function OverallRankingChart({
             borderColor: 'border.subtle',
           }}
         >
-          <Typography variant="columnHead">Rank</Typography>
+          <Typography variant="columnHead">{smUp ? 'Rank' : '#'}</Typography>
           <Typography variant="columnHead">Scenario</Typography>
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Scale zeroWord={zeroWord} />
-          </Box>
+          <Scale zeroWord={zeroWord} />
+          {/* On a phone the score column is too narrow for its head; the numbers speak. */}
           <Typography variant="columnHead" sx={{ textAlign: 'right' }}>
-            Score
+            {smUp ? 'Score' : ''}
           </Typography>
         </Box>
         <Box sx={{ position: 'relative' }}>
-          {/* The guide follows the scenario rows' columns, not the indented team rows. */}
           <ScaleGuide
             columns={ranking.columns.overall}
             columnGap={OVERALL_GAP}
             column={3}
-            from="md"
+            from="xs"
+            inset={ROW_INSET}
           />
           {ranked.map((scenario, index) => {
             // The baseline is a band the others are read against; the rest alternate
@@ -302,11 +331,8 @@ export default function OverallRankingChart({
                       : `${open ? 'Hide' : 'Show'} ${scenario.name} criterion scores`
                   }
                   sx={{
+                    ...rowGridSx,
                     width: '100%',
-                    display: 'grid',
-                    gridTemplateColumns: ranking.columns.overall,
-                    columnGap: OVERALL_GAP,
-                    alignItems: 'center',
                     minHeight: ranking.overallRowHeight,
                     py: baseline ? jtSpacing.component.xs : 0,
                     textAlign: 'left',
@@ -315,58 +341,64 @@ export default function OverallRankingChart({
                     }),
                   }}
                 >
-                  <Typography variant="chartValueLarge" sx={RANK_LABEL}>
+                  <Typography variant={smUp ? 'chartValueLarge' : 'chartValue'} sx={RANK_SX}>
                     {scenario.hasScores ? rankLabel(index + 1) : UNRANKED}
                   </Typography>
-                  <Stack
-                    direction="row"
-                    sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                  >
-                    <Box>
-                      <Typography variant="navigationLabel" sx={{ whiteSpace: 'nowrap' }}>
-                        {scenario.name}
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography
+                      variant={smUp ? 'navigationLabel' : 'chipLabel'}
+                      component="span"
+                      sx={{ display: 'block' }}
+                    >
+                      {scenario.name}
+                    </Typography>
+                    {baseline && smUp && (
+                      <Typography
+                        variant="captionSmall"
+                        component="span"
+                        sx={{ display: 'block', color: 'primary.main' }}
+                      >
+                        {baselineNote}
                       </Typography>
-                      {baseline && (
-                        <Typography
-                          variant="captionSmall"
-                          component="p"
-                          sx={{ color: 'primary.main' }}
-                        >
-                          {baselineNote}
-                        </Typography>
-                      )}
-                    </Box>
-                    {!baseline && (
-                      <ExpandMoreRoundedIcon
-                        sx={{
-                          color: 'base.100',
-                          transform: open ? 'rotate(180deg)' : 'none',
-                          transition: `transform ${ranking.motion.expandMs}ms ease`,
-                        }}
-                      />
-                    )}
-                  </Stack>
-                  <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-                    {baseline ? (
-                      <BaselineSides zeroWord={zeroWord} />
-                    ) : (
-                      <ScoreBar score={scenario.wAvg} />
                     )}
                   </Box>
-                  <ScoreValue scenario={scenario} />
+                  {baseline ? (
+                    smUp ? (
+                      <BaselineSides zeroWord={zeroWord} short={!mdUp} />
+                    ) : (
+                      <Box />
+                    )
+                  ) : scenario.hasScores ? (
+                    <ScoreBar score={scenario.wAvg} />
+                  ) : (
+                    <NotScoredNote />
+                  )}
+                  <ScoreValue scenario={scenario} compact={!smUp} />
+                  {baseline ? (
+                    <Box />
+                  ) : (
+                    <ExpandMoreRoundedIcon
+                      sx={{
+                        width: '100%',
+                        color: 'base.100',
+                        transform: open ? 'rotate(180deg)' : 'none',
+                        transition: `transform ${ranking.motion.expandMs}ms ease`,
+                      }}
+                    />
+                  )}
+                  {/* A phone's bar column is too narrow for the note: it gets its own line. */}
+                  {baseline && !smUp && (
+                    <Typography
+                      variant="captionSmall"
+                      component="span"
+                      sx={{ gridColumn: '2 / -1', color: 'primary.main' }}
+                    >
+                      {baselineNote}
+                    </Typography>
+                  )}
                 </ButtonBase>
                 <Collapse in={open} timeout={ranking.motion.expandMs}>
-                  {/* Team rows start under the scenario name, past the rank column. */}
-                  <Box
-                    sx={(theme) => ({
-                      pl: {
-                        xs: 0,
-                        md: `calc(${numbering.rank.width.sm} + ${theme.spacing(jtSpacing.gap.md)})`,
-                      },
-                    })}
-                  >
-                    <TeamBreakdown scenario={scenario} />
-                  </Box>
+                  <TeamBreakdown scenario={scenario} />
                 </Collapse>
               </Box>
             )

@@ -61,7 +61,12 @@ export function Segmented<T extends string>({
         p: ranking.breakoutControl.inset,
         border: 1,
         borderColor: 'border.strong',
-        borderRadius: ranking.setToggle.radius,
+        // A tray that wraps keeps its options' rounding at its corners, rather than
+        // stretching a pill around two rows: the same curve, the inset and border out.
+        borderRadius: wrap
+          ? (theme) =>
+              `calc(${ranking.breakoutControl.minHeight / 2}px + ${theme.spacing(ranking.breakoutControl.inset)} + 1px)`
+          : ranking.setToggle.radius,
         bgcolor: 'transparent',
       }}
     >

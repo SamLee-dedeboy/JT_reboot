@@ -73,6 +73,20 @@ export const UI = {
   /** The heading over the table, under the criterion tabs. */
   howBuilt: 'How the score is built',
 
+  // Below md: one criterion picker for the tabs, one scenario at a time for the table.
+  changeCriterion: 'Change',
+  biggerScreenTitle: 'Best on a bigger screen',
+  biggerScreenBody: (phone: boolean) =>
+    phone
+      ? 'On a phone you see one scenario at a time. To compare this criterion across all of them side by side, use a tablet, laptop or desktop for the best experience.'
+      : 'At this size you see one scenario at a time. To compare this criterion across all of them side by side, use a tablet held sideways, a laptop or a desktop for the best experience.',
+  dismiss: 'Dismiss',
+  scenario: 'Scenario',
+  scenarioOf: (index: number, count: number) => `${index} of ${count} scenarios`,
+  previousScenario: 'Previous scenario',
+  nextScenario: 'Next scenario',
+  againstBaseline: (baseline: string) => `Against ${baseline}`,
+
   // The rail.
   seaLevel: 'CONDITIONS',
   current: 'Current',
@@ -116,11 +130,7 @@ export const UI = {
   legendScores: 'Score',
   legendDetails: 'Details \u2014',
   /** The legend for a measure's difference: blue better, orange worse. */
-  better: 'Better',
-  worse: 'Worse',
-  noValue: 'Forthcoming',
   switchedOff: 'scenario switched off',
-  notApplicableKey: 'N/A · doesn’t apply to this scenario',
 
   // The table.
   rankingHeading: 'Ranking scores · −5 to +5',
@@ -171,6 +181,9 @@ export const UI = {
   mapPickRegion: 'Pick an area below to outline it on every map.',
   mapPickedRegion: (region: string) =>
     `${region} is outlined on every map. Pick it again to clear.`,
+  mapPickRegionOne: 'Pick an area below to outline it on the map.',
+  mapPickedRegionOne: (region: string) =>
+    `${region} is outlined on the map. Pick it again to clear.`,
   lifeStagePicker: 'Life stage',
 
   // The info cards (explainers) and the cell cards (lookups).

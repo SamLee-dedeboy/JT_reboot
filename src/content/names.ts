@@ -73,8 +73,7 @@ export const TEAM_NAMES: Record<TeamKey, TeamNames> = {
     name: 'Economy',
     shortName: 'Economy',
   },
-  // A proposed sixth criterion (draft): ranked with the others, with no evaluation
-  // page yet.
+  // A proposed sixth criterion (draft), ranked and evaluated with the others.
   waterQuality: {
     key: 'waterQuality',
     slug: 'water-quality-regulation',

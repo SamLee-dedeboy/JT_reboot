@@ -26,6 +26,7 @@ const NO_PLACES: TeamKey[] = ['ecoCultural', 'waterQuality']
 export function Rail({
   state,
   row,
+  oneScenario = false,
 }: {
   state: TableState
   /**
@@ -33,6 +34,8 @@ export function Rail({
    * one-screen kiosk they are a column beside it that scrolls inside itself.
    */
   row: boolean
+  /** Below md the table shows one scenario, chosen by its own picker: no scenario chips. */
+  oneScenario?: boolean
 }) {
   const places = !NO_PLACES.includes(state.root.team)
   // A place that stands for everywhere: Delta-wide, or EJ's all 49 points.
@@ -200,6 +203,25 @@ export function Rail({
   // with no empty row or rule above them.
   if (row) {
     const filters = [conditions, period, place].some(Boolean)
+    if (oneScenario)
+      return filters ? (
+        <Box
+          component="aside"
+          aria-label="Table controls"
+          sx={{
+            ...panelSx,
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'flex-start',
+            columnGap: jtSpacing.section.sm,
+            rowGap: jtSpacing.gap.lg,
+          }}
+        >
+          {conditions}
+          {period}
+          {place}
+        </Box>
+      ) : null
     return (
       <Stack component="aside" aria-label="Table controls" spacing={jtSpacing.gap.lg} sx={panelSx}>
         {filters && (
