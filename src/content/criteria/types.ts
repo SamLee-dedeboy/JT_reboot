@@ -12,7 +12,12 @@
 //     `null` marks a value not published yet.
 
 export type CriterionId =
-  'ecology' | 'environmental-justice' | 'ecocultural-restoration' | 'recreation' | 'economy'
+  | 'water-quality-regulation'
+  | 'ecology'
+  | 'environmental-justice'
+  | 'ecocultural-restoration'
+  | 'recreation'
+  | 'economy'
 
 export interface Criterion {
   /** The criterion page's URL segment, as in /scenarios/evaluation/<id>. */
@@ -27,6 +32,8 @@ export interface Criterion {
   story: CriterionStory
   /** Left out where the team maps no regions (eco-cultural: specific sites are deliberately not mapped). */
   regions?: CriterionRegions
+  /** Point stations, for a criterion measured at stations rather than across regions. */
+  stations?: CriterionStations
   references: string[]
   report: TeamReport
 }
@@ -35,6 +42,8 @@ export interface StoryTable {
   caption: string
   columns: string[]
   rows: string[][]
+  /** Open this optional table when the page first renders. */
+  defaultOpen?: boolean
 }
 
 export interface CriterionComponent {
@@ -94,6 +103,26 @@ export interface CriterionRegions {
   /** One entry per outline on the map, in reading order. */
   regions: Array<{ name: string; note?: string }>
   /** What the map leaves out, where it does. */
+  mapNote?: string
+}
+
+/** A station on the Delta map, in REGION_VIEWBOX coordinates (see deltaRegions.ts). */
+export interface MapStation {
+  name: string
+  at: [number, number]
+  /** Which side of the dot its name sits on. */
+  label: 'above' | 'below' | 'left' | 'right'
+}
+
+export interface CriterionStations {
+  intro: string
+  groups: Array<{
+    name: string
+    /** The theme accent the group's dots are drawn in. */
+    tone: 'blue' | 'purple' | 'orange' | 'yellow'
+    note: string
+    stations: MapStation[]
+  }>
   mapNote?: string
 }
 

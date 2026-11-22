@@ -50,6 +50,7 @@ declare module '@mui/material/styles' {
     scenarioPanelTitle: CSSProperties
     footerLogo: CSSProperties
     chartTitle: CSSProperties
+    chartTitleCompact: CSSProperties
     chartUnit: CSSProperties
     cardHeading: CSSProperties
     chartLabel: CSSProperties
@@ -166,6 +167,7 @@ declare module '@mui/material/Typography' {
     scenarioPanelTitle: true
     footerLogo: true
     chartTitle: true
+    chartTitleCompact: true
     chartUnit: true
     cardHeading: true
     chartLabel: true

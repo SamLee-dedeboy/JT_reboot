@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@mui/material'
 import { alpha } from '@mui/material/styles'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { jtSpacing } from '@/theme'
 import { NumberedHeading, StageChip } from '@/ui'
@@ -264,7 +264,7 @@ function ComponentCard({
 
 /** A component's data table, closed until asked for. */
 function OptionalTable({ table, accent }: { table: StoryTable; accent: string }) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(table.defaultOpen ?? false)
 
   return (
     <Box sx={{ mt: jtSpacing.gap.lg }}>
@@ -275,11 +275,26 @@ function OptionalTable({ table, accent }: { table: StoryTable; accent: string })
         onClick={() => setOpen((current) => !current)}
         sx={{ color: accent, borderColor: 'border.subtle' }}
       >
-        {table.caption}
+        <TableCaption text={table.caption} />
       </Button>
       {open && <StoryDataTable table={table} accent={accent} />}
     </Box>
   )
+}
+
+/** Keep scientific units in their original case inside the uppercase table label. */
+function TableCaption({ text }: { text: string }) {
+  const parts = text.split('µS/cm')
+  return parts.map((part, index) => (
+    <Fragment key={`${part}-${index}`}>
+      {part}
+      {index < parts.length - 1 && (
+        <Typography component="span" variant="chartUnit" sx={{ color: 'inherit' }}>
+          µS/cm
+        </Typography>
+      )}
+    </Fragment>
+  ))
 }
 
 function StoryDataTable({ table, accent }: { table: StoryTable; accent: string }) {

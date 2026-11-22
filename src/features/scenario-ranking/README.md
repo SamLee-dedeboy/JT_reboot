@@ -62,6 +62,7 @@ By scenario, in `components/by-scenario/`:
 | `ByScenarioView.tsx`       | The view's sections in order: intro, overall ranking, heads-up, weights |
 | `OverallRankingChart.tsx`  | The overall ranking, with each scenario's criterion breakdown           |
 | `WeightedRankingChart.tsx` | The priority controls and the re-ranked list                            |
+| `CriteriaKey.tsx`          | The intro's key of the six criteria and the −5…+5 strip                 |
 | `ScoreScale.tsx`           | Legend, score bar and scale guide both charts share                     |
 | `scoreFormat.ts`           | The −5…+5 scale, rank labels and missing-score words                    |
 | `HeadsUp.tsx`              | The caveats between the two charts                                      |
@@ -72,13 +73,14 @@ By criterion, in `components/by-criterion/`:
 | -------------------- | ------------------------------------------------------------------------------------ |
 | `CriterionTable.tsx` | The view's shell: criterion tabs, takeaway + caveats, heading, controls + table      |
 | `Rail.tsx`           | The controls: conditions, time period, place tabs and info card, scenario chips      |
+| `ScenarioPicker.tsx` | Below md: the one scenario on screen (phone stepper, sm list) and the pager under it |
 | `TableHeader.tsx`    | The sentence over the table, the Table/Map switch, the legend                        |
 | `Matrix.tsx`         | The table: heads, score rows, measure rows, cells, bars, best-in-row dot             |
 | `CellCards.tsx`      | Cards opened by a click: a cell's numbers (lookup), a score's definition (explainer) |
 | `Explainer.tsx`      | The one info-card shell: heading, sections, pairs, the −5…+5 scale                   |
 | `Maps.tsx`           | The map view                                                                         |
 | `Pins.tsx`           | Pinned views and notes (hidden: `SHOW_PINS` in `CriterionTable.tsx`)                 |
-| `controls.tsx`       | Shared pieces: criterion tabs, scenario chip, measure row, group title               |
+| `controls.tsx`       | Shared pieces: criterion tabs (a picker below md), scenario chip, group title        |
 | `styles.ts`          | Shared styles: page padding, popover card                                            |
 
 The pill switch (`Segmented`) and focus ring are site-wide, in `src/ui/`. Sizes, row heights and

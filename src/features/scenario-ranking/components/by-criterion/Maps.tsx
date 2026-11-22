@@ -1,5 +1,6 @@
 // The map view: one row of maps per measure, coloured like the table.
-import { Box } from '@mui/material'
+import { Box, useMediaQuery } from '@mui/material'
+import type { Theme } from '@mui/material'
 import { useEffect, useState } from 'react'
 import type { TeamKey } from '../../model/teams'
 import { ANY } from '../../model/criteria'
@@ -31,19 +32,26 @@ export function Maps({
   team,
   onScale,
   onInspect,
+  single,
 }: {
   state: TableState
   team: TeamKey
+  /** Below md, the one scenario chosen by the picker; its map alone. */
+  single?: ScenarioKey
   onScale: (scale: MapScale | null) => void
   onInspect: (inspect: Inspect) => void
 }) {
   const keys = MAP_REGION_KEY[team] ?? {}
+  // A phone has no row wide enough for six measures: their tray wraps.
+  const phone = !useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const items = mapItems(state, team)
   const scores = [...new Set(items.map((item) => item.score))]
   const [picked, setPicked] = useState<string | null>(null)
   const [pickedYear, setPickedYear] = useState<string | null>(null)
   const active = items.find((item) => item.node.id === picked) ?? items[0]
-  const dimmed = state.columns.filter((scenario) => !state.scenarios.includes(scenario))
+  const dimmed = single
+    ? []
+    : state.columns.filter((scenario) => !state.scenarios.includes(scenario))
   const pickedRegion = Object.entries(keys).find(([, place]) => place === state.place)?.[0] ?? null
   useEffect(() => {
     if (!active) onScale(null)
@@ -116,6 +124,7 @@ export function Maps({
               onChange={(next) => openTab(tabs[Number(next)])}
               options={tabs.map((tab, index) => ({ value: String(index), label: tab.name }))}
               dense
+              wrap={phone}
             />
           </Box>
         )}
@@ -150,7 +159,7 @@ export function Maps({
         <RegionValues
           key={node.id}
           team={team}
-          scenarios={state.columns}
+          scenarios={single ? [single] : state.columns}
           dimmed={dimmed}
           reading={node.asPublished ? 'level' : state.reading}
           sameStyleForChange
@@ -193,8 +202,8 @@ export function Maps({
             })
           }
           regionTable={{
-            hint: UI.mapPickRegion,
-            pickedHint: UI.mapPickedRegion,
+            hint: single ? UI.mapPickRegionOne : UI.mapPickRegion,
+            pickedHint: single ? UI.mapPickedRegionOne : UI.mapPickedRegion,
             noValue: (scenario) =>
               outflowUnderSlr(scenario, state.climate) ||
               node.notApplicableIn?.[scenario]?.includes(year ?? state.period)

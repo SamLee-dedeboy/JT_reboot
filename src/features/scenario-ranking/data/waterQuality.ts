@@ -21,7 +21,7 @@ const SOURCE_D1641: Source = {
   doc: 'report',
   where: 'SWRCB Revised Water Right Decision 1641 (15 Mar 2000), Tables 1–4 and footnotes',
   quote:
-    'Tables 1 to 4: municipal and industrial chloride, agricultural and export salinity, fish and wildlife, and the number of days the western Delta must stay fresh (X2).',
+    'Salinity limits for drinking-water intakes, the export pumps, West Delta farms, and a fresh western Delta for fish and wildlife (X2), each with its own season.',
 }
 
 const NOT_BROKEN_OUT: Facet[] = [{ key: '*', label: 'Not broken out' }]
@@ -48,33 +48,31 @@ const GROUPS = [
   {
     key: 'west',
     label: 'Delta outflow',
-    salinityNote:
-      'Port Chicago (station 70), Mallard Island standing in for Chipps Island (station 82) and Collinsville (station 90).',
+    salinityNote: 'Port Chicago, Chipps Island (read at Mallard Island) and Collinsville.',
     d1641Note:
-      'Collinsville (Table 3, every day fresh, Feb–Jun), Chipps Island and Port Chicago (Table 4, required fresh days, Feb–Jun) and San Joaquin River salinity at Jersey Point (Table 3, Apr–May).',
+      'Feb–Jun: EC at or below 2,640 µS/cm every day at Collinsville, and on a required number of days each month at Chipps Island and Port Chicago. Apr–May: 14-day average EC at or below 440 µS/cm at Jersey Point.',
   },
   {
     key: 'muni',
     label: 'Municipal intakes',
-    salinityNote:
-      'Rock Slough standing in for the Contra Costa Canal intake (station 268) and Antioch (station 96): drinking water.',
+    salinityNote: 'Contra Costa Canal (read at Rock Slough) and Antioch: drinking water.',
     d1641Note:
-      'Table 1: chloride at or below 250 mg/L every day at Rock Slough, and the yearly count of days at or below 150 mg/L at Contra Costa Canal or Antioch.',
+      'All year: chloride at or below 250 mg/L every day at the Contra Costa Canal. Calendar year: chloride at or below 150 mg/L on 155–240 days, by year type, at the Contra Costa Canal or Antioch.',
   },
   {
     key: 'export',
     label: 'Export intakes',
     salinityNote:
-      'West Canal at Clifton Court (station 360, SWP) and the Tracy Pumping Plant (station 358, CVP).',
+      'Clifton Court Forebay (State Water Project) and the Tracy Pumping Plant (Central Valley Project).',
     d1641Note:
-      'Table 1: chloride at or below 250 mg/L every day at West Canal and Tracy; Table 2: monthly average EC at or below 1.0 mmhos/cm.',
+      'All year: chloride at or below 250 mg/L every day, and each month’s average EC at or below 1,000 µS/cm, at Clifton Court Forebay and Tracy.',
   },
   {
     key: 'ag',
     label: 'West Delta agriculture',
-    salinityNote: 'Emmaton (station 104) and Jersey Point (station 113).',
+    salinityNote: 'Emmaton and Jersey Point.',
     d1641Note:
-      'Table 2: each day’s 14-day average EC at Emmaton and Jersey Point against that day’s limit for the water year type, Apr 1–Aug 15.',
+      'Apr 1–Aug 15: 14-day average EC at or below 450 µS/cm in wet years, rising after mid-June in drier years, up to 2,780 µS/cm at Emmaton and 2,200 µS/cm at Jersey Point in critical years.',
   },
 ]
 
@@ -228,7 +226,7 @@ export const WATER_QUALITY: TeamData = {
       'Draft: This is a proposed sixth criterion for team review. Its prototype scores count in the By scenario rankings like the other five criteria, so they may change once the team settles the open decisions (year weighting, the D-1641 scale and the overlap with Environmental Justice and Economy).',
       'Exceedance days: An exceedance day means the modeled salinity alone does not meet a D-1641 objective; it is not a regulatory violation. Some objectives can be met with enough Delta outflow instead, and the model results do not include outflow. Collinsville’s Suisun Marsh objective (high-tide EC) and Prisoners Point are not included.',
       'Baselines: Each scenario is compared with its own Business as Usual under the same climate. ++Eco Machine++, ++New Green Watershed++ and ++Bolster & Fortify++ use RMA’s Business as Usual; ++Calling on Reserves++ and ++A Tunnel++ use CalSim’s, which is unusually salty in spring 2020. ++Increased Delta Outflow++ is compared with the Historical Baseline (SCHISM run 15) for water year 2021 only.',
-      'Stand-in stations: Four of the nine compliance points have no model station of their own, so the closest one stands in: Mallard Island for Chipps Island, Antioch near the Antioch Water Works intake, Rock Slough for the Contra Costa Canal intake, and West Canal near Clifton Court.',
+      'Stand-in stations: Four of the nine compliance stations have no model station at the exact location, so the closest one stands in: Mallard Island for Chipps Island, Antioch near the Antioch Water Works intake, Rock Slough for the Contra Costa Canal intake, and West Canal near Clifton Court.',
       'Overlap: Environmental Justice also scores salinity in drinking water (at 49 small community systems), and Economy scores crop losses from irrigation salinity. Whether the municipal and West Delta agriculture groups stay here is a decision for the team.',
     ],
     criterion: {
@@ -239,7 +237,7 @@ export const WATER_QUALITY: TeamData = {
     periodWhy:
       'Salinity change is calculated for each water year, 2019 (wet) and 2020 (dry), and the two are averaged with equal weight: scenarios behave differently in wet and dry years, and one year would hide that. D-1641 objectives keep their own periods, the day, the month or the calendar year, as each is written. Increased Delta Outflow covers water year 2021 (critical), the only year in that run.',
     placeWhy:
-      'Nine model stations stand for the D-1641 compliance points in the western, central and south Delta. They are grouped by what they protect so that the three Delta outflow stations do not outweigh the two export intakes.',
+      'Nine model stations represent D-1641 compliance stations in the western, central and south Delta. They are grouped by what they protect so that the three Delta outflow stations do not outweigh the two export intakes.',
   },
   // The By criterion table's rows, top to bottom
   rows: criterionRows(

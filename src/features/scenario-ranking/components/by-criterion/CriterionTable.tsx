@@ -16,17 +16,32 @@
 // order and fade when switched off; ranking scores (−5…+5) are set apart from the
 // details beneath them.
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
+import ExpandMoreRoundedIcon from '@mui/icons-material/ExpandMoreRounded'
+import LaptopRoundedIcon from '@mui/icons-material/LaptopRounded'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
-import { Box, Button, ButtonBase, Collapse, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  ButtonBase,
+  Collapse,
+  IconButton,
+  Stack,
+  Typography,
+  useMediaQuery,
+} from '@mui/material'
+import type { Theme } from '@mui/material/styles'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useId, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { methodologyPath } from '@/content/routes'
+import { focusRing } from '@/ui/focusRing'
 import { borderedPanelSx } from '@/ui/surfaceStyles'
 import { jtSpacing, navigation, ranking } from '@/theme'
 import { TEAMS } from '../../model/teams'
 import type { TeamKey } from '../../model/teams'
 import type { MapScale } from '../regions/RegionValues'
+import type { ScenarioKey } from '../../model/criteria'
 import { CellCard } from './CellCards'
 import type { Inspect } from './CellCards'
 import { TableTabs } from './controls'
@@ -35,6 +50,7 @@ import { Maps } from './Maps'
 import { Matrix } from './Matrix'
 import { Pins } from './Pins'
 import { Rail } from './Rail'
+import { ScenarioList, ScenarioPager, ScenarioStepper } from './ScenarioPicker'
 import { LegendBar, Sentence, ViewSwitch } from './TableHeader'
 import { UI } from '../../tableText'
 import { teamText } from '../../data/index'
@@ -47,6 +63,7 @@ const TEAM_KEYS = TEAMS.map((team) => team.key)
 
 /** Each table's criterion page, whose route ids differ from the ranking's team keys. */
 const CRITERION_IDS: Partial<Record<TeamKey, string>> = {
+  waterQuality: 'water-quality-regulation',
   ecology: 'ecology',
   recreation: 'recreation',
   environmentalJustice: 'environmental-justice',
@@ -86,6 +103,18 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
   // The map's colour ends, heard from the map so the one legend can give them.
   const [mapScale, setMapScale] = useState<MapScale | null>(null)
   const view: View = state.view === 'map' && !canMap ? 'table' : state.view
+  // Below md the site's table and maps show one scenario at a time, chosen by a picker; six
+  // columns do not fit a phone. The kiosk always has the room for all of them.
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const [picked, setPicked] = useState<ScenarioKey | null>(null)
+  const oneScenario = embedded && !mdUp
+  const single = oneScenario
+    ? picked && state.columns.includes(picked)
+      ? picked
+      : state.columns[0]
+    : undefined
+  const picker = single && { state, scenario: single, onChange: setPicked }
 
   return (
     // From md up the screen is exactly one viewport tall: tabs, sentence, then the
@@ -162,7 +191,7 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
                   </Button>
                 )}
               </Stack>
-              <Caveats team={team} />
+              <Caveats team={team} collapsible={!mdUp} />
             </Box>
             <TableHeading />
           </>
@@ -186,12 +215,19 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
           py: theme.jtSpacing.component.md,
         })}
       >
-        <Rail state={state} row={embedded} />
+        {oneScenario && <BiggerScreenNote phone={!smUp} />}
+        <Rail state={state} row={embedded} oneScenario={oneScenario} />
+        {picker && (smUp ? <ScenarioList {...picker} /> : <ScenarioStepper {...picker} />)}
         <Box
           sx={{
-            ...(embedded ? {} : borderedPanelSx),
+            // One scenario's column is a card of its own, its score at the head.
+            ...(embedded && !single ? {} : borderedPanelSx),
             // Tighter on a laptop, where the table needs the width.
-            p: embedded ? 0 : { md: 1.5, xl: 2.5 },
+            p: single
+              ? { xs: jtSpacing.component.sm, sm: jtSpacing.component.md }
+              : embedded
+                ? 0
+                : { md: 1.5, xl: 2.5 },
             minWidth: 0,
             minHeight: 0,
             display: 'grid',
@@ -214,7 +250,8 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
                   gap: jtSpacing.gap.md,
                 }}
               >
-                <Sentence state={state} compact />
+                {/* One scenario at a time: the picker says which, not the sentence. */}
+                {!single && <Sentence state={state} compact />}
                 {canMap && <ViewSwitch state={state} view={view} />}
               </Box>
               <LegendBar state={state} view={view} mapScale={mapScale} />
@@ -237,15 +274,25 @@ function Table({ team, set, embedded }: { team: TeamKey; set: ScenarioSetId; emb
           <Box
             role="region"
             aria-label={`Result as a ${view}`}
-            sx={{ minHeight: { xs: 480, md: 0 }, overflow: embedded ? 'visible' : 'hidden' }}
+            sx={{
+              minHeight: single ? 0 : { xs: 480, md: 0 },
+              overflow: embedded ? 'visible' : 'hidden',
+            }}
           >
             {view === 'map' ? (
-              <Maps state={state} team={team} onScale={setMapScale} onInspect={setInspect} />
+              <Maps
+                state={state}
+                team={team}
+                onScale={setMapScale}
+                onInspect={setInspect}
+                single={single}
+              />
             ) : (
-              <Matrix state={state} onInspect={setInspect} fit={!embedded} />
+              <Matrix state={state} onInspect={setInspect} fit={!embedded} single={single} />
             )}
           </Box>
         </Box>
+        {picker && !smUp && <ScenarioPager {...picker} />}
       </Box>
 
       {SHOW_PINS && <Pins state={state} name={name} />}
@@ -271,8 +318,12 @@ function TableHeading() {
  * The team's caveats and clarifications, beside its takeaway: what to keep in mind
  * across the whole criterion. Nothing shows for a team with none.
  */
-function Caveats({ team }: { team: TeamKey }) {
+function Caveats({ team, collapsible = false }: { team: TeamKey; collapsible?: boolean }) {
   const notes = teamText(team).caveats ?? []
+  // Below md the notes start closed behind their heading, so the table is not far below.
+  const [open, setOpen] = useState(false)
+  const reduceMotion = useReducedMotion()
+  const bodyId = useId()
   if (notes.length === 0) return null
   // The team's colour marks the icon and arrows, so the note reads as theirs.
   const color = TEAMS.find((t) => t.key === team)?.color
@@ -290,24 +341,110 @@ function Caveats({ team }: { team: TeamKey }) {
         border: 1,
         borderColor: 'border.default',
         borderRadius: 1,
+        // Closed, the heading is the whole panel: its own padding, not the list's.
+        ...(collapsible ? { pt: 0, pb: 0 } : {}),
       }}
     >
-      <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center', mb: 1.5 }}>
-        <WarningAmberRoundedIcon fontSize="small" sx={{ color }} />
-        <Typography
-          id={`caveats-${team}`}
-          variant="chartTitle"
-          component="h3"
-          sx={{ color: 'base.50' }}
+      {collapsible ? (
+        <ButtonBase
+          onClick={() => setOpen((value) => !value)}
+          aria-expanded={open}
+          aria-controls={bodyId}
+          sx={{
+            width: 1,
+            minHeight: ranking.breakoutRow.score,
+            display: 'flex',
+            gap: jtSpacing.gap.xs,
+            textAlign: 'left',
+            '&.Mui-focusVisible': focusRing,
+          }}
         >
-          {UI.caveatsHeading}
-        </Typography>
-      </Stack>
-      <Box>
+          <WarningAmberRoundedIcon fontSize="small" sx={{ color }} />
+          <Typography
+            id={`caveats-${team}`}
+            variant="chartTitle"
+            component="h3"
+            sx={{ flex: 1, color: 'base.50' }}
+          >
+            {UI.caveatsHeading}
+          </Typography>
+          <Typography variant="captionSmall" component="span">
+            {notes.length}
+          </Typography>
+          <motion.span
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.2 }}
+            style={{ display: 'inline-flex' }}
+          >
+            <ExpandMoreRoundedIcon sx={{ color }} />
+          </motion.span>
+        </ButtonBase>
+      ) : (
+        <Stack direction="row" spacing={jtSpacing.gap.xs} sx={{ alignItems: 'center', mb: 1.5 }}>
+          <WarningAmberRoundedIcon fontSize="small" sx={{ color }} />
+          <Typography
+            id={`caveats-${team}`}
+            variant="chartTitle"
+            component="h3"
+            sx={{ color: 'base.50' }}
+          >
+            {UI.caveatsHeading}
+          </Typography>
+        </Stack>
+      )}
+      <Collapse
+        id={bodyId}
+        in={!collapsible || open}
+        timeout={reduceMotion ? 0 : 'auto'}
+        sx={collapsible ? { pb: open ? jtSpacing.component.sm : 0 } : undefined}
+      >
         {notes.map((note) => (
           <CaveatNote key={note} note={note} color={color} />
         ))}
+      </Collapse>
+    </Box>
+  )
+}
+
+/**
+ * Below md, once, where the table starts: why it shows one scenario at a time, and
+ * where to compare them all. Dismissed, it stays gone for this visit.
+ */
+function BiggerScreenNote({ phone }: { phone: boolean }) {
+  const [shown, setShown] = useState(true)
+  if (!shown) return null
+  return (
+    <Box
+      component="aside"
+      aria-label={UI.biggerScreenTitle}
+      sx={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: jtSpacing.gap.sm,
+        p: jtSpacing.component.sm,
+        bgcolor: 'translucent.primaryBlueSubtle',
+        border: 1,
+        borderColor: 'translucent.primaryBlueStrong',
+        borderRadius: 1,
+      }}
+    >
+      <LaptopRoundedIcon sx={{ flex: 'none', color: 'secondary.main' }} />
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography variant="body2" component="p" sx={{ color: 'common.white' }}>
+          <strong>{UI.biggerScreenTitle}</strong>
+        </Typography>
+        <Typography variant="body2" component="p" sx={{ color: 'base.100' }}>
+          {UI.biggerScreenBody(phone)}
+        </Typography>
       </Box>
+      <IconButton
+        size="small"
+        aria-label={UI.dismiss}
+        onClick={() => setShown(false)}
+        sx={{ flex: 'none', color: 'base.100' }}
+      >
+        <CloseRoundedIcon fontSize="small" />
+      </IconButton>
     </Box>
   )
 }

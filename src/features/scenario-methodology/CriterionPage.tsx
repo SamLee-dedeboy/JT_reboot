@@ -17,15 +17,17 @@ import { pageSections } from './components/criterion/criterionLayout'
 import WhatSection from './components/criterion/WhatSection'
 import WhySection from './components/criterion/WhySection'
 import RegionsSection from './components/criterion/RegionsSection'
+import StationsSection from './components/criterion/StationsSection'
 import ComponentsSection from './components/criterion/ComponentsSection'
 import ConstructionSection from './components/criterion/ConstructionSection'
 import ReferencesSection from './components/criterion/ReferencesSection'
 
 const criterionHeroImage = {
+  // No banner of its own yet: the Delta aerial stands in.
+  'water-quality-regulation': '/images/delta-aerial.jpg',
   ecology: '/images/banners/evaluation/criterion-ecology.webp',
   'environmental-justice': '/images/banners/evaluation/criterion-environmental-justice.webp',
-  'ecocultural-restoration':
-    '/images/banners/evaluation/criterion-ecocultural-restoration.webp',
+  'ecocultural-restoration': '/images/banners/evaluation/criterion-ecocultural-restoration.webp',
   recreation: '/images/banners/evaluation/criterion-recreation.webp',
   economy: '/images/banners/evaluation/criterion-economy.webp',
 } as const
@@ -36,8 +38,15 @@ export default function CriterionPage() {
   if (!team) return <Navigate to="/scenarios/evaluation" replace />
   const story = criterionById[team.id].story
   const { color, icon } = teamStyle[team.id]
-  const regions = criterionById[team.id].regions
-  const sections = regions ? pageSections : pageSections.filter((s) => s.id !== 'regions')
+  const { regions, stations } = criterionById[team.id]
+  // A criterion read at stations rather than regions maps those in the regions slot
+  const sections = regions
+    ? pageSections
+    : stations
+      ? pageSections.map((s) =>
+          s.id === 'regions' ? { ...s, label: 'Which stations does it cover?' } : s,
+        )
+      : pageSections.filter((s) => s.id !== 'regions')
 
   return (
     <>
@@ -106,6 +115,7 @@ export default function CriterionPage() {
               <WhatSection story={story} accent={color} />
               <WhySection story={story} accent={color} />
               {regions && <RegionsSection regions={regions} accent={color} />}
+              {!regions && stations && <StationsSection stations={stations} accent={color} />}
               {/* Keyed by criterion so switching criteria resets the open component tab */}
               <ComponentsSection key={team.id} story={story} accent={color} />
               <ConstructionSection story={story} accent={color} />

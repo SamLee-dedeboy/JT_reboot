@@ -4,9 +4,11 @@ import { ecology } from './ecology'
 import { economy } from './economy'
 import { environmentalJustice } from './environmentalJustice'
 import { recreation } from './recreation'
+import { waterQualityRegulation } from './waterQualityRegulation'
 import type { Criterion, CriterionId } from './types'
 
 export const criteria: Criterion[] = [
+  waterQualityRegulation,
   ecology,
   environmentalJustice,
   ecoculturalRestoration,

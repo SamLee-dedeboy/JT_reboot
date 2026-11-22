@@ -2,7 +2,12 @@ import { Box, Stack, Typography } from '@mui/material'
 import { jtSpacing } from '@/theme'
 import { CitedText } from './citations'
 import { NumberedHeading } from '@/ui'
-import { type SectionProps, criterionSplitSx, sectionSx } from './criterionLayout'
+import {
+  type SectionProps,
+  criterionSplitSx,
+  methodologyTextColumnSx,
+  sectionSx,
+} from './criterionLayout'
 
 export default function WhySection({ story, accent }: SectionProps) {
   const { stats = [], statsInRows, paragraphs, quote } = story.why
@@ -15,7 +20,11 @@ export default function WhySection({ story, accent }: SectionProps) {
         accent={accent}
       />
       <Box sx={criterionSplitSx}>
-        <Stack spacing={jtSpacing.gap.md}>
+        {/* Without stats beside it, the text takes the full row at the prose measure */}
+        <Stack
+          spacing={jtSpacing.gap.md}
+          sx={stats.length ? undefined : { gridColumn: '1 / -1', ...methodologyTextColumnSx }}
+        >
           {paragraphs.map((paragraph) => (
             <Typography key={paragraph} variant="body1" sx={{ color: 'base.100' }}>
               <CitedText text={paragraph} />

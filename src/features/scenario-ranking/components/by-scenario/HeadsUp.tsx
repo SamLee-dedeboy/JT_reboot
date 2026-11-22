@@ -1,6 +1,5 @@
 import { Box, Container, Stack, Typography } from '@mui/material'
 import { jtSpacing, ranking } from '@/theme'
-import { RANK_LABEL } from '../../styles'
 import { railSx } from '../rankingLayout'
 
 const headsUpPoints = [
@@ -55,24 +54,33 @@ export default function HeadsUp() {
                 sx={{
                   display: 'grid',
                   gridTemplateColumns: ranking.headsUp.columns,
-                  gap: jtSpacing.gap.md,
-                  py: jtSpacing.component.lg,
+                  gap: { xs: jtSpacing.gap.sm, sm: jtSpacing.gap.md },
+                  py: { xs: jtSpacing.component.md, md: jtSpacing.component.lg },
                   borderTop: 1,
                   borderBottom: index === headsUpPoints.length - 1 ? 1 : 0,
                   borderColor: 'border.default',
                 }}
               >
-                <Typography variant="chartValueLarge" sx={RANK_LABEL}>
+                <Typography variant="chartValueLarge" sx={{ color: 'primary.main' }}>
                   {String(index + 1).padStart(2, '0')}
                 </Typography>
-                <Stack spacing={jtSpacing.gap.xs}>
+                {/* Title over body; from sm to md, side by side so the titles scan down a line. */}
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: { xs: 'minmax(0, 1fr)', ...ranking.headsUp.titleBody },
+                    columnGap: jtSpacing.gap.md,
+                    rowGap: jtSpacing.gap.xs,
+                    alignItems: 'baseline',
+                  }}
+                >
                   <Typography variant="navigationLabel" component="h3">
                     {point.title}
                   </Typography>
                   <Typography variant="body1" sx={{ color: 'base.100' }}>
                     {point.body}
                   </Typography>
-                </Stack>
+                </Box>
               </Box>
             ))}
           </Box>

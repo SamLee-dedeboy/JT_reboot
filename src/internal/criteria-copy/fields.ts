@@ -38,6 +38,7 @@ type TeamId = CriterionId
 
 /** The file each criterion lives in (src/content/criteria/<name>.ts). */
 const criterionFile: Record<TeamId, string> = {
+  'water-quality-regulation': 'src/content/criteria/waterQualityRegulation.ts',
   ecology: 'src/content/criteria/ecology.ts',
   'environmental-justice': 'src/content/criteria/environmentalJustice.ts',
   'ecocultural-restoration': 'src/content/criteria/ecoculturalRestoration.ts',
@@ -47,6 +48,7 @@ const criterionFile: Record<TeamId, string> = {
 
 // The chip group the evaluation page shows for each criterion (EvaluationFramework.tsx).
 const chipGroup: Record<TeamId, string> = {
+  'water-quality-regulation': 'What the stations protect',
   ecology: 'Selected Species of Interest',
   'environmental-justice': 'People and communities',
   'ecocultural-restoration': 'People and communities',

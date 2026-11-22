@@ -5,11 +5,12 @@ import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded'
 import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined'
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import { Box, ButtonBase, IconButton, Typography, useTheme } from '@mui/material'
+import { Box, ButtonBase, IconButton, Typography, useMediaQuery, useTheme } from '@mui/material'
+import type { Theme } from '@mui/material'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useState } from 'react'
 import type { MouseEvent, ReactNode } from 'react'
-import { ranking } from '@/theme'
+import { jtSpacing, ranking } from '@/theme'
 import { TEAMS, cellFill, roundScore } from '../../model/teams'
 import { rankAt } from '../../model/cellValue'
 import { ANY, fmtValue } from '../../model/criteria'
@@ -61,6 +62,25 @@ const labelLines = (lines: 1 | 2 | 3) =>
  */
 /** The gap between two column groups. */
 const GROUP_GAP = '16px'
+/** One scenario's bar is wider than its column by this; it reaches left into the names. */
+const barReach = {
+  xs: `calc(${ranking.singleBarColumn.xs} - ${ranking.singleColumn.xs})`,
+  sm: `calc(${ranking.singleBarColumn.sm} - ${ranking.singleColumn.sm})`,
+}
+const barPull = {
+  xs: `calc(${ranking.singleColumn.xs} - ${ranking.singleBarColumn.xs})`,
+  sm: `calc(${ranking.singleColumn.sm} - ${ranking.singleBarColumn.sm})`,
+}
+/** Its zero line, in from the right: under the middle of the score tiles above it. */
+const barAxis = {
+  xs: `calc(${ranking.singleColumn.xs} / 2)`,
+  sm: `calc(${ranking.singleColumn.sm} / 2)`,
+}
+type Axis = typeof barAxis
+const alongAxis = (axis: Axis, f: (length: string) => string) => ({
+  xs: f(axis.xs),
+  sm: f(axis.sm),
+})
 
 const ECOCULTURAL_RESTORATION_GROUPS: Partial<Record<string, string>> = {
   'bk-ec-restoration-tidal': 'In the Delta',
@@ -95,22 +115,31 @@ export function Matrix({
   state,
   onInspect,
   fit,
+  single,
 }: {
   state: TableState
   onInspect: (inspect: Inspect) => void
   /** Share one screen's height between the rows (the kiosk); otherwise rows take their own. */
   fit: boolean
+  /**
+   * Below md: this scenario's column alone, with no column heads (the picker above names
+   * it), and the criterion's own score as the card's header. Bars keep the scale of all
+   * the columns, so a bar still reads against the other scenarios.
+   */
+  single?: ScenarioKey
 }) {
   // The first column of every group after the first gets a gap before it.
   const groupStarts = new Set(state.groups.slice(1).map((group) => group[0]))
   const gap = (scenario: ScenarioKey) =>
-    groupStarts.has(scenario) ? <Box key={`gap-${scenario}`} aria-hidden /> : null
+    !single && groupStarts.has(scenario) ? <Box key={`gap-${scenario}`} aria-hidden /> : null
   const diff = state.reading === 'change'
   const teamColor = TEAMS.find((t) => t.key === state.root.team)?.color
   const active = state.scenarios
   // In deviation view the baseline is locked off and fades like any scenario
   // switched off; its own text stays plain white (see Cell's `baseline`).
-  const lit = (scenario: ScenarioKey) => active.includes(scenario)
+  const lit = (scenario: ScenarioKey) => !!single || active.includes(scenario)
+  const shown = <T extends { scenario: ScenarioKey }>(cells: T[]) =>
+    single ? cells.filter((cell) => cell.scenario === single) : cells
   const rows = state.rows.map((row) => {
     const cells = state.columns.map((scenario) => {
       const point = pointAt(state, row.node, scenario, state.period)
@@ -129,7 +158,8 @@ export function Matrix({
   // New Green Watershed shows its 50% wetland level; where a row has all three, its
   // header pill opens the column into 25%, 50% and 100% wetland.
   const [levelsOpen, setLevelsOpen] = useState(false)
-  const hasLevels = state.columns.includes(NGW) && rows.some((row) => row.node.ngwLevels)
+  // One column has no head to hold the levels pill.
+  const hasLevels = !single && state.columns.includes(NGW) && rows.some((row) => row.node.ngwLevels)
   const inspectCell = (
     event: MouseEvent<HTMLElement>,
     node: CriterionNode,
@@ -194,6 +224,8 @@ export function Matrix({
       }),
   )
   const reduceMotion = useReducedMotion()
+  // A phone's metric names are a size down, so more of them keep their info button in line.
+  const phone = !useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   // An opened score's entities arrive one after another, sliding down from it;
   // every item keeps its place animated, so the rows below glide out of the way.
   // The fade for a switched-off scenario rides the same animation.
@@ -268,7 +300,7 @@ export function Matrix({
   const restorationGroupSx = {
     position: 'relative' as const,
     pl: 1.5,
-    ml: { md: 2, xl: 3.5 },
+    ml: { xs: 2, xl: 3.5 },
     '&::before': {
       content: '""',
       position: 'absolute' as const,
@@ -285,113 +317,194 @@ export function Matrix({
       sx={{
         height: fit ? 1 : 'auto',
         display: 'grid',
-        gridTemplateColumns: {
-          md: `minmax(0, 2.4fr) ${scenarioColumns}`,
-          xl: `minmax(0, 2.2fr) ${scenarioColumns}`,
-        },
+        gridTemplateColumns: single
+          ? {
+              xs: `minmax(0, 1fr) ${ranking.singleColumn.xs}`,
+              sm: `minmax(0, 1fr) ${ranking.singleColumn.sm}`,
+            }
+          : {
+              md: `minmax(0, 2.4fr) ${scenarioColumns}`,
+              xl: `minmax(0, 2.2fr) ${scenarioColumns}`,
+            },
         gridTemplateRows: template,
         columnGap: 1,
         // Spacing lives inside each row, so a table's gaps do not depend on its row count.
         rowGap: 0,
       }}
     >
-      {/* The scenario groups' names over their columns, then the scenarios. */}
-      <Box />
-      {state.groups.flatMap((group, index) => [
-        index > 0 ? <Box key={`gap-label-${index}`} aria-hidden /> : null,
-        <Typography
-          key={group.join()}
-          variant="chartTitle"
-          sx={{
-            gridColumn: `span ${group.reduce((n, scenario) => n + span(scenario), 0)}`,
-            alignSelf: 'end',
-            color: 'primary.main',
-            pb: 0.5,
-            mb: 0.75,
-            borderBottom: 1,
-            borderColor: 'translucent.primaryGreen',
-          }}
-        >
-          {state.groupLabels?.[index] ?? ''}
-        </Typography>,
-      ])}
-      <Typography variant="chartTitle" sx={{ alignSelf: 'end', color: 'base.200' }}>
-        {UI.metric}
-      </Typography>
-      {state.columns.flatMap((scenario) => [
-        gap(scenario),
-        <Box
-          key={scenario}
-          sx={{
-            gridColumn: `span ${span(scenario)}`,
-            alignSelf: 'end',
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-            columnGap: 1,
-            rowGap: 0.5,
-            // Open, New Green Watershed's head and its levels share a pale green ground.
-            ...(split && scenario === NGW
-              ? { bgcolor: 'translucent.primaryGreenSubtle', px: 1, py: 0.75 }
-              : {}),
-            opacity: lit(scenario) ? 1 : FADED,
-            transition: 'opacity 200ms ease',
-          }}
-        >
-          {/* The level in view sits above the name, so the name lines up with the others. */}
-          {scenario === NGW && hasLevels && (
-            <LevelsPill open={split} onToggle={() => setLevelsOpen((open) => !open)} />
-          )}
-          <Typography variant="chartTitle" sx={{ color: 'base.50', flexBasis: '100%' }}>
-            {scenarioName(scenario)}
+      {/* The scenario groups' names over their columns, then the scenarios. One
+          scenario's column has no heads: the picker above names it. */}
+      {!single && (
+        <>
+          <Box />
+          {state.groups.flatMap((group, index) => [
+            index > 0 ? <Box key={`gap-label-${index}`} aria-hidden /> : null,
+            <Typography
+              key={group.join()}
+              variant="chartTitle"
+              sx={{
+                gridColumn: `span ${group.reduce((n, scenario) => n + span(scenario), 0)}`,
+                alignSelf: 'end',
+                color: 'primary.main',
+                pb: 0.5,
+                mb: 0.75,
+                borderBottom: 1,
+                borderColor: 'translucent.primaryGreen',
+              }}
+            >
+              {state.groupLabels?.[index] ?? ''}
+            </Typography>,
+          ])}
+          <Typography variant="chartTitle" sx={{ alignSelf: 'end', color: 'base.200' }}>
+            {UI.metric}
           </Typography>
-        </Box>,
-      ])}
-      {/* With the levels open, their names under New Green Watershed's. */}
-      {split && <Box />}
-      {split &&
-        state.columns.flatMap((scenario) => [
-          gap(scenario),
-          scenario === NGW ? (
-            UI.ngwLevels.map((label, index) => (
-              <Typography
-                key={`level-${label}`}
-                variant="chartTitle"
-                sx={{
-                  // Two-line and one-line labels sit on the same middle line.
-                  alignSelf: 'stretch',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  textAlign: 'center',
-                  mt: 1,
-                  px: 1,
-                  py: 0.75,
-                  bgcolor: 'translucent.primaryGreenSubtle',
-                  borderTop: 2,
-                  borderColor: index === NGW_DEFAULT ? 'primary.main' : 'transparent',
-                  color: index === NGW_DEFAULT ? 'common.white' : 'base.100',
-                }}
-              >
-                {label}
+          {state.columns.flatMap((scenario) => [
+            gap(scenario),
+            <Box
+              key={scenario}
+              sx={{
+                gridColumn: `span ${span(scenario)}`,
+                alignSelf: 'end',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                columnGap: 1,
+                rowGap: 0.5,
+                // Open, New Green Watershed's head and its levels share a pale green ground.
+                ...(split && scenario === NGW
+                  ? { bgcolor: 'translucent.primaryGreenSubtle', px: 1, py: 0.75 }
+                  : {}),
+                opacity: lit(scenario) ? 1 : FADED,
+                transition: 'opacity 200ms ease',
+              }}
+            >
+              {/* The level in view sits above the name, so the name lines up with the others. */}
+              {scenario === NGW && hasLevels && (
+                <LevelsPill open={split} onToggle={() => setLevelsOpen((open) => !open)} />
+              )}
+              <Typography variant="chartTitle" sx={{ color: 'base.50', flexBasis: '100%' }}>
+                {scenarioName(scenario)}
               </Typography>
-            ))
-          ) : (
-            <Box key={`level-${scenario}`} />
-          ),
-        ])}
-      {rule('heads')}
+            </Box>,
+          ])}
+          {/* With the levels open, their names under New Green Watershed's. */}
+          {split && <Box />}
+          {split &&
+            state.columns.flatMap((scenario) => [
+              gap(scenario),
+              scenario === NGW ? (
+                UI.ngwLevels.map((label, index) => (
+                  <Typography
+                    key={`level-${label}`}
+                    variant="chartTitle"
+                    sx={{
+                      // Two-line and one-line labels sit on the same middle line.
+                      alignSelf: 'stretch',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center',
+                      mt: 1,
+                      px: 1,
+                      py: 0.75,
+                      bgcolor: 'translucent.primaryGreenSubtle',
+                      borderTop: 2,
+                      borderColor: index === NGW_DEFAULT ? 'primary.main' : 'transparent',
+                      color: index === NGW_DEFAULT ? 'common.white' : 'base.100',
+                    }}
+                  >
+                    {label}
+                  </Typography>
+                ))
+              ) : (
+                <Box key={`level-${scenario}`} />
+              ),
+            ])}
+          {rule('heads')}
+        </>
+      )}
       {rows.map(({ node, depth, open, cells }, rowIndex) => {
         const ranked = node.unit === 'score'
         const restorationGroup = ECOCULTURAL_RESTORATION_GROUPS[node.id]
         const inRestorationGroup = ECOCULTURAL_RESTORATION_GROUP_ROWS.has(node.id)
         const inRestorationSplit = ECOCULTURAL_RESTORATION_SPLIT.has(node.id)
         const canOpen = depth === 0 && node.level !== 'team' && !!node.children?.length
+        // Only the criterion's own score opens a card (its takeaway); a metric's score
+        // is read from its row and its info button, and its details from theirs.
+        const inspectable = !(depth === 0 && node.level !== 'team')
         const extent =
           depth === 1 ? extents.get(`${scoreOf(rowIndex)?.id}|${node.unit}`) : undefined
         const bars = barred.includes(node.id)
+        // An open score can draw its entities as bars, column by column. Conditions have
+        // no numbers to draw as bars.
+        const barsButton = open && !node.steps && (
+          <IconButton
+            size="small"
+            onClick={() => toggleBars(node.id)}
+            aria-pressed={bars}
+            aria-label={`${bars ? 'Show values' : 'Show bars'} for what ${node.label} is based on`}
+            title={bars ? UI.showValues : UI.showAsBars}
+            sx={{
+              p: 0.25,
+              ml: single ? 0 : 'auto',
+              flex: 'none',
+              color: bars ? 'primary.main' : 'base.100',
+              bgcolor: bars ? 'translucent.primaryGreen' : 'transparent',
+            }}
+          >
+            <BarChartOutlinedIcon fontSize="small" sx={{ transform: 'rotate(90deg)' }} />
+          </IconButton>
+        )
+        // One scenario: the criterion's score heads the card, its tile beside its name.
+        if (single && node.level === 'team') {
+          const cell = shown(cells)[0]
+          return (
+            <Box
+              key={node.id}
+              sx={{
+                gridColumn: '1 / -1',
+                display: 'flex',
+                alignItems: 'center',
+                gap: jtSpacing.gap.md,
+                pb: jtSpacing.component.sm,
+              }}
+            >
+              <Box
+                sx={{
+                  flex: 'none',
+                  display: 'grid',
+                  width: ranking.singleScore.width,
+                  minHeight: ranking.breakoutRow.score,
+                }}
+              >
+                <Cell
+                  value={cell.value}
+                  why={cell.why}
+                  unit={node.unit}
+                  score={ranked}
+                  baseline={diff && cell.scenario === state.baseline}
+                  signedText={diff && !node.asPublished}
+                  onClick={
+                    cell.raw !== null ? (event) => inspectCell(event, node, cell, diff) : undefined
+                  }
+                />
+              </Box>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="chartTitle" component="p" sx={{ color: teamColor }}>
+                  {UI.teamScore(node.label)}
+                </Typography>
+                <Typography variant="captionSmall" component="p">
+                  {UI.againstBaseline(scenarioName(state.baselineOf(cell.scenario)))}
+                </Typography>
+                <Typography variant="captionSmall" component="p" sx={{ color: 'primary.main' }}>
+                  {UI.criterionScoreHint}
+                </Typography>
+              </Box>
+            </Box>
+          )
+        }
         // A metric described in words: its name, and one line across the scenarios.
         if (depth === 0 && node.level !== 'team' && !isRanked(node) && !node.steps)
           return (
@@ -441,7 +554,7 @@ export function Matrix({
             {restorationGroup && (
               <MotionBox
                 {...motionFor(depth, order[rowIndex])}
-                sx={{ gridColumn: '1 / -1', pt: 0.75, pb: 0.25, ml: { md: 2, xl: 3.5 } }}
+                sx={{ gridColumn: '1 / -1', pt: 0.75, pb: 0.25, ml: { xs: 2, xl: 3.5 } }}
               >
                 <Typography variant="captionSmall" component="p">
                   {restorationGroup}
@@ -479,8 +592,10 @@ export function Matrix({
                 gap: 0.5,
                 py: depth === 1 ? 0.25 : 0.375,
                 // Entities sit well in from their score, under its label.
-                pl: depth === 1 ? { md: 3.5, xl: 5 } : 0,
+                pl: depth === 1 ? { xs: 3.5, xl: 5 } : 0,
                 ...(depth === 1 && inRestorationGroup ? restorationGroupSx : {}),
+                // One scenario's bar reaches into the name's column; the name keeps clear of it.
+                ...(single && extent !== undefined ? { pr: barReach } : {}),
               }}
             >
               {depth === 0 && node.level !== 'team' && (
@@ -524,22 +639,53 @@ export function Matrix({
                         minWidth: 0,
                       }}
                     >
-                      <Typography
-                        variant="chartTitle"
-                        component="p"
-                        title={node.label}
-                        sx={{
-                          ...labelLines(node.level === 'team' ? 2 : lines),
-                          color: node.level === 'team' ? teamColor : undefined,
-                        }}
+                      {/* One scenario's narrow column: the name wraps (up to three lines) and the
+                          info button stays beside it, centred on them. */}
+                      <Box
+                        sx={
+                          single
+                            ? { display: 'flex', alignItems: 'center', columnGap: 0.5, minWidth: 0 }
+                            : { display: 'contents' }
+                        }
                       >
-                        {node.level === 'team' ? UI.teamScore(node.label) : node.label}
-                      </Typography>
-                      {node.id === 'bk-ej-waterage' && <PreliminaryTag />}
-                      {node.steps && <QualitativeTag />}
-                      {/* How the score is built, on demand; in the name's line, so it
+                        <Typography
+                          variant={single && phone ? 'chartTitleCompact' : 'chartTitle'}
+                          component="p"
+                          title={node.label}
+                          sx={{
+                            ...labelLines(single ? 3 : node.level === 'team' ? 2 : lines),
+                            // A narrower phone breaks a long word rather than cutting it.
+                            ...(single ? { hyphens: 'auto' } : {}),
+                            color: node.level === 'team' ? teamColor : undefined,
+                          }}
+                        >
+                          {node.level === 'team' ? UI.teamScore(node.label) : node.label}
+                        </Typography>
+                        {node.id === 'bk-ej-waterage' && <PreliminaryTag />}
+                        {node.steps && <QualitativeTag />}
+                        {/* How the score is built, on demand; in the name's line, so it
                           stays beside a name that wraps. */}
-                      {depth === 0 && <ScoreInfo node={node} />}
+                        {/* One scenario: the chart switch sits under the info button, beside
+                            the name, rather than on a line of its own. */}
+                        {single ? (
+                          <Box
+                            sx={{
+                              flex: 'none',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              // Tight padding, so the pair stands no taller than a two-line name.
+                              '& .MuiIconButton-root': { p: 0 },
+                              gap: 0.5,
+                            }}
+                          >
+                            <ScoreInfo node={node} />
+                            {barsButton}
+                          </Box>
+                        ) : (
+                          depth === 0 && <ScoreInfo node={node} />
+                        )}
+                      </Box>
                     </Box>
                     {node.level === 'team' && (
                       <Box
@@ -591,32 +737,15 @@ export function Matrix({
                       {/* How the score is built, on demand; in the name's line, so it
                           stays beside a name that wraps. */}
                       {depth === 0 && <ScoreInfo node={node} />}
+                      {single && barsButton}
                     </Box>
                   </>
                 )}
               </Box>
-              {/* An open score can draw its entities as bars, column by column. */}
-              {/* Conditions have no numbers to draw as bars. */}
-              {open && !node.steps && (
-                <IconButton
-                  size="small"
-                  onClick={() => toggleBars(node.id)}
-                  aria-pressed={bars}
-                  aria-label={`${bars ? 'Show values' : 'Show bars'} for what ${node.label} is based on`}
-                  title={bars ? UI.showValues : UI.showAsBars}
-                  sx={{
-                    p: 0.25,
-                    ml: 'auto',
-                    flex: 'none',
-                    color: bars ? 'primary.main' : 'base.100',
-                    bgcolor: bars ? 'translucent.primaryGreen' : 'transparent',
-                  }}
-                >
-                  <BarChartOutlinedIcon fontSize="small" sx={{ transform: 'rotate(90deg)' }} />
-                </IconButton>
-              )}
+              {/* At the end of the label's cell, or under one scenario's name, beside its info. */}
+              {!single && barsButton}
             </MotionBox>
-            {cells.flatMap((cell) => [
+            {shown(cells).flatMap((cell) => [
               gap(cell.scenario),
               node.steps || node.metBy ? (
                 <MotionBox
@@ -647,16 +776,28 @@ export function Matrix({
                   signedText={diff}
                   fallback={cell}
                   whole={state.place === ANY}
-                  onInspect={(event, point, level) => inspectCell(event, node, point, diff, level)}
+                  onInspect={
+                    inspectable
+                      ? (event, point, level) => inspectCell(event, node, point, diff, level)
+                      : undefined
+                  }
                 />
               ) : (
                 <MotionBox
                   key={cell.scenario}
                   {...motionFor(depth, order[rowIndex], lit(cell.scenario) ? 1 : FADED)}
-                  sx={{ minHeight: rowMin(depth), display: 'grid', py: depth === 1 ? 0 : 0.375 }}
+                  sx={{
+                    minHeight: rowMin(depth),
+                    display: 'grid',
+                    py: depth === 1 ? 0 : 0.375,
+                    // Wider than the score column, so the bar and its value share the row.
+                    ...(single && extent !== undefined ? { ml: barPull } : {}),
+                  }}
                 >
                   <Cell
                     bar={extent}
+                    axis={single ? barAxis : undefined}
+                    narrow={!!single}
                     value={cell.value}
                     why={cell.why}
                     rank={cell.rank}
@@ -667,7 +808,7 @@ export function Matrix({
                     baseline={diff && cell.scenario === state.baseline}
                     signedText={diff && !node.asPublished}
                     onClick={
-                      cell.raw !== null
+                      inspectable && cell.raw !== null
                         ? (event) => inspectCell(event, node, cell, diff)
                         : undefined
                     }
@@ -758,10 +899,11 @@ function LevelCells({
   fallback: CellPoint
   /** Every place together: the only slice the levels are reported for. */
   whole: boolean
-  onInspect: (event: MouseEvent<HTMLElement>, point: CellPoint, level?: number) => void
+  /** None for a metric's score: only the criterion's score opens a card. */
+  onInspect?: (event: MouseEvent<HTMLElement>, point: CellPoint, level?: number) => void
 }) {
   const inspectColumn =
-    fallback.raw === null
+    fallback.raw === null || !onInspect
       ? undefined
       : (event: MouseEvent<HTMLElement>) => onInspect(event, fallback)
   const box = (key: string, columns: number, children: ReactNode) => (
@@ -838,7 +980,7 @@ function LevelCells({
           1,
           cell(
             value,
-            value === null
+            value === null || !onInspect
               ? undefined
               : (event) => onInspect(event, { ...fallback, raw: levels[index] }, index),
           ),
@@ -1006,6 +1148,8 @@ function percentageChange(value: number, baseline: number): string {
  */
 function Cell({
   bar,
+  axis,
+  narrow,
   value,
   why,
   rank,
@@ -1020,6 +1164,10 @@ function Cell({
 }: {
   /** Draw the value as a bar from mid-cell, this far reaching the edge, instead of as text. */
   bar?: number
+  /** One scenario's bar: zero this far in from the right, not mid-cell. */
+  axis?: Axis
+  /** One scenario's narrow column: a rank badge sits beside its value, not over it. */
+  narrow?: boolean
   value: number | null
   why: string
   rank?: number | null
@@ -1072,8 +1220,8 @@ function Cell({
       component="span"
       title={`Rank ${scoreText(rank)}`}
       sx={{
-        position: 'absolute',
-        right: { md: 6, xl: 10 },
+        position: narrow ? 'static' : 'absolute',
+        right: { xs: 4, md: 6, xl: 10 },
         flex: 'none',
         px: 0.75,
         borderRadius: 0.5,
@@ -1103,7 +1251,14 @@ function Cell({
           '&.Mui-focusVisible': focusRing,
         }}
       >
-        <BarTrack reach={reach} text={text} quiet={quiet} tone={tone} barTone={barTone} />
+        <BarTrack
+          reach={reach}
+          axis={axis}
+          text={text}
+          quiet={quiet}
+          tone={tone}
+          barTone={barTone}
+        />
       </ButtonBase>
     )
   }
@@ -1116,7 +1271,7 @@ function Cell({
         position: 'relative',
         // The value sits in the middle of its cell, a note beside it; a badge keeps the right edge.
         justifyContent: 'center',
-        gap: note ? 1 : 0.5,
+        gap: note || narrow ? 1 : 0.5,
         height: 1,
         minHeight: 0,
         px: { md: 0.75, xl: 1.25 },
@@ -1182,12 +1337,15 @@ function Cell({
  */
 function BarTrack({
   reach,
+  axis,
   text,
   quiet,
   tone,
   barTone,
 }: {
   reach: number
+  /** Zero this far in from the right; each side reaches as far as it is from the edge. */
+  axis?: Axis
   text: string
   quiet: boolean
   /** Blue or orange, as the cell's text. */
@@ -1195,13 +1353,18 @@ function BarTrack({
   /** The bar's own blue or red, the number's darker twin. */
   barTone?: string
 }) {
+  const zero = axis ? alongAxis(axis, (a) => `calc(100% - ${a})`) : '50%'
+  const towards = axis ? axis : '50%'
+  const width = axis
+    ? alongAxis(axis, (a) => `calc(${a} * ${Math.abs(reach)})`)
+    : `${Math.abs(reach) * 50}%`
   return (
     <Box sx={{ position: 'relative', flex: '1 1 auto', alignSelf: 'stretch', minWidth: 0 }}>
       <Box
         aria-hidden
         sx={{
           position: 'absolute',
-          left: '50%',
+          left: zero,
           top: '10%',
           bottom: '10%',
           borderLeft: ranking.zeroLine.width,
@@ -1214,8 +1377,8 @@ function BarTrack({
           position: 'absolute',
           top: '22%',
           bottom: '22%',
-          ...(reach >= 0 ? { left: '50%' } : { right: '50%' }),
-          width: `${Math.abs(reach) * 50}%`,
+          ...(reach >= 0 ? { left: zero } : { right: towards }),
+          width,
           bgcolor: barTone ?? 'base.100',
           opacity: ranking.barOpacity,
           borderRadius: 0.4,
@@ -1230,8 +1393,9 @@ function BarTrack({
           display: 'flex',
           alignItems: 'center',
           gap: 0.75,
-          maxWidth: '50%',
-          ...(reach > 0 ? { right: '50%', pr: 0.75 } : { left: '50%', pl: 0.75 }),
+          // Beside one scenario's axis the number may run past the column, not cut short.
+          ...(axis ? { width: 'max-content' } : { maxWidth: '50%' }),
+          ...(reach > 0 ? { right: towards, pr: 0.75 } : { left: zero, pl: 0.75 }),
         }}
       >
         <Typography

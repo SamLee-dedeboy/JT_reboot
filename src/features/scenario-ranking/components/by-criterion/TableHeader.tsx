@@ -3,7 +3,6 @@ import MapOutlinedIcon from '@mui/icons-material/MapOutlined'
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined'
 import { Box, Typography, useTheme } from '@mui/material'
 import type { ReactNode } from 'react'
-import { ranking } from '@/theme'
 import { cellFill } from '../../model/teams'
 import { ANY } from '../../model/criteria'
 import type { MapScale } from '../regions/RegionValues'
@@ -106,11 +105,19 @@ export function LegendBar({
   mapScale: MapScale | null
 }) {
   const theme = useTheme()
-  const { scores, details } = splitRows(state.selectedNodes)
+  const { scores } = splitRows(state.selectedNodes)
   const item = (key: string, label: string, body: ReactNode) => (
     <Box
       key={key}
-      sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flex: 'none', whiteSpace: 'nowrap' }}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 0.75,
+        // Below md a long item wraps inside the card rather than running out of it.
+        flex: { xs: '0 1 auto', md: 'none' },
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
+        whiteSpace: { xs: 'normal', md: 'nowrap' },
+      }}
     >
       {label && (
         <Typography variant="body2" sx={{ color: 'base.100' }}>
@@ -164,36 +171,6 @@ export function LegendBar({
             {caption('+5')}
           </>,
         )}
-      {details.length > 0 &&
-        view !== 'map' &&
-        state.reading === 'change' &&
-        item(
-          'details',
-          '',
-          <>
-            <Swatch tone={theme.chart.voting.above} />
-            {caption(UI.better)}
-            <Swatch tone={theme.chart.voting.below} />
-            {caption(UI.worse)}
-          </>,
-        )}
-      {item(
-        'empty',
-        '',
-        <>
-          <Box
-            component="span"
-            sx={{
-              width: ranking.legend.swatchHeight * 2 + 2,
-              height: ranking.legend.swatchHeight * 2 + 2,
-              border: 1,
-              borderColor: 'border.strong',
-            }}
-          />
-          {caption(UI.noValue)}
-        </>,
-      )}
-      {view !== 'map' && item('na', '', caption(UI.notApplicableKey))}
       {state.scenarios.length < state.columns.length &&
         item(
           'faded',

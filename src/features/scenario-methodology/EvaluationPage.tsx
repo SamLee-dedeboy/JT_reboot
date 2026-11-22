@@ -24,7 +24,7 @@ const sectionNavigation = [
 type SectionId = (typeof sectionNavigation)[number]['id']
 const sectionIds = sectionNavigation.map(({ id }) => id)
 
-/** /scenarios/evaluation: how the five criteria evaluate the scenarios, and where to compare them. */
+/** /scenarios/evaluation: how the six criteria evaluate the scenarios, and where to compare them. */
 export default function EvaluationPage() {
   const [activeSection, setActiveSection] = useActiveSection(sectionIds, 'how-evaluated')
 
@@ -35,7 +35,7 @@ export default function EvaluationPage() {
         <PageHero
           image="/images/banners/evaluation/evaluation-overview.webp"
           title="Comparative Scenario Evaluation"
-          summary="Five criteria examine the ecological, eco-cultural, community, recreational, and economic effects of every future scenario. Explore what each criterion measures, then compare results across scenarios."
+          summary="Six criteria examine the water quality, ecological, eco-cultural, community, recreational, and economic effects of every future scenario. Explore what each criterion measures, then compare results across scenarios."
         />
 
         <Container maxWidth={false} sx={{ width: '90dvw', px: 0, py: 0 }}>
@@ -48,7 +48,7 @@ export default function EvaluationPage() {
               alignItems: 'start',
             }}
           >
-            {/* Claude structure: the five criteria sit under the evaluation step they belong to. */}
+            {/* Claude structure: the six criteria sit under the evaluation step they belong to. */}
             {/* The rail's cell spans the rows beside it, so the rail stays pinned through all of them. */}
             <Box sx={{ gridRow: { lg: '1 / span 3' }, alignSelf: 'stretch' }}>
               <NavRail

@@ -27,7 +27,7 @@ function CriterionCell({ teamId, scenarioSlug }: { teamId: CriterionId; scenario
   return <ScoreBadge score={finding.overall.score} />
 }
 
-/** Futures down the side, the five criteria across the top. */
+/** Futures down the side, the six criteria across the top. */
 export default function CriteriaGrid({ rows }: { rows: { slug: string; label: string }[] }) {
   return (
     <Box sx={{ overflowX: 'auto' }}>
